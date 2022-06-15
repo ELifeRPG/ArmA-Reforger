@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{CBDA41C4048EF947}Assets/Items/Keys/CarKey"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}
