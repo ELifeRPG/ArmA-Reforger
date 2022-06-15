@@ -330,6 +330,7 @@ Vehicle : "{1F9BB80C3EC3C891}Prefabs/Vehicles/Core/Wheeled_Car_Base.et" {
   }
   ELIFE_VehicleLockComponent "{59833C8D35C84C9D}" {
    m_sDebugIdentifier "123123"
+   m_lockUnlockSoundProject "{5A15B897792C7099}Sounds/Vehicles/Vehicle_LockUnlock.acp"
   }
   FuelManagerComponent "{5622A70CD78A9E2C}" {
    FuelNodes {
@@ -986,5 +987,5 @@ Vehicle : "{1F9BB80C3EC3C891}Prefabs/Vehicles/Core/Wheeled_Car_Base.et" {
    }
   }
  }
- coords 10.238 0.001 13.63
+ coords 0 0 0
 }

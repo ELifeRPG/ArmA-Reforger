@@ -1,0 +1,264 @@
+AudioClass {
+ sounds {
+  SoundClass {
+   id 6153
+   name "SOUND_VEHICLE_LOCK"
+   tl 290 -249
+   conns {
+    ConnectionsClass connections {
+     id 14
+     links {
+      ConnectionClass connection {
+       id 2066
+       port 65
+      }
+     }
+    }
+   }
+   outState 8203
+   outStatePort 17415
+  }
+  SoundClass {
+   id 12297
+   name "SOUND_VEHICLE_UNLOCK"
+   tl 289 -420
+   conns {
+    ConnectionsClass connections {
+     id 14
+     links {
+      ConnectionClass connection {
+       id 11282
+       port 65
+      }
+     }
+    }
+   }
+   outState 8203
+   outStatePort 17415
+  }
+ }
+ mixers {
+  MixerClass {
+   id 8203
+   name "OutputState 8"
+   tl 618 -346
+   res "{B764D803219C775E}Sounds/FinalMix.afm"
+   iops {
+    IOPConnectionClass iopConnection {
+     port 17415
+     conn {
+      ConnectionsClass connections {
+       id 5
+       links {
+        ConnectionClass connection {
+         id 6153
+         port 65
+        }
+        ConnectionClass connection {
+         id 12297
+         port 65
+        }
+       }
+      }
+     }
+    }
+   }
+   path "{B764D803219C775E}Sounds/FinalMix.afm"
+   inputs {
+    "ANM_Footsteps" "ANM_Voice" "WPN_Handling" "WPN_Shots" "WPN_Explosions" "WNP_BulletHits" "CHAR" "ENV_Ambients" "VEH_Animations" "Impacts" "Dialogue" "Music" "ENV_Objects" "UI" "VEH_Engine" "VEH_Tires" "VON" "SFX" "ENV_Ambient_NoAtt" "SFX_Reverb" "VON_Reverb" "Dialogue_Reverb"
+   }
+  }
+ }
+ shaders {
+  ShaderClass {
+   id 2066
+   name "UnlockShader"
+   tl 30 -249
+   conns {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 10244
+       port 65
+      }
+     }
+    }
+   }
+   iops {
+    IOPConnectionClass iopConnection {
+     port 0
+     conn {
+      ConnectionsClass connections {
+       id 24
+       links {
+        ConnectionClass connection {
+         id 3100
+         port 65
+        }
+       }
+      }
+     }
+    }
+    IOPConnectionClass iopConnection {
+     port 1
+     conn {
+      ConnectionsClass connections {
+       id 15
+       links {
+        ConnectionClass connection {
+         id 4115
+         port 65
+        }
+       }
+      }
+     }
+    }
+    IOPConnectionClass iopConnection {
+     port 2
+     conn {
+      ConnectionsClass connections {
+       id 17
+       links {
+        ConnectionClass connection {
+         id 5141
+         port 65
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  ShaderClass {
+   id 11282
+   name "LockShader"
+   tl 31 -420
+   conns {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 9220
+       port 65
+      }
+     }
+    }
+   }
+   iops {
+    IOPConnectionClass iopConnection {
+     port 0
+     conn {
+      ConnectionsClass connections {
+       id 24
+       links {
+        ConnectionClass connection {
+         id 3100
+         port 65
+        }
+       }
+      }
+     }
+    }
+    IOPConnectionClass iopConnection {
+     port 1
+     conn {
+      ConnectionsClass connections {
+       id 15
+       links {
+        ConnectionClass connection {
+         id 4115
+         port 65
+        }
+       }
+      }
+     }
+    }
+    IOPConnectionClass iopConnection {
+     port 2
+     conn {
+      ConnectionsClass connections {
+       id 17
+       links {
+        ConnectionClass connection {
+         id 5141
+         port 65
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+ amplitudes {
+  AmplitudeClass {
+   id 4115
+   name "Amplitude 4"
+   tl -264 94
+   curve Custom
+   AttenuationCurve {
+    CurvePoint "1" {
+     X 10
+     Y 1
+    }
+    CurvePoint "2" {
+     X 30
+     Y 0.75
+    }
+    CurvePoint "3" {
+     X 50
+     Y 0.5
+    }
+    CurvePoint "4" {
+     X 100
+     Y 0.1
+    }
+    CurvePoint "5" {
+     X 200
+    }
+   }
+  }
+ }
+ frequency {
+  FrequencyClass {
+   id 5141
+   name "Frequency 5"
+   tl -268 178
+   enableDistanceAtt 1
+  }
+ }
+ banks_local {
+  BankLocalClass {
+   id 9220
+   name "VehicleLock"
+   tl -320 -421
+   Volume -15
+   Samples {
+    AudioBankSampleClass "Sample(1)" {
+     Filename "{09EBA3B7232A5597}Sounds/Vehicles/VehicleLock.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 10244
+   name "VehicleUnlock"
+   tl -318 -247
+   Volume -10
+   Samples {
+    AudioBankSampleClass "Sample(1)" {
+     Filename "{0489AE535CE603AE}Sounds/Vehicles/VehicleUnlock.wav"
+    }
+   }
+  }
+ }
+ spatialities {
+  SpatialityClass {
+   id 3100
+   name "Spatiality 3"
+   tl -268 17
+   spatialFactor 1
+  }
+ }
+ version 1
+}
