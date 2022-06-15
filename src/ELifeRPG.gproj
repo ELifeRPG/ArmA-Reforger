@@ -1,0 +1,37 @@
+GameProject {
+ ID "ELifeRPG"
+ GUID "596AFBF40E2150FD"
+ TITLE "ELifeRPG"
+ Dependencies {
+  "58D0FB3206B6F859" "5614BBCCBB55ED1C"
+ }
+ Configurations {
+  GameProjectConfig PC {
+   WidgetManagerSettings WidgetManagerSettings "{AC4BE58770485E02}" {
+    StringTables {
+     StringTableDefinition "{599EB571FA8195EE}" {
+      StringTableSource "{91E0F6253032266E}Language/ELIFE_Localization.st"
+      Languages {
+       LanguageDefinition "{599EB571E9F50925}" {
+        Code "en_us"
+        StringTableRuntime "{0D23B93CEF82EE84}Language/ELIFE_Localization.en_us.conf"
+       }
+       LanguageDefinition "{599EB571E9889DAF}" {
+        Code "de_de"
+        StringTableRuntime "{53D333778571EB85}Language/ELIFE_Localization.de_de.conf"
+       }
+      }
+     }
+    }
+   }
+  }
+  GameProjectConfig XBOX_ONE {
+  }
+  GameProjectConfig XBOX_SERIES {
+  }
+  GameProjectConfig PS4 {
+  }
+  GameProjectConfig HEADLESS {
+  }
+ }
+}
