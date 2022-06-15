@@ -12,8 +12,11 @@ class ELIFE_VehicleLockComponent : SCR_BaseLockComponent
 	[Attribute("")]
 	string m_sDebugIdentifier;
 	
+    [Attribute("", UIWidgets.ResourceNamePicker, desc: "Vehicle key prefab")]
+	ResourceName m_KeyPrefab;
+	
     [Attribute("", UIWidgets.ResourceNamePicker, desc: "Lock/Unlock sound project (acp)")]
-	protected ResourceName m_lockUnlockSoundProject;
+	protected ResourceName m_LockUnlockSoundProject;
 	
 	protected AudioHandle m_AudioHandle;
 	
@@ -21,7 +24,7 @@ class ELIFE_VehicleLockComponent : SCR_BaseLockComponent
 	string m_sVehicleIdentifier;
 	
 	[RplProp()]
-	bool m_bIsVehicleLocked = false;
+	bool m_bIsVehicleLocked = true;
 	
 	private IEntity m_Vehicle;
 	
@@ -78,7 +81,7 @@ class ELIFE_VehicleLockComponent : SCR_BaseLockComponent
 		
 		mat[3] = m_Vehicle.GetOrigin();
 		
-		m_AudioHandle = AudioSystem.PlayEvent(m_lockUnlockSoundProject, eventName, mat, signalName, signalValue);
+		m_AudioHandle = AudioSystem.PlayEvent(m_LockUnlockSoundProject, eventName, mat, signalName, signalValue);
 	}
 	
 	//------------------------------------------------------------------------------------------------

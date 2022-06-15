@@ -21,7 +21,7 @@ modded class SCR_EngineAction : SCR_VehicleActionBase
 		
 		if (m_pVehicleLockComponent)
 		{
-			playerHasKeyToCar = ELIFE_VehicleLockUtils.HasPlayerKeyToCar(user, m_pVehicleLockComponent.m_sVehicleIdentifier);
+			playerHasKeyToCar = ELIFE_VehicleLockUtils.HasPlayerKeyToCar(user, m_pVehicleLockComponent.m_sVehicleIdentifier, m_pVehicleLockComponent.m_KeyPrefab);
 			m_pScrCarController.m_bHasPlayerKeyToVehicle = playerHasKeyToCar;
 		}
 		

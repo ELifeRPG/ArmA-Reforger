@@ -1,12 +1,12 @@
 class ELIFE_VehicleLockUtils
 {
-	static bool HasPlayerKeyToCar(IEntity user, string vehicleIdentifier)
+	static bool HasPlayerKeyToCar(IEntity user, string vehicleIdentifier, ResourceName keyPrefab)
 	{
 		// Get inventory of user
 		auto inventoryManager = SCR_InventoryStorageManagerComponent.Cast(user.FindComponent(SCR_InventoryStorageManagerComponent));
 		
-		//if (inventoryManager.GetDepositItemCountByResource() == 0)
-			//return false;
+		if (inventoryManager.GetDepositItemCountByResource(keyPrefab) == 0)
+			return false;
 		
 		// Get inventoryItems
 		array<IEntity> inventoryItems = new array<IEntity>();

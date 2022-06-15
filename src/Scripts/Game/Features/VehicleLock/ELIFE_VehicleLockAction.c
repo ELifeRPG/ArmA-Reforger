@@ -55,7 +55,7 @@ class ELIFE_VehicleLockAction : ScriptedUserAction
 			return false;
 		}
 		
-		if (!ELIFE_VehicleLockUtils.HasPlayerKeyToCar(user, vehicleLockComponent.m_sVehicleIdentifier))
+		if (!ELIFE_VehicleLockUtils.HasPlayerKeyToCar(user, vehicleLockComponent.m_sVehicleIdentifier, vehicleLockComponent.m_KeyPrefab))
 		{
 			SetCannotPerformReason("Player has no key for vehicle");
 			return false;
