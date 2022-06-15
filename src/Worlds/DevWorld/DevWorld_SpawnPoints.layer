@@ -1,0 +1,7 @@
+SCR_VehicleSpawn VehicleSpawner {
+ coords 3.916 0.001 5.264
+ m_rnPrefab "{693CF669B0D929B9}Prefabs/Vehicles/Wheeled/M151A2/TestVehicle.et"
+}
+SCR_SpawnPoint PlayerSpawnPoint : "{6D3068348B1C867E}Prefabs/Spawning/SpawnPoint_LIFE.et" {
+ coords 8.616 0.569 5.767
+}
