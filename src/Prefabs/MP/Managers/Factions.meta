@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{822EFA467A3ACFF2}Prefabs/MP/Managers/Factions"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}

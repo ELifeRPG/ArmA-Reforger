@@ -1,0 +1,14 @@
+SCR_FactionManager : "{A242612865F2A48E}Prefabs/MP/Managers/Factions/FactionManager_Base.et" {
+ ID "56B2B4776E6E4499"
+ Factions {
+  SCR_Faction "{5978862F2CABCC45}" {
+   FactionKey "LIFE"
+   UIInfo SCR_FactionUIInfo "{5978862F584312C1}" {
+    Name "Life"
+    Description "Faction for Life Gameplay"
+    m_sNameUpper "LIFE"
+   }
+   m_sFactionFlag "{D271FFE595D2F7CB}Assets/Items/Food/Data/Apple_01.edds"
+  }
+ }
+}

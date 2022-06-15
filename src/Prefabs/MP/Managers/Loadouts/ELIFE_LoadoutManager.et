@@ -1,0 +1,10 @@
+SCR_LoadoutManager : "{AA4E7419A1FF65B0}Prefabs/MP/Managers/Loadouts/LoadoutManager_Base.et" {
+ ID "56B2B47708C4F23A"
+ m_aPlayerLoadouts {
+  SCR_FactionPlayerLoadout "{5978862C5ED83E46}" {
+   m_sLoadoutName "LIFE Player"
+   m_sLoadoutResource "{9FA4749AF6C55D96}Prefabs/Characters/Factions/LIFE/Character_LIFE.et"
+   m_sAffiliatedFaction "LIFE"
+  }
+ }
+}

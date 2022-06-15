@@ -1,0 +1,57 @@
+ELIFE_GameMode {
+ ID "597F1CE401B0CCF5"
+ components {
+  ELIFE_FarmTreeManager "{597F49C1307CE2DD}" {
+  }
+  SCR_AutomaticRespawnHandlerComponent "{597F1CE47B678746}" {
+   m_iForcedFaction 0
+   m_iForcedLoadout 0
+  }
+  SCR_CallsignManagerComponent "{597F1CE4157DA61F}" {
+  }
+  SCR_DestructionManagerComponent "{597F1CE4157DA627}" {
+  }
+  SCR_GameOverScreenManagerComponent "{597F1CE4157DA629}" {
+   m_GameOverScreenConfig SCR_GameOverScreenConfig "{56DEC6462FFDD82D}" : "{651583FFFB7FC765}Configs/GameOverScreen/GameOverScreensConfig.conf" {
+   }
+  }
+  SCR_GroupsManagerComponent "{597F1CE4157DA62C}" {
+   m_sDefaultGroupPrefab "{8B4D49A9F324E7D5}Prefabs/Groups/PlayableGroup.et"
+   m_iPlayableGroupFrequencyOffset 500
+  }
+  SCR_HintManagerComponent "{597F1CE4157DA62E}" {
+  }
+  SCR_NametagConfigComponent "{597F1CE4157D5810}" {
+  }
+  SCR_NotificationSenderComponent "{597F1CE4157D580D}" {
+  }
+  SCR_PlayerProfileManagerComponent "{597F1CE4157D4F7C}" {
+  }
+  SCR_PlayersRestrictionZoneManagerComponent "{597F1CE4157D4F7D}" {
+  }
+  SCR_PossessingManagerComponent "{597F1CE4157D4F7A}" {
+  }
+  SCR_RespawnSystemComponent "{597F1CE4157D4F7B}" {
+  }
+  SCR_SaveLoadComponent "{597F1CE4157D4F78}" {
+  }
+  SCR_VotingManagerComponent "{5650BB6B6089393A}" : "{37037CBB8B4CD354}Prefabs/MP/Components/VotingManagerComponent.ct" {
+   m_aVotingTemplates {
+    SCR_VotingKick "{597F1CE4157D4F77}" {
+     m_Info SCR_VotingUIInfo "{597F1CE4157D4F74}" {
+      m_iStartNotificationId VOTING_KICK_START
+      m_iSucceededNotificationId VOTING_KICK_SUCCEED
+      m_iFailedNotificationId VOTING_KICK_FAIL
+     }
+    }
+   }
+  }
+  RplComponent "{597F1CE4157D4F75}" {
+   "Rpl State Override" Static
+   Streamable Disabled
+  }
+ }
+ coords 974.412 1.879 12149.478
+ Flags 0
+ m_bAutoDisabledControls 0
+}

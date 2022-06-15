@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A96DDC22198A3533}Prefabs/MP/Managers/Loadouts"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}
