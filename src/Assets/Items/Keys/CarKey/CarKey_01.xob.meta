@@ -8,6 +8,16 @@ MetaFileClass {
      AssignedMaterial "{99FA85B5E7B9CBB4}Assets/Items/Keys/CarKey/data/Material.emat"
     }
    }
+   GeometryParams {
+    GeometryParam UBX_CarKey {
+     LayerPreset "ItemFireView"
+     SurfaceProperties {
+      "{5EAA7FB0A83F90CF}Common/Materials/Game/plastic.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
    Common TXOCommonClass "{599EB5725534947A}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
    }
   }
