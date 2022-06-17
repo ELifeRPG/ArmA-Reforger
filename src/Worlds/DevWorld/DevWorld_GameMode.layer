@@ -1,9 +1,5 @@
 SCR_FactionManager FactionManager : "{C4747BA20C71D8E2}Prefabs/MP/Managers/Factions/ELIFE_FactionManager.et" {
- Factions {
-  SCR_Faction "{5978862F2CABCC45}" {
-   m_sFactionFlag "{8E2F3067D06CB1BF}Assets/Items/Food/Apple/Data/Apple_01.edds"
-  }
- }
+ coords 0 0 0
 }
 ELIFE_GameMode ELIFE_GameMode : "{E9922930097C3FD4}Prefabs/MP/Modes/ELIFE_GameMode.et" {
  components {
