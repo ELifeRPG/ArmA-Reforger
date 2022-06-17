@@ -16,13 +16,14 @@ class ELIFE_VehicleLockAction : ScriptedUserAction
 			return;
 		
 		// Lock/Unlock vehicle
-		vehicleLockComponent.SwitchLockedState();
+		bool newVehicleLockedState = !vehicleLockComponent.IsVehicleLocked();
+		vehicleLockComponent.SwitchLockedState(newVehicleLockedState);
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
-		if (vehicleLockComponent.m_bIsVehicleLocked)
+		if (vehicleLockComponent.IsVehicleLocked())
 		{
 			outName = "Unlock vehicle";
 		}
@@ -55,7 +56,7 @@ class ELIFE_VehicleLockAction : ScriptedUserAction
 			return false;
 		}
 		
-		if (!ELIFE_VehicleLockUtils.HasPlayerKeyToCar(user, vehicleLockComponent.m_sVehicleIdentifier, vehicleLockComponent.m_KeyPrefab))
+		if (!ELIFE_VehicleLockUtils.HasPlayerKeyToCar(user, vehicleLockComponent.VehicleIdentifier(), vehicleLockComponent.m_KeyPrefab))
 		{
 			SetCannotPerformReason("Player has no key for vehicle");
 			return false;

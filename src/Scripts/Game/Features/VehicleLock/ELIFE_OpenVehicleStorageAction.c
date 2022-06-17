@@ -22,7 +22,7 @@ modded class SCR_OpenVehicleStorageAction : SCR_InventoryAction
 		if (!vehicleFaction || !userFaction)
 			return false;
 		
-		if (m_pVehicleLockComponent && m_pVehicleLockComponent.m_bIsVehicleLocked)
+		if (m_pVehicleLockComponent && m_pVehicleLockComponent.IsVehicleLocked())
 			return false;
 
 		if (!vehicleFaction.GetAffiliatedFaction())

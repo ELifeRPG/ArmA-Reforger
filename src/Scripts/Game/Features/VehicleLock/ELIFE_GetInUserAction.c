@@ -69,7 +69,7 @@ modded class SCR_GetInUserAction : SCR_CompartmentUserAction
 		}
 		
 		// ELIFE | Lock vehicle with VehicleLockComponent
-		if (m_pVehicleLockComponent && m_pVehicleLockComponent.m_bIsVehicleLocked)
+		if (m_pVehicleLockComponent && m_pVehicleLockComponent.IsVehicleLocked())
 		{
 			SetCannotPerformReason(m_pVehicleLockComponent.GetCannotPerformReason(user));
 			return false;
@@ -110,7 +110,7 @@ modded class SCR_GetInUserAction : SCR_CompartmentUserAction
 		if (compartmentAccess.IsGettingIn() || compartmentAccess.IsGettingOut())
 			return false;
 		
-		if (m_pVehicleLockComponent && m_pVehicleLockComponent.m_bIsVehicleLocked)
+		if (m_pVehicleLockComponent && m_pVehicleLockComponent.IsVehicleLocked())
 		{
 			return false;
 		}

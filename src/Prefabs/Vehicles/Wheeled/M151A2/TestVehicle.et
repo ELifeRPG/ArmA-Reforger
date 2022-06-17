@@ -283,11 +283,14 @@ Vehicle : "{1F9BB80C3EC3C891}Prefabs/Vehicles/Core/Wheeled_Car_Base.et" {
     ControllersManagerComponent "{20FB66C5C1BE9DA0}" {
     }
     SCR_CarControllerComponent "{20FB66C5BC92275B}" {
+     Enabled 0
+     EngineStartupChance 100
      AirIntakes {
       PointInfo "{59833C8D3A4E0455}" {
        Offset -0.5703 1.0603 1.3617
       }
      }
+     TransmissionRND 0
      SteeringForwardSpeed {
       0 24 2 40 60 20 80 8 100 4
      }

@@ -6,6 +6,8 @@ modded class SCR_EngineAction : SCR_VehicleActionBase
 	
 	protected ELIFE_VehicleLockComponent m_pVehicleLockComponent;
 	
+	private bool m_PlayerHasKeyToCarCache = false;
+	
 	//------------------------------------------------------------------------------------------------
 	override void Init(IEntity pOwnerEntity, GenericComponent pManagerComponent)
 	{
@@ -21,8 +23,12 @@ modded class SCR_EngineAction : SCR_VehicleActionBase
 		
 		if (m_pVehicleLockComponent)
 		{
-			playerHasKeyToCar = ELIFE_VehicleLockUtils.HasPlayerKeyToCar(user, m_pVehicleLockComponent.m_sVehicleIdentifier, m_pVehicleLockComponent.m_KeyPrefab);
-			m_pScrCarController.m_bHasPlayerKeyToVehicle = playerHasKeyToCar;
+			playerHasKeyToCar = ELIFE_VehicleLockUtils.HasPlayerKeyToCar(user, m_pVehicleLockComponent.VehicleIdentifier(), m_pVehicleLockComponent.m_KeyPrefab);
+			
+			if (playerHasKeyToCar != m_PlayerHasKeyToCarCache)
+			{
+				m_pScrCarController.UpdateHasPlayerKeyToVehicle(playerHasKeyToCar);
+			}
 		}
 		
 		return playerHasKeyToCar && CanBePerformedScript(user) && super.CanBeShownScript(user);

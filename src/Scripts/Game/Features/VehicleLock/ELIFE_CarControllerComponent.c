@@ -1,5 +1,6 @@
 modded class SCR_CarControllerComponent : CarControllerComponent
 {
+	[RplProp()]
 	bool m_bHasPlayerKeyToVehicle = false;
 	
 	//------------------------------------------------------------------------------------------------
@@ -20,5 +21,20 @@ modded class SCR_CarControllerComponent : CarControllerComponent
 			return false;
 		
 		return m_bHasPlayerKeyToVehicle;
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	void UpdateHasPlayerKeyToVehicle(bool hasPlayerKeyToVehicle)
+	{
+		Rpc(UpdateHasPlayerKeyToVehicle_Server, hasPlayerKeyToVehicle);
+	}
+	
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	void UpdateHasPlayerKeyToVehicle_Server(bool hasPlayerKeyToVehicle)
+	{
+		m_bHasPlayerKeyToVehicle = hasPlayerKeyToVehicle;
+		
+		Replication.BumpMe();
 	}
 };
