@@ -44,7 +44,6 @@ class ELIFE_VehicleLockComponent : SCR_BaseLockComponent
 	//------------------------------------------------------------------------------------------------
 	void SwitchLockedState(bool locked)
 	{
-		Print("CLIENT | New Locked state from client: " + locked);
 		Rpc(RpcAsk_Authority_SwitchVehicleLockedState, locked);
 	}
 		
@@ -52,24 +51,20 @@ class ELIFE_VehicleLockComponent : SCR_BaseLockComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_Authority_SwitchVehicleLockedState(bool locked)
 	{
-		Print("SERVER | Replication.IsServer(): " + Replication.IsServer());
 		if (!Replication.IsServer())
 			return;
 		
-		Print("SERVER | m_bIsVehicleLocked == locked: " + (m_bIsVehicleLocked == locked));
 		if (m_bIsVehicleLocked == locked)	
 			return;
 		
 		m_bIsVehicleLocked = locked;
 		
-		Print("SERVER | BUMP: m_bIsVehicleLocked: " + m_bIsVehicleLocked);
 		Replication.BumpMe();
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	protected void OnIsVehicleLockedUpdated()
 	{
-		Print("CLIENT | OnIsVehicleLockedUpdated");
 		if (!AudioSystem.IsSoundPlayed(m_AudioHandle))
 			AudioSystem.TerminateSound(m_AudioHandle);
 		
