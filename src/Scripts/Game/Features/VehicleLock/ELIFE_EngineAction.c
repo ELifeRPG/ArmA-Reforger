@@ -17,9 +17,7 @@ modded class SCR_EngineAction : SCR_VehicleActionBase
 		bool playerHasKeyToCar = false;
 		
 		if (m_pVehicleLockComponent)
-		{
 			playerHasKeyToCar = ELIFE_VehicleLockUtils.HasPlayerKeyToCar(user, m_pVehicleLockComponent.VehicleIdentifier(), m_pVehicleLockComponent.m_KeyPrefab);
-		}
 		
 		return playerHasKeyToCar && CanBePerformedScript(user) && super.CanBeShownScript(user);
 	}
