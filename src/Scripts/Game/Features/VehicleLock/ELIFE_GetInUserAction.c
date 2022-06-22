@@ -8,35 +8,34 @@ modded class SCR_GetInUserAction : SCR_CompartmentUserAction
 		m_pLockComp = SCR_BaseLockComponent.Cast(pOwnerEntity.FindComponent(SCR_BaseLockComponent));
 		
 		m_pVehicleLockComponent = ELIFE_VehicleLockComponent.Cast(pOwnerEntity.FindComponent(ELIFE_VehicleLockComponent));
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
-	{
-		if (!pOwnerEntity || !pUserEntity)
+		
+		// Set reference to correct component
+		BaseCompartmentSlot compartment = GetCompartmentSlot();
+		if (!compartment)
 			return;
 		
-		ChimeraCharacter character = ChimeraCharacter.Cast(pUserEntity);
-		if (!character)
+		IEntity owner = compartment.GetOwner();
+		Vehicle vehicle = Vehicle.Cast(SCR_Global.GetMainParent(owner, true));
+		if (!vehicle)
 			return;
 		
-		BaseCompartmentSlot targetCompartment = GetCompartmentSlot();
-		if (!targetCompartment)
-			return;
-		
-		CompartmentAccessComponent compartmentAccess = CompartmentAccessComponent.Cast(character.FindComponent(CompartmentAccessComponent));
-		if (!compartmentAccess)
-			return;
-		
-		if (!compartmentAccess.GetInVehicle(pOwnerEntity, targetCompartment, GetRelevantDoorIndex(pUserEntity)))
-			return;
-		
-		super.PerformAction(pOwnerEntity, pUserEntity);
+		ELIFE_VehicleLockComponent vehicleLockComponent = ELIFE_VehicleLockComponent.Cast(vehicle.FindComponent(ELIFE_VehicleLockComponent));
+		if (m_pVehicleLockComponent != vehicleLockComponent)
+		{
+			m_pVehicleLockComponent = vehicleLockComponent;
+		}
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
-	{		
+	{
+		// ELIFE | Lock vehicle with VehicleLockComponent
+		if (m_pVehicleLockComponent && m_pVehicleLockComponent.IsVehicleLocked())
+		{
+			SetCannotPerformReason(m_pVehicleLockComponent.GetCannotPerformReason(user));
+			return false;
+		}
+		
 		BaseCompartmentSlot compartment = GetCompartmentSlot();
 		if (!compartment)
 			return false;
@@ -52,7 +51,7 @@ modded class SCR_GetInUserAction : SCR_CompartmentUserAction
 		IEntity owner = compartment.GetOwner();
 		Vehicle vehicle = Vehicle.Cast(SCR_Global.GetMainParent(owner, true));
 		if (vehicle)
-		{
+		{			
 			Faction characterFaction = character.GetFaction();
 			Faction vehicleFaction = vehicle.GetFaction();
 			if (characterFaction && vehicleFaction && characterFaction.IsFactionEnemy(vehicleFaction))
@@ -65,13 +64,6 @@ modded class SCR_GetInUserAction : SCR_CompartmentUserAction
 		if (compartment.GetOccupant())
 		{
 			SetCannotPerformReason("#AR-UserAction_SeatOccupied");
-			return false;
-		}
-		
-		// ELIFE | Lock vehicle with VehicleLockComponent
-		if (m_pVehicleLockComponent && m_pVehicleLockComponent.IsVehicleLocked())
-		{
-			SetCannotPerformReason(m_pVehicleLockComponent.GetCannotPerformReason(user));
 			return false;
 		}
 		
@@ -92,9 +84,15 @@ modded class SCR_GetInUserAction : SCR_CompartmentUserAction
 		return true;
 	}	
 	
-	//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------+
 	override bool CanBeShownScript(IEntity user)
 	{
+		// ELIFE | Lock vehicle with VehicleLockComponent
+		if (m_pVehicleLockComponent && m_pVehicleLockComponent.IsVehicleLocked())
+		{
+			return false;
+		}
+		
 		BaseCompartmentSlot compartment = GetCompartmentSlot();
 		if (!compartment)
 			return false;
@@ -109,11 +107,6 @@ modded class SCR_GetInUserAction : SCR_CompartmentUserAction
 		
 		if (compartmentAccess.IsGettingIn() || compartmentAccess.IsGettingOut())
 			return false;
-		
-		if (m_pVehicleLockComponent && m_pVehicleLockComponent.IsVehicleLocked())
-		{
-			return false;
-		}
 		
 		return true;
 	}	
