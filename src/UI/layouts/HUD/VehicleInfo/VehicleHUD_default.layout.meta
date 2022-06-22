@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{4FB397CEB1EC5450}UI/layouts/HUD/VehicleInfo/VehicleHUD_default.layout"
+ Configurations {
+  LayoutResourceClass PC {
+  }
+  LayoutResourceClass XBOX_ONE : PC {
+  }
+  LayoutResourceClass XBOX_SERIES : PC {
+  }
+  LayoutResourceClass PS4 : PC {
+  }
+  LayoutResourceClass HEADLESS : PC {
+  }
+ }
+}

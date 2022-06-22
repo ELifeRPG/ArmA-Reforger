@@ -1,0 +1,76 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ {
+  HorizontalLayoutWidgetClass "{59A4B7E505FA6DB1}" {
+   Name "HorizontalLayout0"
+   Slot FrameWidgetSlot "{50E6EB981C1AAEDE}" {
+    Anchor 0 1 0 1
+    PositionX 16
+    OffsetLeft 16
+    PositionY -16
+    OffsetTop -16
+    SizeX 0
+    OffsetRight -16
+    SizeY 0
+    OffsetBottom 16
+    Alignment 0 1
+    SizeToContent 1
+   }
+   components {
+    SCR_SlotLabelsComponent "{50E8AA0DAD0C13B4}" {
+    }
+   }
+   {
+    OverlayWidgetClass "{59A4B7E505FA6DB7}" {
+     Name "SLOT_SPEED"
+     Slot LayoutSlot "{50E6EB981C1AAEA0}" {
+      Padding 8 0 8 0
+     }
+    }
+    OverlayWidgetClass "{59A4B7E505FA6DB4}" {
+     Name "SLOT_RPM"
+     Slot LayoutSlot "{50E6EB981C1AAF6F}" {
+      Padding 8 0 8 0
+     }
+    }
+    OverlayWidgetClass "{59A4B7E505FAFA02}" {
+     Name "SLOT_FUEL"
+     Slot LayoutSlot "{50E6EB981C1AAF0A}" {
+      VerticalAlign 2
+      Padding 8 0 8 0
+     }
+    }
+   }
+  }
+  HorizontalLayoutWidgetClass "{59A4BA376372E179}" {
+   Name "HorizontalLayout1"
+   Slot FrameWidgetSlot "{50E6EB981C1AAEDE}" {
+    Anchor 1 1 1 1
+    PositionX -175.1
+    OffsetLeft -175.1
+    PositionY -16
+    OffsetTop -16
+    SizeX 0
+    OffsetRight 175.1
+    SizeY 0
+    OffsetBottom 16
+    Alignment 0 1
+    SizeToContent 1
+   }
+   components {
+    SCR_SlotLabelsComponent "{50E8AA0DAD0C13B4}" {
+    }
+   }
+   "Fill Origin" Right
+   {
+    OverlayWidgetClass "{59A4BA376372E17C}" {
+     Name "SLOT_LOCKED"
+     Slot LayoutSlot "{50E6EB981C1AAF0A}" {
+      VerticalAlign 2
+      Padding 8 0 8 0
+     }
+    }
+   }
+  }
+ }
+}

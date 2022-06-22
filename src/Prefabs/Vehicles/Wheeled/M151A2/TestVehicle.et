@@ -324,16 +324,19 @@ Vehicle : "{1F9BB80C3EC3C891}Prefabs/Vehicles/Core/Wheeled_Car_Base.et" {
          m_fValueMax 65
          m_fSectionEveryNthValue 32.5
         }
+        ELIFE_LockedStateIndicator "{59A4B21E562BA402}" {
+         m_sParentSlot "SLOT_LOCKED"
+         m_fWidgetScale 0.3
+        }
        }
+       m_LayoutPath "{4FB397CEB1EC5450}UI/layouts/HUD/VehicleInfo/VehicleHUD_default.layout"
       }
      }
     }
    }
   }
-  ELIFE_VehicleLockComponent "{59833C8D35C84C9D}" {
+  ELIFE_VehicleLockComponent "{59A49686E457E7D8}" {
    m_sDebugIdentifier "123123"
-   m_KeyPrefab "{89DCD5C00091FF04}Prefabs/Items/Keys/CarKey.et"
-   m_LockUnlockSoundProject "{5A15B897792C7099}Sounds/Vehicles/Vehicle_LockUnlock.acp"
   }
   FuelManagerComponent "{5622A70CD78A9E2C}" {
    FuelNodes {

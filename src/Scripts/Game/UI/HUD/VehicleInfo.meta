@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{3E1340EB736DC673}Scripts/Game/UI/HUD/VehicleInfo"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}
