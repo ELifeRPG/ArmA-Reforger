@@ -2,10 +2,11 @@ MetaFileClass {
  Name "{EB84D17FAE53578D}Assets/Items/Keys/CarKey/CarKey_01.xob"
  Configurations {
   FBXResourceClass PC {
+   ExportSkinning 1
    MaterialAssigns {
     MaterialAssignClass "{599EB57256D5FF11}" {
      SourceMaterial "Material"
-     AssignedMaterial "{99FA85B5E7B9CBB4}Assets/Items/Keys/CarKey/data/Material.emat"
+     AssignedMaterial "{99FA85B5E7B9CBB4}Assets/Items/Keys/CarKey/data/CarKey_01.emat"
     }
    }
    GeometryParams {

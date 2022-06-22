@@ -36,9 +36,9 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
     }
     CustomAttributes {
      ItemActionAnimAttributes "{599EB572B56E2505}" {
-      ActionType Bandage
      }
     }
+    CommonItemType "NONE"
    }
   }
   MeshObject "{599EB572B56E2507}" {
@@ -63,5 +63,5 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
    }
   }
  }
- coords 7.04 0.87 4.064
+ coords 0 0 0
 }
