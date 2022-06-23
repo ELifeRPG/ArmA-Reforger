@@ -971,15 +971,10 @@ Vehicle : "{1F9BB80C3EC3C891}Prefabs/Vehicles/Core/Wheeled_Car_Base.et" {
       Name "#AR-Inventory_OpenTrunk"
      }
     }
-    ELIFE_VehicleLockAction "{599EE218FD24FC80}" {
+    ELIFE_VehicleLockAction "{59AF28EDE806CCFD}" : "{937AAB51304F3710}Configs/UserActions/ELIFE_VehicleLockAction.conf" {
      ParentContextList {
-      "door_l01" "door_r01" "starter_switch"
+      "door_r01" "door_l01" "starter_switch"
      }
-     UIInfo UIInfo "{599EE218E95FE975}" {
-      Name "Lock/Unlock Vehicle"
-     }
-     Duration 0.5
-     "Sort Priority" 10
     }
    }
    AllowCrossHierarchy 1
