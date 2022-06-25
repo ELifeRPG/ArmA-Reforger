@@ -8,6 +8,15 @@ MetaFileClass {
      AssignedMaterial "{E8949E822FF420B2}Assets/Items/Food/Apple/Data/Apple_01.emat"
     }
    }
+   GeometryParams {
+    GeometryParam USP_apple {
+     SurfaceProperties {
+      "{DA94EA1EF2914EB7}Common/Materials/Game/flesh.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
    Common TXOCommonClass "{597F38462F7B6783}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
    }
   }

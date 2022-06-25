@@ -42,7 +42,6 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
    Object "{782BF9D75D47E15F}Assets/Items/Food/Apple/Apple_01.xob"
   }
   RigidBody "{59652C0ACB87CE82}" {
-   Enabled 0
    LinearDamping 0.5
    AngularDamping 0.5
    AngularSleepingThreashold 1
@@ -57,5 +56,5 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
    }
   }
  }
- coords 12.055 0.344 13.008
+ coords 7.754 0.001 5.362
 }
