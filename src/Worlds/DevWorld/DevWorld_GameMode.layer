@@ -1,19 +1,23 @@
+SCR_MapEntity MapEntity1 : "{731564B66F91B107}Prefabs/World/Game/MapEntity.et" {
+}
+SCR_AIWorld : "{E0A05C76552E7F58}Prefabs/AI/SCR_AIWorld.et" {
+ coords 0 0 0
+}
+RadioManagerEntity RadioManager : "{B8E09FAB91C4ECCD}Prefabs/Radio/RadioManager.et" {
+ coords 0 0 0
+}
 SCR_FactionManager FactionManager : "{C4747BA20C71D8E2}Prefabs/MP/Managers/Factions/ELIFE_FactionManager.et" {
  coords 0 0 0
 }
 ELIFE_GameMode ELIFE_GameMode : "{E9922930097C3FD4}Prefabs/MP/Modes/ELIFE_GameMode.et" {
  components {
-  SCR_AutomaticRespawnHandlerComponent "{597F1CE47B678746}" {
+  SCR_AutomaticRespawnHandlerComponent "{59AB42FB858B13AC}" {
   }
  }
  coords 0 0 0
 }
+ScriptedChatEntity : "{F69BC912AC8236F9}Prefabs/MP/ScriptedChatEntity.et" {
+ coords 0 0 0
+}
 SCR_LoadoutManager LoadoutManager : "{318E93063CC0FC86}Prefabs/MP/Managers/Loadouts/ELIFE_LoadoutManager.et" {
- m_aPlayerLoadouts {
-  SCR_FactionPlayerLoadout "{599EB57B8A930E51}" {
-   m_sLoadoutName "LIFE Player2"
-   m_sLoadoutResource "{9FA4749AF6C55D96}Prefabs/Characters/Factions/LIFE/Character_LIFE.et"
-   m_sAffiliatedFaction "LIFE"
-  }
- }
 }

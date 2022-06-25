@@ -4,4 +4,7 @@ SCR_VehicleSpawn VehicleSpawner {
 }
 SCR_SpawnPoint PlayerSpawnPoint : "{6D3068348B1C867E}Prefabs/Spawning/SpawnPoint_LIFE.et" {
  coords 8.616 0.569 5.767
+ m_Info SCR_UIInfo "{596559E5AD4DDBF7}" {
+  Name "Hauptstadt"
+ }
 }

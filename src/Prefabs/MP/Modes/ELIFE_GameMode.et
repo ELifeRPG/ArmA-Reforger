@@ -1,12 +1,6 @@
 ELIFE_GameMode {
  ID "597F1CE401B0CCF5"
  components {
-  ELIFE_FarmTreeManager "{597F49C1307CE2DD}" {
-  }
-  SCR_AutomaticRespawnHandlerComponent "{597F1CE47B678746}" {
-   m_iForcedFaction 0
-   m_iForcedLoadout 0
-  }
   SCR_CallsignManagerComponent "{597F1CE4157DA61F}" {
   }
   SCR_DestructionManagerComponent "{597F1CE4157DA627}" {
@@ -31,7 +25,16 @@ ELIFE_GameMode {
   }
   SCR_PossessingManagerComponent "{597F1CE4157D4F7A}" {
   }
+  SCR_RespawnMenuHandlerComponent "{59AB2361F32F298D}" {
+   m_bAllowFactionChange 0
+   m_bAllowLoadoutSelection 0
+   m_bAllowQuickDeploy 0
+  }
   SCR_RespawnSystemComponent "{597F1CE4157D4F7B}" {
+   m_bDebugSkipSelection 1
+  }
+  SCR_RespawnTimerComponent "{59AB42F955539121}" {
+   m_fRespawnTime 0
   }
   SCR_SaveLoadComponent "{597F1CE4157D4F78}" {
   }
@@ -51,7 +54,7 @@ ELIFE_GameMode {
    Streamable Disabled
   }
  }
- coords 974.412 1.879 12149.478
+ coords 0 0 0
  Flags 0
  m_bAutoDisabledControls 0
 }

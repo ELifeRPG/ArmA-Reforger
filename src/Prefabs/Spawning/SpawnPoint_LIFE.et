@@ -12,12 +12,14 @@ SCR_SpawnPoint {
    Streamable Disabled
   }
  }
- coords 111.42 0 132.585
- m_fSpawnRadius 25
- m_fNoPlayerRadius 5
+ coords 8.616 0.569 5.767
+ m_fSpawnRadius 5
+ m_fNoPlayerRadius 0
  m_fNoSightRadius 0
  m_sFaction "LIFE"
+ m_bShowInDeployMapOnly 1
  m_Info SCR_UIInfo "{596559E5AD4DDBF7}" {
-  Name "Spawn"
+  Name ""
+  Icon "{BD2E2F871E6A3EBF}UI/Textures/Flags/Flag_Faction_Base.edds"
  }
 }
