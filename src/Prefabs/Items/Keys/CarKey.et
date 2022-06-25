@@ -36,16 +36,15 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
     }
     CustomAttributes {
      ItemActionAnimAttributes "{599EB572B56E2505}" {
-      ActionType Bandage
      }
     }
+    CommonItemType "NONE"
    }
   }
   MeshObject "{599EB572B56E2507}" {
    Object "{EB84D17FAE53578D}Assets/Items/Keys/CarKey/CarKey_01.xob"
   }
   RigidBody "{599EB572B56E2506}" {
-   Enabled 0
    LinearDamping 0.5
    AngularDamping 0.5
    AngularSleepingThreashold 1
@@ -53,9 +52,16 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
    CCDRadius 0.015
   }
   ActionsManagerComponent "{508AB5952B584B2E}" {
+   ActionContexts {
+    UserActionContext "{508AC2ABEC97066C}" {
+     Position PointInfo "{508AC2ABEAC4A0F5}" {
+      Offset 0 0.0103 0
+     }
+    }
+   }
    additionalActions {
    }
   }
  }
- coords 7.04 0.87 4.064
+ coords 0 0 0
 }

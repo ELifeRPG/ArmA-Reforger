@@ -1,0 +1,7 @@
+Vehicle {
+ ID "BBCBA43A9778AE21"
+ components {
+  ELIFE_VehicleLockComponent "{59A49686E457E7D8}" {
+  }
+ }
+}

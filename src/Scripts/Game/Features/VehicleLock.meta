@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{1A85F94544DA24D9}Scripts/Game/Features/VehicleLock"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,86 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ Color 1 1 1 1
+ {
+  OverlayWidgetClass "{59A4ACCC3FDD723D}" {
+   Name "Gauge"
+   Slot FrameWidgetSlot "{8AC426923A51EF44}" {
+    Anchor 0 1 0 1
+    OffsetLeft 0
+    OffsetTop 0
+    OffsetRight -100
+    OffsetBottom -30
+    Alignment 0 1
+    SizeToContent 1
+   }
+   Clipping False
+   {
+    BlurWidgetClass "{59A4ACCC3FDD723F}" {
+     Name "Background"
+     Slot OverlayWidgetSlot "{1754277964298B99}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.569 0.569 0.569 1
+     Intensity 0.4
+     Mask "{4300DF2BDAC9D6C1}UI/Textures/VehicleInfo/AnalogGauge/GaugeBackground.edds"
+    }
+    ImageWidgetClass "{59A4ACCC3FDD73C1}" {
+     Name "Ring"
+     Slot OverlayWidgetSlot "{1754277964298BC3}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Texture "{068B03F10D21C67C}UI/Textures/VehicleInfo/AnalogGauge/GaugeRing.edds"
+     Image ""
+     Size 256 256
+     Mask "{2E0BB231D250AEDB}UI/Textures/VehicleInfo/AnalogGauge/CircularGradient1.edds"
+     "Transition width" 0
+     Range 0.75
+    }
+    FrameWidgetClass "{59A4ACCC3FDDA51F}" {
+     Name "Frame0"
+     Slot OverlayWidgetSlot "{1849E78DA1C2D152}" {
+     }
+     Clipping False
+     {
+      ImageWidgetClass "{59A4ACCD222F13DE}" {
+       Name "LockedImage"
+       Slot FrameWidgetSlot "{59A4ACCD222F13E5}" {
+        Anchor 0.5 0.5 0.5 0.5
+        PositionX -25
+        OffsetLeft -25
+        PositionY -20
+        OffsetTop -20
+        SizeX 50
+        OffsetRight -25
+        SizeY 40
+        OffsetBottom -20
+       }
+       Texture "{564794579B2DB679}UI/Textures/Editor/Attributes/Attribute_Locked.edds"
+       Image ""
+       Size 64 64
+      }
+      ImageWidgetClass "{59A4ACCD98CECBF1}" {
+       Name "UnlockedImage"
+       Slot FrameWidgetSlot "{59A4ACCD222F13E5}" {
+        Anchor 0.5 0.5 0.5 0.5
+        PositionX -25
+        OffsetLeft -25
+        PositionY -17.5
+        OffsetTop -17.5
+        SizeX 50
+        OffsetRight -25
+        SizeY 35
+        OffsetBottom -17.5
+       }
+       Texture "{6BBC30A02FBC9A29}UI/Textures/Editor/Attributes/Attribute_Unlocked.edds"
+       Image ""
+       Size 64 64
+      }
+     }
+    }
+   }
+  }
+ }
+}
