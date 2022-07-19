@@ -7,7 +7,6 @@ ButtonWidgetClass {
  Opacity 0.9
  components {
   ELIFE_CharacterMenuTile "{59AC6CD9156134BF}" {
-   m_bMouseOverToFocus 1
    m_BackgroundDefault 0 0 0 1
    m_BackgroundHovered 0 0 0 0.784
    m_BackgroundSelected 0.761 0.386 0.08 1
@@ -63,30 +62,12 @@ ButtonWidgetClass {
           VerticalAlign 3
          }
          {
-          OverlayWidgetClass "{59AB42FE21DCB69D}" {
-           Name "Overlay1"
-           Slot LayoutSlot "{558EB3BB6A1EC204}" {
+          FrameWidgetClass "{59E09B4D95D7067F}" : "{55E4F7C989878CF8}UI/layouts/Menus/RoleSelection/LoadoutPreview.layout" {
+           Name "LoadoutPreview"
+           Slot LayoutSlot {
+            SizeMode Fill
            }
            {
-            ScaleWidgetClass "{59AB42FE21DCB69E}" {
-             Name "Scale0"
-             Slot OverlayWidgetSlot "{558EB3BB5D1B10FC}" {
-              VerticalAlign 0
-             }
-             Clipping True
-             {
-              ImageWidgetClass "{59AB42FE21DCB69F}" {
-               Name "Image"
-               Slot AlignableSlot "{55589476CBD910FF}" {
-                HorizontalAlign 0
-                VerticalAlign 0
-               }
-               Texture "{A73947B37A287314}UI/Textures/Flags/flag_us_ca.edds"
-               Image ""
-               Size 800 400
-              }
-             }
-            }
            }
           }
           OverlayWidgetClass "{59AB42FE21DCB660}" {
@@ -135,48 +116,6 @@ ButtonWidgetClass {
                   Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
                  }
                 }
-               }
-              }
-             }
-            }
-           }
-          }
-          OverlayWidgetClass "{59AB42FE21DD5B21}" {
-           Name "Overlay2"
-           Slot LayoutSlot "{585687DFF2E112C5}" {
-           }
-          }
-          VerticalLayoutWidgetClass "{59AB42FE21DD5B2E}" {
-           Name "VerticalLayout0"
-           Slot LayoutSlot "{58EE7B02357D4595}" {
-            SizeMode Fill
-           }
-           {
-            ScrollLayoutWidgetClass "{59AB42FE21DDB0DC}" {
-             Name "PlayerListScroll"
-             Slot LayoutSlot "{58EE7B021097B4B8}" {
-              Padding 0 0 0 1
-              SizeMode Fill
-             }
-             Color 0.76 0.392 0.08 0.945
-             components {
-              SCR_EventHandlerComponent "{58EE7B04DB201098}" {
-              }
-              SCR_GamepadScrollComponent "{5934AC031AAB0515}" {
-               m_bTryFindNewFocus 0
-               m_bScrollEnabled 0
-              }
-             }
-             "Up rule" Stop
-             "Down rule" Stop
-             style Small
-             "no focus" 1
-             {
-              VerticalLayoutWidgetClass "{59AB42FE21DDB0DD}" {
-               Name "PlayerList"
-               Slot OverlayWidgetSlot "{585687DFF2F68CA4}" {
-                HorizontalAlign 3
-                VerticalAlign 3
                }
               }
              }

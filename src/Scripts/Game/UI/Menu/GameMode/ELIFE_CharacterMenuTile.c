@@ -1,10 +1,10 @@
 class ELIFE_CharacterMenuTile : SCR_DeployMenuTile
 {
-	protected Faction m_Faction;
+	CharacterDto m_Character;
 	protected ImageWidget m_wCharacterBackground;
 
 	//------------------------------------------------------------------------------------------------
-	static ELIFE_CharacterMenuTile InitializeTile(SCR_DeployMenuTileSelection parent, SCR_Faction faction)
+	static ELIFE_CharacterMenuTile InitializeTile(SCR_DeployMenuTileSelection parent, CharacterDto character)
 	{
 		Widget tile = GetGame().GetWorkspace().CreateWidgets(parent.GetTileResource());
 		ELIFE_CharacterMenuTile handler = ELIFE_CharacterMenuTile.Cast(tile.FindHandler(ELIFE_CharacterMenuTile));
@@ -12,12 +12,10 @@ class ELIFE_CharacterMenuTile : SCR_DeployMenuTile
 		if (!handler)
 			return null;
 
-		ResourceName flag = faction.GetFactionFlag();
-
 		handler.SetParent(parent);
-		handler.SetImage(flag);
-		handler.SetText(faction.GetFactionName());
-		handler.SetCharacterBackgroundColor(faction.GetFactionColor());
+		handler.SetText(string.Format("%1 %2", character.firstName, character.lastName));
+		handler.m_Character = character;
+		
 		gallery_handler.AddItem(tile);
 
 		return handler;

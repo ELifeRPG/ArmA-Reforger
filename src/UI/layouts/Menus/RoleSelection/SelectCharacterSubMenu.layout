@@ -105,7 +105,7 @@ FrameWidgetClass {
        }
        {
         SizeLayoutWidgetClass "{59AB1DCB4D762D92}" {
-         Name "NoFactionWarning"
+         Name "NoCharacterWarning"
          Slot LayoutSlot "{56EC6E49746DC02D}" {
           HorizontalAlign 1
           VerticalAlign 1
@@ -212,6 +212,43 @@ FrameWidgetClass {
             }
            }
            {
+           }
+          }
+         }
+        }
+        SizeLayoutWidgetClass "{59CF22C3280A61F3}" {
+         Name "LoadingCharactersWarning"
+         Slot LayoutSlot "{56EC6E49746DC02D}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+          SizeMode Fill
+         }
+         AllowMinDesiredWidth 1
+         MinDesiredWidth 400
+         AllowMinDesiredHeight 1
+         MinDesiredHeight 250
+         {
+          VerticalLayoutWidgetClass "{59CF22C3280A61F4}" {
+           Name "VerticalLayout0"
+           Slot LayoutSlot "{56EC6E4CE3B46A7A}" {
+            SizeMode Fill
+           }
+           {
+            OverlayWidgetClass "{59CF22C3280A61F9}" {
+             Name "BaseText0"
+             Slot LayoutSlot "{56EC6E52A2CC8F69}" {
+             }
+             {
+              TextWidgetClass "{59CF22C3280A61FB}" {
+               Prefab "{00000000B604ED88}"
+               Slot OverlayWidgetSlot "{3532E6E48C14967B}" {
+                VerticalAlign 2
+               }
+               Text "#ELIFE-CharacterMenu_LoadingCharacters"
+               "Font Size" 40
+              }
+             }
+            }
            }
           }
          }

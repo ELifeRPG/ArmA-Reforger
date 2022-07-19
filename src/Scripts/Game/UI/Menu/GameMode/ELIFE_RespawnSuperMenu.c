@@ -28,6 +28,12 @@ modded class SCR_RespawnSuperMenu : SCR_SuperMenuBase
 		if (groupsManager)
 			isGroupConfirmed = groupsManager.GetConfirmedByPlayer();
 		
+		SCR_PlayerController playerController = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		
+		bool isCharacterSelected = (
+			playerController.m_sSelectedCharacterId
+		);
+		
 		// enable individual submenu tabs based on gamemode settings:
 		m_TabViewComponent.SetTabVisible(EELifeDeployScreenType.BRIEFING, briefingComponent && briefingComponent.GetInfo()); 
 
@@ -59,6 +65,7 @@ modded class SCR_RespawnSuperMenu : SCR_SuperMenuBase
 			m_RespawnMenuHandler.GetAllowSpawnPointSelection()
 			&& isFactionAssigned
 			&& (isLoadoutAssigned || !m_RespawnMenuHandler.GetAllowLoadoutSelection())
+			&& isCharacterSelected
 		);
 
 		m_TabViewComponent.EnableTab(EELifeDeployScreenType.MAP, showMap);
