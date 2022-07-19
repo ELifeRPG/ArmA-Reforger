@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{D701FB02702F2A56}Scripts/Game/Core/Api/DTOs"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}
