@@ -1,0 +1,451 @@
+FrameWidgetClass {
+ Name "RespawnSuperMenuRoot"
+ "Ignore Cursor" 0
+ {
+  OverlayWidgetClass "{59AB152B4C4F4DF6}" {
+   Name "BackgroundBar"
+   Slot FrameWidgetSlot "{5916B428BC62877B}" {
+    Anchor 0.05 0.05 0.95 0.95
+    PositionX -96
+    OffsetLeft 0
+    PositionY -54
+    OffsetTop 0
+    SizeX -1628
+    OffsetRight 0
+    SizeY -942
+    OffsetBottom 0
+   }
+   Clipping False
+   {
+    SizeLayoutWidgetClass "{59AB152B4C4F4DFC}" {
+     Name "SizeLayout0"
+     Slot OverlayWidgetSlot "{5916B42826E5ECE7}" {
+     }
+     components {
+      SCR_ForceAspectRatioComponent "{5916B42821B8084A}" {
+      }
+     }
+     AllowWidthOverride 1
+     WidthOverride 1728
+     AllowHeightOverride 1
+     HeightOverride 972
+     {
+      VerticalLayoutWidgetClass "{59AB152B4C4F4DFF}" {
+       Name "VerticalLayout0"
+       Slot OverlayWidgetSlot "{5916B428FEC0C43B}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        SizeLayoutWidgetClass "{59AB152B4C4F4D81}" {
+         Name "SizeLayout0"
+         Slot LayoutSlot "{5916B4298649E865}" {
+         }
+         AllowHeightOverride 1
+         HeightOverride 44
+         {
+          ImageWidgetClass "{59AB152B4C4F4D80}" {
+           Name "UpperBackground"
+           Slot LayoutSlot "{5916B4285162D928}" {
+            Padding -5000 -5000 -5000 0
+           }
+           Color 0 0 0 0.784
+           Size 44 44
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  OverlayWidgetClass "{59AB152B4C4F4D82}" : "{6F1E013D3D33703C}UI/layouts/WidgetLibrary/BaseElements/WLib_MenuBaseTabbed.layout" {
+   Name "MenuBase0"
+   Slot FrameWidgetSlot "{54D8A1A69BDC4E85}" {
+    SizeToContent 0
+   }
+   {
+    SizeLayoutWidgetClass "{589F093B48C39BEF}" {
+     Prefab "{589F093B48C39BEF}"
+     {
+      VerticalLayoutWidgetClass "{589F093B48C39BEC}" {
+       Prefab "{589F093B48C39BEC}"
+       {
+        SizeLayoutWidgetClass "{589F093B48C39BEA}" {
+         Prefab "{589F093B48C39BEA}"
+         "Is Visible" 0
+         {
+          OverlayWidgetClass "{58A07816DC169F57}" {
+           Prefab "{58A07816DC169F57}"
+           {
+            TextWidgetClass "{589F093B48C39BE9}" {
+             Prefab "{589F093B48C39BE9}"
+             Text ""
+            }
+           }
+          }
+         }
+        }
+        VerticalLayoutWidgetClass "{589F093AB3EA94A2}" {
+         Prefab "{589F093AB3EA94A2}"
+         components {
+          SCR_TabViewComponent "{546B27D01CA8A38D}" {
+           m_aElements {
+            SCR_TabViewContent "{58A07A786A39582F}" {
+             m_ElementLayout "{4517634FB88BB42A}UI/layouts/Menus/RoleSelection/RespawnBriefingSubMenu.layout"
+             m_sTabButtonContent "#AR-DeployMenu_TabName_Briefing-UC"
+            }
+            SCR_TabViewContent "{58A07A786A4640C7}" {
+             m_ElementLayout "{1A8A5586AE112478}UI/layouts/Menus/RoleSelection/SelectFactionSubMenu.layout"
+             m_sTabButtonContent "#ar-deploymenu_tabname_faction-uc"
+            }
+            SCR_TabViewContent "{58A07A786A8E647C}" {
+             m_ElementLayout "{DCE92B63A1B6757A}UI/layouts/Menus/GroupSlection/SelectGroupMenu.layout"
+             m_sTabButtonContent "#AR-DeployMenu_TabName_Group-UC"
+            }
+            SCR_TabViewContent "{58A07A786A98387E}" {
+             m_ElementLayout "{AF1375C5036CD157}UI/layouts/Menus/RoleSelection/SelectLoadoutSubMenu.layout"
+             m_sTabButtonContent "#ar-deploymenu_tabname_loadout-uc"
+            }
+            SCR_TabViewContent "{59AB152B65945FAA}" {
+             m_ElementLayout "{F86677EEDE8D9D89}UI/layouts/Menus/RoleSelection/SelectCharacterSubMenu.layout"
+             m_sTabButtonContent "CHARACTER"
+            }
+            SCR_TabViewContent "{58A07A798A459800}" {
+             m_ElementLayout "{A71EEE5CFEF28C1C}UI/layouts/Menus/RoleSelection/SelectSpawnPointSubMenu.layout"
+             m_sTabButtonContent "#ar-deploymenu_tabname_map-uc"
+            }
+           }
+           m_iSelectedTab -1
+           m_bKeepHiddenTabs 1
+           m_bManualInit 1
+          }
+         }
+         {
+         }
+        }
+        SizeLayoutWidgetClass "{589F093B48C39B17}" {
+         Prefab "{589F093B48C39B17}"
+         {
+          HorizontalLayoutWidgetClass "{589F093B48C39B16}" {
+           Prefab "{589F093B48C39B16}"
+           {
+            ButtonWidgetClass "{59AB152B4C4F4D8D}" : "{08CF3B69CB1ACBC4}UI/layouts/WidgetLibrary/Buttons/WLib_NavigationButton.layout" {
+             Name "Chat"
+             Slot LayoutSlot "{56AA9BD72EFC437E}" {
+              Padding 10 0 0 0
+             }
+             "Z Order" -2
+             components {
+              SCR_NavigationButtonComponent "{5474BAC5DBCF129A}" {
+               m_sLabel "#ar-keybind_chatopen"
+               m_sActionName "MenuChat"
+              }
+             }
+             {
+             }
+            }
+            ButtonWidgetClass "{59AB152B4C4F4D8C}" : "{08CF3B69CB1ACBC4}UI/layouts/WidgetLibrary/Buttons/WLib_NavigationButton.layout" {
+             Name "Editor"
+             Slot LayoutSlot "{56F4F0CE94EA2796}" {
+              Padding 10 0 0 0
+             }
+             "Z Order" -1
+             components {
+              SCR_NavigationButtonComponent "{5474BAC5DBCF129A}" {
+               m_sLabel "#AR-MainMenu_Editor_Name"
+               m_sActionName "EditorToggle"
+              }
+              SCR_EditorButtonUIComponent "{56F4F0CC669DB1DE}" {
+              }
+             }
+             {
+              SizeLayoutWidgetClass "{5562AD435529FB36}" {
+               Prefab "{5562AD435529FB36}"
+               {
+                OverlayWidgetClass "{000000005E70868E}" {
+                 Prefab "{000000005E70868E}"
+                 {
+                  HorizontalLayoutWidgetClass "{00000000E3602307}" {
+                   Prefab "{00000000E3602307}"
+                   {
+                    RichTextWidgetClass "{00000000B0FD85CE}" {
+                     Prefab "{00000000B0FD85CE}"
+                     Slot LayoutSlot "{547AD5678196CDF0}" {
+                     }
+                     FontProperties FontProperties "{546AF489DFD25402}" {
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+            ButtonWidgetClass "{589F093B48C39B14}" {
+             Prefab "{589F093B48C39B14}"
+             Slot LayoutSlot "{54ACA297E9BAB648}" {
+             }
+             "Z Order" -3
+             components {
+              SCR_NavigationButtonComponent "{5474BAC5DBCF129A}" {
+               m_sLabel "#AR-DeployMenu_PauseButton"
+               m_sActionName "MenuOpen"
+              }
+             }
+             {
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{59AB152B4C4F4D91}" : "{3245B690D1E28B4F}UI/layouts/Menus/Common/LoadingOverlay/LoadingOverlay.layout" {
+   Name "Loading"
+   Slot FrameWidgetSlot "{5650ED41F08A5CFB}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+   }
+   "Is Enabled" 0
+   "Is Visible" 0
+   components {
+    SCR_LoadingOverlay "{5650ED41CF199E0F}" {
+     m_bShownAtStart 0
+    }
+   }
+   {
+    FrameWidgetClass "{5650ED43FC2CBBCB}" {
+     Prefab "{5650ED43FC2CBBCB}"
+     Slot ButtonWidgetSlot "{5650ED41F0849BD5}" {
+     }
+     {
+     }
+    }
+   }
+  }
+  OverlayWidgetClass "{59AB152B4C4F4D93}" : "{01FD644AD2B6317D}UI/layouts/Menus/Common/MenuBackground.layout" {
+   Name "MenuBackground0"
+   Slot FrameWidgetSlot "{552C9A0A8526D2AD}" {
+   }
+   "Z Order" -1
+   {
+   }
+  }
+  FrameWidgetClass "{59AB152B4C4F4D94}" : "{D89BBA18F99053D6}UI/layouts/HUD/Chat/ChatHud.layout" {
+   Name "ChatHud"
+   Slot FrameWidgetSlot "{586295E94909D5C6}" {
+    Anchor 0 0.5 0 0.5
+    PositionX -7
+    OffsetLeft -7
+    PositionY 0
+    OffsetTop 0
+    SizeX 1920
+    OffsetRight -1913
+    SizeY 1080
+    OffsetBottom -1080
+   }
+   {
+    OverlayWidgetClass "{585F053862A9FD1C}" {
+     Prefab "{585F053862A9FD1C}"
+     Slot FrameWidgetSlot "{56150B208158A9EF}" {
+      OffsetLeft 103
+      PositionY 0
+      OffsetTop 0
+      OffsetRight 24
+      OffsetBottom -310
+     }
+     components {
+      SCR_ChatPanel "{585F32D2A6B295EC}" {
+       m_iMessageLineCount 6
+      }
+     }
+     {
+     }
+    }
+   }
+  }
+  FrameWidgetClass "{59AB152B4C4F4D98}" : "{7A376F90E18453C4}UI/layouts/HUD/Notifications/Notifications_Log.layout" {
+   Name "NotificationsLog0"
+   Slot FrameWidgetSlot "{5882F7EAA80331E1}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX -1920
+    OffsetRight 0
+    SizeY -400
+    OffsetBottom 0
+   }
+   components {
+    SCR_NotificationsLogComponent "{5468ED24730EF1AD}" {
+     m_fNotificationDisplayTime 15
+    }
+   }
+   {
+   }
+  }
+  FrameWidgetClass "{59AB152B4C4F4D9E}" : "{777A38BB49472774}UI/layouts/WidgetLibrary/BaseElements/WLib_MenuBase.layout" {
+   Name "MenuBase2"
+   Slot FrameWidgetSlot "{549ED01F9ED1D099}" {
+    Anchor 0 0 1 1
+    PositionX 881.896
+    PositionY 173.838
+    SizeX -1920
+    OffsetRight 0
+    SizeY -1080
+    OffsetBottom 0
+   }
+   "Is Enabled" 0
+   "Is Visible" 0
+   {
+    BlurWidgetClass "{00000000E99E7D4A}" {
+     Prefab "{00000000E99E7D4A}"
+     Color 0 0 0 0.863
+     Intensity 0.5
+    }
+    VerticalLayoutWidgetClass "{00000000149932AF}" {
+     Prefab "{00000000149932AF}"
+     {
+      ImageWidgetClass "{000000009C60BD60}" {
+       Prefab "{000000009C60BD60}"
+       Slot LayoutSlot "{5488B97C9D8206F1}" {
+       }
+       Size 32 40
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{00000000149932AE}" {
+     Prefab "{00000000149932AE}"
+     {
+      ImageWidgetClass "{000000009C60BD61}" {
+       Prefab "{000000009C60BD61}"
+       Size 32 40
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{549ED00272AB4682}" {
+     Prefab "{000000005ABA4553}"
+     {
+      SizeLayoutWidgetClass "{54ACA291E52533FB}" {
+       Prefab "{54ACA291E52533FB}"
+       "Is Enabled" 0
+       "Is Visible" 0
+       {
+        OverlayWidgetClass "{00000000E8F5CC2D}" {
+         Prefab "{00000000E8F5CC2D}"
+         {
+          TextWidgetClass "{0000000059B7F482}" {
+           Prefab "{0000000059B7F482}"
+           Text ""
+          }
+         }
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{549ED00272AB46C3}" {
+       Prefab "{00000000974AC4C5}"
+       components {
+        SCR_TabViewComponent "{546B27D01CA8A38D}" {
+         m_aElements {
+          SCR_TabViewContent "{56FCECB12A86B62D}" {
+           m_ElementLayout "{4517634FB88BB42A}UI/layouts/Menus/RoleSelection/RespawnBriefingSubMenu.layout"
+           m_sTabButtonContent "#AR-DeployMenu_TabName_Briefing-UC"
+          }
+          SCR_TabViewContent "{549ED01EBB10C352}" {
+           m_ElementLayout "{1A8A5586AE112478}UI/layouts/Menus/RoleSelection/SelectFactionSubMenu.layout"
+           m_sTabButtonContent "#ar-deploymenu_tabname_faction-uc"
+          }
+          SCR_TabViewContent "{57069359EC390BB6}" {
+           m_ElementLayout "{DCE92B63A1B6757A}UI/layouts/Menus/GroupSlection/SelectGroupMenu.layout"
+           m_sTabButtonContent "#AR-DeployMenu_TabName_Group-UC"
+          }
+          SCR_TabViewContent "{549ED01EBB243B9D}" {
+           m_ElementLayout "{AF1375C5036CD157}UI/layouts/Menus/RoleSelection/SelectLoadoutSubMenu.layout"
+           m_sTabButtonContent "#ar-deploymenu_tabname_loadout-uc"
+          }
+          SCR_TabViewContent "{549ED01EBAFB21F9}" {
+           m_ElementLayout "{A71EEE5CFEF28C1C}UI/layouts/Menus/RoleSelection/SelectSpawnPointSubMenu.layout"
+           m_sTabButtonContent "#ar-deploymenu_tabname_map-uc"
+          }
+         }
+         m_iSelectedTab -1
+         m_bKeepHiddenTabs 1
+         m_bManualInit 1
+         m_TabLayout "{6299B14B152A16EF}UI/layouts/Menus/RoleSelection/DeployMenuTabViewElement.layout"
+        }
+       }
+       {
+        OverlayWidgetClass "{000000004446F260}" {
+         Prefab "{000000004446F260}"
+         Clipping False
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{54ACA291480977C5}" {
+       Prefab "{54ACA291480977C5}"
+       {
+        HorizontalLayoutWidgetClass "{54B2E1ECF2166EB6}" {
+         Prefab "{54B2E1ECF2166EB6}"
+         {
+          ImageWidgetClass "{000000000D58395B}" {
+           Prefab "{000000000D58395B}"
+           "Is Visible" 0
+          }
+         }
+        }
+        HorizontalLayoutWidgetClass "{0000000059B6DBB4}" {
+         Prefab "{0000000059B6DBB4}"
+         {
+          FrameWidgetClass "{59AB152B4C4F4DA2}" {
+           Name "Frame0"
+           Slot LayoutSlot "{557474B05EA04AD7}" {
+            SizeMode Fill
+           }
+          }
+          ButtonWidgetClass "{54ACA297FECC1128}" {
+           Prefab "{54ACA297FECC1128}"
+           Slot LayoutSlot "{54ACA297E9BAB648}" {
+           }
+           "Z Order" -3
+           components {
+            SCR_NavigationButtonComponent "{5474BAC5DBCF129A}" {
+             m_sLabel "#AR-DeployMenu_PauseButton"
+             m_sActionName "MenuOpen"
+            }
+           }
+           {
+           }
+          }
+          HorizontalLayoutWidgetClass "{56AC962104CF5CDD}" {
+           Prefab "{56AC962104CF5CDD}"
+           Slot LayoutSlot "{56AC962104CF5CEF}" {
+            HorizontalAlign 2
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

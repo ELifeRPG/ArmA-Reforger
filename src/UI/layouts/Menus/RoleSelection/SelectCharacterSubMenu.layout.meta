@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F86677EEDE8D9D89}UI/layouts/Menus/RoleSelection/SelectCharacterSubMenu.layout"
+ Configurations {
+  LayoutResourceClass PC {
+  }
+  LayoutResourceClass XBOX_ONE : PC {
+  }
+  LayoutResourceClass XBOX_SERIES : PC {
+  }
+  LayoutResourceClass PS4 : PC {
+  }
+  LayoutResourceClass HEADLESS : PC {
+  }
+ }
+}

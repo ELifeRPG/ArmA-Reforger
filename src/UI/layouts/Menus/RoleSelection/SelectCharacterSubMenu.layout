@@ -1,0 +1,269 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ components {
+  ELIFE_SelectCharacterSubMenu "{59AB1EB169D45E82}" {
+  }
+ }
+ {
+  HorizontalLayoutWidgetClass "{59AB1DCB4D7687F2}" : "{CA8198ABEF2A3486}UI/layouts/Menus/RoleSelection/DeploySubMenuBase.layout" {
+   Name "TileSelection"
+   Slot FrameWidgetSlot "{558462025A51042F}" {
+   }
+   components {
+    SCR_DeployMenuTileSelection "{585687CA6589C165}" {
+     m_sTilePrefab "{0C50E22D4F14DCC0}UI/layouts/Menus/RoleSelection/CharacterMenuTile.layout"
+    }
+   }
+   {
+    VerticalLayoutWidgetClass "{5584621E221DB594}" {
+     Prefab "{5584621E221DB594}"
+     Slot LayoutSlot "{5584621E221DB5BB}" {
+      FillWeight 0.15
+     }
+    }
+    VerticalLayoutWidgetClass "{5584621E1C59DEFB}" {
+     Prefab "{5584621E1C59DEFB}"
+     {
+      SizeLayoutWidgetClass "{59AB1DCB4D7687F5}" {
+       Name "PermanentCharacter"
+       Slot LayoutSlot "{585687EBFE30E81D}" {
+        Padding 0 40 0 0
+       }
+       Clipping False
+       {
+        OverlayWidgetClass "{59AB1DCB4D7687F4}" {
+         Name "Overlay0"
+         Slot AlignableSlot "{559039A5622707A1}" {
+          Padding 4 4 4 4
+         }
+         Clipping False
+         {
+          ImageWidgetClass "{59AB1DCB4D7687F7}" {
+           Name "Image0"
+           Slot OverlayWidgetSlot "{55904284C6BB4555}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+            Padding -6 -6 -6 -6
+           }
+           Clipping False
+           Color 0.309 0.016 0.016 0.627
+          }
+          PanelWidgetClass "{59AB1DCB4D7687F6}" {
+           Name "Panel0"
+           Slot OverlayWidgetSlot "{559095F68F257D4C}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+            Padding -8 -8 -8 -8
+           }
+           Color 0.947 0.056 0.056 1
+           style outline_2px
+          }
+          HorizontalLayoutWidgetClass "{59AB1DCB4D7687F9}" {
+           Name "HorizontalLayout0"
+           Slot OverlayWidgetSlot "{559042843296C238}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Clipping False
+           {
+            ImageWidgetClass "{59AB1DCB4D762D96}" {
+             Name "Warning"
+             Slot LayoutSlot "{559042842A243703}" {
+              HorizontalAlign 1
+              VerticalAlign 1
+             }
+             Color 0.761 0.386 0.078 1
+             Texture "{1F0A6C9C19E131C6}UI/Textures/Icons/icons_wrapperUI.imageset"
+             Image "outdated2"
+             Size 48 48
+            }
+            TextWidgetClass "{59AB1DCB4D762D95}" {
+             Name "Message"
+             Slot LayoutSlot "{559042842383931F}" {
+              HorizontalAlign 1
+              VerticalAlign 1
+              SizeMode Fill
+             }
+             Clipping False
+             Text "#ELIFE-CharacterMenu_PermanentCharacter"
+             "Font Size" 20
+             "Min Font Size" 20
+             FontProperties FontProperties "{55904286FD00F26E}" {
+              Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{5584621936E2935D}" {
+       Prefab "{5584621936E2935D}"
+       Slot LayoutSlot "{5584621936E29363}" {
+        SizeMode Fill
+       }
+       {
+        SizeLayoutWidgetClass "{59AB1DCB4D762D92}" {
+         Name "NoCharacterWarning"
+         Slot LayoutSlot "{56EC6E49746DC02D}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+          SizeMode Fill
+         }
+         AllowMinDesiredWidth 1
+         MinDesiredWidth 400
+         AllowMinDesiredHeight 1
+         MinDesiredHeight 250
+         {
+          VerticalLayoutWidgetClass "{59AB1DCB4D762D93}" {
+           Name "VerticalLayout0"
+           Slot LayoutSlot "{56EC6E4CE3B46A7A}" {
+            SizeMode Fill
+           }
+           {
+            SizeLayoutWidgetClass "{59AB1DCB4D77C5D9}" {
+             Name "SizeLayout0"
+             Slot LayoutSlot "{56EC6E53D4E6C2F6}" {
+              HorizontalAlign 1
+              VerticalAlign 1
+             }
+             AllowMinDesiredWidth 1
+             MinDesiredWidth 100
+             AllowMinDesiredHeight 1
+             MinDesiredHeight 100
+             MaxDesiredWidth 0
+             {
+              FrameWidgetClass "{59AB1DCB4D77C5DA}" : "{BC2194B0F8B77E44}UI/layouts/WidgetLibrary/TabView/WLib_TabViewWarningIcon.layout" {
+               Name "Frame00"
+               Slot LayoutSlot "{56EC6E539DD3B0ED}" {
+                SizeMode Fill
+               }
+               {
+               }
+              }
+             }
+            }
+            OverlayWidgetClass "{59AB1DCB4D77C5DB}" {
+             Name "BaseText0"
+             Slot LayoutSlot "{56EC6E52A2CC8F69}" {
+             }
+             {
+              ImageWidgetClass "{59AB1DCB4D77C5A4}" {
+               Prefab "{000000009A6CBF71}"
+               Slot OverlayWidgetSlot "{3532E6E48C149799}" {
+               }
+               "Is Visible" 0
+              }
+              TextWidgetClass "{59AB1DCB4D77C5A5}" {
+               Prefab "{00000000B604ED88}"
+               Slot OverlayWidgetSlot "{3532E6E48C14967B}" {
+                VerticalAlign 2
+               }
+               Text "#ELIFE-CharacterMenu_NoCharactersFound"
+               "Font Size" 40
+              }
+             }
+            }
+            ImageWidgetClass "{59AB1DCB4D77C5A6}" {
+             Name "Image1"
+             Slot LayoutSlot "{5488B96A72CAA580}" {
+              Padding 4 8 4 8
+             }
+             Color 0.761 0.392 0.078 1
+             Size 32 4
+             Mask "{A1433FBA32E51BBC}UI/Textures/ProgressMasks/ProgressMaskHorizontal_1024x1.edds"
+             "Transition width" 1
+             Progress 0.5
+             "Mask Mode" "Include Range"
+            }
+            OverlayWidgetClass "{59AB1DCB4D77C5A7}" {
+             Name "BaseText1"
+             Slot LayoutSlot "{56EC6E52A06BC79B}" {
+             }
+             {
+              ImageWidgetClass "{59AB1DCB4D77C5A0}" {
+               Prefab "{000000009A6CBF71}"
+               "Is Visible" 0
+              }
+              TextWidgetClass "{59AB1DCB4D77C5A1}" {
+               Prefab "{00000000B604ED88}"
+               Text "#ELIFE-CharacterMenu_NoCharactersFoundSubtitle"
+               "Font Size" 21
+               "Min Font Size" 20
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+        OverlayWidgetClass "{56DEAE87B4227572}" {
+         Prefab "{56DEAE87B4227572}"
+         "Is Visible" 0
+         {
+          VerticalLayoutWidgetClass "{56DE73DD3754FB6B}" {
+           Prefab "{56DE73DD3754FB6B}"
+           components {
+            SCR_GalleryComponent "{56D4A49D514555C0}" {
+             m_sItemLayout "{0C50E22D4F14DCC0}UI/layouts/Menus/RoleSelection/CharacterMenuTile.layout"
+             m_sActionLeft ""
+             m_sActionRight ""
+            }
+           }
+           {
+           }
+          }
+         }
+        }
+        SizeLayoutWidgetClass "{59CF22C3280A61F3}" {
+         Name "LoadingCharactersWarning"
+         Slot LayoutSlot "{56EC6E49746DC02D}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+          SizeMode Fill
+         }
+         AllowMinDesiredWidth 1
+         MinDesiredWidth 400
+         AllowMinDesiredHeight 1
+         MinDesiredHeight 250
+         {
+          VerticalLayoutWidgetClass "{59CF22C3280A61F4}" {
+           Name "VerticalLayout0"
+           Slot LayoutSlot "{56EC6E4CE3B46A7A}" {
+            SizeMode Fill
+           }
+           {
+            OverlayWidgetClass "{59CF22C3280A61F9}" {
+             Name "BaseText0"
+             Slot LayoutSlot "{56EC6E52A2CC8F69}" {
+             }
+             {
+              TextWidgetClass "{59CF22C3280A61FB}" {
+               Prefab "{00000000B604ED88}"
+               Slot OverlayWidgetSlot "{3532E6E48C14967B}" {
+                VerticalAlign 2
+               }
+               Text "#ELIFE-CharacterMenu_LoadingCharacters"
+               "Font Size" 40
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{5584621E1E6D9939}" {
+     Prefab "{5584621E1E6D9939}"
+     Slot LayoutSlot "{5584621E1E6D9959}" {
+      FillWeight 0.15
+     }
+    }
+   }
+  }
+ }
+}

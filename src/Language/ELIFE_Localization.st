@@ -2,6 +2,30 @@ StringTable {
  TargetPrefix "Target_"
  ItemClassName "CustomStringTableItem"
  Items {
+  CustomStringTableItem "{59AB152E48126786}" {
+   Id "ELIFE-CharacterMenu_NoCharactersFound"
+   Target_en_us "No characters found"
+   Target_de_de "Keine Charaktere gefunden"
+   Modified 1504386629
+   Author "Nico"
+   LastChanged "Nico"
+  }
+  CustomStringTableItem "{59AB1EB0DD371562}" {
+   Id "ELIFE-CharacterMenu_NoCharactersFoundSubtitle"
+   Target_en_us "Create a character: https://eliferpg.com"
+   Target_de_de "Charakter erstellen: https://eliferpg.com"
+   Modified 1504387868
+   Author "Nico"
+   LastChanged "Nico"
+  }
+  CustomStringTableItem "{59AB236BDC1C0CF5}" {
+   Id "ELIFE-CharacterMenu_PermanentCharacter"
+   Target_en_us "You can change your character only after reconnect"
+   Target_de_de "Du kannst deinen Character nur nach einem Reconnect ändern"
+   Modified 1504388785
+   Author "Nico"
+   LastChanged "Nico"
+  }
   CustomStringTableItem "{59A49683D01674F6}" {
    Id "ELIFE-Faction_CitizenFaction_Name"
    Target_en_us "Citizens"
