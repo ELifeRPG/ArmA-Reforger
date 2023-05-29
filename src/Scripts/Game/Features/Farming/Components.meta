@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{0B25800E37CF7EE5}Scripts/Game/Features/Farming/Components"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}

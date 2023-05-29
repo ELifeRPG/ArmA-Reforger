@@ -1,0 +1,11 @@
+Tree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+ ID "27132768B0952045"
+ components {
+  ELIFE_FarmTreeComponent "{5D7AA638AD6DE282}" {
+   m_aResourceNodePositions {
+    1 1 1 1 1 -1 -1 1 1 -1 1 -1
+   }
+   m_GatherItemPrefab "{DD7172CD49314579}Prefabs/Features/Farming/Resources/Resource_Apple.et"
+  }
+ }
+}

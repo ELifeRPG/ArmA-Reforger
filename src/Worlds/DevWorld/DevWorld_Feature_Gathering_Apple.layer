@@ -1,4 +1,11 @@
-Tree : "{36162658FCC66E88}Prefabs/Features/Farming/ResourceObjects/ResourceTree_Apple.et" {
- coords 4.642 0.198 13.618
- angleY 0
+Tree : "{4CC47F3665511C28}Prefabs/Vegetation/Tree/ELIFE_t_malus_domestica_2s.et" {
+ components {
+  ELIFE_FarmTreeComponent "{5D7AA638AD6DE282}" {
+   m_aResourceNodePositions {
+    0.3 2.15 0.9 0.9 3.3 -0.8 -1.5 2.05 0.8 -1 2.75 -1
+   }
+   m_GatherItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+  }
+ }
+ coords 14.902 0.001 15.042
 }
