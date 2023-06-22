@@ -1,8 +1,6 @@
 ELIFE_GameMode {
  ID "597F1CE401B0CCF5"
  components {
-  ELIFE_FarmTreeManager "{597F49C1307CE2DD}" {
-  }
   SCR_AutomaticRespawnHandlerComponent "{597F1CE47B678746}" {
    m_iForcedFaction 0
    m_iForcedLoadout 0
@@ -47,11 +45,10 @@ ELIFE_GameMode {
    }
   }
   RplComponent "{597F1CE4157D4F75}" {
-   "Rpl State Override" Static
+   "Rpl State Override" None
    Streamable Disabled
   }
  }
  coords 974.412 1.879 12149.478
  Flags 0
- m_bAutoDisabledControls 0
 }

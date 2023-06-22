@@ -1,0 +1,45 @@
+Tree : "{388AE316D09D0680}Prefabs/Vegetation/Core/Tree_Base.et" {
+ ID "0F2AA6B42CA78628"
+ components {
+  ELIFE_FarmTreeComponent "{5D7AA757DB98E09C}" {
+   m_aResourceNodePositions {
+    PointInfo "{5D7AE6A6460525F6}" {
+     Offset 0.9174 1.9639 0.6423
+    }
+    PointInfo "{5D7AE6A64161E382}" {
+     Offset -0.7121 2.6827 0.0489
+    }
+    PointInfo "{5D7AE6A6430A0C79}" {
+     Offset 0.2747 2.6606 -0.5156
+    }
+    PointInfo "{5D7AE6A658241E5B}" {
+     Offset -0.284 1.4796 0.0366
+    }
+   }
+   m_GatherItemDisplayName "Plum"
+   m_GatherItemPrefab "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
+   m_GatherItemPreview "{67DE53F4B5E141DC}Prefabs/Items/Food/Plum_MODEL.et"
+   m_GatherTimeout 10
+  }
+  ActionsManagerComponent "{5D7F02DA99F14341}" {
+   ActionContexts {
+    UserActionContext "{5D7F02DA9A632048}" {
+     ContextName "test"
+     Position PointInfo "{5D7F02DA93BF0CF3}" {
+      Offset 0.0201 0.7545 -0.517
+     }
+    }
+   }
+   additionalActions {
+    ELIFE_GatherResourceAction "{5D7F0A384C92C262}" {
+     ParentContextList {
+      "test"
+     }
+     Duration 0.5
+    }
+   }
+  }
+  RplComponent "{5D7AE6A725A5A7FD}" {
+  }
+ }
+}

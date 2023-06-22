@@ -8,6 +8,10 @@ MetaFileClass {
      AssignedMaterial "{E8949E822FF420B2}Assets/Items/Food/Apple/Data/Apple_01.emat"
     }
    }
+   MeshParams {
+    MeshParam apple {
+    }
+   }
    GeometryParams {
     GeometryParam USP_apple {
      SurfaceProperties {

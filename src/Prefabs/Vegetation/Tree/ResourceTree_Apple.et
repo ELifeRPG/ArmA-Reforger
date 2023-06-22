@@ -1,11 +1,81 @@
-Tree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+Tree : "{388AE316D09D0680}Prefabs/Vegetation/Core/Tree_Base.et" {
  ID "27132768B0952045"
  components {
   ELIFE_FarmTreeComponent "{5D7AA638AD6DE282}" {
    m_aResourceNodePositions {
-    1 1 1 1 1 -1 -1 1 1 -1 1 -1
+    PointInfo "{5D7AE6A6460525F6}" {
+     Offset 0.21 2.23 0.79
+    }
+    PointInfo "{5D7AE6A64161E382}" {
+     Offset -0.7124 2.0955 0.0575
+    }
+    PointInfo "{5D7AE6A6430A0C79}" {
+     Offset 0.1528 2.2643 -0.5787
+    }
+    PointInfo "{5D7AE6A658241E5B}" {
+     Offset -0.2564 1.4796 0.0366
+    }
    }
-   m_GatherItemPrefab "{DD7172CD49314579}Prefabs/Features/Farming/Resources/Resource_Apple.et"
+   m_GatherItemDisplayName "Apple"
+   m_GatherItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+   m_GatherItemPreview "{F1B70FF6C7A66A3B}Prefabs/Items/Food/Apple_MODEL.et"
+   m_GatherTimeout 10
+  }
+  ActionsManagerComponent "{5D7CCEBDD742F428}" {
+   ActionContexts {
+    UserActionContext "{5D7CCEBDD1179E1A}" {
+     ContextName "Apple_Spot_1"
+     Position PointInfo "{5D7D3427892526E1}" {
+      Offset 0.21 2.23 0.79
+     }
+    }
+    UserActionContext "{5D7F0A21103C36A6}" {
+     ContextName "Apple_Spot_2"
+     Position PointInfo "{5D7F0A212B514F96}" {
+      Offset -0.7124 2.0955 0.0575
+     }
+    }
+    UserActionContext "{5D7F0A2139919DCE}" {
+     ContextName "Apple_Spot_3"
+     Position PointInfo "{5D7F0A20C7FF32D5}" {
+      Offset 0.1528 2.2643 -0.5787
+     }
+    }
+    UserActionContext "{5D7F0A20D54E2002}" {
+     ContextName "Apple_Spot_4"
+     Position PointInfo "{5D7F0A20EBC3E0FB}" {
+      Offset -0.2564 1.4796 0.0366
+     }
+    }
+   }
+   additionalActions {
+    ELIFE_GatherResourceAction "{5D7D342F088344CE}" {
+     ParentContextList {
+      "Apple_Spot_1"
+     }
+     Duration 0.5
+    }
+    ELIFE_GatherResourceAction "{5D7F0A205FD31573}" {
+     ParentContextList {
+      "Apple_Spot_2"
+     }
+     Duration 0.5
+    }
+    ELIFE_GatherResourceAction "{5D7F0A2054D722D4}" {
+     ParentContextList {
+      "Apple_Spot_3"
+     }
+     Duration 0.5
+    }
+    ELIFE_GatherResourceAction "{5D7F0A205764DF62}" {
+     ParentContextList {
+      "Apple_Spot_4"
+     }
+     Duration 0.5
+    }
+   }
+  }
+  RplComponent "{5D7AE6A6B701FCC5}" {
   }
  }
 }

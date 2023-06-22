@@ -5,15 +5,23 @@ class ELIFE_FarmTreeComponentClass: ScriptComponentClass
 class ELIFE_FarmTreeComponent: ScriptComponent
 {
 	[Attribute("", UIWidgets.Object, category: "Farm Tree Resource")]
-	//ref array<ref PointInfo> m_aResourceNodePositions; // until fixed ....
-	protected ref array<vector> m_aResourceNodePositions;
+	protected ref array<ref PointInfo> m_aResourceNodePositions;
+	
+	[Attribute("", UIWidgets.EditBox, desc: "Display name of what is being gathered")]
+	protected string m_GatherItemDisplayName;
 	
 	[Attribute("", UIWidgets.ResourceNamePicker, desc: "Prefab what item is gathered")]
 	protected ResourceName m_GatherItemPrefab;
 	
-	protected ref array<IEntity> resourceObjects = {};
+	[Attribute("", UIWidgets.ResourceNamePicker, desc: "Prefab what item is visible")]
+	protected ResourceName m_GatherItemPreview;
+	
+	[Attribute("", UIWidgets.EditBox, desc: "Amount of time needed until you can regather something")]
+	protected float m_GatherTimeout;
+	
+	protected ref array<ref PointInfo> resourceObjects = {};
 		
-	ref array<vector> GetResourceNodePositions()
+	ref array<ref PointInfo> GetResourceNodePositions()
 	{
 		return m_aResourceNodePositions;
 	}
@@ -26,21 +34,33 @@ class ELIFE_FarmTreeComponent: ScriptComponent
 		if (owner == null)
 			return;
 		
-		//m_FarmTreeManager.AddFarmTree(owner);
-		Print("Array-Count: " + m_aResourceNodePositions.Count());
+		auto actionsManagerComponent = ActionsManagerComponent.Cast( owner.FindComponent(ActionsManagerComponent) );
+		array<UserActionContext> contextList = {};
+		actionsManagerComponent.GetContextList(contextList);
 		
-		EntitySpawnParams params = EntitySpawnParams();
-		params.TransformMode = ETransformMode.WORLD;
-		Resource res = Resource.Load(m_GatherItemPrefab);
-		
-		foreach (vector pi : m_aResourceNodePositions)
-		{
-			vector position = GetOwner().CoordToParent(pi);
-			params.Transform[3] = position;	
-			if (Math.RandomInt(0, 4) > 0) {
-				GetGame().SpawnEntityPrefab(res, GetGame().GetWorld(), params);
+		foreach (UserActionContext context: contextList) {
+			array<BaseUserAction> actionList = {};
+			context.GetActionsList(actionList);
+			
+			foreach (BaseUserAction actionBase: actionList) {
+				ELIFE_GatherResourceAction action = ELIFE_GatherResourceAction.Cast(actionBase);
+				
+				action.m_GatherItemDisplayName = m_GatherItemDisplayName;
+				action.m_GatherItemPrefab = m_GatherItemPrefab;
+				action.m_GatherItemPreview = m_GatherItemPreview;
+				action.m_GatherTimeout = m_GatherTimeout;
+				
+				vector pos[4];
+				context.GetTransformationModel(pos);
+				pos[3] = owner.CoordToParent(pos[3]);
+				action.m_ContextPosition = pos;
+				action.ShowGatherPreview();
 			}
+			
+			//actionsManagerComponent.
 		}
+		
+
 	}
 	
 	//---------------------------------------- On Init ----------------------------------------\\
@@ -60,9 +80,20 @@ class ELIFE_FarmTreeComponent: ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	override void _WB_AfterWorldUpdate(IEntity owner, float timeSlice)
 	{
-		foreach (vector point : m_aResourceNodePositions)
-		{			
-			ref Shape spawnPointShape = Shape.CreateSphere(COLOR_GREEN, ShapeFlags.ONCE | ShapeFlags.NOOUTLINE, GetOwner().CoordToParent(point), 0.1);
+		foreach (PointInfo point : m_aResourceNodePositions)
+		{
+			vector localMat[4];
+			point.GetTransform(localMat);
+			ref Shape spawnPointShape = Shape.CreateSphere(COLOR_GREEN, ShapeFlags.ONCE | ShapeFlags.NOOUTLINE, GetOwner().CoordToParent(localMat[3]), 0.1);
+		}
+		
+		ActionsManagerComponent actionsManagerComponent = ActionsManagerComponent.Cast(owner.FindComponent(ActionsManagerComponent));
+		
+		array<UserActionContext> contextList = {};
+		actionsManagerComponent.GetContextList(contextList);
+		
+		foreach (UserActionContext context: contextList) {
+			ref Shape spawnPointShape = Shape.CreateSphere(COLOR_BLUE, ShapeFlags.ONCE | ShapeFlags.NOOUTLINE, GetOwner().CoordToParent(context.GetOrigin()), 0.1);
 		}
 	}
 	

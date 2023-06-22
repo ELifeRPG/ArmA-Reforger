@@ -271,12 +271,11 @@ Vehicle : "{1F9BB80C3EC3C891}Prefabs/Vehicles/Core/Wheeled_Car_Base.et" {
    }
   }
   BaseRadioComponent "{59833C8D3A4E0442}" {
-   "Frequency resolution" 1500
+   "Turned on" 1
    Transceivers {
     IntercomTransceiver "{59833C8D3A4E044C}" {
     }
    }
-   "Turned on" 1
   }
   BaseVehicleNodeComponent "{20FB66C5B2237133}" {
    components {
@@ -548,7 +547,7 @@ Vehicle : "{1F9BB80C3EC3C891}Prefabs/Vehicles/Core/Wheeled_Car_Base.et" {
      }
      m_sDamagedParticle "{F855EA6F45F529A4}Particles/Vehicle/Vehicle_smoke_M151A2_damaged_black_01.ptc"
      m_sDamagedParticleHeavy "{614B53F658121834}Particles/Vehicle/Vehicle_smoke_M151A2_damaged_black_02.ptc"
-     m_sDestructionParticle "{141C7EA542E57AB3}Particles/Vehicle/Vehicle_explosion_M151A2_01.ptc"
+     m_sDestructionParticle "{0A70EB725D13F963}Particles/Vehicle/Vehicle_explosion_M151A2_01.ptc"
      m_sBurningParticle "{9D937B6C5BAED3AD}Particles/Vehicle/Vehicle_fire_engine_M151A2_01.ptc"
      m_sBurningGroundParticle "{D813E90D2C48478E}Particles/Vehicle/Vehicle_fire_ground_M151A2_01.ptc"
     }
@@ -605,20 +604,6 @@ Vehicle : "{1F9BB80C3EC3C891}Prefabs/Vehicles/Core/Wheeled_Car_Base.et" {
   }
   SCR_VehicleFactionAffiliationComponent "{5882CBD9AC741CEC}" {
    "faction affiliation" "US"
-  }
-  SlotManagerComponent "{55BCE45E438E4CFF}" {
-   Slots {
-    RegisteringComponentSlotInfo Bench {
-     Prefab "{B56FF8E1E075048A}Prefabs/Vehicles/Wheeled/M151A2/M151A2_bench_cargo.et"
-     RegisterActions 1
-     RegisterDamage 1
-     RegisterCompartments 1
-    }
-    RegisteringComponentSlotInfo Window_front {
-     Prefab "{2114E1618D017FAC}Prefabs/Vehicles/Wheeled/M151A2/Dst/M151A1_window_front.et"
-     RegisterDamage 1
-    }
-   }
   }
   VehicleWheeledSimulation "{731B26FCA2F19855}" {
    Simulation Wheeled "{4D8B26DEA5F25978}" {
@@ -757,6 +742,20 @@ Vehicle : "{1F9BB80C3EC3C891}Prefabs/Vehicles/Core/Wheeled_Car_Base.et" {
      BoneNames {
       "v_dashboard_speed" "v_dashboard_fuel" "v_dashboard_ammeter" "v_dashboard_coolant_temp" "v_dashboard_oil_pressure"
      }
+    }
+   }
+  }
+  SlotManagerComponent "{55BCE45E438E4CFF}" {
+   Slots {
+    RegisteringComponentSlotInfo Bench {
+     Prefab "{B56FF8E1E075048A}Prefabs/Vehicles/Wheeled/M151A2/M151A2_bench_cargo.et"
+     RegisterActions 1
+     RegisterDamage 1
+     RegisterCompartments 1
+    }
+    RegisteringComponentSlotInfo Window_front {
+     Prefab "{2114E1618D017FAC}Prefabs/Vehicles/Wheeled/M151A2/Dst/M151A1_window_front.et"
+     RegisterDamage 1
     }
    }
   }

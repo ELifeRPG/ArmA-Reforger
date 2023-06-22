@@ -4,10 +4,6 @@ SCR_ChimeraCharacter : "{836E7E39AAC5888B}Prefabs/Characters/Factions/BLUFOR/US_
   BaseWeaponManagerComponent "{520EA1D2F659CE5D}" {
    DefaultWeaponIndex 0
   }
-  CharacterGrenadeSlotComponent "{520EA1D2F659CE6E}" {
-  }
-  CharacterWeaponSlotComponent "{520EA1D2F659CFAB}" {
-  }
   FactionAffiliationComponent "{520EC961FB0A2E90}" {
    "faction affiliation" "LIFE"
   }
@@ -27,6 +23,10 @@ SCR_ChimeraCharacter : "{836E7E39AAC5888B}Prefabs/Characters/Factions/BLUFOR/US_
    }
   }
   SCR_GadgetManagerComponent "{520EA1D2DB118DF3}" {
+  }
+  CharacterGrenadeSlotComponent "{520EA1D2F659CE6E}" {
+  }
+  CharacterWeaponSlotComponent "{520EA1D2F659CFAB}" {
   }
   CharacterIdentityComponent "{5584CBC63E092DBC}" {
    Identity Identity "{5584CBC6363C648B}" {
