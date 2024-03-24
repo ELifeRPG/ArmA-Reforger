@@ -28,7 +28,7 @@ class ELIFE_GatherResourceAction : ScriptedUserAction
 		//Spawn item
 		inventoryManager.TrySpawnPrefabToStorage(m_GatherItemPrefab);
 		
-		m_RestockTimestamp = Replication.Time() + (m_GatherTimeout * 1000);
+		m_RestockTimestamp = (pUserEntity.GetWorld().GetWorldTime()) + (m_GatherTimeout * 1000);
 		
 		if (m_GatherItem) {				
 			m_GatherItem.ClearFlags(EntityFlags.VISIBLE);
@@ -46,11 +46,12 @@ class ELIFE_GatherResourceAction : ScriptedUserAction
     //------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
  	{	
-		if(m_RestockTimestamp > Replication.Time())
+				
+		if(user.GetWorld().GetWorldTime() < m_RestockTimestamp)
 		{
-			int secondsLeft = (m_RestockTimestamp - Replication.Time()) / 1000;
+			int secondsLeft = (int)(((m_RestockTimestamp) - user.GetWorld().GetWorldTime()) / 1000);
 			if (secondsLeft < 59) {
-				SetCannotPerformReason(string.Format("Please wait %1 seconds", secondsLeft + 1));
+				SetCannotPerformReason(string.Format("Please wait %1 seconds", secondsLeft.ToString()));
 			}
 			else {
 				SetCannotPerformReason(string.Format("Please wait %1 minutes", (secondsLeft + 1) / 60));
