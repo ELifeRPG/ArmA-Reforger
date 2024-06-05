@@ -40,10 +40,9 @@ modded class SCR_SwitchSeatAction : SCR_GetInUserAction
 		
 		// Prevents switching seats within different vehicles,
 		
-		//!!!TODO: Fix with new version
-		
-		//if (!IsCompartmentInHierarchy(characterCompartment, m_pOwner))
-			//return false;
+		if (characterCompartment.GetVehicle() != m_pOwner)
+			return false;
+
 		
 		// Check if the position isn't lock.
 		if (m_pLockComp && m_pLockComp.IsLocked(user, GetCompartmentSlot()))
@@ -92,12 +91,10 @@ modded class SCR_SwitchSeatAction : SCR_GetInUserAction
 			return false;
 		
 		// Prevents switching seats within different vehicles,
-		
-				//!!!TODO: Fix with new version
 
-		//if (!IsCompartmentInHierarchy(characterCompartment, m_pOwner))
-			//return false;
-		
+		if (characterCompartment.GetVehicle() != m_pOwner)
+			return false;
+
 		//! Check if some other action or animation is preventing the seat switch 
 		auto vehicleController = VehicleControllerComponent.Cast(characterCompartment.GetController());
 		if (vehicleController && !vehicleController.CanSwitchSeat())

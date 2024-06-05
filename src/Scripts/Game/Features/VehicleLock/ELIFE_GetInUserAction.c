@@ -15,7 +15,7 @@ modded class SCR_GetInUserAction : SCR_CompartmentUserAction
 			return;
 		
 		IEntity owner = compartment.GetOwner();
-		Vehicle vehicle = null;
+		Vehicle vehicle = Vehicle.Cast(owner.GetParent());
 		if (!vehicle)
 			return;
 		
