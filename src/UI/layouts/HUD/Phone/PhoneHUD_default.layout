@@ -1,0 +1,63 @@
+FrameWidgetClass {
+ Name "phoneFrame"
+ {
+  FrameWidgetClass "{618B3BF0CA5C1444}" {
+   Name "phone"
+   Slot FrameWidgetSlot "{618B3BF0CA5C1467}" {
+    Anchor 0.805 0.464 0.989 0.982
+    PositionX 40.474
+    OffsetLeft 40.474
+    PositionY 44.339
+    OffsetTop 44.339
+    SizeX -97.667
+    OffsetRight 57.193
+    SizeY -172.309
+    OffsetBottom 127.97
+   }
+   Color 0.821 1 0 1
+   {
+    ImageWidgetClass "{618B4BEEEB5428ED}" {
+     Name "bg_image"
+     Slot FrameWidgetSlot "{618B4BEEEB54280D}" {
+      PositionX -0.999
+      OffsetLeft -0.999
+      PositionY 0
+      OffsetTop 0
+      SizeX 256.834
+      OffsetRight -255.835
+      SizeY 386.622
+      OffsetBottom -386.622
+     }
+     Texture "{8031C5CA40FCD789}Common/Postprocess/Rain/distantRainLayerTex.edds"
+     Size 512 512
+    }
+    GridLayoutWidgetClass "{618B4BEE5173B7A2}" {
+     Name "GridLayout0"
+     Slot FrameWidgetSlot "{618B4BEE5173B7BD}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 255.835
+      OffsetRight -255.835
+      SizeY 384.624
+      OffsetBottom -384.624
+     }
+     {
+      ProfileImageWidgetClass "{618B4BEE691CB95C}" {
+       Name "ProfileImage0"
+       Slot GridWidgetSlot "{618B4BEE691CB979}" {
+        Row 0
+        Column 1
+       }
+       Pivot 0.5 0.5
+       Size 64 64
+       Tiling None
+      }
+     }
+    }
+   }
+  }
+ }
+}
