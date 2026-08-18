@@ -10,7 +10,7 @@ modded class SCR_CarControllerComponent : CarControllerComponent
 		
 		array<IEntity> occupants = {};
 		
-		m_BaseCompartmentManager.GetOccupantsOfType(occupants, ECompartmentType.Pilot);
+		m_BaseCompartmentManager.GetOccupantsOfType(occupants, ECompartmentType.PILOT);
 		
 		if (occupants[0] && m_VehicleLockComponent && !ELIFE_VehicleLockUtils.HasPlayerKeyToCar(occupants[0], m_VehicleLockComponent.VehicleIdentifier(), m_VehicleLockComponent.m_KeyPrefab))
 			return false;

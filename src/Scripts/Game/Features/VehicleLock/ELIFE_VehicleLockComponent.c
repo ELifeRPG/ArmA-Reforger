@@ -1,4 +1,4 @@
-class ELIFE_VehicleLockComponentClass : ScriptComponentClass
+class ELIFE_VehicleLockComponentClass : SCR_BaseLockComponentClass
 {
 	// prefab properties here
 }

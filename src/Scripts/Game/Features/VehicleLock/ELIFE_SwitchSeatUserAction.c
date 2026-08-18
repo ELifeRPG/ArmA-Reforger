@@ -39,7 +39,7 @@ modded class SCR_SwitchSeatAction : SCR_GetInUserAction
 			return false;
 		
 		// Prevents switching seats within different vehicles,
-		if (!IsCompartmentInHierarchy(characterCompartment, m_pOwner))
+		if (characterCompartment.GetOwner().GetRootParent() != m_pOwner.GetRootParent())
 			return false;
 		
 		// Check if the position isn't lock.
@@ -89,7 +89,7 @@ modded class SCR_SwitchSeatAction : SCR_GetInUserAction
 			return false;
 		
 		// Prevents switching seats within different vehicles,
-		if (!IsCompartmentInHierarchy(characterCompartment, m_pOwner))
+		if (characterCompartment.GetOwner().GetRootParent() != m_pOwner.GetRootParent())
 			return false;
 		
 		//! Check if some other action or animation is preventing the seat switch 
