@@ -16,7 +16,7 @@ modded class SCR_SwitchSeatAction : SCR_GetInUserAction
 			return false;
 		
 		ChimeraCharacter character = ChimeraCharacter.Cast(user);
-		if (!character && !character.IsInVehicle())
+		if (!character || !character.IsInVehicle())
 			return false;
 		
 		CharacterControllerComponent characterController = CharacterControllerComponent.Cast(character.FindComponent(CharacterControllerComponent));
@@ -74,7 +74,7 @@ modded class SCR_SwitchSeatAction : SCR_GetInUserAction
 			return false;
 		
 		auto character = ChimeraCharacter.Cast(user);
-		if (!character && !character.IsInVehicle()) 
+		if (!character || !character.IsInVehicle()) 
 			return false;
 		
 		auto compartmentAccess = character.GetCompartmentAccessComponent();
