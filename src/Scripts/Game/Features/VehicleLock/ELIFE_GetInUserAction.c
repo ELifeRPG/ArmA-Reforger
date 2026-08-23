@@ -5,25 +5,13 @@ modded class SCR_GetInUserAction : SCR_CompartmentUserAction
 	//------------------------------------------------------------------------------------------------
 	override void Init(IEntity pOwnerEntity, GenericComponent pManagerComponent)
 	{
-		m_pLockComp = SCR_BaseLockComponent.Cast(pOwnerEntity.FindComponent(SCR_BaseLockComponent));
+		super.Init(pOwnerEntity, pManagerComponent);
 		
-		m_pVehicleLockComponent = ELIFE_VehicleLockComponent.Cast(pOwnerEntity.FindComponent(ELIFE_VehicleLockComponent));
-		
-		// Set reference to correct component
-		BaseCompartmentSlot compartment = GetCompartmentSlot();
-		if (!compartment)
-			return;
-		
-		IEntity owner = compartment.GetOwner();
-		Vehicle vehicle = Vehicle.Cast(owner.GetParent());
+		IEntity vehicle = SCR_EntityHelper.GetMainParent(pOwnerEntity, true);
 		if (!vehicle)
 			return;
 		
-		ELIFE_VehicleLockComponent vehicleLockComponent = ELIFE_VehicleLockComponent.Cast(vehicle.FindComponent(ELIFE_VehicleLockComponent));
-		if (m_pVehicleLockComponent != vehicleLockComponent)
-		{
-			m_pVehicleLockComponent = vehicleLockComponent;
-		}
+		m_pVehicleLockComponent = ELIFE_VehicleLockComponent.Cast(vehicle.FindComponent(ELIFE_VehicleLockComponent));
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -49,7 +37,7 @@ modded class SCR_GetInUserAction : SCR_CompartmentUserAction
 			return false;
 		
 		IEntity owner = compartment.GetOwner();
-		Vehicle vehicle = null;
+		Vehicle vehicle = Vehicle.Cast(SCR_EntityHelper.GetMainParent(owner, true));
 		if (vehicle)
 		{			
 			Faction characterFaction = character.GetFaction();
@@ -75,7 +63,7 @@ modded class SCR_GetInUserAction : SCR_CompartmentUserAction
 		}
 		
 		// Make sure vehicle can be enter via provided door, if not, set reason.
-		if (!compartmentAccess.CanGetInVehicleViaDoor(owner, compartment, GetRelevantDoorIndex(user)))
+		if (!compartmentAccess.CanGetInVehicleViaDoor(owner, m_CompartmentManager, GetRelevantDoorIndex(user)))
 		{
 			SetCannotPerformReason("#AR-UserAction_SeatObstructed");
 			return false;

@@ -1,0 +1,15 @@
+Layer default {
+ Index 0
+}
+Layer Terrain {
+ Index 1
+}
+Layer SpawnPoints {
+ Index 2
+}
+Layer GameMode {
+ Index 3
+}
+Layer Feature_Gathering_Apple {
+ Index 4
+}

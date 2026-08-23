@@ -1,4 +1,6 @@
-ELIFE_PrefabSpawn {
- coords 7.536 0.86 3.831
- m_rnPrefab "{89DCD5C00091FF04}Prefabs/Items/Keys/CarKey.et"
+$grp ELIFE_PrefabSpawn {
+ {
+  coords 7.536 0 3.028
+  m_rnPrefab "{89DCD5C00091FF04}Prefabs/Items/Keys/CarKey.et"
+ }
 }
