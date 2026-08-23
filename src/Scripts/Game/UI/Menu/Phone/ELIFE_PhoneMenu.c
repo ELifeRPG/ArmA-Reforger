@@ -49,7 +49,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 
 		button = SCR_ButtonTextComponent.GetButtonText("AppMap", m_wRoot);
 		if (button)
-			button.m_OnClicked.Insert(OnDummyApp);
+			button.m_OnClicked.Insert(OnMapApp);
 
 		button = SCR_ButtonTextComponent.GetButtonText("AppSettings", m_wRoot);
 		if (button)
@@ -179,6 +179,26 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	protected void OnBankApp()
 	{
 		OpenApp(new ELIFE_PhoneBankingApp());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnMapApp()
+	{
+		CloseWithoutHolster();
+
+		// MenuBase.Close() only queues the close for the next MenuManager update, so opening the
+		// map menu in the same frame would briefly stack it on top of the still-open phone menu
+		// and corrupt the MenuContext/MapContext action-context stack (breaks ESC on the map).
+		// Deferring by one tick lets the phone's close be processed first.
+		GetGame().GetCallqueue().CallLater(OpenMapMenuDeferred, 0, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OpenMapMenuDeferred()
+	{
+		MenuManager menuManager = GetGame().GetMenuManager();
+		if (menuManager)
+			menuManager.OpenMenu(ChimeraMenuPreset.ELIFE_PhoneMapMenu);
 	}
 
 	//------------------------------------------------------------------------------------------------

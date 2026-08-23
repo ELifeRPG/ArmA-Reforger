@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------------
-//! Registers the local phone ChimeraMenu.
+//! Registers the local phone ChimeraMenus.
 //!
 //! WORKBENCH (required):
 //! 1. Resource Browser → ArmaReforger / Configs/System/chimeraMenus.conf (GUID {C747AFB6B750CE9A})
@@ -8,7 +8,12 @@
 //!    - Class: ELIFE_PhoneMenu
 //!    - Layout: UI/layouts/Menus/Phone/PhoneMenu.layout
 //!    - ActionContext: MenuContext (cursor; N is already on that context)
+//! 4. Add an entry named ELIFE_PhoneMapMenu
+//!    - Class: ELIFE_PhoneMapMenuUI
+//!    - Layout: UI/layouts/Map/MapMenu.layout (same GUID as vanilla MapMenu)
+//!    - ActionContext: MapContext
 modded enum ChimeraMenuPreset
 {
-	ELIFE_PhoneMenu
+	ELIFE_PhoneMenu,
+	ELIFE_PhoneMapMenu
 }
