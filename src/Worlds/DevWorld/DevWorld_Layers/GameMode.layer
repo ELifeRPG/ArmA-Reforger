@@ -2,10 +2,6 @@ SCR_FactionManager FactionManager : "{C4747BA20C71D8E2}Prefabs/MP/Managers/Facti
  coords 0 0 0
 }
 ELIFE_GameMode ELIFE_GameMode : "{E9922930097C3FD4}Prefabs/MP/Modes/ELIFE_GameMode.et" {
- components {
-  SCR_AutomaticRespawnHandlerComponent "{597F1CE47B678746}" {
-  }
- }
  coords 0 0 0
 }
 SCR_LoadoutManager LoadoutManager : "{318E93063CC0FC86}Prefabs/MP/Managers/Loadouts/ELIFE_LoadoutManager.et" {

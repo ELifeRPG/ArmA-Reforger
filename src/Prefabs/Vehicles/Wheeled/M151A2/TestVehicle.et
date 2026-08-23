@@ -1,4 +1,4 @@
-Vehicle : "{24C2DDAB6129F316}Prefabs/Vehicles/Wheeled/M151A2/M151A2.et" {
+Vehicle : "{F649585ABB3706C4}Prefabs/Vehicles/Wheeled/M151A2/M151A2.et" {
  ID "BBCBA43A9778AE21"
  components {
   ELIFE_VehicleLockComponent "{59A49686E457E7D8}" {
