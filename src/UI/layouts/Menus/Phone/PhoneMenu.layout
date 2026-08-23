@@ -1,0 +1,418 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ "Ignore Cursor" 0
+ {
+  OverlayWidgetClass "{61E1FE0A4B7C2A01}" {
+   Name "RootOverlay"
+   Slot FrameWidgetSlot "{61E1FE0A4B7C2A02}" {
+    Anchor 0 0 1 1
+    OffsetLeft 0
+    OffsetTop 0
+    OffsetRight 0
+    OffsetBottom 0
+   }
+   {
+    ImageWidgetClass "{61E1FE0A4B7C2A30}" {
+     Name "Dimmer"
+     Slot OverlayWidgetSlot "{61E1FE0A4B7C2A31}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0 0 0 0.28
+    }
+    SizeLayoutWidgetClass "{61E1FE0A4B7C2A32}" {
+     Name "PhoneSize"
+     Slot OverlayWidgetSlot "{61E1FE0A4B7C2A33}" {
+      HorizontalAlign 2
+      VerticalAlign 2
+      Padding 0 0 28 28
+     }
+     AllowWidthOverride 1
+     WidthOverride 300
+     AllowHeightOverride 1
+     HeightOverride 560
+     {
+      OverlayWidgetClass "{61E1FE0A4B7C2A03}" {
+       Name "PhoneBezel"
+       Slot AlignableSlot "{61E1FE0A4B7C2A34}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{61E1FE0A4B7C2A35}" {
+         Name "BezelBackground"
+         Slot OverlayWidgetSlot "{61E1FE0A4B7C2A36}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.05 0.05 0.06 0.96
+        }
+        OverlayWidgetClass "{61E1FE0A4B7C2A37}" {
+         Name "PhoneScreen"
+         Slot OverlayWidgetSlot "{61E1FE0A4B7C2A04}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+          Padding 14 36 14 72
+         }
+         {
+          ImageWidgetClass "{61E1FE0A4B7C2A38}" {
+           Name "ScreenBackground"
+           Slot OverlayWidgetSlot "{61E1FE0A4B7C2A39}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.07 0.16 0.22 1
+          }
+          VerticalLayoutWidgetClass "{61E1FE0A4B7C2A3A}" {
+           Name "ScreenContent"
+           Slot OverlayWidgetSlot "{61E1FE0A4B7C2A3B}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           {
+            TextWidgetClass "{61E1FE0A4B7C2A05}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "StatusBar"
+             Slot LayoutSlot "{61E1FE0A4B7C2A06}" {
+              Padding 12 10 12 0
+             }
+             Color 1 1 1 1
+             Text "#ELIFE-Item_Phone_Name"
+             "Font Size" 18
+             "Min Font Size" 14
+            }
+            TextWidgetClass "{61E1FE0A4B7C2A70}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "DebugPhoneId"
+             Slot LayoutSlot "{61E1FE0A4B7C2A71}" {
+              Padding 12 0 12 6
+             }
+             Color 0.65 0.85 0.75 1
+             Text ""
+             "Font Size" 12
+             "Min Font Size" 10
+            }
+            VerticalLayoutWidgetClass "{61E1FE0A4B7C2A07}" {
+             Name "HomeGrid"
+             Slot LayoutSlot "{61E1FE0A4B7C2A08}" {
+              SizeMode Fill
+              Padding 8 8 8 8
+             }
+             {
+              HorizontalLayoutWidgetClass "{61E1FE0A4B7C2A3C}" {
+               Name "HomeRow0"
+               Slot LayoutSlot "{61E1FE0A4B7C2A3D}" {
+                SizeMode Fill
+               }
+               {
+                ButtonWidgetClass "{61E1FE0A4B7C2A10}" {
+                 Name "AppMessages"
+                 Slot LayoutSlot "{61E1FE0A4B7C2A11}" {
+                  SizeMode Fill
+                  Padding 6 6 6 6
+                 }
+                 Color 1 1 1 1
+                 components {
+                  SCR_ButtonTextComponent "{61E1FE0A4B7C2A13}" {
+                   m_BackgroundDefault 0.16 0.28 0.42 1
+                   m_BackgroundHovered 0.24 0.4 0.56 1
+                   m_BackgroundSelected 0.32 0.5 0.68 1
+                   m_sText "Messages"
+                  }
+                 }
+                 {
+                  OverlayWidgetClass "{61E1FE0A4B7C2A40}" {
+                   Name "AppMessagesOverlay"
+                   Slot ButtonWidgetSlot "{61E1FE0A4B7C2A41}" {
+                    HorizontalAlign 3
+                    VerticalAlign 3
+                   }
+                   {
+                    ImageWidgetClass "{61E1FE0A4B7C2A42}" {
+                     Name "Background"
+                     Slot OverlayWidgetSlot "{61E1FE0A4B7C2A43}" {
+                      HorizontalAlign 3
+                      VerticalAlign 3
+                     }
+                     Color 0.16 0.28 0.42 1
+                    }
+                    TextWidgetClass "{61E1FE0A4B7C2A12}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                     Name "Text"
+                     Slot OverlayWidgetSlot "{61E1FE0A4B7C2A44}" {
+                      HorizontalAlign 1
+                      VerticalAlign 1
+                     }
+                     Color 1 1 1 1
+                     Text "Messages"
+                     "Font Size" 18
+                    }
+                   }
+                  }
+                 }
+                }
+                ButtonWidgetClass "{61E1FE0A4B7C2A14}" {
+                 Name "AppContacts"
+                 Slot LayoutSlot "{61E1FE0A4B7C2A15}" {
+                  SizeMode Fill
+                  Padding 6 6 6 6
+                 }
+                 Color 1 1 1 1
+                 components {
+                  SCR_ButtonTextComponent "{61E1FE0A4B7C2A17}" {
+                   m_BackgroundDefault 0.18 0.36 0.28 1
+                   m_BackgroundHovered 0.26 0.48 0.38 1
+                   m_BackgroundSelected 0.34 0.58 0.46 1
+                   m_sText "Contacts"
+                  }
+                 }
+                 {
+                  OverlayWidgetClass "{61E1FE0A4B7C2A45}" {
+                   Name "AppContactsOverlay"
+                   Slot ButtonWidgetSlot "{61E1FE0A4B7C2A46}" {
+                    HorizontalAlign 3
+                    VerticalAlign 3
+                   }
+                   {
+                    ImageWidgetClass "{61E1FE0A4B7C2A47}" {
+                     Name "Background"
+                     Slot OverlayWidgetSlot "{61E1FE0A4B7C2A48}" {
+                      HorizontalAlign 3
+                      VerticalAlign 3
+                     }
+                     Color 0.18 0.36 0.28 1
+                    }
+                    TextWidgetClass "{61E1FE0A4B7C2A16}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                     Name "Text"
+                     Slot OverlayWidgetSlot "{61E1FE0A4B7C2A49}" {
+                      HorizontalAlign 1
+                      VerticalAlign 1
+                     }
+                     Color 1 1 1 1
+                     Text "Contacts"
+                     "Font Size" 18
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+              HorizontalLayoutWidgetClass "{61E1FE0A4B7C2A3E}" {
+               Name "HomeRow1"
+               Slot LayoutSlot "{61E1FE0A4B7C2A3F}" {
+                SizeMode Fill
+               }
+               {
+                ButtonWidgetClass "{61E1FE0A4B7C2A18}" {
+                 Name "AppMap"
+                 Slot LayoutSlot "{61E1FE0A4B7C2A19}" {
+                  SizeMode Fill
+                  Padding 6 6 6 6
+                 }
+                 Color 1 1 1 1
+                 components {
+                  SCR_ButtonTextComponent "{61E1FE0A4B7C2A1B}" {
+                   m_BackgroundDefault 0.38 0.28 0.16 1
+                   m_BackgroundHovered 0.5 0.38 0.22 1
+                   m_BackgroundSelected 0.62 0.46 0.28 1
+                   m_sText "Map"
+                  }
+                 }
+                 {
+                  OverlayWidgetClass "{61E1FE0A4B7C2A4A}" {
+                   Name "AppMapOverlay"
+                   Slot ButtonWidgetSlot "{61E1FE0A4B7C2A4B}" {
+                    HorizontalAlign 3
+                    VerticalAlign 3
+                   }
+                   {
+                    ImageWidgetClass "{61E1FE0A4B7C2A4C}" {
+                     Name "Background"
+                     Slot OverlayWidgetSlot "{61E1FE0A4B7C2A4D}" {
+                      HorizontalAlign 3
+                      VerticalAlign 3
+                     }
+                     Color 0.38 0.28 0.16 1
+                    }
+                    TextWidgetClass "{61E1FE0A4B7C2A1A}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                     Name "Text"
+                     Slot OverlayWidgetSlot "{61E1FE0A4B7C2A4E}" {
+                      HorizontalAlign 1
+                      VerticalAlign 1
+                     }
+                     Color 1 1 1 1
+                     Text "Map"
+                     "Font Size" 18
+                    }
+                   }
+                  }
+                 }
+                }
+                ButtonWidgetClass "{61E1FE0A4B7C2A1C}" {
+                 Name "AppSettings"
+                 Slot LayoutSlot "{61E1FE0A4B7C2A1D}" {
+                  SizeMode Fill
+                  Padding 6 6 6 6
+                 }
+                 Color 1 1 1 1
+                 components {
+                  SCR_ButtonTextComponent "{61E1FE0A4B7C2A1F}" {
+                   m_BackgroundDefault 0.28 0.22 0.36 1
+                   m_BackgroundHovered 0.38 0.3 0.48 1
+                   m_BackgroundSelected 0.48 0.38 0.58 1
+                   m_sText "Settings"
+                  }
+                 }
+                 {
+                  OverlayWidgetClass "{61E1FE0A4B7C2A4F}" {
+                   Name "AppSettingsOverlay"
+                   Slot ButtonWidgetSlot "{61E1FE0A4B7C2A50}" {
+                    HorizontalAlign 3
+                    VerticalAlign 3
+                   }
+                   {
+                    ImageWidgetClass "{61E1FE0A4B7C2A51}" {
+                     Name "Background"
+                     Slot OverlayWidgetSlot "{61E1FE0A4B7C2A52}" {
+                      HorizontalAlign 3
+                      VerticalAlign 3
+                     }
+                     Color 0.28 0.22 0.36 1
+                    }
+                    TextWidgetClass "{61E1FE0A4B7C2A1E}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                     Name "Text"
+                     Slot OverlayWidgetSlot "{61E1FE0A4B7C2A53}" {
+                      HorizontalAlign 1
+                      VerticalAlign 1
+                     }
+                     Color 1 1 1 1
+                     Text "Settings"
+                     "Font Size" 18
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+        SizeLayoutWidgetClass "{61E1FE0A4B7C2A60}" {
+         Name "NavSize"
+         Slot OverlayWidgetSlot "{61E1FE0A4B7C2A21}" {
+          HorizontalAlign 3
+          VerticalAlign 2
+          Padding 14 0 14 16
+         }
+         AllowHeightOverride 1
+         HeightOverride 52
+         {
+          HorizontalLayoutWidgetClass "{61E1FE0A4B7C2A54}" {
+           Name "NavRow"
+           Slot AlignableSlot "{61E1FE0A4B7C2A61}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+         {
+          ButtonWidgetClass "{61E1FE0A4B7C2A20}" {
+           Name "ButtonBack"
+           Slot LayoutSlot "{61E1FE0A4B7C2A55}" {
+            SizeMode Fill
+            Padding 0 0 6 0
+           }
+           Color 1 1 1 1
+           components {
+            SCR_ButtonTextComponent "{61E1FE0A4B7C2A23}" {
+             m_BackgroundDefault 0.18 0.18 0.2 1
+             m_BackgroundHovered 0.28 0.28 0.3 1
+             m_sText "Back"
+            }
+           }
+           {
+            OverlayWidgetClass "{61E1FE0A4B7C2A56}" {
+             Name "ButtonBackOverlay"
+             Slot ButtonWidgetSlot "{61E1FE0A4B7C2A57}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             {
+              ImageWidgetClass "{61E1FE0A4B7C2A58}" {
+               Name "Background"
+               Slot OverlayWidgetSlot "{61E1FE0A4B7C2A59}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0.18 0.18 0.2 1
+              }
+              TextWidgetClass "{61E1FE0A4B7C2A22}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+               Name "Text"
+               Slot OverlayWidgetSlot "{61E1FE0A4B7C2A5A}" {
+                HorizontalAlign 1
+                VerticalAlign 1
+               }
+               Color 1 1 1 1
+               Text "Back"
+               "Font Size" 18
+              }
+             }
+            }
+           }
+          }
+          ButtonWidgetClass "{61E1FE0A4B7C2A24}" {
+           Name "ButtonClose"
+           Slot LayoutSlot "{61E1FE0A4B7C2A25}" {
+            SizeMode Fill
+            Padding 6 0 0 0
+           }
+           Color 1 1 1 1
+           components {
+            SCR_ButtonTextComponent "{61E1FE0A4B7C2A27}" {
+             m_BackgroundDefault 0.42 0.14 0.14 1
+             m_BackgroundHovered 0.56 0.2 0.2 1
+             m_sText "Close"
+            }
+           }
+           {
+            OverlayWidgetClass "{61E1FE0A4B7C2A5B}" {
+             Name "ButtonCloseOverlay"
+             Slot ButtonWidgetSlot "{61E1FE0A4B7C2A5C}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             {
+              ImageWidgetClass "{61E1FE0A4B7C2A5D}" {
+               Name "Background"
+               Slot OverlayWidgetSlot "{61E1FE0A4B7C2A5E}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0.42 0.14 0.14 1
+              }
+              TextWidgetClass "{61E1FE0A4B7C2A26}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+               Name "Text"
+               Slot OverlayWidgetSlot "{61E1FE0A4B7C2A5F}" {
+                HorizontalAlign 1
+                VerticalAlign 1
+               }
+               Color 1 1 1 1
+               Text "Close"
+               "Font Size" 18
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

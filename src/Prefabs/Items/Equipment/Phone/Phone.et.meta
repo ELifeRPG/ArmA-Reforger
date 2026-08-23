@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{6E2BB64764E3BE9B}Prefabs/Characters/Core/DefaultPlayerController.et"
+ Name "{61E1FE0A4B7C2913}Prefabs/Items/Equipment/Phone/Phone.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }
@@ -8,8 +8,6 @@ MetaFileClass {
   EntityTemplateResourceClass XBOX_SERIES : PC {
   }
   EntityTemplateResourceClass PS4 : PC {
-  }
-  EntityTemplateResourceClass PS5 : PC {
   }
   EntityTemplateResourceClass HEADLESS : PC {
   }

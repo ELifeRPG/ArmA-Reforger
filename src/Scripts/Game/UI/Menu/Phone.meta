@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A5C5D44E8F106D57}Scripts/Game/UI/Menu/Phone"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}

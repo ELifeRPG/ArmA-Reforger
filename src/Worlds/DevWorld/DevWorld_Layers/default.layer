@@ -3,4 +3,12 @@ $grp ELIFE_PrefabSpawn {
   coords 7.536 0 3.028
   m_rnPrefab "{89DCD5C00091FF04}Prefabs/Items/Keys/CarKey.et"
  }
+ {
+  coords 7.78 0.05 3.028
+  m_rnPrefab "{61E1FE0A4B7C2913}Prefabs/Items/Equipment/Phone/Phone.et"
+ }
+ {
+  coords 7.29 0.05 3.22
+  m_rnPrefab "{61E1FE0A4B7C2913}Prefabs/Items/Equipment/Phone/Phone.et"
+ }
 }

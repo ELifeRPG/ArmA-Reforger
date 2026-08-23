@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{C7E7F660A1328F79}Prefabs/Items/Equipment/Phone"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}

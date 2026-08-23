@@ -34,5 +34,45 @@ StringTable {
    Author "Nico"
    LastChanged "Nico"
   }
+  CustomStringTableItem "{D8F80771B243908A}" {
+   Id "ELIFE-Hint_Phone_AppDummy"
+   Target_en_us "This app is not available yet."
+   Target_de_de "Diese App ist noch nicht verfügbar."
+   Modified 1755945600
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{E9081882C354A19B}" {
+   Id "ELIFE-Hint_Phone_Missing"
+   Target_en_us "You do not have a phone."
+   Target_de_de "Du hast kein Telefon."
+   Modified 1755945600
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{A13B4CC6F798E53F}" {
+   Id "ELIFE-Hint_Phone_Unequipped"
+   Target_en_us "Equip a phone from your inventory."
+   Target_de_de "Lege ein Telefon aus dem Inventar an."
+   Modified 1755950000
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{F0192993D465B20C}" {
+   Id "ELIFE-Item_Phone_Description"
+   Target_en_us "A handheld phone."
+   Target_de_de "Ein Mobiltelefon."
+   Modified 1755945600
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{F12A3AA4E576C31D}" {
+   Id "ELIFE-Item_Phone_Name"
+   Target_en_us "Phone"
+   Target_de_de "Telefon"
+   Modified 1755945600
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
  }
 }

@@ -1,0 +1,69 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  SoundComponent "{61E1FE0A4B7C2901}" {
+   Filenames {
+    "{12A94705DF2BFD25}Sounds/Items/_SharedData/PickUp/Items_PickUp_Generic.acp"
+   }
+   OnFrameUpdate 0
+  }
+  ELIFE_PhoneGadgetComponent "{61E1FE0A4B7C2902}" {
+   m_eAnimVariable ANPRC68
+   m_bCanBeHeld 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{61E1FE0A4B7C2903}" {
+    ItemDisplayName ELIFE_PhoneInventoryUIInfo "{61E1FE0A4B7C2904}" {
+     Name "#ELIFE-Item_Phone_Name"
+     Description "#ELIFE-Item_Phone_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.15
+     SizeSetupStrategy Manual
+     ItemDimensions 5 5 5
+     ItemVolume 50
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{61E1FE0A4B7C2905}" {
+     AnimationInstance "{332D4A7512E78419}Assets/Items/Equipment/workspaces/Radio_ANPRC68_player.asi"
+     AnimationAttachments {
+      AnimationAttachmentInfo "{61E1FE0A4B7C2908}" {
+       AnimGraph "{402BB5FA2891D687}Assets/Items/Equipment/workspaces/Radio_ANPRC68.agr"
+       AnimInstance "{332D4A7512E78419}Assets/Items/Equipment/workspaces/Radio_ANPRC68_player.asi"
+       BindingName "Gadget"
+      }
+     }
+    }
+    CustomAttributes {
+     ItemActionAnimAttributes "{61E1FE0A4B7C2909}" {
+     }
+    }
+    CommonItemType "NONE"
+    m_Size SLOT_1x1
+    m_SlotType SLOT_LOADOUT_STORAGE
+    m_bStackable 0
+   }
+  }
+  MeshObject "{61E1FE0A4B7C2907}" {
+   Object "{1B8B5484D7F21A41}Assets/Items/Equipment/Radios/Radio_ANPRC68/Radio_ANPRC68_01.xob"
+  }
+  RigidBody "{61E1FE0A4B7C2906}" {
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+   CCDRadius 0.015
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   ActionContexts {
+    UserActionContext "{61E1FE0A4B7C290A}" {
+     Position PointInfo "{61E1FE0A4B7C290B}" {
+      Offset 0 0.0103 0
+     }
+    }
+   }
+   additionalActions {
+   }
+  }
+ }
+ coords 0 0 0
+}
