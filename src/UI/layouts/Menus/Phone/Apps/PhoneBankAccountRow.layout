@@ -1,0 +1,125 @@
+SizeLayoutWidgetClass {
+ Name "AccountRowSize"
+ AllowHeightOverride 1
+ HeightOverride 50
+ {
+  OverlayWidgetClass "{7A3C91E100000001}" {
+   Name "AccountRow"
+   Slot AlignableSlot "{7A3C91E100000002}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    ButtonWidgetClass "{7A3C91E100000003}" {
+     Name "AccountButton"
+     Slot OverlayWidgetSlot "{7A3C91E100000004}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 0 0 0 1
+     }
+     Color 1 1 1 1
+     style blank
+     components {
+      SCR_ButtonTextComponent "{7A3C91E100000005}" {
+       m_BackgroundDefault 0.16 0.14 0.12 0
+       m_BackgroundHovered 0.525 0.659 0.937 0.12
+       m_BackgroundSelected 0.525 0.659 0.937 0.16
+       m_sText ""
+      }
+     }
+     {
+      OverlayWidgetClass "{7A3C91E100000006}" {
+       Name "AccountButtonOverlay"
+       Slot ButtonWidgetSlot "{7A3C91E100000007}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        HorizontalLayoutWidgetClass "{7A3C91E10000000A}" {
+         Name "AccountRowBody"
+         Slot OverlayWidgetSlot "{7A3C91E10000000B}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+          Padding 2 6 2 6
+         }
+         {
+          VerticalLayoutWidgetClass "{7A3C91E10000000C}" {
+           Name "AccountCopy"
+           Slot LayoutSlot "{7A3C91E10000000D}" {
+            SizeMode Fill
+           }
+           {
+            TextWidgetClass "{7A3C91E10000000E}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "AccountName"
+             Color 0.867 0.851 0.820 1
+             Text ""
+             "Font Size" 14
+             "Min Font Size" 12
+             "Horizontal Alignment" 0
+            }
+            TextWidgetClass "{7A3C91E10000000F}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "AccountKind"
+             Color 0.55 0.56 0.62 1
+             Text ""
+             "Font Size" 10
+             "Min Font Size" 9
+             "Horizontal Alignment" 0
+            }
+           }
+          }
+          TextWidgetClass "{7A3C91E100000010}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "AccountBalance"
+           Slot LayoutSlot "{7A3C91E100000011}" {
+            Padding 8 0 4 0
+           }
+           Color 0.290 0.871 0.502 1
+           Text ""
+           "Font Size" 14
+           "Min Font Size" 12
+           "Horizontal Alignment" 2
+           "Vertical Alignment" 1
+           FontProperties FontProperties "{7A3C91E100000016}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+          TextWidgetClass "{7A3C91E100000017}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "AccountChevron"
+           Slot LayoutSlot "{7A3C91E100000018}" {
+            Padding 0 0 0 0
+           }
+           Color 0.133 0.773 0.369 1
+           Text ">"
+           "Font Size" 14
+           "Min Font Size" 12
+           "Horizontal Alignment" 2
+           "Vertical Alignment" 1
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{7A3C91E100000012}" {
+     Name "AccountHairline"
+     Slot OverlayWidgetSlot "{7A3C91E100000013}" {
+      HorizontalAlign 3
+      VerticalAlign 2
+     }
+     AllowHeightOverride 1
+     HeightOverride 1
+     {
+      ImageWidgetClass "{7A3C91E100000014}" {
+       Name "AccountHairlineFill"
+       Slot AlignableSlot "{7A3C91E100000015}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.086 0.639 0.290 0.35
+      }
+     }
+    }
+   }
+  }
+ }
+}

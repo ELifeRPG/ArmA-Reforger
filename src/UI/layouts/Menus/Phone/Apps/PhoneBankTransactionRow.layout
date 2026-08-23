@@ -1,0 +1,84 @@
+SizeLayoutWidgetClass {
+ Name "PostedRowSize"
+ AllowHeightOverride 1
+ HeightOverride 38
+ {
+  OverlayWidgetClass "{7A3C91E200000001}" {
+   Name "PostedRow"
+   Slot AlignableSlot "{7A3C91E200000002}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    HorizontalLayoutWidgetClass "{7A3C91E200000003}" {
+     Name "PostedBody"
+     Slot OverlayWidgetSlot "{7A3C91E200000004}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 0 4 0 4
+     }
+     {
+      VerticalLayoutWidgetClass "{7A3C91E200000005}" {
+       Name "PostedCopy"
+       Slot LayoutSlot "{7A3C91E200000006}" {
+        SizeMode Fill
+       }
+       {
+        TextWidgetClass "{7A3C91E200000007}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "Memo"
+         Color 0.867 0.851 0.820 1
+         Text ""
+         "Font Size" 12
+         "Min Font Size" 11
+         "Horizontal Alignment" 0
+        }
+        TextWidgetClass "{7A3C91E200000008}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "PostedAt"
+         Color 0.55 0.56 0.62 1
+         Text ""
+         "Font Size" 10
+         "Min Font Size" 9
+         "Horizontal Alignment" 0
+        }
+       }
+      }
+      TextWidgetClass "{7A3C91E200000009}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "Amount"
+       Slot LayoutSlot "{7A3C91E20000000A}" {
+        Padding 8 0 0 0
+       }
+       Color 0.867 0.851 0.820 1
+       Text ""
+       "Font Size" 13
+       "Min Font Size" 11
+       "Horizontal Alignment" 2
+       "Vertical Alignment" 1
+       FontProperties FontProperties "{7A3C91E20000000F}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{7A3C91E20000000B}" {
+     Name "PostedHairline"
+     Slot OverlayWidgetSlot "{7A3C91E20000000C}" {
+      HorizontalAlign 3
+      VerticalAlign 2
+     }
+     AllowHeightOverride 1
+     HeightOverride 1
+     {
+      ImageWidgetClass "{7A3C91E20000000D}" {
+       Name "PostedHairlineFill"
+       Slot AlignableSlot "{7A3C91E20000000E}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.086 0.639 0.290 0.28
+      }
+     }
+    }
+   }
+  }
+ }
+}

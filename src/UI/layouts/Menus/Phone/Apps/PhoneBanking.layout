@@ -1,0 +1,249 @@
+OverlayWidgetClass {
+ Name "BankingRoot"
+ {
+  OverlayWidgetClass "{7A3C91E000000003}" {
+   Name "Pages"
+   Slot OverlayWidgetSlot "{7A3C91E000000004}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+    Padding 12 6 12 4
+   }
+   {
+    VerticalLayoutWidgetClass "{7A3C91E000000005}" {
+     Name "IndexPage"
+     Slot OverlayWidgetSlot "{7A3C91E000000006}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      TextWidgetClass "{7A3C91E000000007}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "IndexIntro"
+       Slot LayoutSlot "{7A3C91E000000008}" {
+        Padding 0 2 0 6
+       }
+       Color 0.133 0.773 0.369 1
+       Text "#ELIFE-Phone_Bank_Accounts"
+       "Font Size" 11
+       "Min Font Size" 10
+       "Horizontal Alignment" 0
+       FontProperties FontProperties "{7A3C91E000000040}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      SizeLayoutWidgetClass "{7A3C91E000000009}" {
+       Name "IndexRule"
+       Slot LayoutSlot "{7A3C91E00000000A}" {
+        Padding 0 0 0 8
+       }
+       AllowHeightOverride 1
+       HeightOverride 1
+       {
+        ImageWidgetClass "{7A3C91E00000000B}" {
+         Name "IndexRuleFill"
+         Slot AlignableSlot "{7A3C91E00000000C}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.086 0.639 0.290 0.55
+        }
+       }
+      }
+      ScrollLayoutWidgetClass "{7A3C91E00000000D}" {
+       Name "AccountScroll"
+       Slot LayoutSlot "{7A3C91E00000000E}" {
+        SizeMode Fill
+       }
+       {
+        VerticalLayoutWidgetClass "{7A3C91E00000000F}" {
+         Name "AccountList"
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{7A3C91E000000010}" {
+       Name "EmptyAccounts"
+       Slot LayoutSlot "{7A3C91E000000011}" {
+        Padding 0 10 0 4
+       }
+       Visible 0
+       {
+        TextWidgetClass "{7A3C91E000000012}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "EmptyAccountsTitle"
+         Slot LayoutSlot "{7A3C91E000000013}" {
+          Padding 0 0 0 4
+         }
+         Color 0.867 0.851 0.820 1
+         Text "#ELIFE-Phone_Bank_NoAccounts"
+         "Font Size" 14
+         "Min Font Size" 12
+         "Horizontal Alignment" 0
+        }
+        TextWidgetClass "{7A3C91E000000014}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "EmptyAccountsHint"
+         Color 0.55 0.56 0.62 1
+         Text "#ELIFE-Phone_Bank_NoAccountsHint"
+         "Font Size" 12
+         "Min Font Size" 10
+         "Horizontal Alignment" 0
+        }
+       }
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{7A3C91E000000015}" {
+     Name "StatementPage"
+     Slot OverlayWidgetSlot "{7A3C91E000000016}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Visible 0
+     {
+      TextWidgetClass "{7A3C91E000000017}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "StatementKind"
+       Slot LayoutSlot "{7A3C91E000000018}" {
+        Padding 0 0 0 2
+       }
+       Color 0.55 0.56 0.62 1
+       Text ""
+       "Font Size" 10
+       "Min Font Size" 9
+       "Horizontal Alignment" 0
+       FontProperties FontProperties "{7A3C91E000000041}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      TextWidgetClass "{7A3C91E000000019}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "StatementName"
+       Slot LayoutSlot "{7A3C91E00000001A}" {
+        Padding 0 0 0 8
+       }
+       Color 0.867 0.851 0.820 1
+       Text ""
+       "Font Size" 16
+       "Min Font Size" 13
+       "Horizontal Alignment" 0
+       FontProperties FontProperties "{7A3C91E000000042}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      SizeLayoutWidgetClass "{7A3C91E00000001B}" {
+       Name "BalancePlate"
+       Slot LayoutSlot "{7A3C91E00000001C}" {
+        Padding 0 0 0 10
+       }
+       AllowHeightOverride 1
+       HeightOverride 56
+       {
+        OverlayWidgetClass "{7A3C91E00000003B}" {
+         Name "BalancePlateInner"
+         Slot AlignableSlot "{7A3C91E00000003C}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         {
+          SmartPanelWidgetClass "{7A3C91E00000003D}" {
+           Name "BalancePlateFill"
+           Slot OverlayWidgetSlot "{7A3C91E00000003E}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.12 0.14 0.20 1
+           style rounded_6px
+           "no focus" 1
+          }
+          TextWidgetClass "{7A3C91E000000043}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "StatementBalance"
+           Slot OverlayWidgetSlot "{7A3C91E00000003F}" {
+            HorizontalAlign 0
+            VerticalAlign 1
+            Padding 12 0 12 0
+           }
+           Color 0.290 0.871 0.502 1
+           Text ""
+           "Font Size" 28
+           "Min Font Size" 20
+           "Horizontal Alignment" 0
+           FontProperties FontProperties "{7A3C91E000000044}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{7A3C91E00000001D}" {
+       Name "StatementRule"
+       Slot LayoutSlot "{7A3C91E00000001E}" {
+        Padding 0 0 0 6
+       }
+       AllowHeightOverride 1
+       HeightOverride 1
+       {
+        ImageWidgetClass "{7A3C91E00000001F}" {
+         Name "StatementRuleFill"
+         Slot AlignableSlot "{7A3C91E000000020}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.086 0.639 0.290 0.55
+        }
+       }
+      }
+      TextWidgetClass "{7A3C91E000000021}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "PostedLabel"
+       Slot LayoutSlot "{7A3C91E000000022}" {
+        Padding 0 6 0 6
+       }
+       Color 0.55 0.56 0.62 1
+       Text "#ELIFE-Phone_Bank_Posted"
+       "Font Size" 10
+       "Min Font Size" 9
+       "Horizontal Alignment" 0
+       FontProperties FontProperties "{7A3C91E000000045}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      ScrollLayoutWidgetClass "{7A3C91E000000023}" {
+       Name "PostedScroll"
+       Slot LayoutSlot "{7A3C91E000000024}" {
+        SizeMode Fill
+       }
+       {
+        VerticalLayoutWidgetClass "{7A3C91E000000025}" {
+         Name "PostedList"
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{7A3C91E000000026}" {
+       Name "EmptyPosted"
+       Slot LayoutSlot "{7A3C91E000000027}" {
+        Padding 0 8 0 4
+       }
+       Visible 0
+       {
+        TextWidgetClass "{7A3C91E000000028}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "EmptyPostedTitle"
+         Slot LayoutSlot "{7A3C91E000000029}" {
+          Padding 0 0 0 4
+         }
+         Color 0.867 0.851 0.820 1
+         Text "#ELIFE-Phone_Bank_NoPosted"
+         "Font Size" 14
+         "Min Font Size" 12
+         "Horizontal Alignment" 0
+        }
+        TextWidgetClass "{7A3C91E00000002A}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "EmptyPostedHint"
+         Color 0.55 0.56 0.62 1
+         Text "#ELIFE-Phone_Bank_NoPostedHint"
+         "Font Size" 12
+         "Min Font Size" 10
+         "Horizontal Alignment" 0
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

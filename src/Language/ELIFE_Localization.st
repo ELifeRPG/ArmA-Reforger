@@ -74,5 +74,109 @@ StringTable {
    Author "ELIFE"
    LastChanged "ELIFE"
   }
+  CustomStringTableItem "{A4B81C09E1D2F703}" {
+   Id "ELIFE-Phone_App_Bank"
+   Target_en_us "Bank"
+   Target_de_de "Bank"
+   Modified 1755980000
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{B5C92D10F2E30814}" {
+   Id "ELIFE-Phone_Bank_IndexIntro"
+   Target_en_us "On this phone."
+   Target_de_de "Auf diesem Telefon."
+   Modified 1755980000
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{C6DA3E2113F41925}" {
+   Id "ELIFE-Phone_Bank_Posted"
+   Target_en_us "Posted"
+   Target_de_de "Gebucht"
+   Modified 1755980000
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{D7EB4F3224052A36}" {
+   Id "ELIFE-Phone_Bank_Personal"
+   Target_en_us "Personal"
+   Target_de_de "Privat"
+   Modified 1755980000
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{E8FC504335163B47}" {
+   Id "ELIFE-Phone_Bank_Company"
+   Target_en_us "Company"
+   Target_de_de "Firma"
+   Modified 1755980000
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{F90D615446274C58}" {
+   Id "ELIFE-Phone_Bank_NoAccounts"
+   Target_en_us "No accounts on this phone."
+   Target_de_de "Keine Konten auf diesem Telefon."
+   Modified 1755980000
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{0A1E726557385D69}" {
+   Id "ELIFE-Phone_Bank_NoAccountsHint"
+   Target_en_us "They show up here when the bank posts them."
+   Target_de_de "Sie erscheinen hier, sobald die Bank sie führt."
+   Modified 1755980000
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{1B2F837668496E7A}" {
+   Id "ELIFE-Phone_Bank_NoPosted"
+   Target_en_us "Nothing posted."
+   Target_de_de "Nichts gebucht."
+   Modified 1755980000
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{2C309487795A7F8B}" {
+   Id "ELIFE-Phone_Bank_NoPostedHint"
+   Target_en_us "New activity lands here."
+   Target_de_de "Neue Buchungen erscheinen hier."
+   Modified 1755980000
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{3D4105988A6B7C9C}" {
+   Id "ELIFE-Phone_App_Contacts"
+   Target_en_us "Contacts"
+   Target_de_de "Kontakte"
+   Modified 1755988800
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{4E5216A99B7C8D0D}" {
+   Id "ELIFE-Phone_App_Map"
+   Target_en_us "Map"
+   Target_de_de "Karte"
+   Modified 1755988800
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{5F6327BA0C8D9E1E}" {
+   Id "ELIFE-Phone_App_Settings"
+   Target_en_us "Settings"
+   Target_de_de "Einstellungen"
+   Modified 1755988800
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
+  CustomStringTableItem "{6A7438CB1D9EAF2F}" {
+   Id "ELIFE-Phone_Bank_Accounts"
+   Target_en_us "Accounts"
+   Target_de_de "Konten"
+   Modified 1755988800
+   Author "ELIFE"
+   LastChanged "ELIFE"
+  }
  }
 }

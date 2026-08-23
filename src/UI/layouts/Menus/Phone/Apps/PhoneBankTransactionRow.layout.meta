@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{6B2F9C41D0E85A37}UI/layouts/Menus/Phone/Apps/PhoneBankTransactionRow.layout"
+ Configurations {
+  LayoutResourceClass PC {
+  }
+  LayoutResourceClass XBOX_ONE : PC {
+  }
+  LayoutResourceClass XBOX_SERIES : PC {
+  }
+  LayoutResourceClass PS4 : PC {
+  }
+  LayoutResourceClass PS5 : PC {
+  }
+  LayoutResourceClass HEADLESS : PC {
+  }
+ }
+}

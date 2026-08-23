@@ -1,2 +1,4 @@
 # Workbench-only editor helpers (Enfusion MCP, etc.). Not part of the shipped addon.
 src/Scripts/WorkbenchGame/
+
+/.directory
