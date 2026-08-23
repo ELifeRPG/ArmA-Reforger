@@ -1,12 +1,6 @@
 ELIFE_GameMode {
  ID "597F1CE401B0CCF5"
  components {
-  ELIFE_FarmTreeManager "{597F49C1307CE2DD}" {
-  }
-  SCR_AutomaticRespawnHandlerComponent "{597F1CE47B678746}" {
-   m_iForcedFaction 0
-   m_iForcedLoadout 0
-  }
   SCR_CallsignManagerComponent "{597F1CE4157DA61F}" {
   }
   SCR_DestructionManagerComponent "{597F1CE4157DA627}" {
@@ -32,8 +26,18 @@ ELIFE_GameMode {
   SCR_PossessingManagerComponent "{597F1CE4157D4F7A}" {
   }
   SCR_RespawnSystemComponent "{597F1CE4157D4F7B}" {
-  }
-  SCR_SaveLoadComponent "{597F1CE4157D4F78}" {
+   components {
+    SCR_FreeSpawnHandlerComponent "{597F1CE4157D4F81}" {
+    }
+    SCR_PossessSpawnHandlerComponent "{597F1CE4157D4F82}" {
+    }
+    SCR_SpawnPointSpawnHandlerComponent "{597F1CE4157D4F83}" {
+    }
+   }
+   m_SpawnLogic SCR_AutoSpawnLogic "{597F1CE4157D4F84}" {
+    m_sForcedFaction "LIFE"
+    m_sForcedLoadout "LIFE Player"
+   }
   }
   SCR_VotingManagerComponent "{5650BB6B6089393A}" : "{37037CBB8B4CD354}Prefabs/MP/Components/VotingManagerComponent.ct" {
    m_aVotingTemplates {
@@ -53,5 +57,4 @@ ELIFE_GameMode {
  }
  coords 974.412 1.879 12149.478
  Flags 0
- m_bAutoDisabledControls 0
 }

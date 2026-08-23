@@ -16,7 +16,7 @@ modded class SCR_SwitchSeatAction : SCR_GetInUserAction
 			return false;
 		
 		ChimeraCharacter character = ChimeraCharacter.Cast(user);
-		if (!character && !character.IsInVehicle())
+		if (!character || !character.IsInVehicle())
 			return false;
 		
 		CharacterControllerComponent characterController = CharacterControllerComponent.Cast(character.FindComponent(CharacterControllerComponent));
@@ -39,7 +39,7 @@ modded class SCR_SwitchSeatAction : SCR_GetInUserAction
 			return false;
 		
 		// Prevents switching seats within different vehicles,
-		if (!IsCompartmentInHierarchy(characterCompartment, m_pOwner))
+		if (characterCompartment.GetOwner().GetRootParent() != m_pOwner.GetRootParent())
 			return false;
 		
 		// Check if the position isn't lock.
@@ -74,7 +74,7 @@ modded class SCR_SwitchSeatAction : SCR_GetInUserAction
 			return false;
 		
 		auto character = ChimeraCharacter.Cast(user);
-		if (!character && !character.IsInVehicle()) 
+		if (!character || !character.IsInVehicle()) 
 			return false;
 		
 		auto compartmentAccess = character.GetCompartmentAccessComponent();
@@ -89,7 +89,7 @@ modded class SCR_SwitchSeatAction : SCR_GetInUserAction
 			return false;
 		
 		// Prevents switching seats within different vehicles,
-		if (!IsCompartmentInHierarchy(characterCompartment, m_pOwner))
+		if (characterCompartment.GetOwner().GetRootParent() != m_pOwner.GetRootParent())
 			return false;
 		
 		//! Check if some other action or animation is preventing the seat switch 
