@@ -12,8 +12,14 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[Attribute("", UIWidgets.EditBox, "Leave empty to auto-assign a UUID when the phone spawns.")]
 	protected string m_sDebugPhoneId;
 
+	[Attribute("20", UIWidgets.EditBox, "Intensity of the screen's emissive texture while the phone menu is open.", "0 1000", category: "Phone")]
+	protected float m_fScreenEmissiveIntensity;
+
 	[RplProp()]
 	protected string m_sPhoneId;
+
+	protected ParametricMaterialInstanceComponent m_ScreenEmissiveMaterial;
+	protected float m_fScreenPulsePhase;
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
@@ -26,6 +32,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	override void EOnInit(IEntity owner)
 	{
 		super.EOnInit(owner);
+
+		m_ScreenEmissiveMaterial = ParametricMaterialInstanceComponent.Cast(owner.FindComponent(ParametricMaterialInstanceComponent));
 
 		if (!Replication.IsServer())
 			return;
@@ -45,6 +53,23 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	string GetPhoneId()
 	{
 		return m_sPhoneId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Runs on every client once the toggle is replicated.
+	override void OnToggleActive(bool state)
+	{
+		m_bActivated = state;
+		UpdateScreenState();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void UpdateScreenState()
+	{
+		if (m_bActivated)
+			StartScreenPulse();
+		else
+			StopScreenPulse();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -78,7 +103,13 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		}
 
 		if (mode != EGadgetMode.IN_HAND)
+		{
 			ClosePhoneMenu();
+
+			//! Direct call since ToggleActive requires m_CharacterOwner, which may already be cleared by this point.
+			if (m_bActivated)
+				OnToggleActive(false);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -93,6 +124,51 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			OpenPhoneMenu();
 		else
 			ClosePhoneMenu();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetScreenLit(bool lit)
+	{
+		if (!m_ScreenEmissiveMaterial)
+			return;
+
+		if (lit)
+			m_ScreenEmissiveMaterial.SetEmissiveMultiplier(m_fScreenEmissiveIntensity);
+		else
+			m_ScreenEmissiveMaterial.SetEmissiveMultiplier(0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Placeholder "in use" look until real UI-driven screen states exist.
+	protected void StartScreenPulse()
+	{
+		if (!m_ScreenEmissiveMaterial)
+			return;
+
+		m_fScreenPulsePhase = 0;
+		GetGame().GetCallqueue().Remove(TickScreenPulse);
+		GetGame().GetCallqueue().CallLater(TickScreenPulse, 50, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void StopScreenPulse()
+	{
+		GetGame().GetCallqueue().Remove(TickScreenPulse);
+		SetScreenLit(false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void TickScreenPulse()
+	{
+		if (!m_ScreenEmissiveMaterial)
+			return;
+
+		//! Randomize phase speed so it doesn't look mechanical.
+		m_fScreenPulsePhase = m_fScreenPulsePhase + Math.RandomFloatInclusive(0.07, 0.13);
+
+		//! Breathes between 75-100% instead of full off/on.
+		float t = 0.875 + 0.125 * Math.Sin(m_fScreenPulsePhase);
+		m_ScreenEmissiveMaterial.SetEmissiveMultiplier(m_fScreenEmissiveIntensity * t);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -113,6 +189,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		if (phoneMenu)
 			phoneMenu.BindPhone(this);
+
+		ToggleActive(true, SCR_EUseContext.FROM_ACTION);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -120,6 +198,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	{
 		if (!IsLocalCharacterOwner())
 			return;
+
+		ToggleActive(false, SCR_EUseContext.FROM_ACTION);
 
 		MenuManager menuManager = GetGame().GetMenuManager();
 		if (!menuManager)
@@ -160,5 +240,29 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return false;
 
 		return characterOwner == SCR_PlayerController.GetLocalControlledEntity();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool RplSave(ScriptBitWriter writer)
+	{
+		if (!super.RplSave(writer))
+			return false;
+
+		writer.WriteBool(m_bActivated);
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool RplLoad(ScriptBitReader reader)
+	{
+		if (!super.RplLoad(reader))
+			return false;
+
+		reader.ReadBool(m_bActivated);
+
+		UpdateScreenState();
+
+		return true;
 	}
 }

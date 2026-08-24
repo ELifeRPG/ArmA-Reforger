@@ -1,6 +1,9 @@
 GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
  ID "508AB2013EEE1E00"
  components {
+  ParametricMaterialInstanceComponent "{0BB128AA4217FE8B}" {
+   EmissiveMultiplier 0
+  }
   SoundComponent "{61E1FE0A4B7C2901}" {
    Filenames {
     "{12A94705DF2BFD25}Sounds/Items/_SharedData/PickUp/Items_PickUp_Generic.acp"
@@ -10,6 +13,7 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
   ELIFE_PhoneGadgetComponent "{61E1FE0A4B7C2902}" {
    m_eAnimVariable ANPRC68
    m_bCanBeHeld 1
+   m_eUseMask FROM_ACTION
   }
   InventoryItemComponent "{5222EB4D0C73006B}" {
    Attributes SCR_ItemAttributeCollection "{61E1FE0A4B7C2903}" {
@@ -32,6 +36,8 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
        BindingName "Gadget"
       }
      }
+     HandAdditiveRotation 0 0 0
+     HandAdditiveTranslation 0 0.2 0
     }
     CustomAttributes {
      ItemActionAnimAttributes "{61E1FE0A4B7C2909}" {
@@ -44,7 +50,17 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
    }
   }
   MeshObject "{61E1FE0A4B7C2907}" {
-   Object "{1B8B5484D7F21A41}Assets/Items/Equipment/Radios/Radio_ANPRC68/Radio_ANPRC68_01.xob"
+   Object "{2CEEABC8A5F9FFF5}Assets/Items/Equipment/Phone/phone_01.xob"
+   Materials {
+    MaterialAssignClass "{C8CEE61B803D0281}" {
+     SourceMaterial "Phone_Body_06D0DC3A5800CC7A"
+     AssignedMaterial "{32874067CF8A6EB2}Assets/Items/Equipment/Radios/Radio_ANPRC68/Data/Radio_ANPRC68_01.emat"
+    }
+    MaterialAssignClass "{154554FD865832A6}" {
+     SourceMaterial "Phone_Screen_7D200FDF0E0FC494"
+     AssignedMaterial "{7D200FDF0E0FC494}Assets/Items/Equipment/Phone/Data/Phone_Screen_251673F62CEAFC4F.emat"
+    }
+   }
   }
   RigidBody "{61E1FE0A4B7C2906}" {
    LinearDamping 0.5
@@ -60,8 +76,6 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
       Offset 0 0.0103 0
      }
     }
-   }
-   additionalActions {
    }
   }
  }

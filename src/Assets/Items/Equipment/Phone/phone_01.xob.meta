@@ -1,0 +1,56 @@
+MetaFileClass {
+ Name "{2CEEABC8A5F9FFF5}Assets/Items/Equipment/Phone/phone_01.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{6A313C5A28C53A63}" {
+     SourceMaterial "Phone_Body_06D0DC3A5800CC7A"
+     AssignedMaterial "{06D0DC3A5800CC7A}Assets/Items/Equipment/Phone/Data/Phone_Body_D530454C1693D26B.emat"
+    }
+    MaterialAssignClass "{6A313C5A28C53A76}" {
+     SourceMaterial "Phone_Screen_7D200FDF0E0FC494"
+     AssignedMaterial "{7D200FDF0E0FC494}Assets/Items/Equipment/Phone/Data/Phone_Screen_251673F62CEAFC4F.emat"
+    }
+   }
+   MeshParams {
+    MeshParam Phone {
+    }
+   }
+   GeometryParams {
+    GeometryParam UTM_Phone {
+     LayerPreset "ItemFireView"
+     SurfaceProperties {
+      "{6A7CBD6BBCFC5148}Common/Materials/Game/Plastic/plastic_6mm.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
+   Common TXOCommonClass "{6A3128CDAA2DE811}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Enfusion Blender Tools"
+   ApplicationName "Enfusion Blender FBX Exporter - Validaton: Normal"
+   ApplicationVersion "4.2.23 LTS"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{6A3128CDAA2DEB53}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{6A3128CDAA2DEAA2}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{6A3128CDAA2DEAEA}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+   Common TXOCommonClass "{6A3128CDAA2DEA10}" : "{F62AA8E7B8EA9D26}Configs/System/ResourceTypes/PS5/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{6A3128CDAA2DEA5F}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+ }
+}
