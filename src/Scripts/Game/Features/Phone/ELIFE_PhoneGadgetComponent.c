@@ -12,7 +12,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[Attribute("", UIWidgets.EditBox, "Leave empty to auto-assign a UUID when the phone spawns.")]
 	protected string m_sDebugPhoneId;
 
-	[Attribute("20", UIWidgets.EditBox, "Intensity of the screen's emissive texture while the phone menu is open.", "0 1000", category: "Phone")]
+	[Attribute("200", UIWidgets.EditBox, "Intensity of the screen's emissive texture while the phone menu is open.", "0 1000", category: "Phone")]
 	protected float m_fScreenEmissiveIntensity;
 
 	[RplProp()]

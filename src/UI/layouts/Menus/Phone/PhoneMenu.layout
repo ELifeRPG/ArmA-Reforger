@@ -358,7 +358,7 @@ FrameWidgetClass {
                 SizeMode Fill
                }
                components {
-                SCR_SystemClockUIComponent "{61E1FE0E4B7C2E01}" {
+                ELIFE_PhoneClockUIComponent "{61E1FE0E4B7C2E01}" {
                 }
                }
                Color 0.867 0.851 0.820 1
@@ -529,7 +529,7 @@ FrameWidgetClass {
                   Padding 0 18 0 2
                  }
                  components {
-                  SCR_SystemClockUIComponent "{61E1FE0E4B7C2E02}" {
+                  ELIFE_PhoneClockUIComponent "{61E1FE0E4B7C2E02}" {
                   }
                  }
                  Color 0.867 0.851 0.820 1
