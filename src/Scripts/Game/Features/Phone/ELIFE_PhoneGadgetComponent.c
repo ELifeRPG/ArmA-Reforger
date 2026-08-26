@@ -60,6 +60,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[RplProp()]
 	protected string m_sPhoneId;
 
+	[RplProp(onRplName: "OnScreenStateUpdated")]
 	protected EPhoneScreenState m_eScreenState;
 
 	protected ParametricMaterialInstanceComponent m_ScreenEmissiveMaterial;
@@ -120,26 +121,33 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Only the owning client's request actually broadcasts - see RpcDo_SyncScreenState.
+	//! Asks the authority (server) to change the state - see RpcAsk_SetScreenState. The authority
+	//! is the only side allowed to set an [RplProp] value for it to actually replicate;
 	void SetScreenState(EPhoneScreenState state)
 	{
-		RplComponent rpl = RplComponent.Cast(GetOwner().FindComponent(RplComponent));
-		if (!rpl || !rpl.IsOwner())
+		if (m_eScreenState == state)
 			return;
 
+		Rpc(RpcAsk_SetScreenState, state);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_SetScreenState(EPhoneScreenState state)
+	{
 		if (m_eScreenState == state)
 			return;
 
 		m_eScreenState = state;
 		ApplyScreenState();
-		Rpc(RpcDo_SyncScreenState, state);
+		Replication.BumpMe();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	protected void RpcDo_SyncScreenState(EPhoneScreenState state)
+	//! Fired by Replication on proxies (not the authority) whenever m_eScreenState updates -
+	//! including the initial sync for players who join after the state was already set.
+	protected void OnScreenStateUpdated()
 	{
-		m_eScreenState = state;
 		ApplyScreenState();
 	}
 
@@ -202,6 +210,23 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		if (mode == EGadgetMode.IN_HAND)
 		{
+			if (Replication.IsServer() && charOwner)
+			{
+				RplComponent rpl = RplComponent.Cast(GetOwner().FindComponent(RplComponent));
+
+				PlayerManager playerManager = GetGame().GetPlayerManager();
+				int playerId = 0;
+				if (playerManager)
+					playerId = playerManager.GetPlayerIdFromControlledEntity(charOwner);
+
+				PlayerController pc;
+				if (playerManager && playerId != 0)
+					pc = playerManager.GetPlayerController(playerId);
+
+				if (rpl && pc)
+					rpl.Give(pc.GetRplIdentity());
+			}
+
 			IEntity localCharacter = SCR_PlayerController.GetLocalControlledEntity();
 			if (charOwner && charOwner == localCharacter)
 				ELIFE_PhoneToggle.RememberActivePhone(this);
@@ -384,7 +409,6 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return false;
 
 		writer.WriteBool(m_bActivated);
-		writer.WriteInt(m_eScreenState);
 
 		return true;
 	}
@@ -396,11 +420,6 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return false;
 
 		reader.ReadBool(m_bActivated);
-
-		int screenState;
-		reader.ReadInt(screenState);
-		m_eScreenState = screenState;
-		ApplyScreenState();
 
 		return true;
 	}
