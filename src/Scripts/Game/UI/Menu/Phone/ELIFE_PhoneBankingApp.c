@@ -55,6 +55,12 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override EPhoneScreenState GetScreenState()
+	{
+		return EPhoneScreenState.BANK;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool OnBack()
 	{
 		if (m_sOpenAccountId != "")

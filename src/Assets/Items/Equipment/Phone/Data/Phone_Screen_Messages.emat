@@ -1,0 +1,11 @@
+MatPBRBasic {
+ SpecularIBL 0.205 0.205 0.205 1
+ Emissive 1 1 1 1
+ EmissiveLV -0.75
+ EmissiveAbsoluteLV 0
+ ApplyAlbedoToEmissive 1
+ SpecularMul 0.1
+ AOScale 1.5
+ EmissiveMap "{962847D42C4B89B6}Assets/Items/Equipment/Phone/Data/phone_screen_messages.edds"
+ BCRMap "{962847D42C4B89B6}Assets/Items/Equipment/Phone/Data/phone_screen_messages.edds"
+}

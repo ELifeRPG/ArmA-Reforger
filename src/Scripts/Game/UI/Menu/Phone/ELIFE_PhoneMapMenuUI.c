@@ -22,6 +22,9 @@ class ELIFE_PhoneMapMenuUI : SCR_MapMenuUI
 
 		ELIFE_PhoneGadgetComponent phone = ELIFE_PhoneToggle.FindOwnedPhone(character);
 		if (phone)
+		{
 			phone.OpenPhoneMenu();
+			phone.SetScreenState(EPhoneScreenState.HOME);
+		}
 	}
 };

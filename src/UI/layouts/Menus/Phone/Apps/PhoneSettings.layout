@@ -26,7 +26,7 @@ OverlayWidgetClass {
        Text "DEVICE"
        "Font Size" 8
        "Min Font Size" 7
-       "Horizontal Alignment" 0
+       "Horizontal Alignment" Left
        FontProperties FontProperties "{C8A6A3884E8E36AE}" {
         Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
        }
@@ -34,6 +34,7 @@ OverlayWidgetClass {
       OverlayWidgetClass "{7DB56B2A407CB2A4}" {
        Name "DeviceCard"
        Slot LayoutSlot "{47A437231C81258C}" {
+        VerticalAlign 0
         SizeMode Fill
        }
        {
@@ -51,7 +52,7 @@ OverlayWidgetClass {
          Name "DeviceCardContent"
          Slot OverlayWidgetSlot "{D4921A30718D4B31}" {
           HorizontalAlign 3
-          VerticalAlign 3
+          VerticalAlign 0
           Padding 10 8 10 8
          }
          {
@@ -64,7 +65,7 @@ OverlayWidgetClass {
            Text "#ELIFE-Phone_Settings_DeviceId"
            "Font Size" 8
            "Min Font Size" 7
-           "Horizontal Alignment" 0
+           "Horizontal Alignment" Left
           }
           TextWidgetClass "{FB06DFD9B3CF8A66}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
            Name "PhoneIdValue"
@@ -75,7 +76,7 @@ OverlayWidgetClass {
            Text ""
            "Font Size" 8
            "Min Font Size" 6
-           "Horizontal Alignment" 0
+           "Horizontal Alignment" Left
           }
          }
         }

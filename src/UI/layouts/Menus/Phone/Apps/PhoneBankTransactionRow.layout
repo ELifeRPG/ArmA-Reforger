@@ -1,5 +1,7 @@
 SizeLayoutWidgetClass {
  Name "PostedRowSize"
+ AllowWidthOverride 1
+ WidthOverride 200
  AllowHeightOverride 1
  HeightOverride 29
  {
@@ -35,7 +37,7 @@ SizeLayoutWidgetClass {
           HorizontalAlign 3
           VerticalAlign 3
          }
-         Color 0.867 0.851 0.820 1
+         Color 0.867 0.851 0.82 1
          style rounded_6px
          "no focus" 1
         }
@@ -49,11 +51,11 @@ SizeLayoutWidgetClass {
        {
         TextWidgetClass "{7A3C91E200000007}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
          Name "Memo"
-         Color 0.867 0.851 0.820 1
+         Color 0.867 0.851 0.82 1
          Text ""
          "Font Size" 10
          "Min Font Size" 9
-         "Horizontal Alignment" 0
+         "Horizontal Alignment" Left
         }
         TextWidgetClass "{7A3C91E200000008}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
          Name "PostedAt"
@@ -61,17 +63,17 @@ SizeLayoutWidgetClass {
          Text ""
          "Font Size" 8
          "Min Font Size" 7
-         "Horizontal Alignment" 0
+         "Horizontal Alignment" Left
         }
        }
       }
       TextWidgetClass "{7A3C91E200000009}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
        Name "Amount"
        Slot LayoutSlot "{7A3C91E20000000A}" {
-        Padding 6 0 0 0
         VerticalAlign 1
+        Padding 6 0 0 0
        }
-       Color 0.867 0.851 0.820 1
+       Color 0.867 0.851 0.82 1
        Text ""
        "Font Size" 10
        "Min Font Size" 9
@@ -98,7 +100,7 @@ SizeLayoutWidgetClass {
         HorizontalAlign 3
         VerticalAlign 3
        }
-       Color 0.851 0.702 0.024 0.20
+       Color 0.851 0.702 0.024 0.2
       }
      }
     }

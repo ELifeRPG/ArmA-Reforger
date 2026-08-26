@@ -58,7 +58,7 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
     }
     MaterialAssignClass "{154554FD865832A6}" {
      SourceMaterial "Phone_Screen_7D200FDF0E0FC494"
-     AssignedMaterial "{7D200FDF0E0FC494}Assets/Items/Equipment/Phone/Data/Phone_Screen_251673F62CEAFC4F.emat"
+     AssignedMaterial "{B1EFD30A850D7431}Assets/Items/Equipment/Phone/Data/Phone_Screen_Off.emat"
     }
    }
   }

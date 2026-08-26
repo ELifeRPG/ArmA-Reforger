@@ -1,10 +1,10 @@
 $grp ELIFE_PrefabSpawn {
  {
-  coords 7.0 0 3.0
+  coords 7 0 3
   m_rnPrefab "{89DCD5C00091FF04}Prefabs/Items/Keys/CarKey.et"
  }
  {
-  coords 7.0 0.05 3.5
+  coords 7 0.05 3.5
   m_rnPrefab "{61E1FE0A4B7C2913}Prefabs/Items/Equipment/Phone/Phone.et"
  }
  {
@@ -12,7 +12,7 @@ $grp ELIFE_PrefabSpawn {
   m_rnPrefab "{2DBBA09446619612}Prefabs/Items/Equipment/Phone/Phone_Green.et"
  }
  {
-  coords 8.0 0.05 3.5
+  coords 8 0.05 3.5
   m_rnPrefab "{94424C1396CB705F}Prefabs/Items/Equipment/Phone/Phone_Graphite.et"
  }
  {
@@ -20,15 +20,15 @@ $grp ELIFE_PrefabSpawn {
   m_rnPrefab "{93506C1D8CB5A5C5}Prefabs/Items/Equipment/Phone/Phone_White.et"
  }
  {
-  coords 7.0 0.05 4.0
+  coords 7 0.05 4
   m_rnPrefab "{C810CA79D892D069}Prefabs/Items/Equipment/Phone/Phone_Navy.et"
  }
  {
-  coords 7.5 0.05 4.0
+  coords 7.5 0.05 4
   m_rnPrefab "{29631E8E4AF04BD7}Prefabs/Items/Equipment/Phone/Phone_Red.et"
  }
  {
-  coords 8.0 0.05 4.0
+  coords 8 0.05 4
   m_rnPrefab "{E8692A5A14D74B83}Prefabs/Items/Equipment/Phone/Phone_Silver.et"
  }
 }

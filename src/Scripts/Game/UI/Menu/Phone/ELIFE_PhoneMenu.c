@@ -58,7 +58,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 		SCR_ButtonTextComponent closeButton = SCR_ButtonTextComponent.GetButtonText("ButtonClose", m_wRoot);
 		if (closeButton)
 		{
-			closeButton.m_OnClicked.Insert(OnClosePressed);
+			closeButton.m_OnClicked.Insert(OnNavBack);
 			GetGame().GetWorkspace().SetFocusedWidget(closeButton.GetRootWidget());
 		}
 
@@ -181,6 +181,9 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 
 		if (m_wStatusBar)
 			m_wStatusBar.SetText(m_App.GetTitle());
+
+		if (m_BoundPhone)
+			m_BoundPhone.SetScreenState(m_App.GetScreenState());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -220,6 +223,9 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	//------------------------------------------------------------------------------------------------
 	protected void OnMapApp()
 	{
+		if (m_BoundPhone)
+			m_BoundPhone.SetScreenState(EPhoneScreenState.MAP);
+
 		CloseWithoutHolster();
 
 		// MenuBase.Close() only queues the close for the next MenuManager update, so opening the
@@ -252,15 +258,13 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 		if (m_App)
 		{
 			CloseApp();
+
+			if (m_BoundPhone)
+				m_BoundPhone.SetScreenState(EPhoneScreenState.HOME);
+
 			return;
 		}
 
-		Close();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void OnClosePressed()
-	{
 		Close();
 	}
 

@@ -1,18 +1,57 @@
 //------------------------------------------------------------------------------------------------
-//! Handheld phone gadget. Identity is this component (SPECIALIST_ITEM), never EGadgetType.GPS.
-//! Each spawned phone gets a unique UUID (backend key). Items are not stackable.
+enum EPhoneScreenState
+{
+	OFF,
+	LOCKED,
+	HOME,
+	BANK,
+	MAP,
+	MESSAGES,
+	SETTINGS
+}
+
+//------------------------------------------------------------------------------------------------
 [EntityEditorProps(category: "ELifeRPG/Gadgets", description: "Handheld phone gadget")]
 class ELIFE_PhoneGadgetComponentClass : SCR_GadgetComponentClass
 {
 }
 
 //------------------------------------------------------------------------------------------------
+//! Handheld phone gadget. Identity is this component (SPECIALIST_ITEM), never EGadgetType.GPS.
+//! Each spawned phone gets a unique UUID (backend key). Items are not stackable.
 class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 {
 	[Attribute("", UIWidgets.EditBox, "Leave empty to auto-assign a UUID when the phone spawns.")]
 	protected string m_sDebugPhoneId;
 
-	[Attribute("200", UIWidgets.EditBox, "Intensity of the screen's emissive texture while the phone menu is open.", "0 1000", category: "Phone")]
+	protected const string BODY_SOURCE_MATERIAL = "Phone_Body_06D0DC3A5800CC7A";
+	protected const string SCREEN_SOURCE_MATERIAL = "Phone_Screen_7D200FDF0E0FC494";
+
+	[Attribute("{32874067CF8A6EB2}Assets/Items/Equipment/Radios/Radio_ANPRC68/Data/Radio_ANPRC68_01.emat", UIWidgets.ResourceNamePicker, "Body material to re-assert on every screen swap (must match this variant's MeshObject body assignment).", "emat", category: "Phone")]
+	protected ResourceName m_sBodyMaterial;
+
+	[Attribute("{B1EFD30A850D7431}Assets/Items/Equipment/Phone/Data/Phone_Screen_Off.emat", UIWidgets.ResourceNamePicker, "Screen material while not activated.", "emat", category: "Phone")]
+	protected ResourceName m_sScreenOffMaterial;
+
+	[Attribute("{C2F0E41B961E8542}Assets/Items/Equipment/Phone/Data/Phone_Screen_Locked.emat", UIWidgets.ResourceNamePicker, "Screen material for the locked-screen state (not currently reachable from the menu).", "emat", category: "Phone")]
+	protected ResourceName m_sScreenLockedMaterial;
+
+	[Attribute("{8AD586FC9172AA4C}Assets/Items/Equipment/Phone/Data/Phone_Screen_Home.emat", UIWidgets.ResourceNamePicker, "Screen material for the home screen.", "emat", category: "Phone")]
+	protected ResourceName m_sScreenHomeMaterial;
+
+	[Attribute("{C9D0F15EBDE84136}Assets/Items/Equipment/Phone/Data/Phone_Screen_Bank.emat", UIWidgets.ResourceNamePicker, "Screen material for the bank app.", "emat", category: "Phone")]
+	protected ResourceName m_sScreenBankMaterial;
+
+	[Attribute("{93D6FB5B77090462}Assets/Items/Equipment/Phone/Data/Phone_Screen_Map.emat", UIWidgets.ResourceNamePicker, "Screen material for the map app.", "emat", category: "Phone")]
+	protected ResourceName m_sScreenMapMaterial;
+
+	[Attribute("{DD81EAC2D9C509DA}Assets/Items/Equipment/Phone/Data/Phone_Screen_Messages.emat", UIWidgets.ResourceNamePicker, "Screen material for the messages app.", "emat", category: "Phone")]
+	protected ResourceName m_sScreenMessagesMaterial;
+
+	[Attribute("{3704D5BBFA59010B}Assets/Items/Equipment/Phone/Data/Phone_Screen_Settings.emat", UIWidgets.ResourceNamePicker, "Screen material for the settings app.", "emat", category: "Phone")]
+	protected ResourceName m_sScreenSettingsMaterial;
+
+	[Attribute("2", UIWidgets.EditBox, "Intensity of the emissive pulse layered on top of the active screen material.", "0 20", category: "Phone")]
 	protected float m_fScreenEmissiveIntensity;
 
 	[Attribute("0.03 0.03 0.035 1", UIWidgets.ColorPicker, "Case color tint applied to the phone menu UI bezel (should roughly match this variant's body material).", category: "Phone")]
@@ -20,6 +59,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 	[RplProp()]
 	protected string m_sPhoneId;
+
+	protected EPhoneScreenState m_eScreenState;
 
 	protected ParametricMaterialInstanceComponent m_ScreenEmissiveMaterial;
 	protected float m_fScreenPulsePhase;
@@ -68,20 +109,72 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Runs on every client once the toggle is replicated.
 	override void OnToggleActive(bool state)
 	{
 		m_bActivated = state;
-		UpdateScreenState();
+
+		if (state)
+			SetScreenState(EPhoneScreenState.HOME);
+		else
+			SetScreenState(EPhoneScreenState.OFF);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void UpdateScreenState()
+	//! Only the owning client's request actually broadcasts - see RpcDo_SyncScreenState.
+	void SetScreenState(EPhoneScreenState state)
 	{
-		if (m_bActivated)
-			StartScreenPulse();
-		else
+		RplComponent rpl = RplComponent.Cast(GetOwner().FindComponent(RplComponent));
+		if (!rpl || !rpl.IsOwner())
+			return;
+
+		if (m_eScreenState == state)
+			return;
+
+		m_eScreenState = state;
+		ApplyScreenState();
+		Rpc(RpcDo_SyncScreenState, state);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	protected void RpcDo_SyncScreenState(EPhoneScreenState state)
+	{
+		m_eScreenState = state;
+		ApplyScreenState();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ApplyScreenState()
+	{
+		switch (m_eScreenState)
+		{
+			case EPhoneScreenState.LOCKED:
+				SetScreenMaterial(m_sScreenLockedMaterial);
+				break;
+			case EPhoneScreenState.HOME:
+				SetScreenMaterial(m_sScreenHomeMaterial);
+				break;
+			case EPhoneScreenState.BANK:
+				SetScreenMaterial(m_sScreenBankMaterial);
+				break;
+			case EPhoneScreenState.MAP:
+				SetScreenMaterial(m_sScreenMapMaterial);
+				break;
+			case EPhoneScreenState.MESSAGES:
+				SetScreenMaterial(m_sScreenMessagesMaterial);
+				break;
+			case EPhoneScreenState.SETTINGS:
+				SetScreenMaterial(m_sScreenSettingsMaterial);
+				break;
+			default:
+				SetScreenMaterial(m_sScreenOffMaterial);
+				break;
+		}
+
+		if (m_eScreenState == EPhoneScreenState.OFF)
 			StopScreenPulse();
+		else
+			StartScreenPulse();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -125,6 +218,19 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override void ModeClear(EGadgetMode mode)
+	{
+		super.ModeClear(mode);
+
+		if (mode == EGadgetMode.IN_HAND)
+		{
+			m_eScreenState = EPhoneScreenState.OFF;
+			SetScreenMaterial(m_sScreenOffMaterial);
+			StopScreenPulse();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void ToggleFocused(bool enable)
 	{
 		super.ToggleFocused(enable);
@@ -136,6 +242,25 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			OpenPhoneMenu();
 		else
 			ClosePhoneMenu();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetScreenMaterial(ResourceName material)
+	{
+		if (material == ResourceName.Empty)
+			return;
+
+		IEntity owner = GetOwner();
+		VObject obj = owner.GetVObject();
+		if (!obj)
+		{
+			Print("ELIFE_Phone: SetScreenMaterial aborted - GetVObject() returned null", LogLevel.WARNING);
+			return;
+		}
+
+		string remap = string.Format("$remap '%1' '%2'; $remap '%3' '%4';",
+			BODY_SOURCE_MATERIAL, m_sBodyMaterial, SCREEN_SOURCE_MATERIAL, material);
+		owner.SetObject(obj, remap);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -151,7 +276,6 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Placeholder "in use" look until real UI-driven screen states exist.
 	protected void StartScreenPulse()
 	{
 		if (!m_ScreenEmissiveMaterial)
@@ -159,7 +283,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		m_fScreenPulsePhase = 0;
 		GetGame().GetCallqueue().Remove(TickScreenPulse);
-		GetGame().GetCallqueue().CallLater(TickScreenPulse, 50, true);
+		GetGame().GetCallqueue().CallLater(TickScreenPulse, 200, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -175,11 +299,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (!m_ScreenEmissiveMaterial)
 			return;
 
-		//! Randomize phase speed so it doesn't look mechanical.
-		m_fScreenPulsePhase = m_fScreenPulsePhase + Math.RandomFloatInclusive(0.07, 0.13);
-
-		//! Breathes between 75-100% instead of full off/on.
-		float t = 0.875 + 0.125 * Math.Sin(m_fScreenPulsePhase);
+		m_fScreenPulsePhase = m_fScreenPulsePhase + Math.RandomFloatInclusive(0.04, 0.09);
+		float t = 0.75 + 0.25 * Math.Sin(m_fScreenPulsePhase);
+		t += Math.RandomFloatInclusive(-0.01, 0.01);
+		t = Math.Clamp(t, 0.95, 1);
 		m_ScreenEmissiveMaterial.SetEmissiveMultiplier(m_fScreenEmissiveIntensity * t);
 	}
 
@@ -261,6 +384,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return false;
 
 		writer.WriteBool(m_bActivated);
+		writer.WriteInt(m_eScreenState);
 
 		return true;
 	}
@@ -273,7 +397,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		reader.ReadBool(m_bActivated);
 
-		UpdateScreenState();
+		int screenState;
+		reader.ReadInt(screenState);
+		m_eScreenState = screenState;
+		ApplyScreenState();
 
 		return true;
 	}

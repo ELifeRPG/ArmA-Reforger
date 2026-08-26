@@ -9,7 +9,7 @@ MetaFileClass {
     }
     MaterialAssignClass "{6A313C5A28C53A76}" {
      SourceMaterial "Phone_Screen_7D200FDF0E0FC494"
-     AssignedMaterial "{7D200FDF0E0FC494}Assets/Items/Equipment/Phone/Data/Phone_Screen_251673F62CEAFC4F.emat"
+     AssignedMaterial "{B1EFD30A850D7431}Assets/Items/Equipment/Phone/Data/Phone_Screen_Off.emat"
     }
    }
    MeshParams {

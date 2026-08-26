@@ -21,11 +21,11 @@ OverlayWidgetClass {
        Slot LayoutSlot "{7A3C91E000000008}" {
         Padding 0 2 0 5
        }
-       Color 0.910 0.780 0.145 1
+       Color 0.91 0.78 0.145 1
        Text "#ELIFE-Phone_Bank_Accounts"
        "Font Size" 9
        "Min Font Size" 8
-       "Horizontal Alignment" 0
+       "Horizontal Alignment" Left
        FontProperties FontProperties "{7A3C91E000000040}" {
         Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
        }
@@ -71,11 +71,11 @@ OverlayWidgetClass {
          Slot LayoutSlot "{7A3C91E000000013}" {
           Padding 0 0 0 3
          }
-         Color 0.867 0.851 0.820 1
+         Color 0.867 0.851 0.82 1
          Text "#ELIFE-Phone_Bank_NoAccounts"
          "Font Size" 11
          "Min Font Size" 10
-         "Horizontal Alignment" 0
+         "Horizontal Alignment" Left
         }
         TextWidgetClass "{7A3C91E000000014}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
          Name "EmptyAccountsHint"
@@ -83,7 +83,7 @@ OverlayWidgetClass {
          Text "#ELIFE-Phone_Bank_NoAccountsHint"
          "Font Size" 10
          "Min Font Size" 8
-         "Horizontal Alignment" 0
+         "Horizontal Alignment" Left
         }
        }
       }
@@ -106,7 +106,7 @@ OverlayWidgetClass {
        Text ""
        "Font Size" 8
        "Min Font Size" 7
-       "Horizontal Alignment" 0
+       "Horizontal Alignment" Left
        FontProperties FontProperties "{7A3C91E000000041}" {
         Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
        }
@@ -116,11 +116,11 @@ OverlayWidgetClass {
        Slot LayoutSlot "{7A3C91E00000001A}" {
         Padding 0 0 0 6
        }
-       Color 0.867 0.851 0.820 1
+       Color 0.867 0.851 0.82 1
        Text ""
        "Font Size" 13
        "Min Font Size" 10
-       "Horizontal Alignment" 0
+       "Horizontal Alignment" Left
        FontProperties FontProperties "{7A3C91E000000042}" {
         Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
        }
@@ -146,7 +146,7 @@ OverlayWidgetClass {
             HorizontalAlign 3
             VerticalAlign 3
            }
-           Color 0.12 0.14 0.20 1
+           Color 0.12 0.14 0.2 1
            style rounded_6px
            "no focus" 1
           }
@@ -161,7 +161,7 @@ OverlayWidgetClass {
            Text ""
            "Font Size" 22
            "Min Font Size" 16
-           "Horizontal Alignment" 0
+           "Horizontal Alignment" Left
            FontProperties FontProperties "{7A3C91E000000044}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
            }
@@ -197,7 +197,7 @@ OverlayWidgetClass {
        Text "#ELIFE-Phone_Bank_Posted"
        "Font Size" 8
        "Min Font Size" 7
-       "Horizontal Alignment" 0
+       "Horizontal Alignment" Left
        FontProperties FontProperties "{7A3C91E000000045}" {
         Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
        }
@@ -225,11 +225,11 @@ OverlayWidgetClass {
          Slot LayoutSlot "{7A3C91E000000029}" {
           Padding 0 0 0 3
          }
-         Color 0.867 0.851 0.820 1
+         Color 0.867 0.851 0.82 1
          Text "#ELIFE-Phone_Bank_NoPosted"
          "Font Size" 11
          "Min Font Size" 10
-         "Horizontal Alignment" 0
+         "Horizontal Alignment" Left
         }
         TextWidgetClass "{7A3C91E00000002A}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
          Name "EmptyPostedHint"
@@ -237,7 +237,7 @@ OverlayWidgetClass {
          Text "#ELIFE-Phone_Bank_NoPostedHint"
          "Font Size" 10
          "Min Font Size" 8
-         "Horizontal Alignment" 0
+         "Horizontal Alignment" Left
         }
        }
       }

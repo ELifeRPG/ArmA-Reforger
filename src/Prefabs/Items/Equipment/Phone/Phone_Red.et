@@ -9,6 +9,7 @@ GenericEntity : "{61E1FE0A4B7C2913}Prefabs/Items/Equipment/Phone/Phone.et" {
    }
   }
   ELIFE_PhoneGadgetComponent "{61E1FE0A4B7C2902}" {
+   m_sBodyMaterial "{5D9E19AB6D209F9F}Assets/Items/Equipment/Phone/Data/Phone_Body_Red.emat"
    m_CaseColor 0.95 0.0 0.05 1
   }
  }

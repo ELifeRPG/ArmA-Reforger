@@ -42,6 +42,12 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	EPhoneScreenState GetScreenState()
+	{
+		return EPhoneScreenState.HOME;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected Widget CreateRoot(notnull Widget host)
 	{
 		return null;

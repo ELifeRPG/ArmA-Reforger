@@ -12,6 +12,12 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override EPhoneScreenState GetScreenState()
+	{
+		return EPhoneScreenState.SETTINGS;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected override Widget CreateRoot(notnull Widget host)
 	{
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
