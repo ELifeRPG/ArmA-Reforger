@@ -103,7 +103,15 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 		if (!workspace)
 			return null;
 
-		return workspace.CreateWidgets(LAYOUT, host);
+		Widget root = workspace.CreateWidgets(LAYOUT, host);
+		if (root)
+		{
+			//! CreateWidgets() doesn't give the returned root a fill slot by default.
+			AlignableSlot.SetHorizontalAlign(root, LayoutHorizontalAlign.Stretch);
+			AlignableSlot.SetVerticalAlign(root, LayoutVerticalAlign.Stretch);
+		}
+
+		return root;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -187,6 +195,12 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 			if (!row)
 				continue;
 
+			//! CreateWidgets() doesn't give the returned root a fill slot by default.
+			LayoutSlot.SetSizeMode(row, LayoutSizeMode.Fill);
+
+			if (i < count - 1)
+				LayoutSlot.SetPadding(row, 0, 0, 0, 5);
+
 			TextWidget nameWidget = TextWidget.Cast(row.FindAnyWidget("AccountName"));
 			if (nameWidget)
 				nameWidget.SetText(account.m_sName);
@@ -198,6 +212,16 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 			TextWidget balanceWidget = TextWidget.Cast(row.FindAnyWidget("AccountBalance"));
 			if (balanceWidget)
 				balanceWidget.SetText(ELIFE_PhoneBankingService.FormatMoney(account.m_iBalanceCents));
+
+			Color kindColor = KindColor(account);
+
+			Widget avatarFill = row.FindAnyWidget("AccountAvatarFill");
+			if (avatarFill)
+				avatarFill.SetColor(kindColor);
+
+			TextWidget avatarGlyph = TextWidget.Cast(row.FindAnyWidget("AccountAvatarGlyph"));
+			if (avatarGlyph && account.m_sName.Length() > 0)
+				avatarGlyph.SetText(account.m_sName.Substring(0, 1));
 
 			Widget buttonWidget = row.FindAnyWidget("AccountButton");
 			if (!buttonWidget)
@@ -233,8 +257,8 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 		if (!workspace)
 			return;
 
-		Color debit = new Color(0.55, 0.56, 0.62, 1);
-		Color credit = new Color(0.867, 0.851, 0.820, 1);
+		Color debit = new Color(0.867, 0.522, 0.522, 1);
+		Color credit = new Color(0.514, 0.812, 0.596, 1);
 
 		int i;
 		for (i = 0; i < count; i++)
@@ -247,6 +271,8 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 			if (!row)
 				continue;
 
+			LayoutSlot.SetSizeMode(row, LayoutSizeMode.Fill);
+
 			TextWidget dateWidget = TextWidget.Cast(row.FindAnyWidget("PostedAt"));
 			if (dateWidget)
 				dateWidget.SetText(tx.m_sPostedAt);
@@ -255,14 +281,25 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 			if (memoWidget)
 				memoWidget.SetText(tx.m_sMemo);
 
+			bool isDebit = tx.m_iAmountCents < 0;
+
 			TextWidget amountWidget = TextWidget.Cast(row.FindAnyWidget("Amount"));
 			if (amountWidget)
 			{
 				amountWidget.SetText(ELIFE_PhoneBankingService.FormatSignedMoney(tx.m_iAmountCents));
-				if (tx.m_iAmountCents < 0)
+				if (isDebit)
 					amountWidget.SetColor(debit);
 				else
 					amountWidget.SetColor(credit);
+			}
+
+			Widget dotWidget = row.FindAnyWidget("TxDot");
+			if (dotWidget)
+			{
+				if (isDebit)
+					dotWidget.SetColor(debit);
+				else
+					dotWidget.SetColor(credit);
 			}
 		}
 	}
@@ -297,6 +334,15 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 		}
 
 		return WidgetManager.Translate("#ELIFE-Phone_Bank_Personal");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected Color KindColor(notnull ELIFE_PhoneBankAccount account)
+	{
+		if (account.m_eOwnerKind == ELIFE_EPhoneBankOwnerKind.COMPANY)
+			return new Color(0.851, 0.702, 0.024, 1);
+
+		return new Color(0.329, 0.510, 0.910, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------

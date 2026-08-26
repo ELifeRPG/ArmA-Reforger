@@ -1,7 +1,7 @@
 SizeLayoutWidgetClass {
  Name "PostedRowSize"
  AllowHeightOverride 1
- HeightOverride 38
+ HeightOverride 29
  {
   OverlayWidgetClass "{7A3C91E200000001}" {
    Name "PostedRow"
@@ -15,9 +15,32 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{7A3C91E200000004}" {
       HorizontalAlign 3
       VerticalAlign 3
-      Padding 0 4 0 4
+      Padding 0 3 0 3
      }
      {
+      SizeLayoutWidgetClass "{35A6C5590365B82B}" {
+       Name "TxDotSize"
+       Slot LayoutSlot "{A57716C7A177AE1D}" {
+        VerticalAlign 1
+        Padding 0 0 6 0
+       }
+       AllowWidthOverride 1
+       WidthOverride 6
+       AllowHeightOverride 1
+       HeightOverride 6
+       {
+        SmartPanelWidgetClass "{4BBFB6783FC91D7F}" {
+         Name "TxDot"
+         Slot AlignableSlot "{F98A8BADFA0F8675}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.867 0.851 0.820 1
+         style rounded_6px
+         "no focus" 1
+        }
+       }
+      }
       VerticalLayoutWidgetClass "{7A3C91E200000005}" {
        Name "PostedCopy"
        Slot LayoutSlot "{7A3C91E200000006}" {
@@ -28,16 +51,16 @@ SizeLayoutWidgetClass {
          Name "Memo"
          Color 0.867 0.851 0.820 1
          Text ""
-         "Font Size" 12
-         "Min Font Size" 11
+         "Font Size" 10
+         "Min Font Size" 9
          "Horizontal Alignment" 0
         }
         TextWidgetClass "{7A3C91E200000008}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
          Name "PostedAt"
          Color 0.55 0.56 0.62 1
          Text ""
-         "Font Size" 10
-         "Min Font Size" 9
+         "Font Size" 8
+         "Min Font Size" 7
          "Horizontal Alignment" 0
         }
        }
@@ -45,12 +68,13 @@ SizeLayoutWidgetClass {
       TextWidgetClass "{7A3C91E200000009}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
        Name "Amount"
        Slot LayoutSlot "{7A3C91E20000000A}" {
-        Padding 8 0 0 0
+        Padding 6 0 0 0
+        VerticalAlign 1
        }
        Color 0.867 0.851 0.820 1
        Text ""
-       "Font Size" 13
-       "Min Font Size" 11
+       "Font Size" 10
+       "Min Font Size" 9
        "Horizontal Alignment" 2
        "Vertical Alignment" 1
        FontProperties FontProperties "{7A3C91E20000000F}" {
@@ -74,7 +98,7 @@ SizeLayoutWidgetClass {
         HorizontalAlign 3
         VerticalAlign 3
        }
-       Color 0.086 0.639 0.290 0.28
+       Color 0.851 0.702 0.024 0.20
       }
      }
     }

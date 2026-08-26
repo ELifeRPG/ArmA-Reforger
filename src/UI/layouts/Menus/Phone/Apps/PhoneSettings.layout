@@ -1,0 +1,89 @@
+OverlayWidgetClass {
+ Name "SettingsRoot"
+ {
+  OverlayWidgetClass "{0BF56E1C63EC56CC}" {
+   Name "Pages"
+   Slot OverlayWidgetSlot "{ACD5B035908835B8}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+    Padding 6 32 6 3
+   }
+   {
+    VerticalLayoutWidgetClass "{E3412EC97B8FE08D}" {
+     Name "SettingsContent"
+     Slot OverlayWidgetSlot "{8B7F2E10B91D5F5D}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     "Fill Origin" Top
+     {
+      TextWidgetClass "{5A9D69A235A82333}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "SettingsIntro"
+       Slot LayoutSlot "{104CF3AD6E0236A0}" {
+        Padding 2 0 2 8
+       }
+       Color 0.443 0.443 0.478 1
+       Text "DEVICE"
+       "Font Size" 8
+       "Min Font Size" 7
+       "Horizontal Alignment" 0
+       FontProperties FontProperties "{C8A6A3884E8E36AE}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      OverlayWidgetClass "{7DB56B2A407CB2A4}" {
+       Name "DeviceCard"
+       Slot LayoutSlot "{47A437231C81258C}" {
+        SizeMode Fill
+       }
+       {
+        SmartPanelWidgetClass "{8625346F695E7FAC}" {
+         Name "DeviceCardBackground"
+         Slot OverlayWidgetSlot "{D9242CBB415D9E62}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.12 0.13 0.17 1
+         style rounded_6px
+         "no focus" 1
+        }
+        VerticalLayoutWidgetClass "{CA0F43A339A3C0D0}" {
+         Name "DeviceCardContent"
+         Slot OverlayWidgetSlot "{D4921A30718D4B31}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+          Padding 10 8 10 8
+         }
+         {
+          TextWidgetClass "{2BBE5B18836E19AA}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "DeviceIdLabel"
+           Slot LayoutSlot "{088D40A89ABD7DC7}" {
+            Padding 0 0 0 2
+           }
+           Color 0.55 0.56 0.62 1
+           Text "#ELIFE-Phone_Settings_DeviceId"
+           "Font Size" 8
+           "Min Font Size" 7
+           "Horizontal Alignment" 0
+          }
+          TextWidgetClass "{FB06DFD9B3CF8A66}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "PhoneIdValue"
+           Slot LayoutSlot "{66FE6BFF1B92B8B7}" {
+            SizeMode Fill
+           }
+           Color 0.78 0.79 0.85 1
+           Text ""
+           "Font Size" 8
+           "Min Font Size" 6
+           "Horizontal Alignment" 0
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

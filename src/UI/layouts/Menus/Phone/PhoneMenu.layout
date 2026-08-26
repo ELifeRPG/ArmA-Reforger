@@ -29,42 +29,17 @@ FrameWidgetClass {
      }
      Color 0.078 0.086 0.114 0.06
     }
-    SizeLayoutWidgetClass "{61E1FE0C4B7C2A03}" {
-     Name "PhoneShadow"
-     Slot OverlayWidgetSlot "{61E1FE0C4B7C2A04}" {
-      HorizontalAlign 2
-      VerticalAlign 2
-      Padding 14 22 22 22
-     }
-     AllowWidthOverride 1
-     WidthOverride 328
-     AllowHeightOverride 1
-     HeightOverride 612
-     {
-      SmartPanelWidgetClass "{61E1FE0C4B7C2A05}" {
-       Name "PhoneShadowFill"
-       Slot AlignableSlot "{61E1FE0C4B7C2A06}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Opacity 0.32
-       Color 0 0 0 1
-       style rounded_faded_16
-       "no focus" 1
-      }
-     }
-    }
     SizeLayoutWidgetClass "{61E1FE0A4B7C2A32}" {
      Name "PhoneSize"
      Slot OverlayWidgetSlot "{61E1FE0A4B7C2A33}" {
       HorizontalAlign 2
       VerticalAlign 2
-      Padding 0 0 28 28
+      Padding 0 0 22 22
      }
      AllowWidthOverride 1
-     WidthOverride 328
+     WidthOverride 262
      AllowHeightOverride 1
-     HeightOverride 612
+     HeightOverride 533
      {
       OverlayWidgetClass "{61E1FE0A4B7C2A03}" {
        Name "PhoneBezel"
@@ -80,7 +55,7 @@ FrameWidgetClass {
           VerticalAlign 3
          }
          Color 0.10 0.11 0.14 1
-         style rounded_6px
+         style rounded_2px
          "no focus" 1
         }
         SizeLayoutWidgetClass "{61E1FE0D4B7C2D01}" {
@@ -88,10 +63,10 @@ FrameWidgetClass {
          Slot OverlayWidgetSlot "{61E1FE0D4B7C2D02}" {
           HorizontalAlign 3
           VerticalAlign 0
-          Padding 8 6 8 0
+          Padding 6 5 6 0
          }
          AllowHeightOverride 1
-         HeightOverride 52
+         HeightOverride 42
          {
           SmartPanelWidgetClass "{61E1FE0C4B7C2A07}" {
            Name "BezelSheen"
@@ -111,13 +86,13 @@ FrameWidgetClass {
          Slot OverlayWidgetSlot "{61E1FE0D4B7C2D04}" {
           HorizontalAlign 2
           VerticalAlign 0
-          Padding 0 10 14 0
+          Padding 0 8 11 0
          }
          "Is Visible" 0
          AllowWidthOverride 1
-         WidthOverride 6
+         WidthOverride 5
          AllowHeightOverride 1
-         HeightOverride 36
+         HeightOverride 29
          {
           ImageWidgetClass "{61E1FE0D4B7C2D05}" {
            Name "Antenna"
@@ -134,12 +109,12 @@ FrameWidgetClass {
          Slot OverlayWidgetSlot "{61E1FE0C4B7C2A0A}" {
           HorizontalAlign 1
           VerticalAlign 0
-          Padding 0 12 0 0
+          Padding 0 10 0 0
          }
          AllowWidthOverride 1
-         WidthOverride 72
+         WidthOverride 58
          AllowHeightOverride 1
-         HeightOverride 7
+         HeightOverride 6
          {
           SmartPanelWidgetClass "{61E1FE0C4B7C2A0B}" {
            Name "Earpiece"
@@ -158,7 +133,7 @@ FrameWidgetClass {
          Slot OverlayWidgetSlot "{61E1FE0D4B7C2D08}" {
           HorizontalAlign 1
           VerticalAlign 0
-          Padding 0 22 0 0
+          Padding 0 18 0 0
          }
          "Is Visible" 0
          {
@@ -168,9 +143,9 @@ FrameWidgetClass {
             Padding 1 0 1 0
            }
            AllowWidthOverride 1
-           WidthOverride 10
+           WidthOverride 8
            AllowHeightOverride 1
-           HeightOverride 3
+           HeightOverride 2
            {
             ImageWidgetClass "{61E1FE0D4B7C2D0B}" {
              Name "Grill0Fill"
@@ -188,9 +163,9 @@ FrameWidgetClass {
             Padding 1 0 1 0
            }
            AllowWidthOverride 1
-           WidthOverride 10
+           WidthOverride 8
            AllowHeightOverride 1
-           HeightOverride 3
+           HeightOverride 2
            {
             ImageWidgetClass "{61E1FE0D4B7C2D0F}" {
              Name "Grill1Fill"
@@ -208,9 +183,9 @@ FrameWidgetClass {
             Padding 1 0 1 0
            }
            AllowWidthOverride 1
-           WidthOverride 10
+           WidthOverride 8
            AllowHeightOverride 1
-           HeightOverride 3
+           HeightOverride 2
            {
             ImageWidgetClass "{61E1FE0D4B7C2D13}" {
              Name "Grill2Fill"
@@ -228,9 +203,9 @@ FrameWidgetClass {
             Padding 1 0 1 0
            }
            AllowWidthOverride 1
-           WidthOverride 10
+           WidthOverride 8
            AllowHeightOverride 1
-           HeightOverride 3
+           HeightOverride 2
            {
             ImageWidgetClass "{61E1FE0D4B7C2D17}" {
              Name "Grill3Fill"
@@ -249,12 +224,12 @@ FrameWidgetClass {
          Slot OverlayWidgetSlot "{61E1FE0D4B7C2D1A}" {
           HorizontalAlign 1
           VerticalAlign 0
-          Padding 0 28 0 0
+          Padding 0 22 0 0
          }
          Color 0.867 0.851 0.820 1
          Text "ELIFE"
-         "Font Size" 9
-         "Min Font Size" 8
+         "Font Size" 7
+         "Min Font Size" 6
          "Horizontal Alignment" 1
          FontProperties FontProperties "{61E1FE0D4B7C2D1B}" {
           Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -265,7 +240,7 @@ FrameWidgetClass {
          Slot OverlayWidgetSlot "{61E1FE0C4B7C2A0E}" {
           HorizontalAlign 3
           VerticalAlign 0
-          Padding 22 40 22 0
+          Padding 18 32 18 0
          }
          AllowHeightOverride 1
          HeightOverride 2
@@ -285,7 +260,7 @@ FrameWidgetClass {
          Slot OverlayWidgetSlot "{61E1FE0A4B7C2A04}" {
           HorizontalAlign 3
           VerticalAlign 3
-          Padding 16 46 16 56
+          Padding 13 45 13 45
          }
          {
           SmartPanelWidgetClass "{61E1FE0A4B7C2A38}" {
@@ -295,7 +270,7 @@ FrameWidgetClass {
             VerticalAlign 3
            }
            Color 0.078 0.086 0.114 1
-           style rounded_6px
+           style rounded_2px
            "no focus" 1
           }
           SizeLayoutWidgetClass "{61E1FE0D4B7C2D1C}" {
@@ -303,10 +278,10 @@ FrameWidgetClass {
            Slot OverlayWidgetSlot "{61E1FE0C4B7C2A12}" {
             HorizontalAlign 3
             VerticalAlign 0
-            Padding 4 4 4 0
+            Padding 3 3 3 0
            }
            AllowHeightOverride 1
-           HeightOverride 72
+           HeightOverride 32
            {
             ImageWidgetClass "{61E1FE0C4B7C2A11}" {
              Name "WallpaperDusk"
@@ -323,10 +298,10 @@ FrameWidgetClass {
            Slot OverlayWidgetSlot "{61E1FE0D4B7C2D1F}" {
             HorizontalAlign 3
             VerticalAlign 0
-            Padding 4 4 4 0
+            Padding 3 3 3 0
            }
            AllowHeightOverride 1
-           HeightOverride 86
+           HeightOverride 40
            {
             ImageWidgetClass "{61E1FE0D4B7C2D20}" {
              Name "LcdGlass"
@@ -343,13 +318,13 @@ FrameWidgetClass {
            Slot OverlayWidgetSlot "{61E1FE0A4B7C2A3B}" {
             HorizontalAlign 3
             VerticalAlign 3
-            Padding 10 10 10 8
+            Padding 8 8 8 6
            }
            {
             HorizontalLayoutWidgetClass "{61E1FE0C4B7C2A15}" {
              Name "StatusRow"
              Slot LayoutSlot "{61E1FE0C4B7C2A16}" {
-              Padding 8 6 8 0
+              Padding 6 5 6 0
              }
              {
               TextWidgetClass "{61E1FE0C4B7C2A17}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
@@ -363,8 +338,8 @@ FrameWidgetClass {
                }
                Color 0.867 0.851 0.820 1
                Text "12:00"
-               "Font Size" 12
-               "Min Font Size" 10
+               "Font Size" 10
+               "Min Font Size" 8
                "Horizontal Alignment" Center
                FontProperties FontProperties "{61E1FE0D4B7C2D22}" {
                 Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -376,9 +351,9 @@ FrameWidgetClass {
                 SizeMode Fill
                }
                Color 0.329 0.510 0.910 1
-               Text "ELIFE"
-               "Font Size" 10
-               "Min Font Size" 9
+               Text "Home"
+               "Font Size" 8
+               "Min Font Size" 7
                "Horizontal Alignment" Center
                FontProperties FontProperties "{61E1FE0D4B7C2D23}" {
                 Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -396,12 +371,12 @@ FrameWidgetClass {
                  Name "Bat0"
                  Slot LayoutSlot "{61E1FE0C4B7C2A1D}" {
                   HorizontalAlign 2
-                  Padding 1 3 0 3
+                  Padding 1 2 0 2
                  }
                  AllowWidthOverride 1
-                 WidthOverride 4
+                 WidthOverride 3
                  AllowHeightOverride 1
-                 HeightOverride 9
+                 HeightOverride 7
                  {
                   ImageWidgetClass "{61E1FE0C4B7C2A1E}" {
                    Name "Bat0Fill"
@@ -416,12 +391,12 @@ FrameWidgetClass {
                 SizeLayoutWidgetClass "{61E1FE0C4B7C2A20}" {
                  Name "Bat1"
                  Slot LayoutSlot "{61E1FE0C4B7C2A21}" {
-                  Padding 1 3 0 3
+                  Padding 1 2 0 2
                  }
                  AllowWidthOverride 1
-                 WidthOverride 4
+                 WidthOverride 3
                  AllowHeightOverride 1
-                 HeightOverride 9
+                 HeightOverride 7
                  {
                   ImageWidgetClass "{61E1FE0C4B7C2A22}" {
                    Name "Bat1Fill"
@@ -436,12 +411,12 @@ FrameWidgetClass {
                 SizeLayoutWidgetClass "{61E1FE0C4B7C2A24}" {
                  Name "Bat2"
                  Slot LayoutSlot "{61E1FE0C4B7C2A25}" {
-                  Padding 1 3 0 3
+                  Padding 1 2 0 2
                  }
                  AllowWidthOverride 1
-                 WidthOverride 4
+                 WidthOverride 3
                  AllowHeightOverride 1
-                 HeightOverride 9
+                 HeightOverride 7
                  {
                   ImageWidgetClass "{61E1FE0C4B7C2A26}" {
                    Name "Bat2Fill"
@@ -456,12 +431,12 @@ FrameWidgetClass {
                 SizeLayoutWidgetClass "{61E1FE0C4B7C2A28}" {
                  Name "Bat3"
                  Slot LayoutSlot "{61E1FE0C4B7C2A29}" {
-                  Padding 1 3 0 3
+                  Padding 1 2 0 2
                  }
                  AllowWidthOverride 1
-                 WidthOverride 4
+                 WidthOverride 3
                  AllowHeightOverride 1
-                 HeightOverride 9
+                 HeightOverride 7
                  {
                   ImageWidgetClass "{61E1FE0C4B7C2A2A}" {
                    Name "Bat3Fill"
@@ -480,7 +455,7 @@ FrameWidgetClass {
             SizeLayoutWidgetClass "{61E1FE0D4B7C2D24}" {
              Name "StatusHairline"
              Slot LayoutSlot "{61E1FE0D4B7C2D25}" {
-              Padding 8 4 8 2
+              Padding 6 2 6 1
              }
              AllowHeightOverride 1
              HeightOverride 1
@@ -495,18 +470,6 @@ FrameWidgetClass {
               }
              }
             }
-            TextWidgetClass "{61E1FE0A4B7C2A70}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-             Name "DebugPhoneId"
-             Slot LayoutSlot "{61E1FE0A4B7C2A71}" {
-              HorizontalAlign 3
-              Padding 8 2 8 2
-             }
-             Color 0.55 0.56 0.62 0.35
-             Text ""
-             "Font Size" 9
-             "Min Font Size" 8
-             "Horizontal Alignment" Center
-            }
             OverlayWidgetClass "{61E1FE0B4B7C2A00}" {
              Name "ScreenStage"
              Slot LayoutSlot "{61E1FE0B4B7C2A01}" {
@@ -518,7 +481,7 @@ FrameWidgetClass {
                Slot OverlayWidgetSlot "{61E1FE0A4B7C2A08}" {
                 HorizontalAlign 3
                 VerticalAlign 3
-                Padding 16 10 16 4
+                Padding 13 18 13 3
                }
                "Fill Origin" Top
                {
@@ -526,7 +489,7 @@ FrameWidgetClass {
                  Name "HomeClock"
                  Slot LayoutSlot "{61E1FE0D4B7C2D29}" {
                   HorizontalAlign 1
-                  Padding 0 18 0 2
+                  Padding 0 14 0 2
                  }
                  components {
                   ELIFE_PhoneClockUIComponent "{61E1FE0E4B7C2E02}" {
@@ -534,8 +497,8 @@ FrameWidgetClass {
                  }
                  Color 0.867 0.851 0.820 1
                  Text "12:00"
-                 "Font Size" 52
-                 "Min Font Size" 36
+                 "Font Size" 42
+                 "Min Font Size" 29
                  "Horizontal Alignment" Center
                  FontProperties FontProperties "{61E1FE0D4B7C2D2A}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -545,10 +508,10 @@ FrameWidgetClass {
                  Name "HomeClockRule"
                  Slot LayoutSlot "{61E1FE0D4B7C2D2C}" {
                   HorizontalAlign 1
-                  Padding 36 0 36 16
+                  Padding 22 0 22 13
                  }
                  AllowHeightOverride 1
-                 HeightOverride 1
+                 HeightOverride 2
                  {
                   ImageWidgetClass "{61E1FE0D4B7C2D2D}" {
                    Name "HomeClockRuleFill"
@@ -556,14 +519,14 @@ FrameWidgetClass {
                     HorizontalAlign 3
                     VerticalAlign 3
                    }
-                   Color 0.110 0.310 0.753 0.40
+                   Color 0.329 0.510 0.910 0.65
                   }
                  }
                 }
                 HorizontalLayoutWidgetClass "{61E1FE0A4B7C2A3C}" {
                  Name "HomeRow0"
                  Slot LayoutSlot "{61E1FE0A4B7C2A3D}" {
-                  Padding 0 0 0 14
+                  Padding 0 0 0 11
                  }
                  {
                   VerticalLayoutWidgetClass "{61E1FE0C4B7C2B01}" {
@@ -578,9 +541,9 @@ FrameWidgetClass {
                       HorizontalAlign 1
                      }
                      AllowWidthOverride 1
-                     WidthOverride 56
+                     WidthOverride 45
                      AllowHeightOverride 1
-                     HeightOverride 56
+                     HeightOverride 45
                      {
                       ButtonWidgetClass "{61E1FE0A4B7C2A10}" {
                        Name "AppBank"
@@ -592,9 +555,9 @@ FrameWidgetClass {
                        style blank
                        components {
                         SCR_ButtonTextComponent "{61E1FE0A4B7C2A13}" {
-                         m_BackgroundDefault 0.086 0.639 0.290 1
-                         m_BackgroundHovered 0.133 0.773 0.369 1
-                         m_BackgroundSelected 0.133 0.773 0.369 1
+                         m_BackgroundDefault 0.851 0.702 0.024 1
+                         m_BackgroundHovered 0.961 0.831 0.043 1
+                         m_BackgroundSelected 0.961 0.831 0.043 1
                          m_sText ""
                         }
                        }
@@ -612,7 +575,7 @@ FrameWidgetClass {
                             HorizontalAlign 3
                             VerticalAlign 3
                            }
-                           Color 0.086 0.639 0.290 1
+                           Color 0.851 0.702 0.024 1
                            style rounded_6px
                            "no focus" 1
                           }
@@ -624,8 +587,8 @@ FrameWidgetClass {
                            }
                            Color 0.867 0.851 0.820 1
                            Text "$"
-                           "Font Size" 26
-                           "Min Font Size" 20
+                           "Font Size" 21
+                           "Min Font Size" 16
                            "Horizontal Alignment" Center
                           }
                          }
@@ -638,34 +601,34 @@ FrameWidgetClass {
                      Name "AppBankLabel"
                      Slot LayoutSlot "{61E1FE0C4B7C2B06}" {
                       HorizontalAlign 1
-                      Padding 0 6 0 0
+                      Padding 0 5 0 0
                      }
                      Color 0.867 0.851 0.820 1
                      Text "#ELIFE-Phone_App_Bank"
-                     "Font Size" 11
-                     "Min Font Size" 10
+                     "Font Size" 9
+                     "Min Font Size" 8
                      "Horizontal Alignment" Center
                     }
                    }
                   }
                   VerticalLayoutWidgetClass "{61E1FE0C4B7C2B07}" {
-                   Name "AppContactsCell"
+                   Name "AppMessagesCell"
                    Slot LayoutSlot "{61E1FE0C4B7C2B08}" {
                     SizeMode Fill
                    }
                    {
                     SizeLayoutWidgetClass "{61E1FE0C4B7C2B09}" {
-                     Name "AppContactsIconSize"
+                     Name "AppMessagesIconSize"
                      Slot LayoutSlot "{61E1FE0C4B7C2B0A}" {
                       HorizontalAlign 1
                      }
                      AllowWidthOverride 1
-                     WidthOverride 56
+                     WidthOverride 45
                      AllowHeightOverride 1
-                     HeightOverride 56
+                     HeightOverride 45
                      {
                       ButtonWidgetClass "{61E1FE0A4B7C2A14}" {
-                       Name "AppContacts"
+                       Name "AppMessages"
                        Slot AlignableSlot "{61E1FE0C4B7C2B0B}" {
                         HorizontalAlign 3
                         VerticalAlign 3
@@ -674,15 +637,15 @@ FrameWidgetClass {
                        style blank
                        components {
                         SCR_ButtonTextComponent "{61E1FE0A4B7C2A17}" {
-                         m_BackgroundDefault 0.851 0.467 0.024 1
-                         m_BackgroundHovered 0.961 0.620 0.043 1
-                         m_BackgroundSelected 0.961 0.620 0.043 1
+                         m_BackgroundDefault 0.086 0.639 0.290 1
+                         m_BackgroundHovered 0.133 0.773 0.369 1
+                         m_BackgroundSelected 0.133 0.773 0.369 1
                          m_sText ""
                         }
                        }
                        {
                         OverlayWidgetClass "{61E1FE0A4B7C2A45}" {
-                         Name "AppContactsOverlay"
+                         Name "AppMessagesOverlay"
                          Slot ButtonWidgetSlot "{61E1FE0A4B7C2A46}" {
                           HorizontalAlign 3
                           VerticalAlign 3
@@ -694,20 +657,20 @@ FrameWidgetClass {
                             HorizontalAlign 3
                             VerticalAlign 3
                            }
-                           Color 0.851 0.467 0.024 1
+                           Color 0.086 0.639 0.290 1
                            style rounded_6px
                            "no focus" 1
                           }
                           ImageWidgetClass "{61E1FE0D4B7C2D31}" {
-                           Name "AppContactsGlyph"
+                           Name "AppMessagesGlyph"
                            Slot OverlayWidgetSlot "{61E1FE0D4B7C2D32}" {
                             HorizontalAlign 1
                             VerticalAlign 1
                            }
                            Color 0.867 0.851 0.820 1
                            Texture "{3262679C50EF4F01}UI/Textures/Icons/icons_wrapperUI.imageset"
-                           Image "players"
-                           Size 28 28
+                           Image "comments"
+                           Size 22 22
                           }
                          }
                         }
@@ -716,15 +679,15 @@ FrameWidgetClass {
                      }
                     }
                     TextWidgetClass "{61E1FE0A4B7C2A16}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-                     Name "AppContactsLabel"
+                     Name "AppMessagesLabel"
                      Slot LayoutSlot "{61E1FE0C4B7C2B0C}" {
                       HorizontalAlign 1
-                      Padding 0 6 0 0
+                      Padding 0 5 0 0
                      }
                      Color 0.867 0.851 0.820 1
-                     Text "#ELIFE-Phone_App_Contacts"
-                     "Font Size" 11
-                     "Min Font Size" 10
+                     Text "#ELIFE-Phone_App_Messages"
+                     "Font Size" 9
+                     "Min Font Size" 8
                      "Horizontal Alignment" Center
                     }
                    }
@@ -748,9 +711,9 @@ FrameWidgetClass {
                       HorizontalAlign 1
                      }
                      AllowWidthOverride 1
-                     WidthOverride 56
+                     WidthOverride 45
                      AllowHeightOverride 1
-                     HeightOverride 56
+                     HeightOverride 45
                      {
                       ButtonWidgetClass "{61E1FE0A4B7C2A18}" {
                        Name "AppMap"
@@ -795,7 +758,7 @@ FrameWidgetClass {
                            Color 0.867 0.851 0.820 1
                            Texture "{3262679C50EF4F01}UI/Textures/Icons/icons_wrapperUI.imageset"
                            Image "compass"
-                           Size 28 28
+                           Size 22 22
                           }
                          }
                         }
@@ -807,12 +770,12 @@ FrameWidgetClass {
                      Name "AppMapLabel"
                      Slot LayoutSlot "{61E1FE0C4B7C2B12}" {
                       HorizontalAlign 1
-                      Padding 0 6 0 0
+                      Padding 0 5 0 0
                      }
                      Color 0.867 0.851 0.820 1
                      Text "#ELIFE-Phone_App_Map"
-                     "Font Size" 11
-                     "Min Font Size" 10
+                     "Font Size" 9
+                     "Min Font Size" 8
                      "Horizontal Alignment" Center
                     }
                    }
@@ -829,9 +792,9 @@ FrameWidgetClass {
                       HorizontalAlign 1
                      }
                      AllowWidthOverride 1
-                     WidthOverride 56
+                     WidthOverride 45
                      AllowHeightOverride 1
-                     HeightOverride 56
+                     HeightOverride 45
                      {
                       ButtonWidgetClass "{61E1FE0A4B7C2A1C}" {
                        Name "AppSettings"
@@ -876,7 +839,7 @@ FrameWidgetClass {
                            Color 0.867 0.851 0.820 1
                            Texture "{3262679C50EF4F01}UI/Textures/Icons/icons_wrapperUI.imageset"
                            Image "settings"
-                           Size 28 28
+                           Size 22 22
                           }
                          }
                         }
@@ -888,12 +851,12 @@ FrameWidgetClass {
                      Name "AppSettingsLabel"
                      Slot LayoutSlot "{61E1FE0C4B7C2B18}" {
                       HorizontalAlign 1
-                      Padding 0 6 0 0
+                      Padding 0 5 0 0
                      }
                      Color 0.867 0.851 0.820 1
                      Text "#ELIFE-Phone_App_Settings"
-                     "Font Size" 11
-                     "Min Font Size" 10
+                     "Font Size" 9
+                     "Min Font Size" 8
                      "Horizontal Alignment" Center
                     }
                    }
@@ -914,11 +877,11 @@ FrameWidgetClass {
             SizeLayoutWidgetClass "{61E1FE0A4B7C2A60}" {
              Name "NavSize"
              Slot LayoutSlot "{61E1FE0A4B7C2A21}" {
-              Padding 8 2 8 4
+              Padding 6 2 6 3
              }
              "Is Visible" 0
              AllowHeightOverride 1
-             HeightOverride 22
+             HeightOverride 18
              {
               ButtonWidgetClass "{61E1FE0A4B7C2A20}" {
                Name "ButtonBack"
@@ -948,11 +911,11 @@ FrameWidgetClass {
                    Slot OverlayWidgetSlot "{61E1FE0A4B7C2A5A}" {
                     HorizontalAlign 0
                     VerticalAlign 1
-                    Padding 2 0 8 0
+                    Padding 2 0 6 0
                    }
                    Color 0.329 0.510 0.910 1
                    Text "<"
-                   "Font Size" 16
+                   "Font Size" 13
                   }
                  }
                 }
@@ -969,12 +932,12 @@ FrameWidgetClass {
          Slot OverlayWidgetSlot "{61E1FE0C4B7C2C02}" {
           HorizontalAlign 1
           VerticalAlign 2
-          Padding 0 0 0 14
+          Padding 0 0 0 11
          }
          AllowWidthOverride 1
-         WidthOverride 96
+         WidthOverride 77
          AllowHeightOverride 1
-         HeightOverride 24
+         HeightOverride 19
          {
           ButtonWidgetClass "{61E1FE0A4B7C2A24}" {
            Name "ButtonClose"
@@ -1016,9 +979,9 @@ FrameWidgetClass {
                 VerticalAlign 1
                }
                AllowWidthOverride 1
-               WidthOverride 44
+               WidthOverride 35
                AllowHeightOverride 1
-               HeightOverride 5
+               HeightOverride 4
                {
                 SmartPanelWidgetClass "{61E1FE0A4B7C2A26}" {
                  Name "HomePillBar"

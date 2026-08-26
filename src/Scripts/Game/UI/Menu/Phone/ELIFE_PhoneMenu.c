@@ -4,11 +4,11 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	protected Widget m_wRoot;
 	protected Widget m_wHomeGrid;
 	protected Widget m_wAppHost;
-	protected TextWidget m_wDebugPhoneId;
 	protected TextWidget m_wStatusBar;
 	protected Widget m_wNavSize;
 	protected Widget m_wCaseBezel;
 	protected ref ELIFE_PhoneAppBase m_App;
+	protected ELIFE_PhoneGadgetComponent m_BoundPhone;
 	protected bool m_bHolsterOnClose = true;
 	protected bool m_bIsClosing;
 
@@ -25,15 +25,9 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 		m_wRoot.SetOpacity(1);
 		m_wHomeGrid = m_wRoot.FindAnyWidget("HomeGrid");
 		m_wAppHost = m_wRoot.FindAnyWidget("AppHost");
-		m_wDebugPhoneId = TextWidget.Cast(m_wRoot.FindAnyWidget("DebugPhoneId"));
 		m_wStatusBar = TextWidget.Cast(m_wRoot.FindAnyWidget("StatusBar"));
 		m_wNavSize = m_wRoot.FindAnyWidget("NavSize");
 		m_wCaseBezel = m_wRoot.FindAnyWidget("BezelBackground");
-
-#ifndef WORKBENCH
-		if (m_wDebugPhoneId)
-			m_wDebugPhoneId.SetVisible(false);
-#endif
 
 		if (m_wAppHost)
 			m_wAppHost.SetVisible(false);
@@ -45,7 +39,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 		if (button)
 			button.m_OnClicked.Insert(OnBankApp);
 
-		button = SCR_ButtonTextComponent.GetButtonText("AppContacts", m_wRoot);
+		button = SCR_ButtonTextComponent.GetButtonText("AppMessages", m_wRoot);
 		if (button)
 			button.m_OnClicked.Insert(OnDummyApp);
 
@@ -55,7 +49,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 
 		button = SCR_ButtonTextComponent.GetButtonText("AppSettings", m_wRoot);
 		if (button)
-			button.m_OnClicked.Insert(OnDummyApp);
+			button.m_OnClicked.Insert(OnSettingsApp);
 
 		button = SCR_ButtonTextComponent.GetButtonText("ButtonBack", m_wRoot);
 		if (button)
@@ -106,16 +100,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	//------------------------------------------------------------------------------------------------
 	void BindPhone(ELIFE_PhoneGadgetComponent phone)
 	{
-		if (!m_wDebugPhoneId && m_wRoot)
-			m_wDebugPhoneId = TextWidget.Cast(m_wRoot.FindAnyWidget("DebugPhoneId"));
-
-		if (m_wDebugPhoneId)
-		{
-			if (phone)
-				m_wDebugPhoneId.SetText(phone.GetPhoneId());
-			else
-				m_wDebugPhoneId.SetText("");
-		}
+		m_BoundPhone = phone;
 
 		if (!m_wCaseBezel && m_wRoot)
 			m_wCaseBezel = m_wRoot.FindAnyWidget("BezelBackground");
@@ -131,6 +116,12 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 			m_wCaseBezel.SetColor(BlendWithDefaultBezel(caseColor, 0.08));
 		else
 			m_wCaseBezel.SetColor(new Color(0.10, 0.11, 0.14, 1));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	ELIFE_PhoneGadgetComponent GetBoundPhone()
+	{
+		return m_BoundPhone;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -211,13 +202,19 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 			m_wNavSize.SetVisible(false);
 
 		if (m_wStatusBar)
-			m_wStatusBar.SetText("ELIFE");
+			m_wStatusBar.SetText("Home");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void OnBankApp()
 	{
 		OpenApp(new ELIFE_PhoneBankingApp());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnSettingsApp()
+	{
+		OpenApp(new ELIFE_PhoneSettingsApp());
 	}
 
 	//------------------------------------------------------------------------------------------------
