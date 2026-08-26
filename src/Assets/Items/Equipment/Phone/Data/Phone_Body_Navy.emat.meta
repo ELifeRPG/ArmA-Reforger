@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{A89A3074E0B40269}Assets/Items/Equipment/Phone/Data/Phone_Body_Navy.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

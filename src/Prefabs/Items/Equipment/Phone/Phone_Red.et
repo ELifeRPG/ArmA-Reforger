@@ -1,0 +1,16 @@
+GenericEntity : "{61E1FE0A4B7C2913}Prefabs/Items/Equipment/Phone/Phone.et" {
+ ID "4D467E0D1403E68F"
+ components {
+  MeshObject "{61E1FE0A4B7C2907}" {
+   Materials {
+    MaterialAssignClass "{C8CEE61B803D0281}" {
+     AssignedMaterial "{5D9E19AB6D209F9F}Assets/Items/Equipment/Phone/Data/Phone_Body_Red.emat"
+    }
+   }
+  }
+  ELIFE_PhoneGadgetComponent "{61E1FE0A4B7C2902}" {
+   m_CaseColor 0.95 0.0 0.05 1
+  }
+ }
+ coords 0 0 0
+}

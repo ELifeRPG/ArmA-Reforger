@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{953F7683F4E3A49D}Assets/Items/Equipment/Phone/Data/Phone_Body_White.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

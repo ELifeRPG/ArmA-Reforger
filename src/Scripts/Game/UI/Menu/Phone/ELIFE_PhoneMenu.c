@@ -7,6 +7,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	protected TextWidget m_wDebugPhoneId;
 	protected TextWidget m_wStatusBar;
 	protected Widget m_wNavSize;
+	protected Widget m_wCaseBezel;
 	protected ref ELIFE_PhoneAppBase m_App;
 	protected bool m_bHolsterOnClose = true;
 	protected bool m_bIsClosing;
@@ -27,6 +28,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 		m_wDebugPhoneId = TextWidget.Cast(m_wRoot.FindAnyWidget("DebugPhoneId"));
 		m_wStatusBar = TextWidget.Cast(m_wRoot.FindAnyWidget("StatusBar"));
 		m_wNavSize = m_wRoot.FindAnyWidget("NavSize");
+		m_wCaseBezel = m_wRoot.FindAnyWidget("BezelBackground");
 
 #ifndef WORKBENCH
 		if (m_wDebugPhoneId)
@@ -107,16 +109,53 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 		if (!m_wDebugPhoneId && m_wRoot)
 			m_wDebugPhoneId = TextWidget.Cast(m_wRoot.FindAnyWidget("DebugPhoneId"));
 
-		if (!m_wDebugPhoneId)
-			return;
-
-		if (!phone)
+		if (m_wDebugPhoneId)
 		{
-			m_wDebugPhoneId.SetText("");
-			return;
+			if (phone)
+				m_wDebugPhoneId.SetText(phone.GetPhoneId());
+			else
+				m_wDebugPhoneId.SetText("");
 		}
 
-		m_wDebugPhoneId.SetText(phone.GetPhoneId());
+		if (!m_wCaseBezel && m_wRoot)
+			m_wCaseBezel = m_wRoot.FindAnyWidget("BezelBackground");
+
+		if (!m_wCaseBezel)
+			return;
+
+		Color caseColor;
+		if (phone)
+			caseColor = phone.GetCaseColor();
+
+		if (caseColor)
+			m_wCaseBezel.SetColor(BlendWithDefaultBezel(caseColor, 0.08));
+		else
+			m_wCaseBezel.SetColor(new Color(0.10, 0.11, 0.14, 1));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Keeps the bezel reading as the original dark case with just a hint of the phone's real color,
+	//! rather than a fully-saturated panel.
+	protected Color BlendWithDefaultBezel(Color caseColor, float mixFactor)
+	{
+		Color baseColor = new Color(0.10, 0.11, 0.14, 1);
+
+		float r = baseColor.R() + (caseColor.R() - baseColor.R()) * mixFactor;
+		float g = baseColor.G() + (caseColor.G() - baseColor.G()) * mixFactor;
+		float b = baseColor.B() + (caseColor.B() - baseColor.B()) * mixFactor;
+
+		//! Cap brightness so light case colors (white/silver) can't wash the bezel out lighter than intended.
+		float brightnessCap = 0.16;
+		float maxChannel = Math.Max(r, Math.Max(g, b));
+		if (maxChannel > brightnessCap)
+		{
+			float scale = brightnessCap / maxChannel;
+			r *= scale;
+			g *= scale;
+			b *= scale;
+		}
+
+		return new Color(r, g, b, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------

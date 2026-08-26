@@ -1,0 +1,9 @@
+MatPBRBasic : "{AD04B939A2C3F083}Assets/_BaseMaterials/Equipment_MatPBRBasic.emat" {
+ SurfaceProperties "{B701566F3B8A0DF6}Common/Materials/Game/metal_sheet.gamemat"
+ BCRMap "{FA844C666950EFCD}Assets/Items/Equipment/Radios/Radio_ANPRC68/Data/Radio_ANPRC68_BCR.edds"
+ NMOMap "{C25CF7F4B027BD53}Assets/Items/Equipment/Radios/Radio_ANPRC68/Data/Radio_ANPRC68_NMO.edds"
+ Diffuse 0.03 0.18 0.85 1
+ DiffuseIBL 0.03 0.18 0.85 1
+ RoughnessScale 0.55
+ SpecularMul 1.5
+}

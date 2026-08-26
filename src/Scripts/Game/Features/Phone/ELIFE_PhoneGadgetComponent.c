@@ -15,6 +15,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[Attribute("200", UIWidgets.EditBox, "Intensity of the screen's emissive texture while the phone menu is open.", "0 1000", category: "Phone")]
 	protected float m_fScreenEmissiveIntensity;
 
+	[Attribute("0.03 0.03 0.035 1", UIWidgets.ColorPicker, "Case color tint applied to the phone menu UI bezel (should roughly match this variant's body material).", category: "Phone")]
+	protected ref Color m_CaseColor;
+
 	[RplProp()]
 	protected string m_sPhoneId;
 
@@ -53,6 +56,15 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	string GetPhoneId()
 	{
 		return m_sPhoneId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	Color GetCaseColor()
+	{
+		if (!m_CaseColor)
+			m_CaseColor = new Color(0.03, 0.03, 0.035, 1);
+
+		return m_CaseColor;
 	}
 
 	//------------------------------------------------------------------------------------------------
