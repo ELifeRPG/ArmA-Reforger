@@ -4,3 +4,12 @@ $grp ELIFE_PrefabSpawn {
   m_rnPrefab "{89DCD5C00091FF04}Prefabs/Items/Keys/CarKey.et"
  }
 }
+GenericEntity : "{1A55B0A00B6222AD}Prefabs/Structures/Signs/ELIFE_Sign_Custom_L.et" {
+ components {
+  ELIFE_SignContentRenderComponent "{7B2200000000E0E0}" {
+   m_sText "Berlin"
+  }
+ }
+ coords 7.881 1.242 12.672
+ angles 0 180 0
+}

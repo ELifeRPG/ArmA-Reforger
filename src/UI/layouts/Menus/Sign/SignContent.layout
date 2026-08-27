@@ -1,0 +1,48 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ {
+  RTTextureWidgetClass "{7B2200000000B0B0}" {
+   Name "ContentRT"
+   Slot FrameWidgetSlot "{7B2200000000B0B1}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 1024
+    OffsetRight -1024
+    SizeY 512
+    OffsetBottom -512
+   }
+   allowAlpha 1
+   {
+    ImageWidgetClass "{7B2200000000C0C0}" {
+     Name "Background"
+     Slot FrameWidgetSlot "{7B2200000000C0C1}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     Color 0 0 0 1
+    }
+    TextWidgetClass "{7B2200000000D0D0}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+     Name "ContentLabel"
+     Slot OverlayWidgetSlot "{7B2200000000D0D1}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Pivot 0 0
+     Text "SIGN NAME"
+     "Font Size" 124
+     "Min Font Size" 56
+     FontProperties FontProperties "{7B2200000000D0D2}" {
+      Font "{F91B83DEEB148C54}UI/Fonts/PermanentMarker/PermanentMarker-Regular.fnt"
+     }
+    }
+   }
+  }
+ }
+}

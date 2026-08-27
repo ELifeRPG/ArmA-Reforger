@@ -1,0 +1,14 @@
+GenericEntity : "{40D29D1D738123D0}Prefabs/Structures/Signs/Military/Signpost_01/Signpost_01_sign_01_L_base.et" {
+ components {
+  MeshObject "{54969A6AAAADA251}" {
+   Materials {
+    MaterialAssignClass {
+     SourceMaterial "Signpost_01_Decal"
+     AssignedMaterial "{930F734606D6FD9D}Assets/Structures/Signs/Data/Sign_Content_Live.emat"
+    }
+   }
+  }
+  ELIFE_SignContentRenderComponent "{7B2200000000E0E0}" {
+  }
+ }
+}

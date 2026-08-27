@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{F91B83DEEB148C54}UI/Fonts/PermanentMarker/PermanentMarker-Regular.fnt"
+ Configurations {
+  FNTResourceClass PC {
+  }
+  FNTResourceClass XBOX_ONE : PC {
+  }
+  FNTResourceClass XBOX_SERIES : PC {
+  }
+  FNTResourceClass PS4 : PC {
+  }
+  FNTResourceClass PS5 : PC {
+  }
+  FNTResourceClass HEADLESS : PC {
+  }
+ }
+}

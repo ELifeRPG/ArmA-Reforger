@@ -1,0 +1,12 @@
+MatPBRDecal {
+ BlendMode AlphaBlend
+ RoughnessScale 0.2
+ MetalnessScale 0
+ OpacityMap "$rendertarget"
+ GlobalMapsUVTransform MatUVTransform "{6A3703C44B5B3AB2}" {
+  TilingU 0.9
+  TilingV 0.9
+  OffsetU -0.01
+  OffsetV -0.002
+ }
+}
