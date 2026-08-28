@@ -12,9 +12,9 @@ OverlayWidgetClass "{61E1FE0A4B7C2A01}" {
   SizeLayoutWidgetClass "{61E1FE0A4B7C2A32}" {
    Name "PhoneSize"
    Slot OverlayWidgetSlot "{61E1FE0A4B7C2A33}" {
-    HorizontalAlign 2
+    HorizontalAlign 1
     VerticalAlign 2
-    Padding 0 0 22 22
+    Padding 0 0 0 22
    }
    AllowWidthOverride 1
    WidthOverride 262
@@ -904,6 +904,16 @@ OverlayWidgetClass "{61E1FE0A4B7C2A01}" {
            }
           }
          }
+        }
+        ImageWidgetClass "{61E1FE0F4B7C2F01}" {
+         Name "ScreenOff"
+         Slot OverlayWidgetSlot "{61E1FE0F4B7C2F02}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         "Is Visible" 0
+         Color 0 0 0 1
+         "no focus" 1
         }
        }
       }

@@ -2,6 +2,18 @@ FrameWidgetClass {
  Name "rootFrame"
  "Ignore Cursor" 0
  {
+  BlurWidgetClass "{61E1FE0C4B7C2A01}" {
+   Name "WorldBlur"
+   Slot FrameWidgetSlot "{61E1FE0C4B7C2A02}" {
+    Anchor 0 0 1 1
+    OffsetLeft 0
+    OffsetTop 0
+    OffsetRight 0
+    OffsetBottom 0
+   }
+   Color 1 1 1 1
+   Intensity 0.3
+  }
   OverlayWidgetClass "{61E1FE0A4B7C2A01}" : "{7B24000000000004}UI/layouts/Menus/Phone/PhoneMenuContent.layout" {
    Name "RootOverlay"
    Slot FrameWidgetSlot "{61E1FE0A4B7C2A02}" {

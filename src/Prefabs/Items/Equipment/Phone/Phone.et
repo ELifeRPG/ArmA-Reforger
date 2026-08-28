@@ -7,6 +7,7 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
   SoundComponent "{61E1FE0A4B7C2901}" {
    Filenames {
     "{12A94705DF2BFD25}Sounds/Items/_SharedData/PickUp/Items_PickUp_Generic.acp"
+    "{454687C5EE700601}Sounds/Items/Phone/Phone_UI.acp"
    }
    OnFrameUpdate 0
   }

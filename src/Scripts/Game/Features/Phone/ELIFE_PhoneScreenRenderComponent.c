@@ -131,6 +131,14 @@ class ELIFE_PhoneScreenRenderComponent : ScriptComponent
 		AlignableSlot.SetHorizontalAlign(menuRoot, LayoutHorizontalAlign.Stretch);
 		AlignableSlot.SetVerticalAlign(menuRoot, LayoutVerticalAlign.Stretch);
 
+		Widget phoneSize = menuRoot.FindAnyWidget("PhoneSize");
+		if (phoneSize)
+		{
+			AlignableSlot.SetHorizontalAlign(phoneSize, LayoutHorizontalAlign.Right);
+			AlignableSlot.SetVerticalAlign(phoneSize, LayoutVerticalAlign.Bottom);
+			AlignableSlot.SetPadding(phoneSize, 0, 0, 22, 22);
+		}
+
 		m_ScreenController = new ELIFE_PhoneScreenController();
 		m_ScreenController.Init(menuRoot, phone);
 		m_ScreenController.ShowScreenState(phone.GetScreenState());

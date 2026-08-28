@@ -1,0 +1,350 @@
+AudioClass {
+ sounds {
+  SoundClass "1" {
+   id 1
+   name "SOUND_PHONE_POWER_ON"
+   version 5
+   tl 0 176
+   ins {
+    ConnectionsClass "con:64" {
+     id 64
+     links {
+      ConnectionClass "11:65" {
+       id 11
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    48 0
+   }
+   outState 3
+   outStatePort 12295
+  }
+  SoundClass "4" {
+   id 4
+   name "SOUND_PHONE_POWER_OFF"
+   version 5
+   tl 0 416
+   ins {
+    ConnectionsClass "con:64" {
+     id 64
+     links {
+      ConnectionClass "21:65" {
+       id 21
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    48 0
+   }
+   outState 3
+   outStatePort 12295
+  }
+  SoundClass "6" {
+   id 6
+   name "SOUND_PHONE_NOTIFICATION"
+   version 5
+   tl 0 -80
+   ins {
+    ConnectionsClass "con:64" {
+     id 64
+     links {
+      ConnectionClass "31:65" {
+       id 31
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    48 0
+   }
+   outState 3
+   outStatePort 12295
+  }
+ }
+ mixers {
+  MixerClass "3" {
+   id 3
+   name "OutputState"
+   version 4
+   tl 448 176
+   res "{B764D803219C775E}Sounds/FinalMix.afm"
+   ins {
+    ConnectionsClass "con:12295" {
+     id 12295
+     links {
+      ConnectionClass "1:65" {
+       id 1
+       port 65
+      }
+      ConnectionClass "4:65" {
+       id 4
+       port 65
+      }
+      ConnectionClass "6:65" {
+       id 6
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    16 0
+   }
+   inputs {
+    "WPN_Handling" "WPN_Shots" "WPN_Explosions" "WNP_BulletHits" "CHAR" "ENV_AMB_2D" "VEH_Animations" "Impacts" "Dialog" "ENV_Doors" "VEH_Engine" "VEH_Tires" "VON" "SFX" "SFX_Reverb_OBSOLETE" "VON_Reverb_Small" "Dialog_Reverb" "Impacts_EXT" "ENV_AMB_3D" "WPN_SonicCracks" "CHAR_Gear" "PA" "SFX_Reverb_Exterior" "ENV_AMB_3D_Reverb_Exterior" "SFX_Direct" "SFX_Reverb_Small" "SFX_Reverb_Medium" "SFX_Reverb_Large" "WPN_Shots_Player" "Dialog_Reverb_Small" "Dialog_Reverb_Medium" "Dialog_Reverb_Large" "WPN_TravelingProjectile" "Dialog_Delay_Exterior" "SFX_Reverb_InCabin" "VON_Reverb_Medium" "VON_Reverb_Large"
+   }
+  }
+ }
+ shaders {
+  ShaderClass "11" {
+   id 11
+   name "Shader"
+   version 5
+   tl -240 176
+   ins {
+    ConnectionsClass "con:0" {
+     id 0
+     links {
+      ConnectionClass "12:65" {
+       id 12
+       port 65
+      }
+     }
+    }
+    ConnectionsClass "con:1" {
+     id 1
+     links {
+      ConnectionClass "13:65" {
+       id 13
+       port 65
+      }
+     }
+    }
+    ConnectionsClass "con:2" {
+     id 2
+     links {
+      ConnectionClass "14:65" {
+       id 14
+       port 65
+      }
+     }
+    }
+    ConnectionsClass "con:64" {
+     id 64
+     links {
+      ConnectionClass "2:65" {
+       id 2
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    7 0
+   }
+  }
+  ShaderClass "21" {
+   id 21
+   name "Shader"
+   version 5
+   tl -240 416
+   ins {
+    ConnectionsClass "con:0" {
+     id 0
+     links {
+      ConnectionClass "22:65" {
+       id 22
+       port 65
+      }
+     }
+    }
+    ConnectionsClass "con:1" {
+     id 1
+     links {
+      ConnectionClass "23:65" {
+       id 23
+       port 65
+      }
+     }
+    }
+    ConnectionsClass "con:2" {
+     id 2
+     links {
+      ConnectionClass "24:65" {
+       id 24
+       port 65
+      }
+     }
+    }
+    ConnectionsClass "con:64" {
+     id 64
+     links {
+      ConnectionClass "5:65" {
+       id 5
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    7 0
+   }
+  }
+  ShaderClass "31" {
+   id 31
+   name "Shader"
+   version 5
+   tl -240 -80
+   ins {
+    ConnectionsClass "con:0" {
+     id 0
+     links {
+      ConnectionClass "32:65" {
+       id 32
+       port 65
+      }
+     }
+    }
+    ConnectionsClass "con:1" {
+     id 1
+     links {
+      ConnectionClass "33:65" {
+       id 33
+       port 65
+      }
+     }
+    }
+    ConnectionsClass "con:2" {
+     id 2
+     links {
+      ConnectionClass "34:65" {
+       id 34
+       port 65
+      }
+     }
+    }
+    ConnectionsClass "con:64" {
+     id 64
+     links {
+      ConnectionClass "7:65" {
+       id 7
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    7 0
+   }
+  }
+ }
+ amplitudes {
+  AmplitudeClass "13" : "{B8DF212957DF97E8}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-50LUFS_to_-45LUFS.conf" {
+   id 13
+   version 5
+   tl -592 208
+   parent "{B8DF212957DF97E8}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-50LUFS_to_-45LUFS.conf"
+  }
+  AmplitudeClass "23" : "{B8DF212957DF97E8}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-50LUFS_to_-45LUFS.conf" {
+   id 23
+   version 5
+   tl -592 496
+   parent "{B8DF212957DF97E8}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-50LUFS_to_-45LUFS.conf"
+  }
+  AmplitudeClass "33" : "{B8DF212957DF97E8}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-50LUFS_to_-45LUFS.conf" {
+   id 33
+   version 5
+   tl -592 -80
+   parent "{B8DF212957DF97E8}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-50LUFS_to_-45LUFS.conf"
+  }
+ }
+ frequency {
+  FrequencyClass "14" : "{CA912C59A9267045}Sounds/_SharedData/Configs/Frequency/_SharedData/Frequency_Base.conf" {
+   id 14
+   version 5
+   tl -592 272
+   parent "{CA912C59A9267045}Sounds/_SharedData/Configs/Frequency/_SharedData/Frequency_Base.conf"
+  }
+  FrequencyClass "24" : "{CA912C59A9267045}Sounds/_SharedData/Configs/Frequency/_SharedData/Frequency_Base.conf" {
+   id 24
+   version 5
+   tl -592 560
+   parent "{CA912C59A9267045}Sounds/_SharedData/Configs/Frequency/_SharedData/Frequency_Base.conf"
+  }
+  FrequencyClass "34" : "{CA912C59A9267045}Sounds/_SharedData/Configs/Frequency/_SharedData/Frequency_Base.conf" {
+   id 34
+   version 5
+   tl -592 -16
+   parent "{CA912C59A9267045}Sounds/_SharedData/Configs/Frequency/_SharedData/Frequency_Base.conf"
+  }
+ }
+ banks_local {
+  BankLocalClass "2" {
+   id 2
+   name "Phone Power On"
+   version 7
+   tl -592 80
+   Volume -11
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{E3E34E1B0BC94432}Sounds/UI/Samples/Menu/UI_Task_Succeded.wav"
+    }
+   }
+  }
+  BankLocalClass "5" {
+   id 5
+   name "Phone Power Off"
+   version 7
+   tl -592 368
+   Volume -14
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{8BD49C1587312522}Sounds/UI/Samples/Menu/UI_Task_Canceled.wav"
+    }
+   }
+  }
+  BankLocalClass "7" {
+   id 7
+   name "Phone Notification"
+   version 7
+   tl -592 -208
+   Volume -20
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{06C02AFB2CA882EB}Sounds/UI/Samples/Menu/UI_Task_Created.wav"
+    }
+   }
+  }
+ }
+ spatialities {
+  SpatialityClass "12" {
+   id 12
+   name "Spatiality"
+   version 5
+   tl -592 144
+   spatialFactor 1
+  }
+  SpatialityClass "22" {
+   id 22
+   name "Spatiality"
+   version 5
+   tl -592 432
+   spatialFactor 1
+  }
+  SpatialityClass "32" {
+   id 32
+   name "Spatiality"
+   version 5
+   tl -592 -144
+   spatialFactor 1
+  }
+ }
+ version 2
+ sourcesLimit 1
+}

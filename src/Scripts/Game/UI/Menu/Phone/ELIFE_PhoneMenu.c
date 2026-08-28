@@ -11,6 +11,17 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	protected ELIFE_PhoneGadgetComponent m_BoundPhone;
 	protected bool m_bHolsterOnClose = true;
 	protected bool m_bIsClosing;
+	protected Widget m_wPhoneSize;
+	protected Widget m_wWorldBlur;
+	protected Widget m_wScreenOff;
+	protected float m_fSlideRestLeft, m_fSlideRestTop, m_fSlideRestRight, m_fSlideRestBottom;
+	protected float m_fSlideProgress;
+	protected bool m_bSlideOpening;
+
+	protected const float PHONE_SLIDE_OFFSET = 700;
+	protected const int PHONE_SLIDE_DURATION_MS = 220;
+	protected const int PHONE_SLIDE_TICK_MS = 16;
+	protected const int PHONE_SLIDE_CLOSE_DELAY_MS = 220;
 
 	//------------------------------------------------------------------------------------------------
 	override void OnMenuOpen()
@@ -28,6 +39,11 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 		m_wStatusBar = TextWidget.Cast(m_wRoot.FindAnyWidget("StatusBar"));
 		m_wNavSize = m_wRoot.FindAnyWidget("NavSize");
 		m_wCaseBezel = m_wRoot.FindAnyWidget("BezelBackground");
+		m_wPhoneSize = m_wRoot.FindAnyWidget("PhoneSize");
+		m_wWorldBlur = m_wRoot.FindAnyWidget("WorldBlur");
+		m_wScreenOff = m_wRoot.FindAnyWidget("ScreenOff");
+		if (m_wPhoneSize)
+			PlaySlideIn();
 
 		if (m_wAppHost)
 			m_wAppHost.SetVisible(false);
@@ -79,6 +95,9 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	{
 		m_bIsClosing = true;
 		CloseApp();
+
+		GetGame().GetCallqueue().Remove(Close);
+		GetGame().GetCallqueue().Remove(TickSlide);
 
 		InputManager inputManager = GetGame().GetInputManager();
 		if (inputManager)
@@ -150,14 +169,90 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Slides PhoneSize in from below the screen to its resting position from the layout.
+	protected void PlaySlideIn()
+	{
+		AlignableSlot.GetPadding(m_wPhoneSize, m_fSlideRestLeft, m_fSlideRestTop, m_fSlideRestRight, m_fSlideRestBottom);
+
+		m_fSlideProgress = 0;
+		m_bSlideOpening = true;
+
+		//! Applied immediately (not left to the first tick) so it never shows at rest for one frame.
+		AlignableSlot.SetPadding(m_wPhoneSize, m_fSlideRestLeft, m_fSlideRestTop, m_fSlideRestRight, m_fSlideRestBottom - PHONE_SLIDE_OFFSET);
+		if (m_wWorldBlur)
+			m_wWorldBlur.SetOpacity(0);
+
+		GetGame().GetCallqueue().Remove(TickSlide);
+		GetGame().GetCallqueue().CallLater(TickSlide, PHONE_SLIDE_TICK_MS, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Slides PhoneSize off-screen, then closes for real once the slide's done. Holsters right away
+	//! (not deferred) so the screen turns off in sync with the slide, not after it finishes.
+	protected void CloseWithSlide()
+	{
+		if (m_bIsClosing)
+			return;
+
+		m_bIsClosing = true;
+
+		if (m_wScreenOff)
+			m_wScreenOff.SetVisible(true);
+
+		if (m_bHolsterOnClose)
+			ELIFE_PhoneToggle.HolsterOwnedPhone(SCR_PlayerController.GetLocalControlledEntity());
+
+		if (!m_wPhoneSize)
+		{
+			Close();
+			return;
+		}
+
+		m_fSlideProgress = 1;
+		m_bSlideOpening = false;
+		GetGame().GetCallqueue().Remove(TickSlide);
+		GetGame().GetCallqueue().CallLater(TickSlide, PHONE_SLIDE_TICK_MS, true);
+
+		GetGame().GetCallqueue().CallLater(Close, PHONE_SLIDE_CLOSE_DELAY_MS, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Steps PhoneSize's bottom padding each tick - larger padding pushes it up, so off-screen means
+	//! going below the resting value, not above it.
+	protected void TickSlide()
+	{
+		if (!m_wPhoneSize)
+		{
+			GetGame().GetCallqueue().Remove(TickSlide);
+			return;
+		}
+
+		float tickMs = PHONE_SLIDE_TICK_MS;
+		float durationMs = PHONE_SLIDE_DURATION_MS;
+		float step = tickMs / durationMs;
+		if (m_bSlideOpening)
+			m_fSlideProgress = Math.Min(1, m_fSlideProgress + step);
+		else
+			m_fSlideProgress = Math.Max(0, m_fSlideProgress - step);
+
+		float bottom = m_fSlideRestBottom - (1 - m_fSlideProgress) * PHONE_SLIDE_OFFSET;
+		AlignableSlot.SetPadding(m_wPhoneSize, m_fSlideRestLeft, m_fSlideRestTop, m_fSlideRestRight, bottom);
+
+		if (m_wWorldBlur)
+			m_wWorldBlur.SetOpacity(m_fSlideProgress);
+
+		if ((m_bSlideOpening && m_fSlideProgress >= 1) || (!m_bSlideOpening && m_fSlideProgress <= 0))
+			GetGame().GetCallqueue().Remove(TickSlide);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void CloseWithoutHolster()
 	{
 		if (m_bIsClosing)
 			return;
 
 		m_bHolsterOnClose = false;
-		m_bIsClosing = true;
-		Close();
+		CloseWithSlide();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -226,7 +321,9 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 		if (m_BoundPhone)
 			m_BoundPhone.SetScreenState(EPhoneScreenState.MAP);
 
-		CloseWithoutHolster();
+		m_bHolsterOnClose = false;
+		m_bIsClosing = true;
+		Close();
 
 		// MenuBase.Close() only queues the close for the next MenuManager update, so opening the
 		// map menu in the same frame would briefly stack it on top of the still-open phone menu
@@ -265,7 +362,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 			return;
 		}
 
-		Close();
+		CloseWithSlide();
 	}
 
 	//------------------------------------------------------------------------------------------------

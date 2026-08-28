@@ -58,8 +58,17 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected ParametricMaterialInstanceComponent m_ScreenEmissiveMaterial;
 	protected float m_fScreenPulsePhase;
 	protected ELIFE_PhoneScreenRenderComponent m_ScreenRenderComponent;
+	protected SoundComponent m_SoundComponent;
 	protected bool m_bLiveScreenActive;
 	protected ResourceName m_sAppliedScreenMaterial;
+	protected EPhoneScreenState m_ePrevScreenState = EPhoneScreenState.OFF;
+
+	//! Defined in the phone's own Phone_UI.acp (reuses vanilla UI_Task_Succeded/Canceled.wav).
+	protected const string SOUND_EVENT_POWER_ON = "SOUND_PHONE_POWER_ON";
+	protected const string SOUND_EVENT_POWER_OFF = "SOUND_PHONE_POWER_OFF";
+
+	//! Reserved for a future notification feature (see Phone_UI.acp) - not triggered anywhere yet.
+	protected const string SOUND_EVENT_NOTIFICATION = "SOUND_PHONE_NOTIFICATION";
 
 	//! Outer LOD tier (see ELIFE_PhoneScreenRenderComponent.SYNC_RANGE_METERS); starts true so a
 	//! client spawning already close doesn't wait a tick for the initial state.
@@ -79,6 +88,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		m_ScreenEmissiveMaterial = ParametricMaterialInstanceComponent.Cast(owner.FindComponent(ParametricMaterialInstanceComponent));
 		m_ScreenRenderComponent = ELIFE_PhoneScreenRenderComponent.Cast(owner.FindComponent(ELIFE_PhoneScreenRenderComponent));
+		m_SoundComponent = SoundComponent.Cast(owner.FindComponent(SoundComponent));
 
 		if (!Replication.IsServer())
 			return;
@@ -221,10 +231,23 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		else
 			SetScreenMaterial(GetBakedScreenMaterial());
 
+		bool poweringOn = m_ePrevScreenState == EPhoneScreenState.OFF && m_eScreenState != EPhoneScreenState.OFF;
+		bool poweringOff = m_ePrevScreenState != EPhoneScreenState.OFF && m_eScreenState == EPhoneScreenState.OFF;
+		m_ePrevScreenState = m_eScreenState;
+
 		if (m_eScreenState == EPhoneScreenState.OFF)
+		{
 			StopScreenPulse();
+			if (poweringOff && m_SoundComponent)
+				m_SoundComponent.SoundEvent(SOUND_EVENT_POWER_OFF);
+		}
 		else
+		{
+			if (poweringOn && m_SoundComponent)
+				m_SoundComponent.SoundEvent(SOUND_EVENT_POWER_ON);
+
 			StartScreenPulse();
+		}
 
 		if (m_ScreenRenderComponent)
 			m_ScreenRenderComponent.OnScreenStateChanged(m_eScreenState);
@@ -325,7 +348,11 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		if (mode == EGadgetMode.IN_HAND)
 		{
+			if (m_ePrevScreenState != EPhoneScreenState.OFF && m_SoundComponent)
+				m_SoundComponent.SoundEvent(SOUND_EVENT_POWER_OFF);
+
 			m_eScreenState = EPhoneScreenState.OFF;
+			m_ePrevScreenState = EPhoneScreenState.OFF;
 			m_bLiveScreenActive = false;
 			SetScreenMaterial(m_sScreenOffMaterial);
 			StopScreenPulse();
