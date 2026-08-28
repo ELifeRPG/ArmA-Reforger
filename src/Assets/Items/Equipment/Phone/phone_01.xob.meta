@@ -5,7 +5,7 @@ MetaFileClass {
    MaterialAssigns {
     MaterialAssignClass "{6A313C5A28C53A63}" {
      SourceMaterial "Phone_Body_06D0DC3A5800CC7A"
-     AssignedMaterial "{06D0DC3A5800CC7A}Assets/Items/Equipment/Phone/Data/Phone_Body_D530454C1693D26B.emat"
+     AssignedMaterial "{E7EB5828B81C1D25}Assets/Items/Equipment/Phone/Data/Phone_Body_Graphite.emat"
     }
     MaterialAssignClass "{6A313C5A28C53A76}" {
      SourceMaterial "Phone_Screen_7D200FDF0E0FC494"

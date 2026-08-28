@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{3EF77054C1575C6D}Assets/Items/Equipment/Phone/Data/phone_screen_locked.edds"
+ Name "{6A2320A557854FE2}Assets/Items/Equipment/Phone/Data/phone_screen_LOD.edds"
  Configurations {
   PNGResourceClass PC : "{DC555BD399D92412}Configs/System/ResourceTypes/PC/TextureUnspecified.conf" {
   }

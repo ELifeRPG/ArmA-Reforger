@@ -33,26 +33,11 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[Attribute("{B1EFD30A850D7431}Assets/Items/Equipment/Phone/Data/Phone_Screen_Off.emat", UIWidgets.ResourceNamePicker, "Screen material while not activated.", "emat", category: "Phone")]
 	protected ResourceName m_sScreenOffMaterial;
 
-	[Attribute("{C2F0E41B961E8542}Assets/Items/Equipment/Phone/Data/Phone_Screen_Locked.emat", UIWidgets.ResourceNamePicker, "Screen material for the locked-screen state (not currently reachable from the menu).", "emat", category: "Phone")]
-	protected ResourceName m_sScreenLockedMaterial;
-
-	[Attribute("{8AD586FC9172AA4C}Assets/Items/Equipment/Phone/Data/Phone_Screen_Home.emat", UIWidgets.ResourceNamePicker, "Screen material for the home screen.", "emat", category: "Phone")]
-	protected ResourceName m_sScreenHomeMaterial;
-
-	[Attribute("{C9D0F15EBDE84136}Assets/Items/Equipment/Phone/Data/Phone_Screen_Bank.emat", UIWidgets.ResourceNamePicker, "Screen material for the bank app.", "emat", category: "Phone")]
-	protected ResourceName m_sScreenBankMaterial;
-
-	[Attribute("{93D6FB5B77090462}Assets/Items/Equipment/Phone/Data/Phone_Screen_Map.emat", UIWidgets.ResourceNamePicker, "Screen material for the map app.", "emat", category: "Phone")]
-	protected ResourceName m_sScreenMapMaterial;
-
-	[Attribute("{DD81EAC2D9C509DA}Assets/Items/Equipment/Phone/Data/Phone_Screen_Messages.emat", UIWidgets.ResourceNamePicker, "Screen material for the messages app.", "emat", category: "Phone")]
-	protected ResourceName m_sScreenMessagesMaterial;
-
-	[Attribute("{3704D5BBFA59010B}Assets/Items/Equipment/Phone/Data/Phone_Screen_Settings.emat", UIWidgets.ResourceNamePicker, "Screen material for the settings app.", "emat", category: "Phone")]
-	protected ResourceName m_sScreenSettingsMaterial;
-
 	[Attribute("{454687C5EE7005C8}Assets/Items/Equipment/Phone/Data/Phone_Screen_Live.emat", UIWidgets.ResourceNamePicker, "Screen material used while ELIFE_PhoneScreenRenderComponent has a render-target bound (feeds its $rendertarget slot).", "emat", category: "Phone")]
 	protected ResourceName m_sScreenLiveMaterial;
+
+	[Attribute("{0C988E40A81DDEEF}Assets/Items/Equipment/Phone/Data/Phone_Screen_LOD.emat", UIWidgets.ResourceNamePicker, "Screen material shown for any non-Off state when out of live-render range (see GetBakedScreenMaterial).", "emat", category: "Phone")]
+	protected ResourceName m_sScreenLodMaterial;
 
 	[Attribute("2", UIWidgets.EditBox, "Intensity of the emissive pulse layered on top of the active screen material.", "0 20", category: "Phone")]
 	protected float m_fScreenEmissiveIntensity;
@@ -246,25 +231,14 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Out of live-render range, every non-Off state shows the same generic LOD material rather than
+	//! per-app content - only Off gets its own distinct material.
 	protected ResourceName GetBakedScreenMaterial()
 	{
-		switch (m_eScreenState)
-		{
-			case EPhoneScreenState.LOCKED:
-				return m_sScreenLockedMaterial;
-			case EPhoneScreenState.HOME:
-				return m_sScreenHomeMaterial;
-			case EPhoneScreenState.BANK:
-				return m_sScreenBankMaterial;
-			case EPhoneScreenState.MAP:
-				return m_sScreenMapMaterial;
-			case EPhoneScreenState.MESSAGES:
-				return m_sScreenMessagesMaterial;
-			case EPhoneScreenState.SETTINGS:
-				return m_sScreenSettingsMaterial;
-		}
+		if (m_eScreenState == EPhoneScreenState.OFF)
+			return m_sScreenOffMaterial;
 
-		return m_sScreenOffMaterial;
+		return m_sScreenLodMaterial;
 	}
 
 	//------------------------------------------------------------------------------------------------

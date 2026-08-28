@@ -191,6 +191,7 @@ class ELIFE_PhoneToggle
 modded class SCR_PlayerController
 {
 	protected string m_sELIFEActivePhoneId;
+	protected bool m_bELIFEPhoneToggleRegistered;
 
 	//------------------------------------------------------------------------------------------------
 	void ELIFE_SetActivePhoneId(string phoneId)
@@ -209,7 +210,11 @@ modded class SCR_PlayerController
 	{
 		super.OnUpdate(timeSlice);
 
-		if (m_bIsLocalPlayerController)
+		//! Registers once per controller
+		if (m_bIsLocalPlayerController && !m_bELIFEPhoneToggleRegistered)
+		{
 			ELIFE_PhoneToggle.Register();
+			m_bELIFEPhoneToggleRegistered = true;
+		}
 	}
 }

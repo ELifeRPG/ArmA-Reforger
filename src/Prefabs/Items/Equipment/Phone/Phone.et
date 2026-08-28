@@ -14,6 +14,7 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
    m_eAnimVariable ANPRC68
    m_bCanBeHeld 1
    m_eUseMask FROM_ACTION
+   m_sBodyMaterial "{E7EB5828B81C1D25}Assets/Items/Equipment/Phone/Data/Phone_Body_Graphite.emat"
   }
   ELIFE_PhoneScreenRenderComponent "{454687C5EE7005C9}" {
   }
@@ -56,7 +57,7 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
    Materials {
     MaterialAssignClass "{C8CEE61B803D0281}" {
      SourceMaterial "Phone_Body_06D0DC3A5800CC7A"
-     AssignedMaterial "{32874067CF8A6EB2}Assets/Items/Equipment/Radios/Radio_ANPRC68/Data/Radio_ANPRC68_01.emat"
+     AssignedMaterial "{E7EB5828B81C1D25}Assets/Items/Equipment/Phone/Data/Phone_Body_Graphite.emat"
     }
     MaterialAssignClass "{154554FD865832A6}" {
      SourceMaterial "Phone_Screen_7D200FDF0E0FC494"
