@@ -1,8 +1,4 @@
 //------------------------------------------------------------------------------------------------
-//! Hallmark · genre: editorial · macrostructure: Index-First · theme: Grid
-//! audience: LIFE characters · use: read statement · tone: civilian 1989 RP
-//! lcd: dark canvas (0.078 0.086 0.114) · signal: primary-light on the balance only
-//! pre-emit critique: P4 H4 E4 S4 R5 V4
 class ELIFE_PhoneBankRowClick : ScriptedWidgetEventHandler
 {
 	protected ELIFE_PhoneBankingApp m_App;
@@ -73,6 +69,21 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override string GetSubState()
+	{
+		return m_sOpenAccountId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void ApplySubState(string subState)
+	{
+		if (subState == "")
+			ShowIndex();
+		else
+			OpenStatement(subState);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void OpenStatement(string accountId)
 	{
 		ELIFE_PhoneBankAccount account = FindAccount(accountId);
@@ -100,6 +111,8 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 
 		if (m_wStatementPage)
 			m_wStatementPage.SetVisible(true);
+
+		NotifySubStateChanged();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -142,7 +155,8 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 		m_aRowClicks = new array<ref ELIFE_PhoneBankRowClick>();
 		ELIFE_PhoneBankingService.GetAccounts(m_aAccounts);
 		FillIndex();
-		ShowIndex();
+
+		//! Actual visible page is set by Open()'s ApplySubState() call right after this, not here.
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -163,6 +177,8 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 
 		if (m_wIndexPage)
 			m_wIndexPage.SetVisible(true);
+
+		NotifySubStateChanged();
 	}
 
 	//------------------------------------------------------------------------------------------------

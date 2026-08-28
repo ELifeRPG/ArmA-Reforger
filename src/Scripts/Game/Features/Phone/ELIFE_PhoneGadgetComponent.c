@@ -21,8 +21,8 @@ class ELIFE_PhoneGadgetComponentClass : SCR_GadgetComponentClass
 //! Each spawned phone gets a unique UUID (backend key). Items are not stackable.
 class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 {
-	[Attribute("", UIWidgets.EditBox, "Leave empty to auto-assign a UUID when the phone spawns.")]
-	protected string m_sDebugPhoneId;
+	[Attribute("", UIWidgets.EditBox, "Fixed device ID assigned at manufacture. Leave empty to auto-assign a UUID when the phone spawns.")]
+	protected string m_sManufactureDeviceId;
 
 	protected const string BODY_SOURCE_MATERIAL = "Phone_Body_06D0DC3A5800CC7A";
 	protected const string SCREEN_SOURCE_MATERIAL = "Phone_Screen_7D200FDF0E0FC494";
@@ -51,6 +51,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[Attribute("{3704D5BBFA59010B}Assets/Items/Equipment/Phone/Data/Phone_Screen_Settings.emat", UIWidgets.ResourceNamePicker, "Screen material for the settings app.", "emat", category: "Phone")]
 	protected ResourceName m_sScreenSettingsMaterial;
 
+	[Attribute("{454687C5EE7005C8}Assets/Items/Equipment/Phone/Data/Phone_Screen_Live.emat", UIWidgets.ResourceNamePicker, "Screen material used while ELIFE_PhoneScreenRenderComponent has a render-target bound (feeds its $rendertarget slot).", "emat", category: "Phone")]
+	protected ResourceName m_sScreenLiveMaterial;
+
 	[Attribute("2", UIWidgets.EditBox, "Intensity of the emissive pulse layered on top of the active screen material.", "0 20", category: "Phone")]
 	protected float m_fScreenEmissiveIntensity;
 
@@ -63,8 +66,19 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[RplProp(onRplName: "OnScreenStateUpdated")]
 	protected EPhoneScreenState m_eScreenState;
 
+	//! Generic in-app navigation sync channel - see ELIFE_PhoneAppBase.GetSubState()/ApplySubState().
+	[RplProp(onRplName: "OnScreenSubStateUpdated")]
+	protected string m_sScreenSubState;
+
 	protected ParametricMaterialInstanceComponent m_ScreenEmissiveMaterial;
 	protected float m_fScreenPulsePhase;
+	protected ELIFE_PhoneScreenRenderComponent m_ScreenRenderComponent;
+	protected bool m_bLiveScreenActive;
+	protected ResourceName m_sAppliedScreenMaterial;
+
+	//! Outer LOD tier (see ELIFE_PhoneScreenRenderComponent.SYNC_RANGE_METERS); starts true so a
+	//! client spawning already close doesn't wait a tick for the initial state.
+	protected bool m_bLocallySynced = true;
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
@@ -79,6 +93,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		super.EOnInit(owner);
 
 		m_ScreenEmissiveMaterial = ParametricMaterialInstanceComponent.Cast(owner.FindComponent(ParametricMaterialInstanceComponent));
+		m_ScreenRenderComponent = ELIFE_PhoneScreenRenderComponent.Cast(owner.FindComponent(ELIFE_PhoneScreenRenderComponent));
 
 		if (!Replication.IsServer())
 			return;
@@ -86,8 +101,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (m_sPhoneId != "")
 			return;
 
-		if (m_sDebugPhoneId != "")
-			m_sPhoneId = m_sDebugPhoneId;
+		if (m_sManufactureDeviceId != "")
+			m_sPhoneId = m_sManufactureDeviceId;
 		else
 			m_sPhoneId = UUID.GenV4();
 
@@ -121,8 +136,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Asks the authority (server) to change the state - see RpcAsk_SetScreenState. The authority
-	//! is the only side allowed to set an [RplProp] value for it to actually replicate;
+	//! Asks the authority (server) to change state - only it may set an [RplProp] for it to replicate.
 	void SetScreenState(EPhoneScreenState state)
 	{
 		if (m_eScreenState == state)
@@ -144,45 +158,133 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Fired by Replication on proxies (not the authority) whenever m_eScreenState updates -
-	//! including the initial sync for players who join after the state was already set.
+	//! Fired on proxies whenever m_eScreenState updates, incl. initial sync for late joiners.
 	protected void OnScreenStateUpdated()
 	{
 		ApplyScreenState();
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Generic counterpart to SetScreenState() for in-app navigation - see ELIFE_PhoneAppBase.
+	void SetScreenSubState(string subState)
+	{
+		if (m_sScreenSubState == subState)
+			return;
+
+		Rpc(RpcAsk_SetScreenSubState, subState);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_SetScreenSubState(string subState)
+	{
+		if (m_sScreenSubState == subState)
+			return;
+
+		m_sScreenSubState = subState;
+		ApplyScreenSubState();
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnScreenSubStateUpdated()
+	{
+		ApplyScreenSubState();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ApplyScreenSubState()
+	{
+		if (m_ScreenRenderComponent)
+			m_ScreenRenderComponent.OnScreenSubStateChanged(m_sScreenSubState);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetScreenSubState()
+	{
+		return m_sScreenSubState;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Outer LOD tier gate - entering re-applies current state, leaving freezes on the Off material.
+	void SetLocallySynced(bool synced)
+	{
+		if (m_bLocallySynced == synced)
+			return;
+
+		m_bLocallySynced = synced;
+
+		if (m_bLocallySynced)
+		{
+			ApplyScreenState();
+			return;
+		}
+
+		StopScreenPulse();
+		SetScreenMaterial(m_sScreenOffMaterial);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void ApplyScreenState()
 	{
-		switch (m_eScreenState)
-		{
-			case EPhoneScreenState.LOCKED:
-				SetScreenMaterial(m_sScreenLockedMaterial);
-				break;
-			case EPhoneScreenState.HOME:
-				SetScreenMaterial(m_sScreenHomeMaterial);
-				break;
-			case EPhoneScreenState.BANK:
-				SetScreenMaterial(m_sScreenBankMaterial);
-				break;
-			case EPhoneScreenState.MAP:
-				SetScreenMaterial(m_sScreenMapMaterial);
-				break;
-			case EPhoneScreenState.MESSAGES:
-				SetScreenMaterial(m_sScreenMessagesMaterial);
-				break;
-			case EPhoneScreenState.SETTINGS:
-				SetScreenMaterial(m_sScreenSettingsMaterial);
-				break;
-			default:
-				SetScreenMaterial(m_sScreenOffMaterial);
-				break;
-		}
+		//! Outside the outer LOD tier, skip material/pulse/RT work entirely until back in range.
+		if (!m_bLocallySynced)
+			return;
+
+		if (m_bLiveScreenActive)
+			SetScreenMaterial(m_sScreenLiveMaterial);
+		else
+			SetScreenMaterial(GetBakedScreenMaterial());
 
 		if (m_eScreenState == EPhoneScreenState.OFF)
 			StopScreenPulse();
 		else
 			StartScreenPulse();
+
+		if (m_ScreenRenderComponent)
+			m_ScreenRenderComponent.OnScreenStateChanged(m_eScreenState);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected ResourceName GetBakedScreenMaterial()
+	{
+		switch (m_eScreenState)
+		{
+			case EPhoneScreenState.LOCKED:
+				return m_sScreenLockedMaterial;
+			case EPhoneScreenState.HOME:
+				return m_sScreenHomeMaterial;
+			case EPhoneScreenState.BANK:
+				return m_sScreenBankMaterial;
+			case EPhoneScreenState.MAP:
+				return m_sScreenMapMaterial;
+			case EPhoneScreenState.MESSAGES:
+				return m_sScreenMessagesMaterial;
+			case EPhoneScreenState.SETTINGS:
+				return m_sScreenSettingsMaterial;
+		}
+
+		return m_sScreenOffMaterial;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	EPhoneScreenState GetScreenState()
+	{
+		return m_eScreenState;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetLiveScreenMaterial(bool enable)
+	{
+		if (m_bLiveScreenActive == enable)
+			return;
+
+		m_bLiveScreenActive = enable;
+
+		if (m_bLiveScreenActive)
+			SetScreenMaterial(m_sScreenLiveMaterial);
+		else
+			SetScreenMaterial(GetBakedScreenMaterial());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -250,8 +352,12 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (mode == EGadgetMode.IN_HAND)
 		{
 			m_eScreenState = EPhoneScreenState.OFF;
+			m_bLiveScreenActive = false;
 			SetScreenMaterial(m_sScreenOffMaterial);
 			StopScreenPulse();
+
+			if (m_ScreenRenderComponent)
+				m_ScreenRenderComponent.OnScreenStateChanged(EPhoneScreenState.OFF);
 		}
 	}
 
@@ -275,6 +381,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (material == ResourceName.Empty)
 			return;
 
+		//! Skip redundant remaps - re-issuing the same material tears down an already-bound $rendertarget.
+		if (material == m_sAppliedScreenMaterial)
+			return;
+
 		IEntity owner = GetOwner();
 		VObject obj = owner.GetVObject();
 		if (!obj)
@@ -286,6 +396,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		string remap = string.Format("$remap '%1' '%2'; $remap '%3' '%4';",
 			BODY_SOURCE_MATERIAL, m_sBodyMaterial, SCREEN_SOURCE_MATERIAL, material);
 		owner.SetObject(obj, remap);
+		m_sAppliedScreenMaterial = material;
 	}
 
 	//------------------------------------------------------------------------------------------------

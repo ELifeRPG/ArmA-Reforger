@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{454687C5EE7005C8}Assets/Items/Equipment/Phone/Data/Phone_Screen_Live.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

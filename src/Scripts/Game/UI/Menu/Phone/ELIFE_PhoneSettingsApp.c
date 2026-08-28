@@ -46,8 +46,8 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 			return;
 
 		string phoneId = "";
-		if (m_Menu && m_Menu.GetBoundPhone())
-			phoneId = m_Menu.GetBoundPhone().GetPhoneId();
+		if (m_Phone)
+			phoneId = m_Phone.GetPhoneId();
 
 		m_wPhoneIdValue.SetText(phoneId);
 	}

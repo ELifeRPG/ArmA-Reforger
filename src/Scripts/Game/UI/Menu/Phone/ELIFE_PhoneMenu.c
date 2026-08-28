@@ -165,7 +165,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	{
 		CloseApp();
 
-		if (!m_wAppHost)
+		if (!m_wAppHost || !m_BoundPhone)
 			return;
 
 		if (m_wHomeGrid)
@@ -177,7 +177,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 			m_wNavSize.SetVisible(true);
 
 		m_App = app;
-		m_App.Open(this, m_wAppHost);
+		m_App.Open(m_BoundPhone, m_wAppHost);
 
 		if (m_wStatusBar)
 			m_wStatusBar.SetText(m_App.GetTitle());
