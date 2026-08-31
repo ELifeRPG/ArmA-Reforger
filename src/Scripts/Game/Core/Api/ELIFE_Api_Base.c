@@ -6,6 +6,7 @@ class ELIFE_Api
 	protected static string serverURL;
 
 	protected const string CONFIG_FILE_PATH = "$profile:ELifeRPG.json";
+	protected const string WORKBENCH_DEFAULT_SERVER_URL = "http://127.0.0.1:5200/";
 
 	//------------------------------------------------------------------------------------------------
 	static ELIFE_Api GetInstance()
@@ -26,10 +27,21 @@ class ELIFE_Api
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Hardcoded to the dev Bridge for now - TODO Step 2: read CONFIG_FILE_PATH
 	protected string ParseServerUrlFromProfile()
 	{
-		return "http://127.0.0.1:5200/";
+		if (!FileIO.FileExist(CONFIG_FILE_PATH))
+		{
+#ifdef WORKBENCH
+			return WORKBENCH_DEFAULT_SERVER_URL;
+#else
+			return "";
+#endif
+		}
+
+		ELIFE_ApiConfigDto config = new ELIFE_ApiConfigDto();
+		config.ExpandFromRAW(SCR_FileIOHelper.GetFileStringContent(CONFIG_FILE_PATH));
+
+		return config.serverUrl;
 	}
 
 	//------------------------------------------------------------------------------------------------

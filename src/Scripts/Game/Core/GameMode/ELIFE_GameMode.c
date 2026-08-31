@@ -42,7 +42,7 @@ class ELIFE_GameMode : SCR_BaseGameMode
 
 		m_BridgeConnectivityCallback = new ELIFE_BaseRestCallback();
 		m_BridgeConnectivityCallback.SetCallback(this, "OnBridgeConnectivityResult");
-		ELIFE_Api.GetInstance().GetElifeApi().GET(m_BridgeConnectivityCallback, "characters?bohemiaId=00000000-0000-0000-0000-000000000000");
+		ELIFE_Api.GetInstance().GetElifeApi().GET(m_BridgeConnectivityCallback, "health");
 	}
 
 	//------------------------------------------------------------------------------------------------
