@@ -21,9 +21,12 @@ class ELIFE_Api
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! RestContext always sends application/x-www-form-urlencoded regardless of what's actually in the body, this overrides it to send application/json
 	RestContext GetElifeApi()
 	{
-		return GetGame().GetRestApi().GetContext(serverURL);
+		RestContext context = GetGame().GetRestApi().GetContext(serverURL);
+		context.SetHeaders("Content-Type,application/json");
+		return context;
 	}
 
 	//------------------------------------------------------------------------------------------------
