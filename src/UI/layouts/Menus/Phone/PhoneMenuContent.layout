@@ -913,7 +913,6 @@ OverlayWidgetClass "{61E1FE0A4B7C2A01}" {
          }
          "Is Visible" 0
          Color 0 0 0 1
-         "no focus" 1
         }
        }
       }

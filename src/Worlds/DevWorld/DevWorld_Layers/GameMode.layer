@@ -5,11 +5,5 @@ ELIFE_GameMode ELIFE_GameMode : "{E9922930097C3FD4}Prefabs/MP/Modes/ELIFE_GameMo
  coords 0 0 0
 }
 SCR_LoadoutManager LoadoutManager : "{318E93063CC0FC86}Prefabs/MP/Managers/Loadouts/ELIFE_LoadoutManager.et" {
- m_aPlayerLoadouts {
-  SCR_FactionPlayerLoadout "{599EB57B8A930E51}" {
-   m_sLoadoutName "LIFE Player"
-   m_sLoadoutResource "{9FA4749AF6C55D96}Prefabs/Characters/Factions/LIFE/Character_LIFE.et"
-   m_sAffiliatedFaction "LIFE"
-  }
- }
+ coords 0 0 0
 }

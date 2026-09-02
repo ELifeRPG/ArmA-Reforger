@@ -82,6 +82,58 @@ OverlayWidgetClass {
         }
        }
       }
+      OverlayWidgetClass "{E3503B7D89DC6091}" {
+       Name "PinCard"
+       Slot LayoutSlot "{DC1CB1782C76A3B4}" {
+        VerticalAlign 0
+        SizeMode Fill
+        Padding 0 6 0 0
+       }
+       {
+        SmartPanelWidgetClass "{1328F81B68623BB2}" {
+         Name "PinCardBackground"
+         Slot OverlayWidgetSlot "{540A4BB560480D3C}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.12 0.13 0.17 1
+         style rounded_6px
+         "no focus" 1
+        }
+        VerticalLayoutWidgetClass "{961820C599AD4613}" {
+         Name "PinCardContent"
+         Slot OverlayWidgetSlot "{3F1C2F7195C231C7}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 10 8 10 8
+         }
+         {
+          TextWidgetClass "{47A0251BF94089AD}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "PinLabel"
+           Slot LayoutSlot "{094C0AD0D2DC225C}" {
+            Padding 0 0 0 2
+           }
+           Color 0.55 0.56 0.62 1
+           Text "#ELIFE-Phone_Settings_Pin"
+           "Font Size" 8
+           "Min Font Size" 7
+           "Horizontal Alignment" Left
+          }
+          TextWidgetClass "{96F19840EBF2268D}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "PinValue"
+           Slot LayoutSlot "{4D8840535CAF98D5}" {
+            SizeMode Fill
+           }
+           Color 0.78 0.79 0.85 1
+           Text ""
+           "Font Size" 8
+           "Min Font Size" 6
+           "Horizontal Alignment" Left
+          }
+         }
+        }
+       }
+      }
      }
     }
    }

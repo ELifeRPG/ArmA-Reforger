@@ -42,7 +42,7 @@ class ELIFE_GameMode : SCR_BaseGameMode
 
 		m_BridgeConnectivityCallback = new ELIFE_BaseRestCallback();
 		m_BridgeConnectivityCallback.SetCallback(this, "OnBridgeConnectivityResult");
-		ELIFE_Api.GetInstance().GetElifeApi().GET(m_BridgeConnectivityCallback, "health");
+		ELIFE_Api.GetInstance().GetElifeApi().GET(m_BridgeConnectivityCallback, "ping");
 	}
 
 	//------------------------------------------------------------------------------------------------

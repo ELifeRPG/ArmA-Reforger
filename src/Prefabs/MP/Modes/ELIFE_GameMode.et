@@ -1,42 +1,16 @@
-ELIFE_GameMode {
+ELIFE_GameMode : "{0F307326459A1395}Prefabs/MP/Modes/GameMode_Base.et" {
  ID "597F1CE401B0CCF5"
  components {
-  SCR_CallsignManagerComponent "{597F1CE4157DA61F}" {
-  }
-  SCR_DestructionManagerComponent "{597F1CE4157DA627}" {
-  }
-  SCR_GameOverScreenManagerComponent "{597F1CE4157DA629}" {
+  SCR_GameOverScreenManagerComponent "{56DEC646298AD219}" {
    m_GameOverScreenConfig SCR_GameOverScreenConfig "{56DEC6462FFDD82D}" : "{651583FFFB7FC765}Configs/GameOverScreen/GameOverScreensConfig.conf" {
    }
   }
-  SCR_GroupsManagerComponent "{597F1CE4157DA62C}" {
+  SCR_GroupsManagerComponent "{5706EC99934496F5}" {
    m_sDefaultGroupPrefab "{8B4D49A9F324E7D5}Prefabs/Groups/PlayableGroup.et"
    m_iPlayableGroupFrequencyOffset 500
   }
-  SCR_HintManagerComponent "{597F1CE4157DA62E}" {
-  }
-  SCR_NametagConfigComponent "{597F1CE4157D5810}" {
-  }
-  SCR_NotificationSenderComponent "{597F1CE4157D580D}" {
-  }
-  SCR_PlayerProfileManagerComponent "{597F1CE4157D4F7C}" {
-  }
-  SCR_PlayersRestrictionZoneManagerComponent "{597F1CE4157D4F7D}" {
-  }
-  SCR_PossessingManagerComponent "{597F1CE4157D4F7A}" {
-  }
-  SCR_RespawnSystemComponent "{597F1CE4157D4F7B}" {
-   components {
-    SCR_FreeSpawnHandlerComponent "{597F1CE4157D4F81}" {
-    }
-    SCR_PossessSpawnHandlerComponent "{597F1CE4157D4F82}" {
-    }
-    SCR_SpawnPointSpawnHandlerComponent "{597F1CE4157D4F83}" {
-    }
-   }
+  SCR_RespawnSystemComponent "{56B2B4793051E7C9}" {
    m_SpawnLogic SCR_AutoSpawnLogic "{597F1CE4157D4F84}" {
-    m_sForcedFaction "LIFE"
-    m_sForcedLoadout "LIFE Player"
    }
   }
   SCR_VotingManagerComponent "{5650BB6B6089393A}" : "{37037CBB8B4CD354}Prefabs/MP/Components/VotingManagerComponent.ct" {
@@ -50,11 +24,11 @@ ELIFE_GameMode {
     }
    }
   }
-  RplComponent "{597F1CE4157D4F75}" {
-   "Rpl State Override" Static
+  RplComponent "{56B2B4793BF2E1B4}" {
    Streamable Disabled
   }
  }
  coords 974.412 1.879 12149.478
  Flags 0
+ m_bUseSpawnPreload 0
 }

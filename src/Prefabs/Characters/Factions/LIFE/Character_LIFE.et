@@ -1,10 +1,7 @@
 SCR_ChimeraCharacter : "{836E7E39AAC5888B}Prefabs/Characters/Factions/BLUFOR/US_Army/Character_US_Base.et" {
  ID "520EC961A090BBD5"
  components {
-  BaseWeaponManagerComponent "{520EA1D2F659CE5D}" {
-   DefaultWeaponIndex 0
-  }
-  FactionAffiliationComponent "{520EC961FB0A2E90}" {
+  SCR_CharacterFactionAffiliationComponent "{520EC961FB0A2E90}" {
    "faction affiliation" "LIFE"
   }
   SCR_EditableCharacterComponent "{520EA1D2F659C85C}" {
@@ -28,7 +25,7 @@ SCR_ChimeraCharacter : "{836E7E39AAC5888B}Prefabs/Characters/Factions/BLUFOR/US_
   }
   CharacterWeaponSlotComponent "{520EA1D2F659CFAB}" {
   }
-  CharacterIdentityComponent "{5584CBC63E092DBC}" {
+  SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
    Identity Identity "{5584CBC6363C648B}" {
     VisualIdentity VisualIdentity "{56E6D9456009D1C4}" {
      Head "{D7C470712EC4D596}Prefabs/Characters/Heads/Head_White_05.et"

@@ -18,12 +18,9 @@ class ELIFE_PhoneGadgetComponentClass : SCR_GadgetComponentClass
 
 //------------------------------------------------------------------------------------------------
 //! Handheld phone gadget. Identity is this component (SPECIALIST_ITEM), never EGadgetType.GPS.
-//! Each spawned phone gets a unique UUID (backend key). Items are not stackable.
+//! Provisioned against the backend on first equip. Items are not stackable.
 class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 {
-	[Attribute("", UIWidgets.EditBox, "Fixed device ID assigned at manufacture. Leave empty to auto-assign a UUID when the phone spawns.")]
-	protected string m_sManufactureDeviceId;
-
 	protected const string BODY_SOURCE_MATERIAL = "Phone_Body_06D0DC3A5800CC7A";
 	protected const string SCREEN_SOURCE_MATERIAL = "Phone_Screen_7D200FDF0E0FC494";
 
@@ -45,8 +42,24 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[Attribute("0.03 0.03 0.035 1", UIWidgets.ColorPicker, "Case color tint applied to the phone menu UI bezel (should roughly match this variant's body material).", category: "Phone")]
 	protected ref Color m_CaseColor;
 
-	[RplProp()]
+	[RplProp(onRplName: "OnPhoneIdUpdated")]
 	protected string m_sPhoneId;
+
+	[RplProp()]
+	protected string m_sNumber;
+
+	[RplProp()]
+	protected string m_sPin;
+
+	protected ref ELIFE_ProvisionPhoneCallback m_ProvisionCallback;
+	protected ref ELIFE_BaseRestCallback m_PowerOnCallback;
+	protected int m_iOwnerPlayerId;
+
+	//! Server: last fetched contacts (real) - client: whichever variant this machine's RPC channel delivered.
+	protected ref array<ref ELIFE_ContactDto> m_aContacts = {};
+	protected int m_iContactsCacheTime;
+	protected ref ELIFE_ContactsFetchCallback m_ContactsFetchCallback;
+	protected const int CONTACTS_CACHE_TTL_MS = 15000;
 
 	[RplProp(onRplName: "OnScreenStateUpdated")]
 	protected EPhoneScreenState m_eScreenState;
@@ -89,25 +102,199 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		m_ScreenEmissiveMaterial = ParametricMaterialInstanceComponent.Cast(owner.FindComponent(ParametricMaterialInstanceComponent));
 		m_ScreenRenderComponent = ELIFE_PhoneScreenRenderComponent.Cast(owner.FindComponent(ELIFE_PhoneScreenRenderComponent));
 		m_SoundComponent = SoundComponent.Cast(owner.FindComponent(SoundComponent));
-
-		if (!Replication.IsServer())
-			return;
-
-		if (m_sPhoneId != "")
-			return;
-
-		if (m_sManufactureDeviceId != "")
-			m_sPhoneId = m_sManufactureDeviceId;
-		else
-			m_sPhoneId = UUID.GenV4();
-
-		Replication.BumpMe();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	string GetPhoneId()
 	{
 		return m_sPhoneId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fires on the owning client whenever m_sPhoneId actually changes - including once async
+	//! provisioning finishes, since capturing it at equip time (ModeSwitch) would always be empty.
+	protected void OnPhoneIdUpdated()
+	{
+		if (IsLocalCharacterOwner())
+			ELIFE_PhoneToggle.RememberActivePhone(this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetNumber()
+	{
+		return m_sNumber;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetPin()
+	{
+		return m_sPin;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Dev-only - only the owner ever needs the PIN again (the guard chain accepts "owner OR PIN"),
+	//! so it isn't reused after this - just shown in Settings.
+	protected void ProvisionPhone(int playerId)
+	{
+		ELIFE_Api api = ELIFE_Api.GetInstance();
+		if (!api)
+			return;
+
+		string characterId = ELIFE_CharacterIdentity.GetCharacterId(playerId);
+		string pin = string.Format("%1", Math.RandomIntInclusive(1000, 9999));
+		string body = string.Format("{\"characterId\":\"%1\",\"pin\":\"%2\"}", characterId, pin);
+
+		m_ProvisionCallback = new ELIFE_ProvisionPhoneCallback();
+		m_ProvisionCallback.SetCallback(this, "OnPhoneProvisioned", pin);
+		api.GetElifeApi().POST(m_ProvisionCallback, "phones", body);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnPhoneProvisioned(ELIFE_EApiStatusCode status, JsonApiStruct data, string pin)
+	{
+		ELIFE_ProvisionPhoneResponseDto response = ELIFE_ProvisionPhoneResponseDto.Cast(data);
+		if (status != ELIFE_EApiStatusCode.SUCCESS || !response)
+		{
+			Print("ELIFE_PhoneGadgetComponent | provisioning failed", LogLevel.ERROR);
+			return;
+		}
+
+		m_sPhoneId = response.phoneId;
+		m_sNumber = response.number;
+		m_sPin = pin;
+		Replication.BumpMe();
+
+		//! onRplName only reliably fires on remote proxies, not the machine setting the value (see
+		//! RpcAsk_SetScreenState() below, which applies locally the same way) - on a listen server the
+		//! equipping player IS that machine, so OnPhoneIdUpdated() alone would never fire for them.
+		OnPhoneIdUpdated();
+
+		//! Contacts/Messages guard chain requires the phone powered on - freshly provisioned phones
+		//! start off, so nothing in either app works until this runs once.
+		PowerOnPhone();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PowerOnPhone()
+	{
+		ELIFE_Api api = ELIFE_Api.GetInstance();
+		if (!api)
+			return;
+
+		string characterId = ELIFE_CharacterIdentity.GetCharacterId(m_iOwnerPlayerId);
+		string body = string.Format("{\"characterId\":\"%1\",\"isPoweredOn\":true}", characterId);
+
+		m_PowerOnCallback = new ELIFE_BaseRestCallback();
+		m_PowerOnCallback.SetCallback(this, "OnPhonePoweredOn");
+		api.GetElifeApi().POST(m_PowerOnCallback, string.Format("phones/%1/power", m_sPhoneId), body);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnPhonePoweredOn(ELIFE_EApiStatusCode status, JsonApiStruct data)
+	{
+		if (status != ELIFE_EApiStatusCode.SUCCESS)
+			Print("ELIFE_PhoneGadgetComponent | power-on failed", LogLevel.ERROR);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	array<ref ELIFE_ContactDto> GetContacts()
+	{
+		return m_aContacts;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Called by the Contacts app on open - refreshes from the Bridge only if the cache is stale.
+	void RequestContacts()
+	{
+		Rpc(RpcAsk_RequestContacts);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_RequestContacts()
+	{
+		if (m_sPhoneId == "")
+			return;
+
+		if (System.GetTickCount() - m_iContactsCacheTime < CONTACTS_CACHE_TTL_MS)
+		{
+			PushContacts();
+			return;
+		}
+
+		ELIFE_Api api = ELIFE_Api.GetInstance();
+		if (!api)
+			return;
+
+		//! Contacts/messages routes take no characterId/pin - possession is proven once at power-on.
+		string request = string.Format("phones/%1/apps/contacts/entries", m_sPhoneId);
+
+		m_ContactsFetchCallback = new ELIFE_ContactsFetchCallback();
+		m_ContactsFetchCallback.SetCallback(this, "OnContactsFetched");
+		api.GetElifeApi().GET(m_ContactsFetchCallback, request);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnContactsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data)
+	{
+		ELIFE_ContactListDto list = ELIFE_ContactListDto.Cast(data);
+		if (status != ELIFE_EApiStatusCode.SUCCESS || !list)
+		{
+			Print("ELIFE_PhoneGadgetComponent | contacts fetch failed", LogLevel.ERROR);
+			return;
+		}
+
+		m_aContacts = list.items;
+		m_iContactsCacheTime = System.GetTickCount();
+		PushContacts();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner gets the real cache, everyone else with the phone streamed gets a redacted copy
+	protected void PushContacts()
+	{
+		ELIFE_ContactListDto real = new ELIFE_ContactListDto();
+		real.items = m_aContacts;
+		real.Pack();
+		Rpc(RpcDo_ContactsOwner, real.AsString());
+
+		//! Broadcast doesn't self-deliver to a listen server's own local view (same quirk as
+		//! onRplName - see OnPhoneIdUpdated()) - the UI needs to self-apply the redacted
+		//! copy here too when Replication.IsServer() and the local player isn't the owner.
+		ELIFE_ContactListDto redacted = new ELIFE_ContactListDto();
+		foreach (ELIFE_ContactDto contact : m_aContacts)
+			redacted.items.Insert(contact.Redact());
+		redacted.Pack();
+		Rpc(RpcDo_ContactsBystanders, redacted.AsString());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_ContactsOwner(string json)
+	{
+		ApplyContacts(json);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! No RplCondition filter here - its per-recipient behavior for RPCs (vs. RplProp, where it's
+	//! documented) is unverified, and an entity with an owner may not broadcast at all under it.
+	//! Excluding the owner is done explicitly below instead, which is correct regardless.
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	protected void RpcDo_ContactsBystanders(string json)
+	{
+		RplComponent rpl = RplComponent.Cast(GetOwner().FindComponent(RplComponent));
+		if (rpl && rpl.IsOwner())
+			return;
+
+		ApplyContacts(json);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ApplyContacts(string json)
+	{
+		ELIFE_ContactListDto list = new ELIFE_ContactListDto();
+		list.ExpandFromRAW(json);
+		m_aContacts = list.items;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -324,6 +511,12 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 				if (rpl && pc)
 					rpl.Give(pc.GetRplIdentity());
+
+				if (playerId != 0)
+					m_iOwnerPlayerId = playerId;
+
+				if (m_sPhoneId == "")
+					ProvisionPhone(playerId);
 			}
 
 			IEntity localCharacter = SCR_PlayerController.GetLocalControlledEntity();
@@ -534,5 +727,32 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		reader.ReadBool(m_bActivated);
 
 		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class ELIFE_ProvisionPhoneCallback : ELIFE_BaseRestCallback
+{
+	//------------------------------------------------------------------------------------------------
+	override ELIFE_EApiStatusCode ExtractData(string data, int dataSize, out JsonApiStruct resultData)
+	{
+		ELIFE_ProvisionPhoneResponseDto dto = new ELIFE_ProvisionPhoneResponseDto();
+		dto.ExpandFromRAW(data);
+		resultData = dto;
+		return ELIFE_EApiStatusCode.SUCCESS;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class ELIFE_ContactsFetchCallback : ELIFE_BaseRestCallback
+{
+	//------------------------------------------------------------------------------------------------
+	//! Bridge returns a bare JSON array - wrap it so the object-rooted JsonApiStruct parser can read it.
+	override ELIFE_EApiStatusCode ExtractData(string data, int dataSize, out JsonApiStruct resultData)
+	{
+		ELIFE_ContactListDto dto = new ELIFE_ContactListDto();
+		dto.ExpandFromRAW(string.Format("{\"items\":%1}", data));
+		resultData = dto;
+		return ELIFE_EApiStatusCode.SUCCESS;
 	}
 }

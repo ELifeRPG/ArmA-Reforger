@@ -186,5 +186,13 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
+  CustomStringTableItem "{C207ED1617A70FA8}" {
+   Id "ELIFE-Phone_Settings_Pin"
+   Target_en_us "PIN"
+   Target_de_de "PIN"
+   Modified 1756209600
+   Author "Robin"
+   LastChanged "Robin"
+  }
  }
 }
