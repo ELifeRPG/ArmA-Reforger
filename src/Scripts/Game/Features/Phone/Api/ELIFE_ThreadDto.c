@@ -1,9 +1,8 @@
 //------------------------------------------------------------------------------------------------
-//! Covers both API shapes: the thread-list summary (no messages) and single-thread detail (with
-//! messages) - "messages" just stays empty when the response doesn't include it.
+//! Covers every thread shape the Bridge returns - "messages" stays empty when the response omits it.
 class ELIFE_ThreadDto : JsonApiStruct
 {
-	string id;
+	string threadId;
 	ref array<string> participants = {};
 	int unreadCount;
 	string lastMessageAt;
@@ -11,7 +10,7 @@ class ELIFE_ThreadDto : JsonApiStruct
 
 	void ELIFE_ThreadDto()
 	{
-		RegV("id");
+		RegV("threadId");
 		RegV("participants");
 		RegV("unreadCount");
 		RegV("lastMessageAt");
@@ -19,11 +18,11 @@ class ELIFE_ThreadDto : JsonApiStruct
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! id/unreadCount/lastMessageAt stay real (activity signal only) - participants/messages identify who.
+	//! threadId/unreadCount/lastMessageAt stay real - only participants/messages identify anyone.
 	ELIFE_ThreadDto Redact()
 	{
 		ELIFE_ThreadDto redacted = new ELIFE_ThreadDto();
-		redacted.id = id;
+		redacted.threadId = threadId;
 		redacted.unreadCount = unreadCount;
 		redacted.lastMessageAt = lastMessageAt;
 

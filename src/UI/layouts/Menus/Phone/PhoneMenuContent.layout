@@ -843,6 +843,102 @@ OverlayWidgetClass "{61E1FE0A4B7C2A01}" {
                 }
                }
               }
+              HorizontalLayoutWidgetClass "{61E1FE0C4B7C2D01}" {
+               Name "HomeRow2"
+               Slot LayoutSlot "{61E1FE0C4B7C2D02}" {
+                Padding 0 11 0 0
+               }
+               {
+                VerticalLayoutWidgetClass "{61E1FE0C4B7C2D03}" {
+                 Name "AppContactsCell"
+                 Slot LayoutSlot "{61E1FE0C4B7C2D04}" {
+                  SizeMode Fill
+                 }
+                 {
+                  SizeLayoutWidgetClass "{61E1FE0C4B7C2D05}" {
+                   Name "AppContactsIconSize"
+                   Slot LayoutSlot "{61E1FE0C4B7C2D06}" {
+                    HorizontalAlign 1
+                   }
+                   AllowWidthOverride 1
+                   WidthOverride 45
+                   AllowHeightOverride 1
+                   HeightOverride 45
+                   {
+                    ButtonWidgetClass "{61E1FE0C4B7C2D07}" {
+                     Name "AppContacts"
+                     Slot AlignableSlot "{61E1FE0C4B7C2D08}" {
+                      HorizontalAlign 3
+                      VerticalAlign 3
+                     }
+                     Color 1 1 1 1
+                     style blank
+                     components {
+                      SCR_ButtonTextComponent "{61E1FE0C4B7C2D09}" {
+                       m_BackgroundDefault 0.239 0.588 0.502 1
+                       m_BackgroundHovered 0.29 0.69 0.6 1
+                       m_BackgroundSelected 0.29 0.69 0.6 1
+                       m_sText ""
+                      }
+                     }
+                     {
+                      OverlayWidgetClass "{61E1FE0C4B7C2D0A}" {
+                       Name "AppContactsOverlay"
+                       Slot ButtonWidgetSlot "{61E1FE0C4B7C2D0B}" {
+                        HorizontalAlign 3
+                        VerticalAlign 3
+                       }
+                       {
+                        SmartPanelWidgetClass "{61E1FE0C4B7C2D0C}" {
+                         Name "Background"
+                         Slot OverlayWidgetSlot "{61E1FE0C4B7C2D0D}" {
+                          HorizontalAlign 3
+                          VerticalAlign 3
+                         }
+                         Color 0.239 0.588 0.502 1
+                         style rounded_6px
+                         "no focus" 1
+                        }
+                        TextWidgetClass "{61E1FE0C4B7C2D0E}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                         Name "AppContactsGlyph"
+                         Slot OverlayWidgetSlot "{61E1FE0C4B7C2D0F}" {
+                          HorizontalAlign 1
+                          VerticalAlign 1
+                         }
+                         Color 0.867 0.851 0.820 1
+                         Text "@"
+                         "Font Size" 21
+                         "Min Font Size" 16
+                         "Horizontal Alignment" Center
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                  TextWidgetClass "{61E1FE0C4B7C2D10}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                   Name "AppContactsLabel"
+                   Slot LayoutSlot "{61E1FE0C4B7C2D11}" {
+                    HorizontalAlign 1
+                    Padding 0 5 0 0
+                   }
+                   Color 0.867 0.851 0.820 1
+                   Text "#ELIFE-Phone_App_Contacts"
+                   "Font Size" 9
+                   "Min Font Size" 8
+                   "Horizontal Alignment" Center
+                  }
+                 }
+                }
+                VerticalLayoutWidgetClass "{61E1FE0C4B7C2D12}" {
+                 Name "HomeRow2Spacer"
+                 Slot LayoutSlot "{61E1FE0C4B7C2D13}" {
+                  SizeMode Fill
+                 }
+                }
+               }
+              }
              }
             }
             OverlayWidgetClass "{61E1FE0B4B7C2A02}" {

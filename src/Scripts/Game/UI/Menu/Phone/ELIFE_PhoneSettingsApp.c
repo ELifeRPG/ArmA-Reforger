@@ -21,19 +21,7 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	protected override Widget CreateRoot(notnull Widget host)
 	{
-		WorkspaceWidget workspace = GetGame().GetWorkspace();
-		if (!workspace)
-			return null;
-
-		Widget root = workspace.CreateWidgets(LAYOUT, host);
-		if (root)
-		{
-			//! CreateWidgets() doesn't give the returned root a fill slot by default.
-			AlignableSlot.SetHorizontalAlign(root, LayoutHorizontalAlign.Stretch);
-			AlignableSlot.SetVerticalAlign(root, LayoutVerticalAlign.Stretch);
-		}
-
-		return root;
+		return CreateStretched(LAYOUT, host);
 	}
 
 	//------------------------------------------------------------------------------------------------

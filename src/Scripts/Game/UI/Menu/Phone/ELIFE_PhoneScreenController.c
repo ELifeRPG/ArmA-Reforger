@@ -46,9 +46,12 @@ class ELIFE_PhoneScreenController
 				OpenApp(state, new ELIFE_PhoneSettingsApp());
 				break;
 			case EPhoneScreenState.MESSAGES:
-				//! No real app page for this state - ELIFE_PhoneMenu just shows a hint here too.
 				m_wStatusBar.SetText("#ELIFE-Phone_App_Messages");
-				CloseApp();
+				OpenApp(state, new ELIFE_PhoneMessagesApp());
+				break;
+			case EPhoneScreenState.CONTACTS:
+				m_wStatusBar.SetText("#ELIFE-Phone_App_Contacts");
+				OpenApp(state, new ELIFE_PhoneContactsApp());
 				break;
 			case EPhoneScreenState.MAP:
 				//! ELIFE_PhoneMenu opens a separate map menu for this state - no AppHost content.

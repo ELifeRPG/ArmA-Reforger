@@ -57,7 +57,11 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 
 		button = SCR_ButtonTextComponent.GetButtonText("AppMessages", m_wRoot);
 		if (button)
-			button.m_OnClicked.Insert(OnDummyApp);
+			button.m_OnClicked.Insert(OnMessagesApp);
+
+		button = SCR_ButtonTextComponent.GetButtonText("AppContacts", m_wRoot);
+		if (button)
+			button.m_OnClicked.Insert(OnContactsApp);
 
 		button = SCR_ButtonTextComponent.GetButtonText("AppMap", m_wRoot);
 		if (button)
@@ -341,9 +345,15 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void OnDummyApp()
+	protected void OnMessagesApp()
 	{
-		SCR_HintManagerComponent.ShowCustomHint("#ELIFE-Hint_Phone_AppDummy", "#ELIFE-Item_Phone_Name", 2.0);
+		OpenApp(new ELIFE_PhoneMessagesApp());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnContactsApp()
+	{
+		OpenApp(new ELIFE_PhoneContactsApp());
 	}
 
 	//------------------------------------------------------------------------------------------------

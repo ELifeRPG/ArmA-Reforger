@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{9C6B03E5A187D24F}UI/layouts/Menus/Phone/Apps/PhoneAppStatus.layout"
+ Configurations {
+  LayoutResourceClass PC {
+  }
+  LayoutResourceClass XBOX_ONE : PC {
+  }
+  LayoutResourceClass XBOX_SERIES : PC {
+  }
+  LayoutResourceClass PS4 : PC {
+  }
+  LayoutResourceClass PS5 : PC {
+  }
+  LayoutResourceClass HEADLESS : PC {
+  }
+ }
+}

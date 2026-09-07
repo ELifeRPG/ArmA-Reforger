@@ -9,4 +9,15 @@ class ELIFE_ContactListDto : JsonApiStruct
 	{
 		RegV("items");
 	}
+
+	//------------------------------------------------------------------------------------------------
+	ELIFE_ContactListDto Redact()
+	{
+		ELIFE_ContactListDto redacted = new ELIFE_ContactListDto();
+
+		foreach (ELIFE_ContactDto contact : items)
+			redacted.items.Insert(contact.Redact());
+
+		return redacted;
+	}
 }

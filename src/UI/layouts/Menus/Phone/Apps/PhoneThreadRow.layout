@@ -1,0 +1,187 @@
+SizeLayoutWidgetClass {
+ Name "ThreadRowSize"
+ AllowWidthOverride 1
+ WidthOverride 200
+ AllowHeightOverride 1
+ HeightOverride 43
+ {
+  OverlayWidgetClass "{7A3C91E600000001}" {
+   Name "ThreadRow"
+   Slot AlignableSlot "{7A3C91E600000002}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    SmartPanelWidgetClass "{7A3C91E600000003}" {
+     Name "ThreadRowBackground"
+     Slot OverlayWidgetSlot "{7A3C91E600000004}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.12 0.13 0.17 1
+     style rounded_6px
+     "no focus" 1
+    }
+    ButtonWidgetClass "{7A3C91E600000005}" {
+     Name "ThreadButton"
+     Slot OverlayWidgetSlot "{7A3C91E600000006}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 1
+     components {
+      SCR_ButtonTextComponent "{7A3C91E600000007}" {
+       m_BackgroundDefault 0.086 0.639 0.29 0
+       m_BackgroundHovered 0.086 0.639 0.29 0.16
+       m_BackgroundSelected 0.086 0.639 0.29 0.26
+       m_sText ""
+      }
+     }
+     style blank
+     {
+      HorizontalLayoutWidgetClass "{7A3C91E600000008}" {
+       Name "ThreadRowBody"
+       Slot ButtonWidgetSlot "{7A3C91E600000009}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+        Padding 5 5 5 5
+       }
+       {
+        SizeLayoutWidgetClass "{7A3C91E60000000A}" {
+         Name "ThreadAvatarSize"
+         Slot LayoutSlot "{7A3C91E60000000B}" {
+          Padding 0 0 6 0
+         }
+         AllowWidthOverride 1
+         WidthOverride 26
+         AllowHeightOverride 1
+         HeightOverride 26
+         {
+          OverlayWidgetClass "{7A3C91E60000000C}" {
+           Name "ThreadAvatar"
+           Slot AlignableSlot "{7A3C91E60000000D}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           {
+            SmartPanelWidgetClass "{7A3C91E60000000E}" {
+             Name "ThreadAvatarFill"
+             Slot OverlayWidgetSlot "{7A3C91E60000000F}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0.086 0.639 0.29 1
+             style rounded_6px
+             "no focus" 1
+            }
+            TextWidgetClass "{7A3C91E600000010}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "ThreadAvatarGlyph"
+             Slot OverlayWidgetSlot "{7A3C91E600000011}" {
+              HorizontalAlign 1
+              VerticalAlign 1
+             }
+             Color 0.078 0.086 0.114 1
+             Text ""
+             "Font Size" 11
+             "Min Font Size" 10
+             "Horizontal Alignment" Center
+             FontProperties FontProperties "{7A3C91E600000012}" {
+              Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+             }
+            }
+           }
+          }
+         }
+        }
+        VerticalLayoutWidgetClass "{7A3C91E600000013}" {
+         Name "ThreadCopy"
+         Slot LayoutSlot "{7A3C91E600000014}" {
+          SizeMode Fill
+         }
+         {
+          TextWidgetClass "{7A3C91E600000015}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "ThreadParticipants"
+           Color 0.867 0.851 0.82 1
+           Text ""
+           "Font Size" 10
+           "Min Font Size" 9
+           "Horizontal Alignment" Left
+          }
+          TextWidgetClass "{7A3C91E600000016}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "ThreadPreview"
+           Color 0.55 0.56 0.62 1
+           Text ""
+           "Font Size" 8
+           "Min Font Size" 7
+           "Horizontal Alignment" Left
+          }
+         }
+        }
+        SizeLayoutWidgetClass "{7A3C91E600000017}" {
+         Name "ThreadUnreadSize"
+         Slot LayoutSlot "{7A3C91E600000018}" {
+          VerticalAlign 1
+          Padding 5 0 3 0
+         }
+         AllowWidthOverride 1
+         WidthOverride 18
+         AllowHeightOverride 1
+         HeightOverride 18
+         {
+          OverlayWidgetClass "{7A3C91E600000019}" {
+           Name "ThreadUnread"
+           Slot AlignableSlot "{7A3C91E60000001A}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           "Is Visible" 0
+           {
+            SmartPanelWidgetClass "{7A3C91E60000001B}" {
+             Name "ThreadUnreadFill"
+             Slot OverlayWidgetSlot "{7A3C91E60000001C}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0.867 0.263 0.263 1
+             style rounded_6px
+             "no focus" 1
+            }
+            TextWidgetClass "{7A3C91E60000001D}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "ThreadUnreadCount"
+             Slot OverlayWidgetSlot "{7A3C91E60000001E}" {
+              HorizontalAlign 1
+              VerticalAlign 1
+             }
+             Color 0.949 0.933 0.902 1
+             Text ""
+             "Font Size" 8
+             "Min Font Size" 7
+             "Horizontal Alignment" Center
+             FontProperties FontProperties "{7A3C91E60000001F}" {
+              Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+             }
+            }
+           }
+          }
+         }
+        }
+        TextWidgetClass "{7A3C91E600000020}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "ThreadChevron"
+         Slot LayoutSlot "{7A3C91E600000021}" {
+          VerticalAlign 1
+         }
+         Color 0.55 0.56 0.62 1
+         Text ">"
+         "Font Size" 10
+         "Min Font Size" 10
+         "Horizontal Alignment" 2
+         "Vertical Alignment" 1
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

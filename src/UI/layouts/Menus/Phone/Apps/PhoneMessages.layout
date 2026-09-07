@@ -1,0 +1,179 @@
+OverlayWidgetClass {
+ Name "MessagesRoot"
+ {
+  OverlayWidgetClass "{7A3C91E500000001}" {
+   Name "Pages"
+   Slot OverlayWidgetSlot "{7A3C91E500000002}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+    Padding 0 32 0 3
+   }
+   {
+    VerticalLayoutWidgetClass "{7A3C91E500000003}" {
+     Name "IndexPage"
+     Slot OverlayWidgetSlot "{7A3C91E500000004}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      TextWidgetClass "{7A3C91E500000005}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "IndexIntro"
+       Slot LayoutSlot "{7A3C91E500000006}" {
+        Padding 0 2 0 5
+       }
+       Color 0.133 0.773 0.369 1
+       Text "#ELIFE-Phone_Messages_Threads"
+       "Font Size" 9
+       "Min Font Size" 8
+       "Horizontal Alignment" Left
+       FontProperties FontProperties "{7A3C91E500000007}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      SizeLayoutWidgetClass "{7A3C91E500000008}" {
+       Name "IndexRule"
+       Slot LayoutSlot "{7A3C91E500000009}" {
+        Padding 0 0 0 6
+       }
+       AllowHeightOverride 1
+       HeightOverride 1
+       {
+        ImageWidgetClass "{7A3C91E50000000A}" {
+         Name "IndexRuleFill"
+         Slot AlignableSlot "{7A3C91E50000000B}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.086 0.639 0.29 0.55
+        }
+       }
+      }
+      ScrollLayoutWidgetClass "{7A3C91E50000000C}" {
+       Name "ThreadScroll"
+       Slot LayoutSlot "{7A3C91E50000000D}" {
+        SizeMode Fill
+       }
+       {
+        VerticalLayoutWidgetClass "{7A3C91E50000000E}" {
+         Name "ThreadList"
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{7A3C91E50000000F}" {
+       Name "EmptyThreads"
+       Slot LayoutSlot "{7A3C91E500000010}" {
+        Padding 0 8 0 3
+       }
+       "Is Visible" 0
+       {
+        TextWidgetClass "{7A3C91E500000011}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "EmptyThreadsTitle"
+         Slot LayoutSlot "{7A3C91E500000012}" {
+          Padding 0 0 0 3
+         }
+         Color 0.867 0.851 0.82 1
+         Text "#ELIFE-Phone_Messages_None"
+         "Font Size" 11
+         "Min Font Size" 10
+         "Horizontal Alignment" Left
+        }
+        TextWidgetClass "{7A3C91E500000013}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "EmptyThreadsHint"
+         Color 0.55 0.56 0.62 1
+         Text "#ELIFE-Phone_Messages_NoneHint"
+         "Font Size" 10
+         "Min Font Size" 8
+         "Horizontal Alignment" Left
+        }
+       }
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{7A3C91E500000014}" {
+     Name "ThreadPage"
+     Slot OverlayWidgetSlot "{7A3C91E500000015}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     "Is Visible" 0
+     {
+      TextWidgetClass "{7A3C91E500000016}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "ThreadTitle"
+       Slot LayoutSlot "{7A3C91E500000017}" {
+        Padding 0 0 0 2
+       }
+       Color 0.867 0.851 0.82 1
+       Text ""
+       "Font Size" 13
+       "Min Font Size" 10
+       "Horizontal Alignment" Left
+       FontProperties FontProperties "{7A3C91E500000018}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      TextWidgetClass "{7A3C91E500000019}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "ThreadSubtitle"
+       Slot LayoutSlot "{7A3C91E50000001A}" {
+        Padding 0 0 0 6
+       }
+       Color 0.55 0.56 0.62 1
+       Text ""
+       "Font Size" 8
+       "Min Font Size" 7
+       "Horizontal Alignment" Left
+       FontProperties FontProperties "{7A3C91E50000001B}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      SizeLayoutWidgetClass "{7A3C91E50000001C}" {
+       Name "ThreadRule"
+       Slot LayoutSlot "{7A3C91E50000001D}" {
+        Padding 0 0 0 5
+       }
+       AllowHeightOverride 1
+       HeightOverride 1
+       {
+        ImageWidgetClass "{7A3C91E50000001E}" {
+         Name "ThreadRuleFill"
+         Slot AlignableSlot "{7A3C91E50000001F}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.086 0.639 0.29 0.55
+        }
+       }
+      }
+      ScrollLayoutWidgetClass "{7A3C91E500000020}" {
+       Name "MessageScroll"
+       Slot LayoutSlot "{7A3C91E500000021}" {
+        SizeMode Fill
+       }
+       {
+        VerticalLayoutWidgetClass "{7A3C91E500000022}" {
+         Name "MessageList"
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{7A3C91E500000023}" {
+       Name "EmptyMessages"
+       Slot LayoutSlot "{7A3C91E500000024}" {
+        Padding 0 6 0 3
+       }
+       "Is Visible" 0
+       {
+        TextWidgetClass "{7A3C91E500000025}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "EmptyMessagesTitle"
+         Color 0.55 0.56 0.62 1
+         Text "#ELIFE-Phone_Messages_EmptyThread"
+         "Font Size" 10
+         "Min Font Size" 8
+         "Horizontal Alignment" Left
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

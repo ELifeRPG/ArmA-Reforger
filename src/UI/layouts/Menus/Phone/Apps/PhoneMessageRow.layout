@@ -1,0 +1,45 @@
+VerticalLayoutWidgetClass {
+ Name "MessageRow"
+ {
+  TextWidgetClass "{7A3C91E700000001}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+   Name "MessageMeta"
+   Slot LayoutSlot "{7A3C91E700000002}" {
+    Padding 0 4 0 1
+   }
+   Color 0.55 0.56 0.62 1
+   Text ""
+   "Font Size" 8
+   "Min Font Size" 8
+   "Horizontal Alignment" Left
+   FontProperties FontProperties "{7A3C91E700000003}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{7A3C91E700000004}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+   Name "MessageBody"
+   Slot LayoutSlot "{7A3C91E700000005}" {
+    Padding 0 0 0 4
+   }
+   Color 0.867 0.851 0.82 1
+   Text ""
+   "Font Size" 10
+   "Min Font Size" 10
+   "Horizontal Alignment" Left
+  }
+  SizeLayoutWidgetClass "{7A3C91E700000006}" {
+   Name "MessageHairline"
+   AllowHeightOverride 1
+   HeightOverride 1
+   {
+    ImageWidgetClass "{7A3C91E700000007}" {
+     Name "MessageHairlineFill"
+     Slot AlignableSlot "{7A3C91E700000008}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.086 0.639 0.29 0.2
+    }
+   }
+  }
+ }
+}

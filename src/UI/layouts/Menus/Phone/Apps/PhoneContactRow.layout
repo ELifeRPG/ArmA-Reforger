@@ -1,0 +1,111 @@
+SizeLayoutWidgetClass {
+ Name "ContactRowSize"
+ AllowWidthOverride 1
+ WidthOverride 200
+ AllowHeightOverride 1
+ HeightOverride 43
+ {
+  OverlayWidgetClass "{7A3C91E400000001}" {
+   Name "ContactRow"
+   Slot AlignableSlot "{7A3C91E400000002}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    SmartPanelWidgetClass "{7A3C91E400000003}" {
+     Name "ContactRowBackground"
+     Slot OverlayWidgetSlot "{7A3C91E400000004}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.12 0.13 0.17 1
+     style rounded_6px
+     "no focus" 1
+    }
+    HorizontalLayoutWidgetClass "{7A3C91E400000005}" {
+     Name "ContactRowBody"
+     Slot OverlayWidgetSlot "{7A3C91E400000006}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 5 5 5 5
+     }
+     {
+      SizeLayoutWidgetClass "{7A3C91E400000007}" {
+       Name "ContactAvatarSize"
+       Slot LayoutSlot "{7A3C91E400000008}" {
+        Padding 0 0 6 0
+       }
+       AllowWidthOverride 1
+       WidthOverride 26
+       AllowHeightOverride 1
+       HeightOverride 26
+       {
+        OverlayWidgetClass "{7A3C91E400000009}" {
+         Name "ContactAvatar"
+         Slot AlignableSlot "{7A3C91E40000000A}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         {
+          SmartPanelWidgetClass "{7A3C91E40000000B}" {
+           Name "ContactAvatarFill"
+           Slot OverlayWidgetSlot "{7A3C91E40000000C}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.239 0.588 0.502 1
+           style rounded_6px
+           "no focus" 1
+          }
+          TextWidgetClass "{7A3C91E40000000D}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "ContactAvatarGlyph"
+           Slot OverlayWidgetSlot "{7A3C91E40000000E}" {
+            HorizontalAlign 1
+            VerticalAlign 1
+           }
+           Color 0.078 0.086 0.114 1
+           Text ""
+           "Font Size" 11
+           "Min Font Size" 10
+           "Horizontal Alignment" Center
+           FontProperties FontProperties "{7A3C91E40000000F}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{7A3C91E400000010}" {
+       Name "ContactCopy"
+       Slot LayoutSlot "{7A3C91E400000011}" {
+        SizeMode Fill
+       }
+       {
+        TextWidgetClass "{7A3C91E400000012}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "ContactName"
+         Color 0.867 0.851 0.82 1
+         Text ""
+         "Font Size" 10
+         "Min Font Size" 9
+         "Horizontal Alignment" Left
+        }
+        TextWidgetClass "{7A3C91E400000013}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "ContactNumber"
+         Color 0.55 0.56 0.62 1
+         Text ""
+         "Font Size" 8
+         "Min Font Size" 7
+         "Horizontal Alignment" Left
+         FontProperties FontProperties "{7A3C91E400000014}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

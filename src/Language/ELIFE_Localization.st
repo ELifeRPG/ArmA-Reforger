@@ -34,14 +34,6 @@ StringTable {
    Author "Nico"
    LastChanged "Nico"
   }
-  CustomStringTableItem "{D8F80771B243908A}" {
-   Id "ELIFE-Hint_Phone_AppDummy"
-   Target_en_us "This app is not available yet."
-   Target_de_de "Diese App ist noch nicht verfügbar."
-   Modified 1755945600
-   Author "Robin"
-   LastChanged "Robin"
-  }
   CustomStringTableItem "{E9081882C354A19B}" {
    Id "ELIFE-Hint_Phone_Missing"
    Target_en_us "You do not have a phone."
@@ -191,6 +183,102 @@ StringTable {
    Target_en_us "PIN"
    Target_de_de "PIN"
    Modified 1756209600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{D318FE2728B810B9}" {
+   Id "ELIFE-Phone_App_Contacts"
+   Target_en_us "Contacts"
+   Target_de_de "Kontakte"
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{E4290F38390921CA}" {
+   Id "ELIFE-Phone_Contacts_Saved"
+   Target_en_us "Saved"
+   Target_de_de "Gespeichert"
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{F53A10494A1A32DB}" {
+   Id "ELIFE-Phone_Contacts_None"
+   Target_en_us "No contacts saved."
+   Target_de_de "Keine Kontakte gespeichert."
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{064B215A5B2B43EC}" {
+   Id "ELIFE-Phone_Contacts_NoneHint"
+   Target_en_us "Numbers you save show up here."
+   Target_de_de "Gespeicherte Nummern erscheinen hier."
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{175C326B6C3C54FD}" {
+   Id "ELIFE-Phone_Messages_Threads"
+   Target_en_us "Conversations"
+   Target_de_de "Unterhaltungen"
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{286D437C7D4D650E}" {
+   Id "ELIFE-Phone_Messages_None"
+   Target_en_us "No messages."
+   Target_de_de "Keine Nachrichten."
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{397E548D8E5E761F}" {
+   Id "ELIFE-Phone_Messages_NoneHint"
+   Target_en_us "New conversations land here."
+   Target_de_de "Neue Unterhaltungen erscheinen hier."
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{4A8F659E9F6F8720}" {
+   Id "ELIFE-Phone_Messages_EmptyThread"
+   Target_en_us "Nothing in this conversation."
+   Target_de_de "Diese Unterhaltung ist leer."
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{5B9076AFA0709831}" {
+   Id "ELIFE-Phone_Messages_You"
+   Target_en_us "You"
+   Target_de_de "Du"
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{6CA187B0B181A942}" {
+   Id "ELIFE-Phone_Status_Loading"
+   Target_en_us "Loading…"
+   Target_de_de "Wird geladen…"
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{7DB298C1C292BA53}" {
+   Id "ELIFE-Phone_Status_Error"
+   Target_en_us "No network."
+   Target_de_de "Kein Netz."
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{8EC3A9D2D3A3CB64}" {
+   Id "ELIFE-Phone_Status_ErrorHint"
+   Target_en_us "Try again in a moment."
+   Target_de_de "Versuche es gleich noch einmal."
+   Modified 1757203200
    Author "Robin"
    LastChanged "Robin"
   }

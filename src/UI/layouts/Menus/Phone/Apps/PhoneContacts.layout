@@ -1,0 +1,86 @@
+OverlayWidgetClass {
+ Name "ContactsRoot"
+ {
+  VerticalLayoutWidgetClass "{7A3C91E300000001}" {
+   Name "IndexPage"
+   Slot OverlayWidgetSlot "{7A3C91E300000002}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+    Padding 0 32 0 3
+   }
+   {
+    TextWidgetClass "{7A3C91E300000003}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+     Name "IndexIntro"
+     Slot LayoutSlot "{7A3C91E300000004}" {
+      Padding 0 2 0 5
+     }
+     Color 0.373 0.729 0.643 1
+     Text "#ELIFE-Phone_Contacts_Saved"
+     "Font Size" 9
+     "Min Font Size" 8
+     "Horizontal Alignment" Left
+     FontProperties FontProperties "{7A3C91E300000005}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    SizeLayoutWidgetClass "{7A3C91E300000006}" {
+     Name "IndexRule"
+     Slot LayoutSlot "{7A3C91E300000007}" {
+      Padding 0 0 0 6
+     }
+     AllowHeightOverride 1
+     HeightOverride 1
+     {
+      ImageWidgetClass "{7A3C91E300000008}" {
+       Name "IndexRuleFill"
+       Slot AlignableSlot "{7A3C91E300000009}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.239 0.588 0.502 0.55
+      }
+     }
+    }
+    ScrollLayoutWidgetClass "{7A3C91E30000000A}" {
+     Name "ContactScroll"
+     Slot LayoutSlot "{7A3C91E30000000B}" {
+      SizeMode Fill
+     }
+     {
+      VerticalLayoutWidgetClass "{7A3C91E30000000C}" {
+       Name "ContactList"
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{7A3C91E30000000D}" {
+     Name "EmptyContacts"
+     Slot LayoutSlot "{7A3C91E30000000E}" {
+      Padding 0 8 0 3
+     }
+     "Is Visible" 0
+     {
+      TextWidgetClass "{7A3C91E30000000F}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "EmptyContactsTitle"
+       Slot LayoutSlot "{7A3C91E300000010}" {
+        Padding 0 0 0 3
+       }
+       Color 0.867 0.851 0.82 1
+       Text "#ELIFE-Phone_Contacts_None"
+       "Font Size" 11
+       "Min Font Size" 10
+       "Horizontal Alignment" Left
+      }
+      TextWidgetClass "{7A3C91E300000011}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "EmptyContactsHint"
+       Color 0.55 0.56 0.62 1
+       Text "#ELIFE-Phone_Contacts_NoneHint"
+       "Font Size" 10
+       "Min Font Size" 8
+       "Horizontal Alignment" Left
+      }
+     }
+    }
+   }
+  }
+ }
+}

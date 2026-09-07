@@ -7,7 +7,27 @@ enum EPhoneScreenState
 	BANK,
 	MAP,
 	MESSAGES,
-	SETTINGS
+	SETTINGS,
+	CONTACTS
+}
+
+//------------------------------------------------------------------------------------------------
+//! Lets an app tell "still waiting" from "came back empty" from "Bridge unreachable".
+enum ELIFE_EPhoneDataStatus
+{
+	IDLE,
+	LOADING,
+	READY,
+	ERROR
+}
+
+//------------------------------------------------------------------------------------------------
+//! Server-side cache of one data key: real payload, bystander copy, and when it was fetched.
+class ELIFE_PhoneDataEntry
+{
+	string m_sReal;
+	string m_sRedacted;
+	int m_iFetchTime;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -55,11 +75,22 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected ref ELIFE_BaseRestCallback m_PowerOnCallback;
 	protected int m_iOwnerPlayerId;
 
-	//! Server: last fetched contacts (real) - client: whichever variant this machine's RPC channel delivered.
-	protected ref array<ref ELIFE_ContactDto> m_aContacts = {};
-	protected int m_iContactsCacheTime;
-	protected ref ELIFE_ContactsFetchCallback m_ContactsFetchCallback;
-	protected const int CONTACTS_CACHE_TTL_MS = 15000;
+	//! Data keys the apps fetch through the generic channel below.
+	static const string DATA_CONTACTS = "contacts";
+	static const string DATA_MESSAGES = "messages";
+
+	//! Server-only: the real payload per key plus its pre-built bystander copy.
+	protected ref map<string, ref ELIFE_PhoneDataEntry> m_mServerData = new map<string, ref ELIFE_PhoneDataEntry>();
+	protected ref map<string, ref ELIFE_BaseRestCallback> m_mPendingFetches = new map<string, ref ELIFE_BaseRestCallback>();
+
+	//! What this machine got pushed - real payload for the owner, redacted copy for everyone else.
+	protected ref map<string, string> m_mData = new map<string, string>();
+	protected ref map<string, ELIFE_EPhoneDataStatus> m_mDataStatus = new map<string, ELIFE_EPhoneDataStatus>();
+
+	//! Fires with the data key whenever this machine's copy or its status changes - apps re-render off it.
+	ref ScriptInvoker m_OnDataChanged = new ScriptInvoker();
+
+	protected const int DATA_CACHE_TTL_MS = 15000;
 
 	[RplProp(onRplName: "OnScreenStateUpdated")]
 	protected EPhoneScreenState m_eScreenState;
@@ -197,82 +228,200 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	array<ref ELIFE_ContactDto> GetContacts()
+	//! Empty until the first push lands, so callers must re-render on m_OnDataChanged.
+	string GetData(string key)
 	{
-		return m_aContacts;
+		string json;
+		m_mData.Find(key, json);
+		return json;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Called by the Contacts app on open - refreshes from the Bridge only if the cache is stale.
-	void RequestContacts()
+	ELIFE_EPhoneDataStatus GetDataStatus(string key)
 	{
-		Rpc(RpcAsk_RequestContacts);
+		ELIFE_EPhoneDataStatus status;
+		if (!m_mDataStatus.Find(key, status))
+			return ELIFE_EPhoneDataStatus.IDLE;
+
+		return status;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetDataStatus(string key, ELIFE_EPhoneDataStatus status)
+	{
+		m_mDataStatus.Set(key, status);
+		m_OnDataChanged.Invoke(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Called by an app on open. Only the owner drives fetches - a bystander's screen just mirrors
+	//! whatever the owner's next refresh broadcasts.
+	void RequestData(string key)
+	{
+		if (!IsLocalCharacterOwner())
+			return;
+
+		//! Set locally, not pushed back - a round trip just to say "loading" often lands after the answer.
+		SetDataStatus(key, ELIFE_EPhoneDataStatus.LOADING);
+
+		Rpc(RpcAsk_RequestData, key);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_RequestContacts()
+	protected void RpcAsk_RequestData(string key)
 	{
+		//! Provisioning hasn't finished (or failed) - answer anyway, the owner is stuck on LOADING otherwise.
 		if (m_sPhoneId == "")
-			return;
-
-		if (System.GetTickCount() - m_iContactsCacheTime < CONTACTS_CACHE_TTL_MS)
 		{
-			PushContacts();
+			PushDataError(key);
 			return;
 		}
+
+		ELIFE_PhoneDataEntry entry;
+		if (m_mServerData.Find(key, entry) && System.GetTickCount() - entry.m_iFetchTime < DATA_CACHE_TTL_MS)
+		{
+			PushData(key);
+			return;
+		}
+
+		FetchData(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Only place that knows a key's wire shape - route and response parsing. Everything downstream
+	//! (caching, pushing, rendering) is key-agnostic.
+	protected void FetchData(string key)
+	{
+		//! A second fetch would just overwrite the pending callback and waste a round trip.
+		if (m_mPendingFetches.Contains(key))
+			return;
 
 		ELIFE_Api api = ELIFE_Api.GetInstance();
 		if (!api)
-			return;
-
-		//! Contacts/messages routes take no characterId/pin - possession is proven once at power-on.
-		string request = string.Format("phones/%1/apps/contacts/entries", m_sPhoneId);
-
-		m_ContactsFetchCallback = new ELIFE_ContactsFetchCallback();
-		m_ContactsFetchCallback.SetCallback(this, "OnContactsFetched");
-		api.GetElifeApi().GET(m_ContactsFetchCallback, request);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void OnContactsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data)
-	{
-		ELIFE_ContactListDto list = ELIFE_ContactListDto.Cast(data);
-		if (status != ELIFE_EApiStatusCode.SUCCESS || !list)
 		{
-			Print("ELIFE_PhoneGadgetComponent | contacts fetch failed", LogLevel.ERROR);
+			PushDataError(key);
 			return;
 		}
 
-		m_aContacts = list.items;
-		m_iContactsCacheTime = System.GetTickCount();
-		PushContacts();
+		string route;
+		ELIFE_BaseRestCallback callback;
+
+		if (key == DATA_CONTACTS)
+		{
+			route = "contacts/entries";
+			callback = new ELIFE_ContactsFetchCallback();
+		}
+		else if (key == DATA_MESSAGES)
+		{
+			//! No "since" cursor, so threads come back whole with bodies - the plain threads route
+			//! omits them and would need a second call per opened thread.
+			route = "messages/updates";
+			callback = new ELIFE_MessageUpdatesFetchCallback();
+		}
+		else
+		{
+			PushDataError(key);
+			return;
+		}
+
+		callback.SetCallback(this, "OnDataFetched", key);
+		m_mPendingFetches.Set(key, callback);
+
+		//! Contacts/messages routes take no characterId/pin - possession is proven once at power-on.
+		api.GetElifeApi().GET(callback, string.Format("phones/%1/apps/%2", m_sPhoneId, route));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Owner gets the real cache, everyone else with the phone streamed gets a redacted copy
-	protected void PushContacts()
+	void OnDataFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string key)
 	{
-		ELIFE_ContactListDto real = new ELIFE_ContactListDto();
-		real.items = m_aContacts;
-		real.Pack();
-		Rpc(RpcDo_ContactsOwner, real.AsString());
+		m_mPendingFetches.Remove(key);
 
-		//! Broadcast doesn't self-deliver to a listen server's own local view (same quirk as
-		//! onRplName - see OnPhoneIdUpdated()) - the UI needs to self-apply the redacted
-		//! copy here too when Replication.IsServer() and the local player isn't the owner.
-		ELIFE_ContactListDto redacted = new ELIFE_ContactListDto();
-		foreach (ELIFE_ContactDto contact : m_aContacts)
-			redacted.items.Insert(contact.Redact());
+		if (status != ELIFE_EApiStatusCode.SUCCESS || !data)
+		{
+			Print(string.Format("ELIFE_PhoneGadgetComponent | fetch failed for '%1'", key), LogLevel.ERROR);
+			PushDataError(key);
+			return;
+		}
+
+		ELIFE_PhoneDataEntry entry = new ELIFE_PhoneDataEntry();
+		data.Pack();
+		entry.m_sReal = data.AsString();
+		entry.m_sRedacted = RedactPayload(key, data);
+		entry.m_iFetchTime = System.GetTickCount();
+		m_mServerData.Set(key, entry);
+
+		PushData(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Each DTO decides which of its own fields are private - see ELIFE_DataRedactor.
+	protected string RedactPayload(string key, JsonApiStruct data)
+	{
+		JsonApiStruct redacted;
+
+		ELIFE_ContactListDto contacts = ELIFE_ContactListDto.Cast(data);
+		if (contacts)
+			redacted = contacts.Redact();
+
+		ELIFE_MessageUpdatesDto updates = ELIFE_MessageUpdatesDto.Cast(data);
+		if (updates)
+			redacted = updates.Redact();
+
+		if (!redacted)
+			return "";
+
 		redacted.Pack();
-		Rpc(RpcDo_ContactsBystanders, redacted.AsString());
+		return redacted.AsString();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner gets the real payload, everyone with the phone streamed in gets the redacted copy.
+	protected void PushData(string key)
+	{
+		ELIFE_PhoneDataEntry entry;
+		if (!m_mServerData.Find(key, entry))
+			return;
+
+		Rpc(RpcDo_DataOwner, key, entry.m_sReal);
+		Rpc(RpcDo_DataBystanders, key, entry.m_sRedacted);
+
+		//! Neither RPC self-delivers to a listen server's own view (same quirk as onRplName, see
+		//! OnPhoneIdUpdated()), so apply it directly here. A dedicated server has no view to render into.
+		if (!SCR_PlayerController.GetLocalControlledEntity())
+			return;
+
+		if (IsLocalCharacterOwner())
+			ApplyData(key, entry.m_sReal);
+		else
+			ApplyData(key, entry.m_sRedacted);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Only the owner is told a fetch failed - a bystander never asked, so to them it just looks like
+	//! the mirror stopped updating.
+	protected void PushDataError(string key)
+	{
+		Rpc(RpcDo_DataError, key);
+
+		//! Same listen-server self-delivery caveat as PushData().
+		if (SCR_PlayerController.GetLocalControlledEntity() && IsLocalCharacterOwner())
+			SetDataStatus(key, ELIFE_EPhoneDataStatus.ERROR);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_ContactsOwner(string json)
+	protected void RpcDo_DataError(string key)
 	{
-		ApplyContacts(json);
+		SetDataStatus(key, ELIFE_EPhoneDataStatus.ERROR);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! RPCs only marshal primitives, so payloads cross as packed JSON rather than as DTOs.
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_DataOwner(string key, string json)
+	{
+		ApplyData(key, json);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -280,21 +429,20 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//! documented) is unverified, and an entity with an owner may not broadcast at all under it.
 	//! Excluding the owner is done explicitly below instead, which is correct regardless.
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	protected void RpcDo_ContactsBystanders(string json)
+	protected void RpcDo_DataBystanders(string key, string json)
 	{
 		RplComponent rpl = RplComponent.Cast(GetOwner().FindComponent(RplComponent));
 		if (rpl && rpl.IsOwner())
 			return;
 
-		ApplyContacts(json);
+		ApplyData(key, json);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void ApplyContacts(string json)
+	protected void ApplyData(string key, string json)
 	{
-		ELIFE_ContactListDto list = new ELIFE_ContactListDto();
-		list.ExpandFromRAW(json);
-		m_aContacts = list.items;
+		m_mData.Set(key, json);
+		SetDataStatus(key, ELIFE_EPhoneDataStatus.READY);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -752,6 +900,19 @@ class ELIFE_ContactsFetchCallback : ELIFE_BaseRestCallback
 	{
 		ELIFE_ContactListDto dto = new ELIFE_ContactListDto();
 		dto.ExpandFromRAW(string.Format("{\"items\":%1}", data));
+		resultData = dto;
+		return ELIFE_EApiStatusCode.SUCCESS;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class ELIFE_MessageUpdatesFetchCallback : ELIFE_BaseRestCallback
+{
+	//------------------------------------------------------------------------------------------------
+	override ELIFE_EApiStatusCode ExtractData(string data, int dataSize, out JsonApiStruct resultData)
+	{
+		ELIFE_MessageUpdatesDto dto = new ELIFE_MessageUpdatesDto();
+		dto.ExpandFromRAW(data);
 		resultData = dto;
 		return ELIFE_EApiStatusCode.SUCCESS;
 	}

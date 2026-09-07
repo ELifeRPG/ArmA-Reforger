@@ -118,19 +118,7 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	protected override Widget CreateRoot(notnull Widget host)
 	{
-		WorkspaceWidget workspace = GetGame().GetWorkspace();
-		if (!workspace)
-			return null;
-
-		Widget root = workspace.CreateWidgets(LAYOUT, host);
-		if (root)
-		{
-			//! CreateWidgets() doesn't give the returned root a fill slot by default.
-			AlignableSlot.SetHorizontalAlign(root, LayoutHorizontalAlign.Stretch);
-			AlignableSlot.SetVerticalAlign(root, LayoutVerticalAlign.Stretch);
-		}
-
-		return root;
+		return CreateStretched(LAYOUT, host);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -365,20 +353,5 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 			return new Color(0.851, 0.702, 0.024, 1);
 
 		return new Color(0.329, 0.510, 0.910, 1);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void ClearChildren(Widget parent)
-	{
-		if (!parent)
-			return;
-
-		Widget child = parent.GetChildren();
-		while (child)
-		{
-			Widget next = child.GetSibling();
-			child.RemoveFromHierarchy();
-			child = next;
-		}
 	}
 }
