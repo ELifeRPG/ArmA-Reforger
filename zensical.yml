@@ -1,0 +1,109 @@
+site_url: https://eliferpg.github.io/ArmA-Reforger/
+site_name: ELifeRPG ArmA Reforger
+site_description: Technical documentation for the ELifeRPG ArmA Reforger addon
+copyright: Copyright &copy; 2026 ELifeRPG
+docs_dir: .
+
+repo_url: https://github.com/ELifeRPG/ArmA-Reforger
+repo_name: ELifeRPG/ArmA-Reforger
+edit_uri: edit/main/docs/
+
+nav:
+  - Home: index.md
+  - Backend API client: backend-api.md
+  - RTTexture guide: rttexture-guide.md
+
+extra_css:
+  - stylesheets/extra.css
+
+theme:
+  logo: assets/logo.svg
+  favicon: assets/logo-icon.png
+  language: en
+  features:
+    - announce.dismiss
+    - content.action.edit
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - content.footnote.tooltips
+    - content.tabs.link
+    - content.tooltips
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.path
+    - navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+
+  font:
+    text: Inter
+    code: JetBrains Mono
+
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: lucide/sun-moon
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: lucide/sun
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: lucide/moon
+        name: Switch to system preference
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ELifeRPG/ArmA-Reforger
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: zensical.extensions.emoji.to_svg
+      emoji_index: zensical.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde

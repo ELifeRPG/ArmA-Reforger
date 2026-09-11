@@ -1,0 +1,25 @@
+/*
+ * Brand colors — shared with ELifeRPG/docs, see that repo's
+ * docs/development/design-system.md for the full palette reference.
+ */
+
+:root {
+  --md-primary-fg-color: #1c4fc0;
+  --md-primary-fg-color--light: #86a8ef;
+  --md-primary-fg-color--dark: #123a91;
+}
+
+[data-md-color-scheme="default"] {
+  --md-typeset-a-color: #123a91;
+  --md-accent-fg-color: #1c4fc0;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-typeset-a-color: #5482e8;
+  --md-accent-fg-color: #86a8ef;
+  --md-default-bg-color: #14161d;
+}
+
+[data-md-color-scheme="slate"] .md-logo img {
+  content: url("../assets/logo-light.svg");
+}
