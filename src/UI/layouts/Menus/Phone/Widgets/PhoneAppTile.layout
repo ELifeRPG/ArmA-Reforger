@@ -1,0 +1,126 @@
+VerticalLayoutWidgetClass {
+ Name "AppTile"
+ {
+  SizeLayoutWidgetClass "{72A81D6C4C1A50B3}" {
+   Name "TileSize"
+   Slot LayoutSlot "{07CEB453A8629ECC}" {
+    HorizontalAlign 1
+   }
+   AllowWidthOverride 1
+   WidthOverride 52
+   AllowHeightOverride 1
+   HeightOverride 52
+   {
+    OverlayWidgetClass "{55148A7B4D484973}" {
+     Name "Tile"
+     Slot AlignableSlot "{F19669DF9069B1E5}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      SmartPanelWidgetClass "{E67D09F092FD5951}" {
+       Name "TileFill"
+       Slot OverlayWidgetSlot "{631EA2A377D854CA}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0159 0.0194 0.0319 1
+       style rounded_6px
+       "no focus" 1
+      }
+      SizeLayoutWidgetClass "{3990DD51CC34E349}" {
+       Name "TileSheenSize"
+       Slot OverlayWidgetSlot "{F8ABF4A356B0F17A}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 2 1 2 0
+       }
+       AllowHeightOverride 1
+       HeightOverride 1
+       {
+        ImageWidgetClass "{99FD2AFFAA42702F}" {
+         Name "TileSheen"
+         Slot AlignableSlot "{CC51F3C992F56639}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.8626 0.8964 0.964 0.16
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{AA2C72DFEA433C32}" {
+       Name "TileIconSize"
+       Slot OverlayWidgetSlot "{BE7D626D634AB4F4}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       AllowWidthOverride 1
+       WidthOverride 36
+       AllowHeightOverride 1
+       HeightOverride 36
+      }
+      TextWidgetClass "{C111D788C1C082F6}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "TileMark"
+       Slot OverlayWidgetSlot "{9C0BE107FBE6A398}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       "Is Visible" 0
+       Color 0.8378 0.8626 0.9222 1
+       Text ""
+       "Font Size" 35
+       "Min Font Size" 35
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{A15C49577223E930}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      ButtonWidgetClass "{585646EA2F895440}" {
+       Name "TileButton"
+       Slot OverlayWidgetSlot "{B591EB3582675DB4}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 1 1 1 1
+       style blank
+       components {
+        SCR_ButtonTextComponent "{825325340684F634}" {
+         m_BackgroundDefault 0.8626 0.8964 0.964 0
+         m_BackgroundHovered 0.8626 0.8964 0.964 0.10
+         m_BackgroundSelected 0.8626 0.8964 0.964 0.16
+         m_BackgroundSelectedHovered 0.8626 0.8964 0.964 0.16
+         m_BackgroundClicked 0.8626 0.8964 0.964 0.16
+         m_sText ""
+        }
+       }
+       {
+        SmartPanelWidgetClass "{E6642241837EFA6F}" {
+         Name "Background"
+         Slot ButtonWidgetSlot "{B050CEB21FCC97DE}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0 0 0 0
+         style rounded_6px
+         "no focus" 1
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  TextWidgetClass "{FA2FFAEC362B634F}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+   Name "TileLabel"
+   Slot LayoutSlot "{203841652722EAFD}" {
+    HorizontalAlign 1
+    Padding 0 6 0 0
+   }
+   Color 0.8378 0.8626 0.9222 1
+   Text ""
+   "Font Size" 10
+   "Min Font Size" 10
+   "Horizontal Alignment" Center
+  }
+ }
+}

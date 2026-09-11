@@ -1,175 +1,409 @@
 OverlayWidgetClass {
  Name "MessagesRoot"
  {
-  OverlayWidgetClass "{7A3C91E500000001}" {
-   Name "Pages"
-   Slot OverlayWidgetSlot "{7A3C91E500000002}" {
+  OverlayWidgetClass "{B36F3099B7B9937F}" {
+   Name "IndexPage"
+   Slot OverlayWidgetSlot "{C16FA6C7A76F513F}" {
     HorizontalAlign 3
     VerticalAlign 3
-    Padding 0 32 0 3
    }
    {
-    VerticalLayoutWidgetClass "{7A3C91E500000003}" {
-     Name "IndexPage"
-     Slot OverlayWidgetSlot "{7A3C91E500000004}" {
+    ScrollLayoutWidgetClass "{1CEC14D166E1F7B1}" {
+     Name "ThreadScroll"
+     Slot OverlayWidgetSlot "{23F3E682602EB585}" {
       HorizontalAlign 3
       VerticalAlign 3
      }
+     Color 0.0383 0.0466 0.0723 0.20
      {
-      TextWidgetClass "{7A3C91E500000005}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-       Name "IndexIntro"
-       Slot LayoutSlot "{7A3C91E500000006}" {
-        Padding 0 2 0 5
+      VerticalLayoutWidgetClass "{72036252CDF00E44}" {
+       Name "ThreadScrollBody"
+       Slot AlignableSlot "{F6FA896350ADED18}" {
+        HorizontalAlign 3
        }
-       Color 0.133 0.773 0.369 1
-       Text "#ELIFE-Phone_Messages_Threads"
-       "Font Size" 9
-       "Min Font Size" 8
-       "Horizontal Alignment" Left
-       FontProperties FontProperties "{7A3C91E500000007}" {
-        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-       }
-      }
-      SizeLayoutWidgetClass "{7A3C91E500000008}" {
-       Name "IndexRule"
-       Slot LayoutSlot "{7A3C91E500000009}" {
-        Padding 0 0 0 6
-       }
-       AllowHeightOverride 1
-       HeightOverride 1
+       "Fill Origin" Top
        {
-        ImageWidgetClass "{7A3C91E50000000A}" {
-         Name "IndexRuleFill"
-         Slot AlignableSlot "{7A3C91E50000000B}" {
-          HorizontalAlign 3
-          VerticalAlign 3
+        TextWidgetClass "{19FA03A661456864}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "LargeTitle"
+         Slot LayoutSlot "{A18D57DF5E7D9411}" {
+          Padding 12 48 12 8
          }
-         Color 0.086 0.639 0.29 0.55
-        }
-       }
-      }
-      ScrollLayoutWidgetClass "{7A3C91E50000000C}" {
-       Name "ThreadScroll"
-       Slot LayoutSlot "{7A3C91E50000000D}" {
-        SizeMode Fill
-       }
-       {
-        VerticalLayoutWidgetClass "{7A3C91E50000000E}" {
-         Name "ThreadList"
-        }
-       }
-      }
-      VerticalLayoutWidgetClass "{7A3C91E50000000F}" {
-       Name "EmptyThreads"
-       Slot LayoutSlot "{7A3C91E500000010}" {
-        Padding 0 8 0 3
-       }
-       "Is Visible" 0
-       {
-        TextWidgetClass "{7A3C91E500000011}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-         Name "EmptyThreadsTitle"
-         Slot LayoutSlot "{7A3C91E500000012}" {
-          Padding 0 0 0 3
+         Color 0.8378 0.8626 0.9222 1
+         Text ""
+         "Font Size" 20
+         "Min Font Size" 20
+         "Horizontal Alignment" Left
+         FontProperties FontProperties "{C487B47AB94172ED}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
          }
-         Color 0.867 0.851 0.82 1
-         Text "#ELIFE-Phone_Messages_None"
-         "Font Size" 11
-         "Min Font Size" 10
-         "Horizontal Alignment" Left
         }
-        TextWidgetClass "{7A3C91E500000013}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-         Name "EmptyThreadsHint"
-         Color 0.55 0.56 0.62 1
-         Text "#ELIFE-Phone_Messages_NoneHint"
-         "Font Size" 10
-         "Min Font Size" 8
-         "Horizontal Alignment" Left
+        VerticalLayoutWidgetClass "{15E50214AA25CC48}" {
+         Name "ThreadGroups"
+         Slot LayoutSlot "{329696566F576A89}" {
+          Padding 12 0 12 30
+         }
         }
        }
       }
      }
     }
-    VerticalLayoutWidgetClass "{7A3C91E500000014}" {
-     Name "ThreadPage"
-     Slot OverlayWidgetSlot "{7A3C91E500000015}" {
-      HorizontalAlign 3
-      VerticalAlign 3
+    VerticalLayoutWidgetClass "{D2DAE6EE245AACE9}" {
+     Name "EmptyThreads"
+     Slot OverlayWidgetSlot "{E41FFE1085AABFA5}" {
+      HorizontalAlign 1
+      VerticalAlign 1
+      Padding 20 0 20 0
      }
      "Is Visible" 0
      {
-      TextWidgetClass "{7A3C91E500000016}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-       Name "ThreadTitle"
-       Slot LayoutSlot "{7A3C91E500000017}" {
-        Padding 0 0 0 2
+      TextWidgetClass "{14EAC470C4CB2CF2}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "EmptyTitle"
+       Slot LayoutSlot "{BC05C9993516259E}" {
+        HorizontalAlign 1
+        Padding 0 0 0 4
        }
-       Color 0.867 0.851 0.82 1
-       Text ""
-       "Font Size" 13
-       "Min Font Size" 10
-       "Horizontal Alignment" Left
-       FontProperties FontProperties "{7A3C91E500000018}" {
-        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-       }
-      }
-      TextWidgetClass "{7A3C91E500000019}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-       Name "ThreadSubtitle"
-       Slot LayoutSlot "{7A3C91E50000001A}" {
-        Padding 0 0 0 6
-       }
-       Color 0.55 0.56 0.62 1
-       Text ""
-       "Font Size" 8
-       "Min Font Size" 7
-       "Horizontal Alignment" Left
-       FontProperties FontProperties "{7A3C91E50000001B}" {
-        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       Color 0.8378 0.8626 0.9222 1
+       Text "#ELIFE-Phone_Messages_None"
+       "Font Size" 15
+       "Min Font Size" 14
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{20092634B67CF7B1}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
        }
       }
-      SizeLayoutWidgetClass "{7A3C91E50000001C}" {
-       Name "ThreadRule"
-       Slot LayoutSlot "{7A3C91E50000001D}" {
-        Padding 0 0 0 5
+      TextWidgetClass "{AF62726ED473AA5E}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "EmptyHint"
+       Slot LayoutSlot "{E5B1C64CE119904C}" {
+        HorizontalAlign 1
        }
-       AllowHeightOverride 1
-       HeightOverride 1
+       Color 0.366 0.4024 0.5025 1
+       Text "#ELIFE-Phone_Messages_NoneHint"
+       "Font Size" 10
+       "Min Font Size" 9
+       "Horizontal Alignment" Center
+      }
+     }
+    }
+   }
+  }
+  OverlayWidgetClass "{97E229C348B64810}" {
+   Name "ThreadPage"
+   Slot OverlayWidgetSlot "{162B151274DEA79C}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   "Is Visible" 0
+   {
+    ScrollLayoutWidgetClass "{4E49313E5CB531B8}" {
+     Name "MessageScroll"
+     Slot OverlayWidgetSlot "{FB0F90C61798406E}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.0383 0.0466 0.0723 0.55
+     {
+      VerticalLayoutWidgetClass "{4FC03E2231203B41}" {
+       Name "MessageScrollBody"
+       Slot AlignableSlot "{7BA9C1314720682C}" {
+        HorizontalAlign 3
+       }
+       "Fill Origin" Top
        {
-        ImageWidgetClass "{7A3C91E50000001E}" {
-         Name "ThreadRuleFill"
-         Slot AlignableSlot "{7A3C91E50000001F}" {
+        VerticalLayoutWidgetClass "{BE4C9A3DECB1200E}" {
+         Name "ThreadHeader"
+         Slot LayoutSlot "{085E18AF3253D2DF}" {
+          Padding 12 48 12 10
+         }
+         {
+          TextWidgetClass "{45B433150A974401}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "ThreadTitle"
+           Color 0.8378 0.8626 0.9222 1
+           Text ""
+           "Font Size" 20
+           "Min Font Size" 20
+           "Horizontal Alignment" Left
+           FontProperties FontProperties "{69AAEAEF9F9981BD}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{6D052BBE828B0F10}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "ThreadSubtitle"
+           Slot LayoutSlot "{2906613CC3223965}" {
+            Padding 0 2 0 0
+           }
+           Color 0.366 0.4024 0.5025 1
+           Text ""
+           "Font Size" 10
+           "Min Font Size" 9
+           "Horizontal Alignment" Left
+          }
+         }
+        }
+        VerticalLayoutWidgetClass "{2243CFE6876FF9E0}" {
+         Name "MessageList"
+         Slot LayoutSlot "{0C4CFA44D9118CB8}" {
+          Padding 12 0 12 66
+         }
+        }
+       }
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{51A8123F7CE11D6C}" {
+     Name "ComposeSize"
+     Slot OverlayWidgetSlot "{B6AFE2B263738065}" {
+      HorizontalAlign 3
+      VerticalAlign 2
+      Padding 12 0 12 22
+     }
+     AllowHeightOverride 1
+     HeightOverride 34
+     {
+      OverlayWidgetClass "{683EC2736465A4B5}" {
+       Name "ComposeBar"
+       Slot AlignableSlot "{6BEFF9A0BC0AC00D}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Clipping True
+       {
+        BlurWidgetClass "{0A1B7703B181683D}" {
+         Name "GlassBlur"
+         Slot OverlayWidgetSlot "{29C94CFCE1424254}" {
           HorizontalAlign 3
           VerticalAlign 3
          }
-         Color 0.086 0.639 0.29 0.55
+         Color 1 1 1 1
+         Intensity 0.7
+        }
+        SmartPanelWidgetClass "{6C4AFD8BA8B95D30}" {
+         Name "GlassScrim"
+         Slot OverlayWidgetSlot "{583ED9858E3BF4AA}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.004 0.0048 0.0075 0.55
+         style rounded_6px
+         "no focus" 1
+        }
+        SmartPanelWidgetClass "{8ED366449664177B}" {
+         Name "GlassTint"
+         Slot OverlayWidgetSlot "{C083088D687AB437}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.5837 0.6453 0.8073 0.14
+         style rounded_6px
+         "no focus" 1
+        }
+        SizeLayoutWidgetClass "{B8392B78C8FA4E60}" {
+         Name "GlassSpecularSize"
+         Slot OverlayWidgetSlot "{5ED1CB498941B250}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 6 0 6 0
+         }
+         AllowHeightOverride 1
+         HeightOverride 1
+         {
+          ImageWidgetClass "{74245ABBE2C40BB7}" {
+           Name "GlassSpecular"
+           Slot AlignableSlot "{291F21D3EAEC1F2A}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.8626 0.8964 0.964 0.18
+          }
+         }
+        }
+        SizeLayoutWidgetClass "{3ACD578F20A408B8}" {
+         Name "GlassHairlineSize"
+         Slot OverlayWidgetSlot "{C7BE516331F3D4ED}" {
+          HorizontalAlign 3
+          VerticalAlign 2
+          Padding 6 0 6 0
+         }
+         AllowHeightOverride 1
+         HeightOverride 1
+         {
+          ImageWidgetClass "{18B6935D1F5BA0B8}" {
+           Name "GlassHairline"
+           Slot AlignableSlot "{A257334F5706EA69}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.0015 0.0021 0.0033 0.26
+          }
+         }
+        }
+        HorizontalLayoutWidgetClass "{3E1964F24D3C0AAE}" {
+         Name "ComposeRow"
+         Slot OverlayWidgetSlot "{771F0DBFF4C7423B}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+          Padding 8 0 3 0
+         }
+         {
+          EditBoxWidgetClass "{9E21E06FEE3F302F}" {
+           Name "ComposeField"
+           Slot LayoutSlot "{D8334E7F14DF26EC}" {
+            VerticalAlign 1
+            SizeMode Fill
+           }
+           Color 0.8378 0.8626 0.9222 1
+           components {
+            SCR_EventHandlerComponent "{5C3BFF716443F052}" {
+            }
+           }
+           "Font Size" 11
+           "Use placeholder text" 1
+           "Placeholder text" "#ELIFE-Phone_Messages_ComposePlaceholder"
+          }
+          SizeLayoutWidgetClass "{71B1D201991EE71C}" {
+           Name "SendDiscSize"
+           Slot LayoutSlot "{6BCA838F377C4E13}" {
+            VerticalAlign 1
+            Padding 6 0 0 0
+           }
+           AllowWidthOverride 1
+           WidthOverride 28
+           AllowHeightOverride 1
+           HeightOverride 28
+           {
+            OverlayWidgetClass "{1376FAA4AECD6CD9}" {
+             Name "SendFrame"
+             Slot AlignableSlot "{6A87BDC5FFE15EE5}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             {
+              SmartPanelWidgetClass "{F6C6A55B53E3A37D}" {
+               Name "SendFallback"
+               Slot OverlayWidgetSlot "{8D03C973EA45D40D}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               "Is Visible" 0
+               Color 1 1 1 1
+               style rounded_6px
+               "no focus" 1
+              }
+              ImageWidgetClass "{01CCF39AC8FE92EF}" {
+               Name "SendDisc"
+               Slot OverlayWidgetSlot "{08B9943DFF8A7E3D}" {
+                HorizontalAlign 1
+                VerticalAlign 1
+               }
+               Color 1 1 1 1
+               Size 28 28
+              }
+              ButtonWidgetClass "{879ADA174E509526}" {
+               Name "ButtonSend"
+               Slot OverlayWidgetSlot "{0005955FAA6E4FF2}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 1 1 1 1
+               components {
+                SCR_ButtonTextComponent "{9811870A4D241D6C}" {
+                 m_BackgroundDefault 0.91 0.929 0.973 0
+                 m_BackgroundHovered 0.91 0.929 0.973 0.1
+                 m_BackgroundSelected 0.91 0.929 0.973 0.16
+                 m_BackgroundSelectedHovered 0.91 0.929 0.973 0.16
+                 m_BackgroundClicked 0.91 0.929 0.973 0.16
+                 m_sText ""
+                }
+               }
+               style blank
+               {
+                OverlayWidgetClass "{B0795854493368D5}" {
+                 Name "ButtonSurface"
+                 Slot ButtonWidgetSlot "{2623D05D063A565A}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 {
+                  ImageWidgetClass "{7C430C8C168C9FEB}" {
+                   Name "Background"
+                   Slot OverlayWidgetSlot "{7B0B4F6489936F86}" {
+                    HorizontalAlign 1
+                    VerticalAlign 1
+                   }
+                   Color 0 0 0 0
+                   Size 28 28
+                  }
+                  SizeLayoutWidgetClass "{886ED8C1D22CA090}" {
+                   Name "SendIconSize"
+                   Slot OverlayWidgetSlot "{4CD2A159B92ECED6}" {
+                    HorizontalAlign 1
+                    VerticalAlign 1
+                   }
+                   "Is Visible" 0
+                   AllowWidthOverride 1
+                   WidthOverride 14
+                   AllowHeightOverride 1
+                   HeightOverride 14
+                   {
+                    ImageWidgetClass "{C7CAD22DA16F8CBB}" {
+                     Name "SendIcon"
+                     Slot AlignableSlot "{6CFD83E3AA702B55}" {
+                      HorizontalAlign 1
+                      VerticalAlign 1
+                     }
+                     Color 0.925 0.937 0.965 1
+                     Size 14 14
+                    }
+                   }
+                  }
+                  TextWidgetClass "{1EC95DAEA23726D4}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                   Name "SendGlyph"
+                   Slot OverlayWidgetSlot "{5C73567D311F7EE3}" {
+                    HorizontalAlign 1
+                    VerticalAlign 1
+                   }
+                   "Is Visible" 0
+                   Color 0.925 0.937 0.965 1
+                   Text "→"
+                   "Font Size" 14
+                   "Min Font Size" 14
+                   "Horizontal Alignment" Center
+                   FontProperties FontProperties "{1C424CACACF54E22}" {
+                    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
         }
        }
       }
-      ScrollLayoutWidgetClass "{7A3C91E500000020}" {
-       Name "MessageScroll"
-       Slot LayoutSlot "{7A3C91E500000021}" {
-        SizeMode Fill
+     }
+    }
+    VerticalLayoutWidgetClass "{9D8F8661741FBEE8}" {
+     Name "EmptyMessages"
+     Slot OverlayWidgetSlot "{26AB4E69D3DA8F0E}" {
+      HorizontalAlign 1
+      VerticalAlign 1
+      Padding 20 0 20 0
+     }
+     "Is Visible" 0
+     {
+      TextWidgetClass "{516A1D1DC3FE15F7}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "EmptyMessagesTitle"
+       Slot LayoutSlot "{CE9E7FAB34A39568}" {
+        HorizontalAlign 1
        }
-       {
-        VerticalLayoutWidgetClass "{7A3C91E500000022}" {
-         Name "MessageList"
-        }
-       }
-      }
-      VerticalLayoutWidgetClass "{7A3C91E500000023}" {
-       Name "EmptyMessages"
-       Slot LayoutSlot "{7A3C91E500000024}" {
-        Padding 0 6 0 3
-       }
-       "Is Visible" 0
-       {
-        TextWidgetClass "{7A3C91E500000025}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-         Name "EmptyMessagesTitle"
-         Color 0.55 0.56 0.62 1
-         Text "#ELIFE-Phone_Messages_EmptyThread"
-         "Font Size" 10
-         "Min Font Size" 8
-         "Horizontal Alignment" Left
-        }
-       }
+       Color 0.366 0.4024 0.5025 1
+       Text "#ELIFE-Phone_Messages_EmptyThread"
+       "Font Size" 10
+       "Min Font Size" 10
+       "Horizontal Alignment" Center
       }
      }
     }

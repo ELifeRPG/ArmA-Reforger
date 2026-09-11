@@ -1,245 +1,213 @@
 OverlayWidgetClass {
  Name "BankingRoot"
  {
-  OverlayWidgetClass "{7A3C91E000000003}" {
-   Name "Pages"
-   Slot OverlayWidgetSlot "{7A3C91E000000004}" {
+  OverlayWidgetClass "{D94E64C4727E0925}" {
+   Name "IndexPage"
+   Slot OverlayWidgetSlot "{563D535070ABA6F8}" {
     HorizontalAlign 3
     VerticalAlign 3
-    Padding 0 32 0 3
    }
    {
-    VerticalLayoutWidgetClass "{7A3C91E000000005}" {
-     Name "IndexPage"
-     Slot OverlayWidgetSlot "{7A3C91E000000006}" {
+    ScrollLayoutWidgetClass "{8284320AEB2445E0}" {
+     Name "AccountScroll"
+     Slot OverlayWidgetSlot "{B3F9DD967EFB7CCB}" {
       HorizontalAlign 3
       VerticalAlign 3
      }
+     Color 0.0383 0.0466 0.0723 0.20
      {
-      TextWidgetClass "{7A3C91E000000007}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-       Name "IndexIntro"
-       Slot LayoutSlot "{7A3C91E000000008}" {
-        Padding 0 2 0 5
+      VerticalLayoutWidgetClass "{F8D6102C4BD1B9C9}" {
+       Name "AccountScrollBody"
+       Slot AlignableSlot "{CB74FD3BB10E90CF}" {
+        HorizontalAlign 3
        }
-       Color 0.91 0.78 0.145 1
-       Text "#ELIFE-Phone_Bank_Accounts"
-       "Font Size" 9
-       "Min Font Size" 8
-       "Horizontal Alignment" Left
-       FontProperties FontProperties "{7A3C91E000000040}" {
-        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-       }
-      }
-      SizeLayoutWidgetClass "{7A3C91E000000009}" {
-       Name "IndexRule"
-       Slot LayoutSlot "{7A3C91E00000000A}" {
-        Padding 0 0 0 6
-       }
-       AllowHeightOverride 1
-       HeightOverride 1
+       "Fill Origin" Top
        {
-        ImageWidgetClass "{7A3C91E00000000B}" {
-         Name "IndexRuleFill"
-         Slot AlignableSlot "{7A3C91E00000000C}" {
-          HorizontalAlign 3
-          VerticalAlign 3
+        TextWidgetClass "{A4BB2D2E19ED051A}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "LargeTitle"
+         Slot LayoutSlot "{EBB2118EF19995C4}" {
+          Padding 12 48 12 8
          }
-         Color 0.851 0.702 0.024 0.55
-        }
-       }
-      }
-      ScrollLayoutWidgetClass "{7A3C91E00000000D}" {
-       Name "AccountScroll"
-       Slot LayoutSlot "{7A3C91E00000000E}" {
-        SizeMode Fill
-       }
-       {
-        VerticalLayoutWidgetClass "{7A3C91E00000000F}" {
-         Name "AccountList"
-        }
-       }
-      }
-      VerticalLayoutWidgetClass "{7A3C91E000000010}" {
-       Name "EmptyAccounts"
-       Slot LayoutSlot "{7A3C91E000000011}" {
-        Padding 0 8 0 3
-       }
-       "Is Visible" 0
-       {
-        TextWidgetClass "{7A3C91E000000012}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-         Name "EmptyAccountsTitle"
-         Slot LayoutSlot "{7A3C91E000000013}" {
-          Padding 0 0 0 3
+         Color 0.8378 0.8626 0.9222 1
+         Text ""
+         "Font Size" 20
+         "Min Font Size" 20
+         "Horizontal Alignment" Left
+         FontProperties FontProperties "{A1FCF943812D29AE}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
          }
-         Color 0.867 0.851 0.82 1
-         Text "#ELIFE-Phone_Bank_NoAccounts"
-         "Font Size" 11
-         "Min Font Size" 10
-         "Horizontal Alignment" Left
         }
-        TextWidgetClass "{7A3C91E000000014}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-         Name "EmptyAccountsHint"
-         Color 0.55 0.56 0.62 1
-         Text "#ELIFE-Phone_Bank_NoAccountsHint"
-         "Font Size" 10
-         "Min Font Size" 8
-         "Horizontal Alignment" Left
+        VerticalLayoutWidgetClass "{54BACF67C436DADE}" {
+         Name "AccountGroups"
+         Slot LayoutSlot "{B03EF8DBF4B44171}" {
+          Padding 12 0 12 30
+         }
         }
        }
       }
      }
     }
-    VerticalLayoutWidgetClass "{7A3C91E000000015}" {
-     Name "StatementPage"
-     Slot OverlayWidgetSlot "{7A3C91E000000016}" {
-      HorizontalAlign 3
-      VerticalAlign 3
+    VerticalLayoutWidgetClass "{76E1CABD8D679103}" {
+     Name "EmptyAccounts"
+     Slot OverlayWidgetSlot "{C0EE88DBB5568DC9}" {
+      HorizontalAlign 1
+      VerticalAlign 1
+      Padding 20 0 20 0
      }
      "Is Visible" 0
      {
-      TextWidgetClass "{7A3C91E000000017}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-       Name "StatementKind"
-       Slot LayoutSlot "{7A3C91E000000018}" {
-        Padding 0 0 0 2
+      TextWidgetClass "{8C0E7D0658D80159}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "EmptyTitle"
+       Slot LayoutSlot "{4A702DC91A2E8D20}" {
+        HorizontalAlign 1
+        Padding 0 0 0 4
        }
-       Color 0.55 0.56 0.62 1
-       Text ""
-       "Font Size" 8
-       "Min Font Size" 7
-       "Horizontal Alignment" Left
-       FontProperties FontProperties "{7A3C91E000000041}" {
-        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-       }
-      }
-      TextWidgetClass "{7A3C91E000000019}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-       Name "StatementName"
-       Slot LayoutSlot "{7A3C91E00000001A}" {
-        Padding 0 0 0 6
-       }
-       Color 0.867 0.851 0.82 1
-       Text ""
-       "Font Size" 13
-       "Min Font Size" 10
-       "Horizontal Alignment" Left
-       FontProperties FontProperties "{7A3C91E000000042}" {
-        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       Color 0.8378 0.8626 0.9222 1
+       Text "#ELIFE-Phone_Bank_NoAccounts"
+       "Font Size" 15
+       "Min Font Size" 14
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{274769545F4D3C85}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
        }
       }
-      SizeLayoutWidgetClass "{7A3C91E00000001B}" {
-       Name "BalancePlate"
-       Slot LayoutSlot "{7A3C91E00000001C}" {
-        Padding 0 0 0 8
+      TextWidgetClass "{C1F157F4C4791BB7}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "EmptyHint"
+       Slot LayoutSlot "{EEC3B7FC32A47295}" {
+        HorizontalAlign 1
        }
-       AllowHeightOverride 1
-       HeightOverride 45
+       Color 0.366 0.4024 0.5025 1
+       Text "#ELIFE-Phone_Bank_NoAccountsHint"
+       "Font Size" 10
+       "Min Font Size" 9
+       "Horizontal Alignment" Center
+      }
+     }
+    }
+   }
+  }
+  OverlayWidgetClass "{873D8E407F97031D}" {
+   Name "StatementPage"
+   Slot OverlayWidgetSlot "{A7EAD6676A8B6F88}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   "Is Visible" 0
+   {
+    ScrollLayoutWidgetClass "{4CDF96CAE1DDF744}" {
+     Name "PostedScroll"
+     Slot OverlayWidgetSlot "{1792170F43839314}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.0383 0.0466 0.0723 0.20
+     {
+      VerticalLayoutWidgetClass "{620AB01D33EC533A}" {
+       Name "PostedScrollBody"
+       Slot AlignableSlot "{40557BBC8A35E0C9}" {
+        HorizontalAlign 3
+       }
+       "Fill Origin" Top
        {
-        OverlayWidgetClass "{7A3C91E00000003B}" {
-         Name "BalancePlateInner"
-         Slot AlignableSlot "{7A3C91E00000003C}" {
-          HorizontalAlign 3
-          VerticalAlign 3
+        VerticalLayoutWidgetClass "{554F9B947E8F75E2}" {
+         Name "StatementHeader"
+         Slot LayoutSlot "{8E1BCDE9D8C19D08}" {
+          Padding 12 48 12 6
          }
          {
-          SmartPanelWidgetClass "{7A3C91E00000003D}" {
-           Name "BalancePlateFill"
-           Slot OverlayWidgetSlot "{7A3C91E00000003E}" {
-            HorizontalAlign 3
-            VerticalAlign 3
-           }
-           Color 0.12 0.14 0.2 1
-           style rounded_6px
-           "no focus" 1
-          }
-          TextWidgetClass "{7A3C91E000000043}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-           Name "StatementBalance"
-           Slot OverlayWidgetSlot "{7A3C91E00000003F}" {
-            HorizontalAlign 0
-            VerticalAlign 1
-            Padding 10 0 10 0
-           }
-           Color 0.976 0.859 0.298 1
+          TextWidgetClass "{218A6E0976DB1956}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "StatementName"
+           Color 0.8378 0.8626 0.9222 1
            Text ""
-           "Font Size" 22
-           "Min Font Size" 16
+           "Font Size" 20
+           "Min Font Size" 20
            "Horizontal Alignment" Left
-           FontProperties FontProperties "{7A3C91E000000044}" {
-            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           FontProperties FontProperties "{9FE97BC7DC38FDF8}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{A9712979230F0A63}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "StatementKind"
+           Slot LayoutSlot "{B8E17158CA8AE410}" {
+            Padding 0 2 0 0
+           }
+           Color 0.366 0.4024 0.5025 1
+           Text ""
+           "Font Size" 10
+           "Min Font Size" 9
+           "Horizontal Alignment" Left
+          }
+          TextWidgetClass "{1EB091C521A4CEC5}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "StatementBalance"
+           Slot LayoutSlot "{46445082588E6639}" {
+            Padding 0 10 0 0
+           }
+           Color 0.7446 0.3971 0.0684 1
+           Text ""
+           "Font Size" 26
+           "Min Font Size" 24
+           "Horizontal Alignment" Left
+           FontProperties FontProperties "{A50234E5EF591C58}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
            }
           }
          }
         }
-       }
-      }
-      SizeLayoutWidgetClass "{7A3C91E00000001D}" {
-       Name "StatementRule"
-       Slot LayoutSlot "{7A3C91E00000001E}" {
-        Padding 0 0 0 5
-       }
-       AllowHeightOverride 1
-       HeightOverride 1
-       {
-        ImageWidgetClass "{7A3C91E00000001F}" {
-         Name "StatementRuleFill"
-         Slot AlignableSlot "{7A3C91E000000020}" {
-          HorizontalAlign 3
-          VerticalAlign 3
+        TextWidgetClass "{29ACB06887117F00}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "PostedLabel"
+         Slot LayoutSlot "{D24C2E152120F826}" {
+          Padding 12 8 12 4
          }
-         Color 0.851 0.702 0.024 0.55
+         Color 0.1715 0.1942 0.2664 1
+         Text "#ELIFE-Phone_Bank_Posted"
+         "Font Size" 9
+         "Min Font Size" 9
+         "Horizontal Alignment" Left
         }
-       }
-      }
-      TextWidgetClass "{7A3C91E000000021}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-       Name "PostedLabel"
-       Slot LayoutSlot "{7A3C91E000000022}" {
-        Padding 0 5 0 5
-       }
-       Color 0.55 0.56 0.62 1
-       Text "#ELIFE-Phone_Bank_Posted"
-       "Font Size" 8
-       "Min Font Size" 7
-       "Horizontal Alignment" Left
-       FontProperties FontProperties "{7A3C91E000000045}" {
-        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-       }
-      }
-      ScrollLayoutWidgetClass "{7A3C91E000000023}" {
-       Name "PostedScroll"
-       Slot LayoutSlot "{7A3C91E000000024}" {
-        SizeMode Fill
-       }
-       {
-        VerticalLayoutWidgetClass "{7A3C91E000000025}" {
+        VerticalLayoutWidgetClass "{AB6DECA040CB5048}" {
          Name "PostedList"
+         Slot LayoutSlot "{A9FC99865B8284CE}" {
+          Padding 12 0 12 30
+         }
         }
        }
       }
-      VerticalLayoutWidgetClass "{7A3C91E000000026}" {
-       Name "EmptyPosted"
-       Slot LayoutSlot "{7A3C91E000000027}" {
-        Padding 0 6 0 3
+     }
+    }
+    VerticalLayoutWidgetClass "{5743817188A3FD73}" {
+     Name "EmptyPosted"
+     Slot OverlayWidgetSlot "{23EA23E4AF683DD5}" {
+      HorizontalAlign 1
+      VerticalAlign 2
+      Padding 20 0 20 60
+     }
+     "Is Visible" 0
+     {
+      TextWidgetClass "{4D24512D10BC27A9}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "EmptyPostedTitle"
+       Slot LayoutSlot "{5C66BD958113205E}" {
+        HorizontalAlign 1
+        Padding 0 0 0 4
        }
-       "Is Visible" 0
-       {
-        TextWidgetClass "{7A3C91E000000028}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-         Name "EmptyPostedTitle"
-         Slot LayoutSlot "{7A3C91E000000029}" {
-          Padding 0 0 0 3
-         }
-         Color 0.867 0.851 0.82 1
-         Text "#ELIFE-Phone_Bank_NoPosted"
-         "Font Size" 11
-         "Min Font Size" 10
-         "Horizontal Alignment" Left
-        }
-        TextWidgetClass "{7A3C91E00000002A}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-         Name "EmptyPostedHint"
-         Color 0.55 0.56 0.62 1
-         Text "#ELIFE-Phone_Bank_NoPostedHint"
-         "Font Size" 10
-         "Min Font Size" 8
-         "Horizontal Alignment" Left
-        }
+       Color 0.8378 0.8626 0.9222 1
+       Text "#ELIFE-Phone_Bank_NoPosted"
+       "Font Size" 15
+       "Min Font Size" 14
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{B4A83270E197E505}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
        }
+      }
+      TextWidgetClass "{FC616BF4E00872D3}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "EmptyPostedHint"
+       Slot LayoutSlot "{27C259875FF656F3}" {
+        HorizontalAlign 1
+       }
+       Color 0.366 0.4024 0.5025 1
+       Text "#ELIFE-Phone_Bank_NoPostedHint"
+       "Font Size" 10
+       "Min Font Size" 9
+       "Horizontal Alignment" Center
       }
      }
     }

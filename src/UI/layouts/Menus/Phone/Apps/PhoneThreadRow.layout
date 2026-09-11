@@ -1,181 +1,276 @@
 SizeLayoutWidgetClass {
  Name "ThreadRowSize"
- AllowWidthOverride 1
- WidthOverride 200
  AllowHeightOverride 1
- HeightOverride 43
+ HeightOverride 36
  {
-  OverlayWidgetClass "{7A3C91E600000001}" {
+  OverlayWidgetClass "{6C4E625757CCA8E0}" {
    Name "ThreadRow"
-   Slot AlignableSlot "{7A3C91E600000002}" {
+   Slot AlignableSlot "{48A93524FB2EA645}" {
     HorizontalAlign 3
     VerticalAlign 3
+    Padding 0 0 0 2
    }
    {
-    SmartPanelWidgetClass "{7A3C91E600000003}" {
-     Name "ThreadRowBackground"
-     Slot OverlayWidgetSlot "{7A3C91E600000004}" {
+    BlurWidgetClass "{562EFD09BAAB430A}" {
+     Name "GlassBlur"
+     Slot OverlayWidgetSlot "{2AA0DF1646664436}" {
       HorizontalAlign 3
       VerticalAlign 3
      }
-     Color 0.12 0.13 0.17 1
+     Color 1 1 1 1
+     Intensity 0.7
+    }
+    SmartPanelWidgetClass "{9A32CC88A16C4E30}" {
+     Name "GlassScrim"
+     Slot OverlayWidgetSlot "{92BFF4D0EE984833}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.004 0.0048 0.0075 0.55
      style rounded_6px
      "no focus" 1
     }
-    ButtonWidgetClass "{7A3C91E600000005}" {
+    SmartPanelWidgetClass "{1522C2401CC94211}" {
+     Name "GlassTint"
+     Slot OverlayWidgetSlot "{D3231ADB145B437C}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.5837 0.6453 0.8073 0.14
+     style rounded_6px
+     "no focus" 1
+    }
+    SizeLayoutWidgetClass "{32673F6372144273}" {
+     Name "GlassSpecularSize"
+     Slot OverlayWidgetSlot "{C1FE917A1ACD4998}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+      Padding 6 0 6 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 1
+     {
+      ImageWidgetClass "{FA6043E8E8C74837}" {
+       Name "GlassSpecular"
+       Slot AlignableSlot "{6F0530FD75604FCC}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.8626 0.8964 0.964 0.18
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{5A2B8E1C6D394F70}" {
+     Name "GlassHairlineSize"
+     Slot OverlayWidgetSlot "{8D4A7C2F1B5E4903}" {
+      HorizontalAlign 3
+      VerticalAlign 2
+      Padding 6 0 6 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 1
+     {
+      ImageWidgetClass "{3E9C5A7D2F4B4861}" {
+       Name "GlassHairline"
+       Slot AlignableSlot "{7B4D2E9A6C3F4855}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0015 0.0021 0.0033 0.26
+      }
+     }
+    }
+    ButtonWidgetClass "{8128D24FAC0337DF}" {
      Name "ThreadButton"
-     Slot OverlayWidgetSlot "{7A3C91E600000006}" {
+     Slot OverlayWidgetSlot "{8730FC4A6DBB9642}" {
       HorizontalAlign 3
       VerticalAlign 3
      }
      Color 1 1 1 1
      components {
-      SCR_ButtonTextComponent "{7A3C91E600000007}" {
-       m_BackgroundDefault 0.086 0.639 0.29 0
-       m_BackgroundHovered 0.086 0.639 0.29 0.16
-       m_BackgroundSelected 0.086 0.639 0.29 0.26
+      SCR_ButtonTextComponent "{6554B217A1940F35}" {
+       m_BackgroundDefault 0.91 0.929 0.973 0
+       m_BackgroundHovered 0.91 0.929 0.973 0.06
+       m_BackgroundSelected 0.91 0.929 0.973 0.12
+       m_BackgroundSelectedHovered 0.91 0.929 0.973 0.12
+       m_BackgroundClicked 0.91 0.929 0.973 0.12
        m_sText ""
       }
      }
      style blank
      {
-      HorizontalLayoutWidgetClass "{7A3C91E600000008}" {
-       Name "ThreadRowBody"
-       Slot ButtonWidgetSlot "{7A3C91E600000009}" {
+      OverlayWidgetClass "{3C7CF3C83046E39D}" {
+       Name "ButtonSurface"
+       Slot ButtonWidgetSlot "{F46A36AFF838F9B8}" {
         HorizontalAlign 3
         VerticalAlign 3
-        Padding 5 5 5 5
        }
        {
-        SizeLayoutWidgetClass "{7A3C91E60000000A}" {
-         Name "ThreadAvatarSize"
-         Slot LayoutSlot "{7A3C91E60000000B}" {
-          Padding 0 0 6 0
+        SmartPanelWidgetClass "{C416C0DF2E52180D}" {
+         Name "Background"
+         Slot OverlayWidgetSlot "{F5B01A598A2C6BE1}" {
+          HorizontalAlign 3
+          VerticalAlign 3
          }
-         AllowWidthOverride 1
-         WidthOverride 26
-         AllowHeightOverride 1
-         HeightOverride 26
+         Color 0 0 0 0
+         style rounded_6px
+         "no focus" 1
+        }
+        HorizontalLayoutWidgetClass "{C5FC69D5C96F3028}" {
+         Name "ThreadRowBody"
+         Slot OverlayWidgetSlot "{6E8295FE2368F645}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+          Padding 8 5 8 5
+         }
          {
-          OverlayWidgetClass "{7A3C91E60000000C}" {
-           Name "ThreadAvatar"
-           Slot AlignableSlot "{7A3C91E60000000D}" {
-            HorizontalAlign 3
-            VerticalAlign 3
+          SizeLayoutWidgetClass "{D06C6C877843A968}" {
+           Name "ThreadAvatarSize"
+           Slot LayoutSlot "{B1F6A5A6CF4D65FD}" {
+            VerticalAlign 1
+            Padding 0 0 8 0
            }
+           AllowWidthOverride 1
+           WidthOverride 24
+           AllowHeightOverride 1
+           HeightOverride 24
            {
-            SmartPanelWidgetClass "{7A3C91E60000000E}" {
-             Name "ThreadAvatarFill"
-             Slot OverlayWidgetSlot "{7A3C91E60000000F}" {
+            OverlayWidgetClass "{4386D8110962F653}" {
+             Name "ThreadAvatar"
+             Slot AlignableSlot "{2F2A68D1BD0DA4D5}" {
               HorizontalAlign 3
               VerticalAlign 3
              }
-             Color 0.086 0.639 0.29 1
-             style rounded_6px
-             "no focus" 1
-            }
-            TextWidgetClass "{7A3C91E600000010}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-             Name "ThreadAvatarGlyph"
-             Slot OverlayWidgetSlot "{7A3C91E600000011}" {
-              HorizontalAlign 1
-              VerticalAlign 1
+             {
+              SmartPanelWidgetClass "{DDA1A53B888A842F}" {
+               Name "ThreadAvatarFill"
+               Slot OverlayWidgetSlot "{931E94DCD283A374}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0.0159 0.0194 0.0319 1
+               style rounded_6px
+               "no focus" 1
+              }
+              TextWidgetClass "{C3C7D60B06AC1293}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+               Name "ThreadAvatarGlyph"
+               Slot OverlayWidgetSlot "{569BDAE5358F3A28}" {
+                HorizontalAlign 1
+                VerticalAlign 1
+               }
+               Color 0.8378 0.8626 0.9222 1
+               Text ""
+               "Font Size" 11
+               "Min Font Size" 11
+               "Horizontal Alignment" Center
+               FontProperties FontProperties "{527BE6DB35B1CDBD}" {
+                Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+               }
+              }
              }
-             Color 0.078 0.086 0.114 1
+            }
+           }
+          }
+          VerticalLayoutWidgetClass "{5DD922FE6EA9ADA0}" {
+           Name "ThreadCopy"
+           Slot LayoutSlot "{03477066A73CD36D}" {
+            VerticalAlign 1
+            SizeMode Fill
+           }
+           {
+            TextWidgetClass "{F20FEE24A78C24B9}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "ThreadParticipants"
+             Color 0.8378 0.8626 0.9222 1
              Text ""
              "Font Size" 11
              "Min Font Size" 10
-             "Horizontal Alignment" Center
-             FontProperties FontProperties "{7A3C91E600000012}" {
-              Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+             "Horizontal Alignment" Left
+             FontProperties FontProperties "{5678ACF3CDE2011D}" {
+              Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
              }
             }
-           }
-          }
-         }
-        }
-        VerticalLayoutWidgetClass "{7A3C91E600000013}" {
-         Name "ThreadCopy"
-         Slot LayoutSlot "{7A3C91E600000014}" {
-          SizeMode Fill
-         }
-         {
-          TextWidgetClass "{7A3C91E600000015}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-           Name "ThreadParticipants"
-           Color 0.867 0.851 0.82 1
-           Text ""
-           "Font Size" 10
-           "Min Font Size" 9
-           "Horizontal Alignment" Left
-          }
-          TextWidgetClass "{7A3C91E600000016}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-           Name "ThreadPreview"
-           Color 0.55 0.56 0.62 1
-           Text ""
-           "Font Size" 8
-           "Min Font Size" 7
-           "Horizontal Alignment" Left
-          }
-         }
-        }
-        SizeLayoutWidgetClass "{7A3C91E600000017}" {
-         Name "ThreadUnreadSize"
-         Slot LayoutSlot "{7A3C91E600000018}" {
-          VerticalAlign 1
-          Padding 5 0 3 0
-         }
-         AllowWidthOverride 1
-         WidthOverride 18
-         AllowHeightOverride 1
-         HeightOverride 18
-         {
-          OverlayWidgetClass "{7A3C91E600000019}" {
-           Name "ThreadUnread"
-           Slot AlignableSlot "{7A3C91E60000001A}" {
-            HorizontalAlign 3
-            VerticalAlign 3
-           }
-           "Is Visible" 0
-           {
-            SmartPanelWidgetClass "{7A3C91E60000001B}" {
-             Name "ThreadUnreadFill"
-             Slot OverlayWidgetSlot "{7A3C91E60000001C}" {
-              HorizontalAlign 3
-              VerticalAlign 3
-             }
-             Color 0.867 0.263 0.263 1
-             style rounded_6px
-             "no focus" 1
-            }
-            TextWidgetClass "{7A3C91E60000001D}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-             Name "ThreadUnreadCount"
-             Slot OverlayWidgetSlot "{7A3C91E60000001E}" {
-              HorizontalAlign 1
-              VerticalAlign 1
-             }
-             Color 0.949 0.933 0.902 1
+            TextWidgetClass "{32B14540C39CF8D6}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "ThreadPreview"
+             Color 0.366 0.4024 0.5025 1
              Text ""
-             "Font Size" 8
-             "Min Font Size" 7
-             "Horizontal Alignment" Center
-             FontProperties FontProperties "{7A3C91E60000001F}" {
-              Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+             "Font Size" 9
+             "Min Font Size" 9
+             "Horizontal Alignment" Left
+            }
+           }
+          }
+          VerticalLayoutWidgetClass "{CDDFFA0FB5FB65EA}" {
+           Name "ThreadTrailing"
+           Slot LayoutSlot "{FC69832B30A8FCD1}" {
+            VerticalAlign 1
+            Padding 8 0 0 0
+           }
+           {
+            TextWidgetClass "{60F3573385F62689}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "ThreadTime"
+             Slot LayoutSlot "{C15A1ED041DA616A}" {
+              HorizontalAlign 2
+             }
+             Color 0.1715 0.1942 0.2664 1
+             Text ""
+             "Font Size" 9
+             "Min Font Size" 9
+             "Horizontal Alignment" 2
+             FontProperties FontProperties "{1F686C012CD422C5}" {
+              Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+             }
+            }
+            SizeLayoutWidgetClass "{35A13D4DDE373A8A}" {
+             Name "ThreadUnreadSize"
+             Slot LayoutSlot "{CB9E28201A19A05D}" {
+              HorizontalAlign 2
+              Padding 0 3 0 0
+             }
+             "Is Visible" 0
+             AllowWidthOverride 1
+             WidthOverride 16
+             AllowHeightOverride 1
+             HeightOverride 14
+             {
+              OverlayWidgetClass "{422BE04F1C4901BE}" {
+               Name "ThreadUnread"
+               Slot AlignableSlot "{E4F68A3601DA7513}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               {
+                SmartPanelWidgetClass "{EA35280842EEB46E}" {
+                 Name "ThreadUnreadFill"
+                 Slot OverlayWidgetSlot "{6096B02BA2BFCA3E}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 0.1147 0.5398 0.2085 1
+                 style rounded_6px
+                 "no focus" 1
+                }
+                TextWidgetClass "{5F53DF4D4F58169A}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                 Name "ThreadUnreadCount"
+                 Slot OverlayWidgetSlot "{2A552A3773D51239}" {
+                  HorizontalAlign 1
+                  VerticalAlign 1
+                 }
+                 Color 0.004 0.0048 0.0075 1
+                 Text ""
+                 "Font Size" 9
+                 "Min Font Size" 9
+                 "Horizontal Alignment" Center
+                 FontProperties FontProperties "{B4F0AA40055CFAB0}" {
+                  Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                 }
+                }
+               }
+              }
              }
             }
            }
           }
          }
-        }
-        TextWidgetClass "{7A3C91E600000020}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-         Name "ThreadChevron"
-         Slot LayoutSlot "{7A3C91E600000021}" {
-          VerticalAlign 1
-         }
-         Color 0.55 0.56 0.62 1
-         Text ">"
-         "Font Size" 10
-         "Min Font Size" 10
-         "Horizontal Alignment" 2
-         "Vertical Alignment" 1
         }
        }
       }

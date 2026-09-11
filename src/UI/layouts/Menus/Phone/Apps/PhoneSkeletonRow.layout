@@ -1,0 +1,90 @@
+SizeLayoutWidgetClass {
+ Name "SkeletonRowSize"
+ AllowHeightOverride 1
+ HeightOverride 34
+ {
+  HorizontalLayoutWidgetClass "{BCA9641940AB3394}" {
+   Name "SkeletonRow"
+   Slot AlignableSlot "{034957AC913DC6A4}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+    Padding 0 5 0 5
+   }
+   {
+    SizeLayoutWidgetClass "{6DF6CDE5C89C3745}" {
+     Name "SkeletonAvatarSize"
+     Slot LayoutSlot "{A8B30540C9DD6B52}" {
+      VerticalAlign 1
+      Padding 0 0 8 0
+     }
+     AllowWidthOverride 1
+     WidthOverride 24
+     AllowHeightOverride 1
+     HeightOverride 24
+     {
+      SmartPanelWidgetClass "{681C1E6BF3AFE0C2}" {
+       Name "SkeletonAvatar"
+       Slot AlignableSlot "{2E5A3A947A35A8C3}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0159 0.0194 0.0319 1
+       style rounded_6px
+       "no focus" 1
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{63AEAB980BB52F32}" {
+     Name "SkeletonCopy"
+     Slot LayoutSlot "{6DAAFEB8BF7C37C2}" {
+      SizeMode Fill
+      VerticalAlign 1
+     }
+     {
+      SizeLayoutWidgetClass "{9D25EACBFD27D15D}" {
+       Name "SkeletonLine0Size"
+       Slot LayoutSlot "{3603804A726EE9E0}" {
+        Padding 0 0 0 5
+       }
+       AllowWidthOverride 1
+       WidthOverride 104
+       AllowHeightOverride 1
+       HeightOverride 8
+       {
+        SmartPanelWidgetClass "{76567A68E2ADFB0D}" {
+         Name "SkeletonLine0"
+         Slot AlignableSlot "{4E89ABFA519F5BCD}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.0159 0.0194 0.0319 1
+         style rounded_2px
+         "no focus" 1
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{7D3BD85C5098B024}" {
+       Name "SkeletonLine1Size"
+       AllowWidthOverride 1
+       WidthOverride 62
+       AllowHeightOverride 1
+       HeightOverride 6
+       {
+        SmartPanelWidgetClass "{ADBD8D78C5961784}" {
+         Name "SkeletonLine1"
+         Slot AlignableSlot "{13199CC36F457FFB}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.0159 0.0194 0.0319 1
+         style rounded_2px
+         "no focus" 1
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

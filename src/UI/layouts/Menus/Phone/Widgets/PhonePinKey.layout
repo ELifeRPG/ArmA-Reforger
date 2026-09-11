@@ -1,0 +1,142 @@
+SizeLayoutWidgetClass {
+ Name "PinKeySize"
+ AllowWidthOverride 1
+ WidthOverride 56
+ AllowHeightOverride 1
+ HeightOverride 32
+ {
+  OverlayWidgetClass "{8864A188D3E3386C}" {
+   Name "PinKey"
+   Slot AlignableSlot "{94832BFC1F55E754}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    BlurWidgetClass "{032B1B1694CD7CDA}" {
+     Name "GlassBlur"
+     Slot OverlayWidgetSlot "{B3D863526204DCEE}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 1
+     Intensity 0.7
+    }
+    SmartPanelWidgetClass "{77A17106D413F919}" {
+     Name "GlassScrim"
+     Slot OverlayWidgetSlot "{E4D8A9932451A419}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.004 0.0048 0.0075 0.55
+     style rounded_6px
+     "no focus" 1
+    }
+    SmartPanelWidgetClass "{4A2E7E7181181770}" {
+     Name "GlassTint"
+     Slot OverlayWidgetSlot "{16301A5C826D206E}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.5837 0.6453 0.8073 0.14
+     style rounded_6px
+     "no focus" 1
+    }
+    SizeLayoutWidgetClass "{DFF904965B90CBB5}" {
+     Name "GlassSpecularSize"
+     Slot OverlayWidgetSlot "{7D30AD4B9724F9A7}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+      Padding 6 0 6 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 1
+     {
+      ImageWidgetClass "{2CC27A6BE7E6F6D1}" {
+       Name "GlassSpecular"
+       Slot AlignableSlot "{AF07875FB31D863D}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.8626 0.8964 0.964 0.18
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{168B25C98683C8AA}" {
+     Name "GlassHairlineSize"
+     Slot OverlayWidgetSlot "{51AA924205FAED0C}" {
+      HorizontalAlign 3
+      VerticalAlign 2
+      Padding 6 0 6 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 1
+     {
+      ImageWidgetClass "{AB4B2FEBBFB0958A}" {
+       Name "GlassHairline"
+       Slot AlignableSlot "{4BEC63784F7EE2BF}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0015 0.0021 0.0033 0.26
+      }
+     }
+    }
+    ButtonWidgetClass "{83D7C89DA10D49F7}" {
+     Name "KeyButton"
+     Slot OverlayWidgetSlot "{5F18D6732EB57D8A}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 1
+     style blank
+     components {
+      SCR_ButtonTextComponent "{7DCA1FE134A54C14}" {
+       m_BackgroundDefault 0.910 0.929 0.973 0
+       m_BackgroundHovered 0.910 0.929 0.973 0.10
+       m_BackgroundSelected 0.910 0.929 0.973 0.16
+       m_BackgroundSelectedHovered 0.910 0.929 0.973 0.16
+       m_BackgroundClicked 0.910 0.929 0.973 0.16
+       m_sText ""
+      }
+     }
+     {
+      OverlayWidgetClass "{4D3B06AEA0E58763}" {
+       Name "KeyButtonOverlay"
+       Slot ButtonWidgetSlot "{DAE6B6F628B6AAB2}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        SmartPanelWidgetClass "{D2B609E8E4E2943E}" {
+         Name "Background"
+         Slot OverlayWidgetSlot "{31B724F0D9F85276}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0 0 0 0
+         style rounded_6px
+         "no focus" 1
+        }
+        TextWidgetClass "{28EA58D7A05BC407}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "KeyLabel"
+         Slot OverlayWidgetSlot "{9B1E97DAE1ECD73D}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.8378 0.8626 0.9222 1
+         Text ""
+         "Font Size" 19
+         "Min Font Size" 19
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{D75057FC999C6629}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

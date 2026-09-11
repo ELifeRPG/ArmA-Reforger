@@ -2,46 +2,22 @@ OverlayWidgetClass {
  Name "StatusOverlay"
  "Is Visible" 0
  {
-  ImageWidgetClass "{7A3C91E800000001}" {
+  ImageWidgetClass "{6A4270E19A18AA2F}" {
    Name "StatusBackdrop"
-   Slot OverlayWidgetSlot "{7A3C91E800000002}" {
+   Slot OverlayWidgetSlot "{FD7469A349B62689}" {
     HorizontalAlign 3
     VerticalAlign 3
    }
-   Color 0.078 0.086 0.114 1
+   Color 0.004 0.0048 0.0075 1
   }
-  VerticalLayoutWidgetClass "{7A3C91E800000003}" {
-   Name "StatusCopy"
-   Slot OverlayWidgetSlot "{7A3C91E800000004}" {
-    HorizontalAlign 1
-    VerticalAlign 1
-    Padding 13 0 13 0
+  VerticalLayoutWidgetClass "{12CD766EC4A92E0D}" {
+   Name "SkeletonList"
+   Slot OverlayWidgetSlot "{26775FB146FCF42E}" {
+    HorizontalAlign 3
+    VerticalAlign 0
+    Padding 12 44 12 0
    }
-   {
-    TextWidgetClass "{7A3C91E800000005}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-     Name "StatusTitle"
-     Slot LayoutSlot "{7A3C91E800000006}" {
-      HorizontalAlign 1
-      Padding 0 0 0 3
-     }
-     Color 0.867 0.851 0.82 1
-     Text ""
-     "Font Size" 11
-     "Min Font Size" 10
-     "Horizontal Alignment" Center
-    }
-    TextWidgetClass "{7A3C91E800000007}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-     Name "StatusHint"
-     Slot LayoutSlot "{7A3C91E800000008}" {
-      HorizontalAlign 1
-     }
-     Color 0.55 0.56 0.62 1
-     Text ""
-     "Font Size" 9
-     "Min Font Size" 8
-     "Horizontal Alignment" Center
-    }
-   }
+   "Fill Origin" Top
   }
  }
 }

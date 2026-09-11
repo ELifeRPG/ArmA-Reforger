@@ -5,14 +5,14 @@ class ELIFE_PhoneScreenRenderComponentClass : ScriptComponentClass
 }
 
 //------------------------------------------------------------------------------------------------
-//! Client-local companion to ELIFE_PhoneGadgetComponent. Renders the phone UI live onto the mesh
-//! screen when nearby (see docs/rttexture-guide.md).
+//! Client-local companion to ELIFE_PhoneGadgetComponent. Renders the phone UI live onto the mesh screen when nearby.
 class ELIFE_PhoneScreenRenderComponent : ScriptComponent
 {
 	protected const ResourceName SCREEN_CONTENT_LAYOUT = "{9DC05521B419EB64}UI/layouts/Menus/Phone/PhoneScreenContent.layout";
 
-	//! Not PhoneMenu.layout itself - its root only works as a real menu, not inserted as a child.
-	protected const ResourceName PHONE_MENU_CONTENT_LAYOUT = "{7B24000000000004}UI/layouts/Menus/Phone/PhoneMenuContent.layout";
+	//! Screen contents only, no bezel - the gadget model is the frame. Shared 1:1 with the in-hand
+	//! menu at the same 236x443 pixel size, so nothing has to be scaled.
+	protected const ResourceName PHONE_SCREEN_LAYOUT = "{7C10D4A9E3B25F81}UI/layouts/Menus/Phone/PhoneScreen.layout";
 
 	//! Shared for every phone, not per-entity. SYNC_RANGE_METERS must stay >= ACTIVATION_RANGE_METERS.
 	protected const float ACTIVATION_RANGE_METERS = 10;
@@ -59,7 +59,6 @@ class ELIFE_PhoneScreenRenderComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Called whenever in-app navigation changes (see ELIFE_PhoneAppBase.GetSubState()).
 	void OnScreenSubStateChanged(string subState)
 	{
 		if (m_ScreenController)
@@ -109,38 +108,30 @@ class ELIFE_PhoneScreenRenderComponent : ScriptComponent
 			return;
 
 		m_RT = RTTextureWidget.Cast(m_wRoot.FindAnyWidget("ContentRT"));
-		Widget menuHost = m_wRoot.FindAnyWidget("PhoneMenuHost");
-		if (!m_RT || !menuHost)
+		Widget screenHost = m_wRoot.FindAnyWidget("PhoneScreenHost");
+		if (!m_RT || !screenHost)
 		{
-			Print("ELIFE_Phone: PhoneScreenContent.layout is missing ContentRT/PhoneMenuHost - aborting RT screen bind", LogLevel.WARNING);
+			Print("ELIFE_Phone: PhoneScreenContent.layout is missing ContentRT/PhoneScreenHost - aborting RT screen bind", LogLevel.WARNING);
 			m_wRoot.RemoveFromHierarchy();
 			m_wRoot = null;
 			return;
 		}
 
-		Widget menuRoot = workspace.CreateWidgets(PHONE_MENU_CONTENT_LAYOUT, menuHost);
-		if (!menuRoot)
+		Widget screenRoot = workspace.CreateWidgets(PHONE_SCREEN_LAYOUT, screenHost);
+		if (!screenRoot)
 		{
-			Print("ELIFE_Phone: Failed to insert PhoneMenuContent.layout into PhoneMenuHost - aborting RT screen bind", LogLevel.WARNING);
+			Print("ELIFE_Phone: Failed to insert PhoneScreen.layout into PhoneScreenHost - aborting RT screen bind", LogLevel.WARNING);
 			m_wRoot.RemoveFromHierarchy();
 			m_wRoot = null;
 			return;
 		}
 
 		//! CreateWidgets() doesn't give the returned root a fill slot by default.
-		AlignableSlot.SetHorizontalAlign(menuRoot, LayoutHorizontalAlign.Stretch);
-		AlignableSlot.SetVerticalAlign(menuRoot, LayoutVerticalAlign.Stretch);
-
-		Widget phoneSize = menuRoot.FindAnyWidget("PhoneSize");
-		if (phoneSize)
-		{
-			AlignableSlot.SetHorizontalAlign(phoneSize, LayoutHorizontalAlign.Right);
-			AlignableSlot.SetVerticalAlign(phoneSize, LayoutVerticalAlign.Bottom);
-			AlignableSlot.SetPadding(phoneSize, 0, 0, 22, 22);
-		}
+		AlignableSlot.SetHorizontalAlign(screenRoot, LayoutHorizontalAlign.Stretch);
+		AlignableSlot.SetVerticalAlign(screenRoot, LayoutVerticalAlign.Stretch);
 
 		m_ScreenController = new ELIFE_PhoneScreenController();
-		m_ScreenController.Init(menuRoot, phone);
+		m_ScreenController.Init(screenRoot, phone);
 		m_ScreenController.ShowScreenState(phone.GetScreenState());
 
 		IEntity owner = GetOwner();
@@ -151,7 +142,7 @@ class ELIFE_PhoneScreenRenderComponent : ScriptComponent
 		m_RT.SetRenderTarget(owner);
 		m_RT.SetEnabled(true);
 
-		//! Forces the first frame to render immediately - see docs/rttexture-guide.md requirement 3.
+		//! Forces the first frame to render immediately instead of waiting for the next tick.
 		m_wRoot.Update();
 		m_RT.Update();
 

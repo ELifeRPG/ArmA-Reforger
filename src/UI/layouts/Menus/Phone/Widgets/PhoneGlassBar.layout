@@ -1,0 +1,69 @@
+OverlayWidgetClass {
+ Name "GlassBar"
+ Clipping True
+ {
+  BlurWidgetClass "{A1A286C777017CB4}" {
+   Name "GlassBlur"
+   Slot OverlayWidgetSlot "{092F56AFAC9A59C3}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 1 1 1 1
+   Intensity 1.0
+  }
+  ImageWidgetClass "{69BC1D3F0D815583}" {
+   Name "GlassScrim"
+   Slot OverlayWidgetSlot "{6C3F829BB799A09A}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 0.004 0.0048 0.0075 0.86
+  }
+  ImageWidgetClass "{CFD2466019EFF84F}" {
+   Name "GlassTint"
+   Slot OverlayWidgetSlot "{7B142FFAF5AB66D5}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 0.5837 0.6453 0.8073 0.10
+  }
+  SizeLayoutWidgetClass "{F5409A802EE40BE2}" {
+   Name "GlassSpecularSize"
+   Slot OverlayWidgetSlot "{E07F854EB44D7CEB}" {
+    HorizontalAlign 3
+    VerticalAlign 0
+   }
+   AllowHeightOverride 1
+   HeightOverride 1
+   {
+    ImageWidgetClass "{C3C0E01F8F6FD9A6}" {
+     Name "GlassSpecular"
+     Slot AlignableSlot "{FBB0B0F80B73A3C9}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.8626 0.8964 0.964 0.14
+    }
+   }
+  }
+  SizeLayoutWidgetClass "{521509E18004358D}" {
+   Name "GlassHairlineSize"
+   Slot OverlayWidgetSlot "{1F8955402B75F4EA}" {
+    HorizontalAlign 3
+    VerticalAlign 2
+   }
+   AllowHeightOverride 1
+   HeightOverride 1
+   {
+    ImageWidgetClass "{4A291B69D03E6B61}" {
+     Name "GlassHairline"
+     Slot AlignableSlot "{8C605A82F09DEB0D}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.0015 0.0021 0.0033 0.26
+    }
+   }
+  }
+ }
+}

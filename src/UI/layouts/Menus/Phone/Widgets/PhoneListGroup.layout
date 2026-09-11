@@ -1,0 +1,26 @@
+VerticalLayoutWidgetClass "{F248694B6008475C}" {
+ Name "ListGroup"
+ Slot LayoutSlot "{24F76DCE04204EF1}" {
+  HorizontalAlign 3
+ }
+ {
+  TextWidgetClass "{6710727FF5844009}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+   Name "GroupHeaderLabel"
+   Slot LayoutSlot "{77F8C28EB1C742A1}" {
+    HorizontalAlign 3
+    Padding 0 0 0 4
+   }
+   Color 0.745 0.397 0.0685 1
+   Text ""
+   "Font Size" 9
+   "Min Font Size" 9
+   "Horizontal Alignment" Left
+  }
+  VerticalLayoutWidgetClass "{2D6E0E63C1AF4A55}" {
+   Name "GroupList"
+   Slot LayoutSlot "{7B9A2C9C6C4E4A6E}" {
+    HorizontalAlign 3
+   }
+  }
+ }
+}

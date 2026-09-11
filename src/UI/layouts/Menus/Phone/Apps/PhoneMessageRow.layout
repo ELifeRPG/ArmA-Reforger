@@ -1,43 +1,63 @@
-VerticalLayoutWidgetClass {
+OverlayWidgetClass {
  Name "MessageRow"
  {
-  TextWidgetClass "{7A3C91E700000001}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-   Name "MessageMeta"
-   Slot LayoutSlot "{7A3C91E700000002}" {
-    Padding 0 4 0 1
+  VerticalLayoutWidgetClass "{097B26ED0A255A4B}" {
+   Name "MessageColumn"
+   Slot OverlayWidgetSlot "{84F589FDD2917ADD}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+    Padding 0 0 0 8
    }
-   Color 0.55 0.56 0.62 1
-   Text ""
-   "Font Size" 8
-   "Min Font Size" 8
-   "Horizontal Alignment" Left
-   FontProperties FontProperties "{7A3C91E700000003}" {
-    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-   }
-  }
-  TextWidgetClass "{7A3C91E700000004}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-   Name "MessageBody"
-   Slot LayoutSlot "{7A3C91E700000005}" {
-    Padding 0 0 0 4
-   }
-   Color 0.867 0.851 0.82 1
-   Text ""
-   "Font Size" 10
-   "Min Font Size" 10
-   "Horizontal Alignment" Left
-  }
-  SizeLayoutWidgetClass "{7A3C91E700000006}" {
-   Name "MessageHairline"
-   AllowHeightOverride 1
-   HeightOverride 1
    {
-    ImageWidgetClass "{7A3C91E700000007}" {
-     Name "MessageHairlineFill"
-     Slot AlignableSlot "{7A3C91E700000008}" {
-      HorizontalAlign 3
-      VerticalAlign 3
+    TextWidgetClass "{0D59BF29CA67E239}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+     Name "MessageMeta"
+     Slot LayoutSlot "{B31BDE3B35149111}" {
+      Padding 2 0 2 3
      }
-     Color 0.086 0.639 0.29 0.2
+     Color 0.1715 0.1942 0.2664 1
+     Text ""
+     "Font Size" 9
+     "Min Font Size" 9
+     "Horizontal Alignment" Left
+    }
+    SizeLayoutWidgetClass "{3AF98719C51392CA}" {
+     Name "BubbleSize"
+     AllowMaxDesiredWidth 1
+     MaxDesiredWidth 168
+     {
+      OverlayWidgetClass "{1E8F5C23A6ED2CA5}" {
+       Name "Bubble"
+       Slot AlignableSlot "{5EE971500394DB5E}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        SmartPanelWidgetClass "{25217D6A809E208F}" {
+         Name "BubbleFill"
+         Slot OverlayWidgetSlot "{75B95AC384BBA0C0}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.0159 0.0194 0.0319 1
+         style rounded_6px
+         "no focus" 1
+        }
+        TextWidgetClass "{E1808814E0344F8D}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "MessageBody"
+         Slot OverlayWidgetSlot "{6F89C8F717608FE8}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+          Padding 8 5 8 6
+         }
+         Color 0.8378 0.8626 0.9222 1
+         Text ""
+         "Font Size" 11
+         "Min Font Size" 11
+         "Horizontal Alignment" Left
+        }
+       }
+      }
+     }
     }
    }
   }

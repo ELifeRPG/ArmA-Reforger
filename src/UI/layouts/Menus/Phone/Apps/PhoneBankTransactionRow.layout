@@ -1,106 +1,84 @@
 SizeLayoutWidgetClass {
  Name "PostedRowSize"
- AllowWidthOverride 1
- WidthOverride 200
  AllowHeightOverride 1
- HeightOverride 29
+ HeightOverride 34
  {
-  OverlayWidgetClass "{7A3C91E200000001}" {
+  OverlayWidgetClass "{AFA77B82F28FE4FD}" {
    Name "PostedRow"
-   Slot AlignableSlot "{7A3C91E200000002}" {
+   Slot AlignableSlot "{A573359E28EFC516}" {
     HorizontalAlign 3
     VerticalAlign 3
    }
    {
-    HorizontalLayoutWidgetClass "{7A3C91E200000003}" {
+    HorizontalLayoutWidgetClass "{79B699AEEE69A0BC}" {
      Name "PostedBody"
-     Slot OverlayWidgetSlot "{7A3C91E200000004}" {
+     Slot OverlayWidgetSlot "{6215EAE1A5A863DC}" {
       HorizontalAlign 3
       VerticalAlign 3
-      Padding 0 3 0 3
+      Padding 0 5 0 5
      }
      {
-      SizeLayoutWidgetClass "{35A6C5590365B82B}" {
-       Name "TxDotSize"
-       Slot LayoutSlot "{A57716C7A177AE1D}" {
-        VerticalAlign 1
-        Padding 0 0 6 0
-       }
-       AllowWidthOverride 1
-       WidthOverride 6
-       AllowHeightOverride 1
-       HeightOverride 6
-       {
-        SmartPanelWidgetClass "{4BBFB6783FC91D7F}" {
-         Name "TxDot"
-         Slot AlignableSlot "{F98A8BADFA0F8675}" {
-          HorizontalAlign 3
-          VerticalAlign 3
-         }
-         Color 0.867 0.851 0.82 1
-         style rounded_6px
-         "no focus" 1
-        }
-       }
-      }
-      VerticalLayoutWidgetClass "{7A3C91E200000005}" {
+      VerticalLayoutWidgetClass "{B148F7CAE7E3B9E5}" {
        Name "PostedCopy"
-       Slot LayoutSlot "{7A3C91E200000006}" {
+       Slot LayoutSlot "{3C2F2D48DA62F9A6}" {
         SizeMode Fill
+        VerticalAlign 1
        }
        {
-        TextWidgetClass "{7A3C91E200000007}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+        TextWidgetClass "{6F47C0BBB18F4743}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
          Name "Memo"
-         Color 0.867 0.851 0.82 1
+         Color 0.8378 0.8626 0.9222 1
          Text ""
-         "Font Size" 10
+         "Font Size" 11
+         "Min Font Size" 10
+         "Horizontal Alignment" Left
+        }
+        TextWidgetClass "{90F78B3929D96AC3}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "PostedAt"
+         Color 0.366 0.4024 0.5025 1
+         Text ""
+         "Font Size" 9
          "Min Font Size" 9
          "Horizontal Alignment" Left
-        }
-        TextWidgetClass "{7A3C91E200000008}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-         Name "PostedAt"
-         Color 0.55 0.56 0.62 1
-         Text ""
-         "Font Size" 8
-         "Min Font Size" 7
-         "Horizontal Alignment" Left
+         FontProperties FontProperties "{FF794D2697FDBA79}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
         }
        }
       }
-      TextWidgetClass "{7A3C91E200000009}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+      TextWidgetClass "{982B1D4A5B77E71C}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
        Name "Amount"
-       Slot LayoutSlot "{7A3C91E20000000A}" {
+       Slot LayoutSlot "{401F3EB82D4FD184}" {
         VerticalAlign 1
-        Padding 6 0 0 0
+        Padding 8 0 0 0
        }
-       Color 0.867 0.851 0.82 1
+       Color 0.8378 0.8626 0.9222 1
        Text ""
-       "Font Size" 10
-       "Min Font Size" 9
+       "Font Size" 11
+       "Min Font Size" 10
        "Horizontal Alignment" 2
-       "Vertical Alignment" 1
-       FontProperties FontProperties "{7A3C91E20000000F}" {
-        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       FontProperties FontProperties "{7D4672F8462AE748}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
        }
       }
      }
     }
-    SizeLayoutWidgetClass "{7A3C91E20000000B}" {
-     Name "PostedHairline"
-     Slot OverlayWidgetSlot "{7A3C91E20000000C}" {
+    SizeLayoutWidgetClass "{95B719A2A0E64877}" {
+     Name "RowHairlineSize"
+     Slot OverlayWidgetSlot "{6FB2A34C404807F7}" {
       HorizontalAlign 3
       VerticalAlign 2
      }
      AllowHeightOverride 1
      HeightOverride 1
      {
-      ImageWidgetClass "{7A3C91E20000000D}" {
-       Name "PostedHairlineFill"
-       Slot AlignableSlot "{7A3C91E20000000E}" {
+      ImageWidgetClass "{7A013D0B164535E2}" {
+       Name "RowHairline"
+       Slot AlignableSlot "{C56DA12FD81DF2EF}" {
         HorizontalAlign 3
         VerticalAlign 3
        }
-       Color 0.851 0.702 0.024 0.2
+       Color 0.0383 0.0466 0.0723 0.9
       }
      }
     }

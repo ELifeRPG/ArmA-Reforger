@@ -1,0 +1,1180 @@
+OverlayWidgetClass {
+ Name "PhoneScreen"
+ {
+  SmartPanelWidgetClass "{BEB94BDE65556040}" {
+   Name "ScreenGround"
+   Slot OverlayWidgetSlot "{8B453F497287FD2D}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 0.004 0.0048 0.0075 1
+   style rounded_6px
+   "no focus" 1
+  }
+  OverlayWidgetClass "{2A80FE4C924FB0B4}" {
+   Name "Wallpaper"
+   Slot OverlayWidgetSlot "{8D4C52269AF5C4A3}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    SmartPanelWidgetClass "{DDE4849F73C7CD03}" {
+     Name "WallpaperBase"
+     Slot OverlayWidgetSlot "{32FC9BA31ABAC65A}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.0066 0.0103 0.0243 1
+     style rounded_6px
+     "no focus" 1
+    }
+    ImageWidgetClass "{24572D8FAF49819D}" {
+     Name "WallpaperGlow"
+     Slot OverlayWidgetSlot "{3248ACBCCF7F2863}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 2 2 2 2
+     }
+     Color 0.0232 0.0421 0.1246 1
+     Texture "{099C73E0F66A5F28}UI/Textures/Common/gradientTexture_Dither_down_512.edds"
+    }
+   }
+  }
+  OverlayWidgetClass "{95CCE9DD97B21B69}" {
+   Name "ScreenStage"
+   Slot OverlayWidgetSlot "{21E33A5521C22D13}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    OverlayWidgetClass "{826FF397499D027C}" {
+     Name "LockScreen"
+     Slot OverlayWidgetSlot "{37D6FFC0F6C92F7C}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     "Is Visible" 0
+     {
+      VerticalLayoutWidgetClass "{C50E9AB5F39F6086}" {
+       Name "LockColumn"
+       Slot OverlayWidgetSlot "{836338CB4ACDC2DF}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+        Padding 12 20 12 12
+       }
+       "Fill Origin" Top
+       {
+        VerticalLayoutWidgetClass "{5AF24144CEBC073E}" {
+         Name "LockHeader"
+         Slot LayoutSlot "{2D13987C4D95A304}" {
+          Padding 0 36 0 0
+         }
+         {
+          TextWidgetClass "{12E070D47A868C30}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "LockTime"
+           Slot LayoutSlot "{A461E67AA0BDD46B}" {
+            HorizontalAlign 1
+           }
+           Color 0.8378 0.8626 0.9222 1
+           components {
+            ELIFE_PhoneClockUIComponent "{726B3604EB8AE1AC}" {
+            }
+           }
+           Text "12:00"
+           "Font Size" 46
+           "Min Font Size" 46
+           "Horizontal Alignment" Center
+           FontProperties FontProperties "{20A01B20FE1C284A}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{CF20D1D21245034C}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "LockDate"
+           Slot LayoutSlot "{73AD96F623244D55}" {
+            HorizontalAlign 1
+            Padding 0 2 0 0
+           }
+           Color 0.366 0.4024 0.5025 1
+           Text ""
+           "Font Size" 10
+           "Min Font Size" 10
+           "Horizontal Alignment" Center
+          }
+          TextWidgetClass "{C83A72ADECCADD7E}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "LockNumber"
+           Slot LayoutSlot "{7E9446EF93C9EBC7}" {
+            HorizontalAlign 1
+            Padding 0 6 0 0
+           }
+           Color 0.1715 0.1942 0.2664 1
+           Text ""
+           "Font Size" 9
+           "Min Font Size" 9
+           "Horizontal Alignment" Center
+           FontProperties FontProperties "{0EBCAB3CEAAD91B8}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+         }
+        }
+        VerticalLayoutWidgetClass "{9E1387E1B67858EF}" {
+         Name "LockNotifications"
+         Slot LayoutSlot "{6371C383BA07C56C}" {
+          Padding 0 16 0 0
+          SizeMode Fill
+         }
+         "Fill Origin" Bottom
+        }
+        VerticalLayoutWidgetClass "{9F6D569674411ABA}" {
+         Name "LockPad"
+         Slot LayoutSlot "{F29D40E386D9367A}" {
+          Padding 0 14 0 0
+         }
+         {
+          TextWidgetClass "{D7166FAFA3D9E1AD}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "PinPrompt"
+           Slot LayoutSlot "{0C3161AF03AF0098}" {
+            HorizontalAlign 1
+           }
+           Color 0.366 0.4024 0.5025 1
+           Text "#ELIFE-Phone_Lock_Enter"
+           "Font Size" 9
+           "Min Font Size" 9
+           "Horizontal Alignment" Center
+          }
+          HorizontalLayoutWidgetClass "{F2FDCB5913BBA415}" {
+           Name "PinDots"
+           Slot LayoutSlot "{FC59AF850EA1F732}" {
+            HorizontalAlign 1
+            Padding 0 8 0 12
+           }
+           {
+            SizeLayoutWidgetClass "{B4D9C0E745D7D402}" {
+             Name "PinDot0Size"
+             Slot LayoutSlot "{B7327A660EBA1CDB}" {
+              Padding 0 0 8 0
+             }
+             AllowWidthOverride 1
+             WidthOverride 8
+             AllowHeightOverride 1
+             HeightOverride 8
+             {
+              SmartPanelWidgetClass "{F993D37536AE715C}" {
+               Name "PinDot0"
+               Slot AlignableSlot "{C828A7511CECC417}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0.0383 0.0466 0.0723 1
+               style rounded_6px
+               "no focus" 1
+              }
+             }
+            }
+            SizeLayoutWidgetClass "{CA4F418C3663E4B3}" {
+             Name "PinDot1Size"
+             Slot LayoutSlot "{B24BFE0B129091DB}" {
+              Padding 0 0 8 0
+             }
+             AllowWidthOverride 1
+             WidthOverride 8
+             AllowHeightOverride 1
+             HeightOverride 8
+             {
+              SmartPanelWidgetClass "{64D0A953A5F09922}" {
+               Name "PinDot1"
+               Slot AlignableSlot "{1FF775A556D95454}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0.0383 0.0466 0.0723 1
+               style rounded_6px
+               "no focus" 1
+              }
+             }
+            }
+            SizeLayoutWidgetClass "{4BC4D79806BCB166}" {
+             Name "PinDot2Size"
+             Slot LayoutSlot "{42D34599BB7258E6}" {
+              Padding 0 0 8 0
+             }
+             AllowWidthOverride 1
+             WidthOverride 8
+             AllowHeightOverride 1
+             HeightOverride 8
+             {
+              SmartPanelWidgetClass "{E30AE9E221189E1A}" {
+               Name "PinDot2"
+               Slot AlignableSlot "{E9EA1656B754B0C7}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0.0383 0.0466 0.0723 1
+               style rounded_6px
+               "no focus" 1
+              }
+             }
+            }
+            SizeLayoutWidgetClass "{081760F9E070F937}" {
+             Name "PinDot3Size"
+             AllowWidthOverride 1
+             WidthOverride 8
+             AllowHeightOverride 1
+             HeightOverride 8
+             {
+              SmartPanelWidgetClass "{8D6D6D3F73A225A7}" {
+               Name "PinDot3"
+               Slot AlignableSlot "{F078A4FF6DE07FAB}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0.0383 0.0466 0.0723 1
+               style rounded_6px
+               "no focus" 1
+              }
+             }
+            }
+           }
+          }
+          VerticalLayoutWidgetClass "{9A3B4BA5A2AD3EA6}" {
+           Name "PinRows"
+           Slot LayoutSlot "{36B36F32EF0E4C7E}" {
+            HorizontalAlign 1
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+    OverlayWidgetClass "{120D3FEAF06E8B01}" {
+     Name "HomeScreen"
+     Slot OverlayWidgetSlot "{A21BACED5ADE67F3}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      VerticalLayoutWidgetClass "{FA7053B4399B98C2}" {
+       Name "HomeColumn"
+       Slot OverlayWidgetSlot "{FD42DF4310358B3A}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 12 32 12 0
+       }
+       "Fill Origin" Top
+       {
+        TextWidgetClass "{01C60D399EECA895}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "HomeClock"
+         Slot LayoutSlot "{825B6B96E636AFA7}" {
+          Padding 2 0 2 0
+         }
+         Color 0.8378 0.8626 0.9222 1
+         components {
+          ELIFE_PhoneClockUIComponent "{DB464F7055ADADDC}" {
+          }
+         }
+         Text "12:00"
+         "Font Size" 34
+         "Min Font Size" 34
+         "Horizontal Alignment" Left
+         FontProperties FontProperties "{9891CF44F9C179A7}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{6FD5238D89B32F65}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "HomeDate"
+         Slot LayoutSlot "{5A51FB16FD4CD33C}" {
+          Padding 2 0 2 18
+         }
+         Color 0.366 0.4024 0.5025 1
+         Text ""
+         "Font Size" 10
+         "Min Font Size" 10
+         "Horizontal Alignment" Left
+        }
+        VerticalLayoutWidgetClass "{9349EE4EE47BA5C5}" {
+         Name "HomeCards"
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{A370E6008C13DD9B}" {
+       Name "HomeGridRows"
+       Slot OverlayWidgetSlot "{81C224F6B42CD16C}" {
+        HorizontalAlign 3
+        VerticalAlign 2
+        Padding 12 0 12 34
+       }
+       "Fill Origin" Top
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{AF265FB0CD33224B}" {
+     Name "AppWashSize"
+     Slot OverlayWidgetSlot "{E3FD6EDC80B0556F}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+      Padding 2 2 2 0
+     }
+     "Is Visible" 0
+     AllowHeightOverride 1
+     HeightOverride 165
+     {
+      ImageWidgetClass "{2E3D7F3A1462D59C}" {
+       Name "AppWash"
+       Slot AlignableSlot "{09DAFED80BCEA463}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0232 0.0421 0.1246 0.14
+       Texture "{099C73E0F66A5F28}UI/Textures/Common/gradientTexture_Dither_down_512.edds"
+      }
+     }
+    }
+    OverlayWidgetClass "{EFF83717EDF0BAB6}" {
+     Name "AppHost"
+     Slot OverlayWidgetSlot "{66E578DA11BD4905}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     "Is Visible" 0
+    }
+   }
+  }
+  SizeLayoutWidgetClass "{79E3A4B320B47D63}" {
+   Name "NavBarSize"
+   Slot OverlayWidgetSlot "{76793E8FD2DE9E0A}" {
+    HorizontalAlign 3
+    VerticalAlign 0
+    Padding 0 20 0 0
+   }
+   "Is Visible" 0
+   AllowHeightOverride 1
+   HeightOverride 24
+   {
+    OverlayWidgetClass "{84B0DE98964265EF}" {
+     Name "NavBar"
+     Slot AlignableSlot "{9D6F341F1F9E0A42}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      OverlayWidgetClass "{1AB6505BCF2047E7}" : "{7C11D4A9E3B25F82}UI/layouts/Menus/Phone/Widgets/PhoneGlassBar.layout" {
+       Name "NavBarGlass"
+       Slot OverlayWidgetSlot "{3741CBDD0F1BB655}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Opacity 0
+      }
+      TextWidgetClass "{B3CA7709DA910418}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "NavTitle"
+       Slot OverlayWidgetSlot "{F39BFA0D2E9B4B88}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       Opacity 0
+       Color 0.8378 0.8626 0.9222 1
+       Text ""
+       "Font Size" 15
+       "Min Font Size" 14
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{73113E86076FC1F1}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      SizeLayoutWidgetClass "{44435188934D90B9}" {
+       Name "NavBackSize"
+       Slot OverlayWidgetSlot "{B0BEB4CE4D9B8D89}" {
+        HorizontalAlign 0
+        VerticalAlign 3
+        Padding 6 0 0 0
+       }
+       AllowWidthOverride 1
+       WidthOverride 48
+       {
+        ButtonWidgetClass "{230142B7D8F18CA2}" {
+         Name "ButtonBack"
+         Slot AlignableSlot "{805CC90985ADB287}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 1 1 1 1
+         components {
+          SCR_ButtonTextComponent "{BB0040B425B843AE}" {
+           m_BackgroundDefault 0.91 0.929 0.973 0
+           m_BackgroundHovered 0.91 0.929 0.973 0.1
+           m_BackgroundSelected 0.91 0.929 0.973 0.16
+           m_BackgroundSelectedHovered 0.91 0.929 0.973 0.16
+           m_BackgroundClicked 0.91 0.929 0.973 0.16
+           m_sText ""
+          }
+         }
+         style blank
+         {
+          OverlayWidgetClass "{D1AEC2E4453CECCD}" {
+           Name "ButtonSurface"
+           Slot ButtonWidgetSlot "{93F926AE9C1D44AD}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           {
+            SizeLayoutWidgetClass "{B693702E142A4703}" {
+             Name "BackChipSize"
+             Slot OverlayWidgetSlot "{2F0248A5B52C4006}" {
+              HorizontalAlign 0
+              VerticalAlign 1
+              Padding 4 0 4 0
+             }
+             AllowWidthOverride 1
+             WidthOverride 60
+             AllowHeightOverride 1
+             HeightOverride 20
+             {
+              OverlayWidgetClass "{BA54BB7E2FB34013}" {
+               Name "BackChip"
+               Slot AlignableSlot "{A793D28F83CD465D}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               {
+                BlurWidgetClass "{9A31C2E5F1B04A1D}" {
+                 Name "GlassBlur"
+                 Slot OverlayWidgetSlot "{6C7C6C6D7A9245B1}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 1 1 1 1
+                 Intensity 0.15
+                }
+                SmartPanelWidgetClass "{7AC9C931CB01492A}" {
+                 Name "GlassScrim"
+                 Slot OverlayWidgetSlot "{140E931F79E943EF}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 0.004 0.0048 0.0075 0.55
+                 style rounded_6px
+                 "no focus" 1
+                }
+                SmartPanelWidgetClass "{A637E2E5939F6788}" {
+                 Name "GlassTint"
+                 Slot OverlayWidgetSlot "{5887CAA63BB485C8}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 0.5837 0.6453 0.8073 0.03
+                 style rounded_6px
+                 "no focus" 1
+                }
+                SizeLayoutWidgetClass "{D3E4F506A7B84C2E}" {
+                 Name "GlassSpecularSize"
+                 Slot OverlayWidgetSlot "{4F5A6B7C8D9E4013}" {
+                  HorizontalAlign 3
+                  VerticalAlign 0
+                  Padding 4 0 4 0
+                 }
+                 AllowHeightOverride 1
+                 HeightOverride 1
+                 {
+                  ImageWidgetClass "{E1F2A3B4C5D64728}" {
+                   Name "GlassSpecular"
+                   Slot AlignableSlot "{5A6B7C8D9E0F4839}" {
+                    HorizontalAlign 3
+                    VerticalAlign 3
+                   }
+                   Color 0.1128 0.126 0.1706 0.55
+                  }
+                 }
+                }
+                SizeLayoutWidgetClass "{F607B8C9DAEB4A3F}" {
+                 Name "GlassHairlineSize"
+                 Slot OverlayWidgetSlot "{6B7C8D9EAF104A50}" {
+                  HorizontalAlign 3
+                  VerticalAlign 2
+                  Padding 4 0 4 0
+                 }
+                 AllowHeightOverride 1
+                 HeightOverride 1
+                 {
+                  ImageWidgetClass "{A7B8C9DAEB1F4C61}" {
+                   Name "GlassHairline"
+                   Slot AlignableSlot "{7C8D9EAFB0214C72}" {
+                    HorizontalAlign 3
+                    VerticalAlign 3
+                   }
+                   Color 0.0015 0.0021 0.0033 0.14
+                  }
+                 }
+                }
+                SmartPanelWidgetClass "{B2C3D4E5F607183A}" {
+                 Name "Background"
+                 Slot OverlayWidgetSlot "{C3D4E5F607182B4B}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 0 0 0 0
+                 style rounded_6px
+                 "no focus" 1
+                }
+                HorizontalLayoutWidgetClass "{C1D009872A30B0AA}" {
+                 Name "BackBody"
+                 Slot OverlayWidgetSlot "{2DBD64E81F7822EB}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                  Padding 8 0 8 0
+                 }
+                 {
+                  TextWidgetClass "{F2E93648E6128871}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                   Name "BackChevron"
+                   Slot LayoutSlot "{958B90CE2815549E}" {
+                    VerticalAlign 1
+                    Padding 0 0 3 2
+                   }
+                   Color 0.8378 0.8626 0.9222 1
+                   Text "‹"
+                   "Font Size" 15
+                   "Min Font Size" 15
+                   "Horizontal Alignment" Center
+                   FontProperties FontProperties "{6039545C53499558}" {
+                    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                   }
+                  }
+                  TextWidgetClass "{5FD20FAEED245EAC}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                   Name "BackLabel"
+                   Slot LayoutSlot "{A76146FA5B9660B6}" {
+                    VerticalAlign 1
+                   }
+                   Color 0.8378 0.8626 0.9222 1
+                   Text "#ELIFE-Phone_Nav_Back"
+                   "Font Size" 9
+                   "Min Font Size" 9
+                   "Horizontal Alignment" Left
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{C9DA2D1771A82D6C}" {
+       Name "NavActionSize"
+       Slot OverlayWidgetSlot "{87B1663E32170FD4}" {
+        HorizontalAlign 2
+        VerticalAlign 3
+        Padding 0 0 6 0
+       }
+       AllowWidthOverride 1
+       WidthOverride 78
+       {
+        OverlayWidgetClass "{5B98839DD20EF664}" {
+         Name "NavActionFrame"
+         Slot AlignableSlot "{4536DFD8DF1557A5}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         {
+          OverlayWidgetClass "{F206A8F26551080E}" {
+           Name "NavActionChip"
+           Slot OverlayWidgetSlot "{466EDBB571880435}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           "Is Visible" 0
+           {
+            BlurWidgetClass "{B1C2D3E4F5064718}" {
+             Name "GlassBlur"
+             Slot OverlayWidgetSlot "{C2D3E4F506174829}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 1 1 1 1
+             Intensity 0.15
+            }
+            SmartPanelWidgetClass "{D3E4F5061728493A}" {
+             Name "GlassScrim"
+             Slot OverlayWidgetSlot "{E4F506172839404B}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0.0835 0.0946 0.1128 0.35
+             style rounded_6px
+             "no focus" 1
+            }
+            SmartPanelWidgetClass "{F5061728394A415C}" {
+             Name "GlassTint"
+             Slot OverlayWidgetSlot "{061728394A4B526D}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0.5837 0.6453 0.8073 0.03
+             style rounded_6px
+             "no focus" 1
+            }
+            SizeLayoutWidgetClass "{1728394A4B5C637E}" {
+             Name "GlassSpecularSize"
+             Slot OverlayWidgetSlot "{28394A4B5C6D748F}" {
+              HorizontalAlign 3
+              VerticalAlign 0
+              Padding 6 0 6 0
+             }
+             AllowHeightOverride 1
+             HeightOverride 1
+             {
+              ImageWidgetClass "{394A4B5C6D7E8590}" {
+               Name "GlassSpecular"
+               Slot AlignableSlot "{4A4B5C6D7E8F96A1}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0.7874 0.8276 0.9331 0.1
+              }
+             }
+            }
+            SizeLayoutWidgetClass "{5C6D7E8F96A1B7B2}" {
+             Name "GlassHairlineSize"
+             Slot OverlayWidgetSlot "{6D7E8F96A1B2C8C3}" {
+              HorizontalAlign 3
+              VerticalAlign 2
+              Padding 6 0 6 0
+             }
+             AllowHeightOverride 1
+             HeightOverride 1
+             {
+              ImageWidgetClass "{7E8F96A1B2C3D9D4}" {
+               Name "GlassHairline"
+               Slot AlignableSlot "{8F96A1B2C3D4EAE5}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0.0015 0.0021 0.0033 0.26
+              }
+             }
+            }
+           }
+          }
+          ButtonWidgetClass "{E9F66C53449D821E}" {
+           Name "ButtonNavAction"
+           Slot OverlayWidgetSlot "{64A81AA3A1272A23}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           "Is Visible" 0
+           Color 1 1 1 1
+           components {
+            SCR_ButtonTextComponent "{81FB2B43EA5C6969}" {
+             m_BackgroundDefault 0.91 0.929 0.973 0
+             m_BackgroundHovered 0.91 0.929 0.973 0.1
+             m_BackgroundSelected 0.91 0.929 0.973 0.16
+             m_BackgroundSelectedHovered 0.91 0.929 0.973 0.16
+             m_BackgroundClicked 0.91 0.929 0.973 0.16
+             m_sText ""
+            }
+           }
+           style blank
+           {
+            OverlayWidgetClass "{05A94BC02AECE741}" {
+             Name "ButtonSurface"
+             Slot ButtonWidgetSlot "{95793F2075E0A8C5}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             {
+              SmartPanelWidgetClass "{7F374C14EE3800F0}" {
+               Name "Background"
+               Slot OverlayWidgetSlot "{170228549FBCDA93}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0 0 0 0
+               style rounded_6px
+               "no focus" 1
+              }
+              HorizontalLayoutWidgetClass "{AE8DAEC6974E85A2}" {
+               Name "NavActionRow"
+               Slot OverlayWidgetSlot "{28032DACBDEB59DD}" {
+                HorizontalAlign 1
+                VerticalAlign 1
+               }
+               {
+                SizeLayoutWidgetClass "{9D2A341B26436ED5}" {
+                 Name "NavActionIconSize"
+                 Slot LayoutSlot "{0F9F0637199F6FE6}" {
+                  VerticalAlign 1
+                  Padding 0 0 4 0
+                 }
+                 "Is Visible" 0
+                 AllowWidthOverride 1
+                 WidthOverride 12
+                 AllowHeightOverride 1
+                 HeightOverride 12
+                 {
+                  ImageWidgetClass "{1CE6F2AD08F364FC}" {
+                   Name "NavActionIcon"
+                   Slot AlignableSlot "{E48DD6069CC70108}" {
+                    HorizontalAlign 1
+                    VerticalAlign 1
+                   }
+                   Color 1 1 1 1
+                   Texture "{3262679C50EF4F01}UI/Textures/Icons/icons_wrapperUI.imageset"
+                   Size 12 12
+                  }
+                 }
+                }
+                TextWidgetClass "{CC324DE9CE4F9156}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                 Name "NavActionLabel"
+                 Slot LayoutSlot "{86DCF05471A42D44}" {
+                  VerticalAlign 1
+                 }
+                 Color 0.3814 0.4395 0.5771 1
+                 Text ""
+                 "Font Size" 11
+                 "Min Font Size" 11
+                 "Horizontal Alignment" 1
+                 FontProperties FontProperties "{655F5DD36281280F}" {
+                  Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  SizeLayoutWidgetClass "{9A0AA66213966468}" {
+   Name "StatusBarSize"
+   Slot OverlayWidgetSlot "{3329ED2832E4CF0E}" {
+    HorizontalAlign 3
+    VerticalAlign 0
+   }
+   AllowHeightOverride 1
+   HeightOverride 20
+   {
+    OverlayWidgetClass "{652BC30E0747C064}" {
+     Name "StatusBar"
+     Slot AlignableSlot "{11E38EA361E88533}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      OverlayWidgetClass "{88DF0CB4AA791053}" : "{7C11D4A9E3B25F82}UI/layouts/Menus/Phone/Widgets/PhoneGlassBar.layout" {
+       Name "StatusBarGlass"
+       Slot OverlayWidgetSlot "{4C92D74BA9C54B4C}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+      }
+      TextWidgetClass "{0C906B3C9353520D}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "StatusNumber"
+       Slot OverlayWidgetSlot "{CA925DBC4E1964DF}" {
+        HorizontalAlign 0
+        VerticalAlign 1
+        Padding 10 0 0 0
+       }
+       Color 0.366 0.4024 0.5025 1
+       Text ""
+       "Font Size" 9
+       "Min Font Size" 9
+       "Horizontal Alignment" Left
+       FontProperties FontProperties "{0AA064CEC985A2C7}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{090F6E85887F1E0A}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "StatusTime"
+       Slot OverlayWidgetSlot "{44F89FAEF13B1C8E}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       Color 0.8378 0.8626 0.9222 1
+       components {
+        ELIFE_PhoneClockUIComponent "{38F061FCEC0A6247}" {
+        }
+       }
+       Text "12:00"
+       "Font Size" 9
+       "Min Font Size" 9
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{3B758E9B853A3E10}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      HorizontalLayoutWidgetClass "{6FADC05BAF0B25B1}" {
+       Name "StatusIndicators"
+       Slot OverlayWidgetSlot "{901F5851C050187F}" {
+        HorizontalAlign 2
+        VerticalAlign 1
+        Padding 0 0 10 0
+       }
+       {
+        SizeLayoutWidgetClass "{3F64200048168010}" {
+         Name "Signal0Size"
+         Slot LayoutSlot "{6022A9A9DB66BF51}" {
+          VerticalAlign 2
+          Padding 0 0 1 0
+         }
+         AllowWidthOverride 1
+         WidthOverride 2
+         AllowHeightOverride 1
+         HeightOverride 3
+         {
+          ImageWidgetClass "{1F2E811D812CCA5F}" {
+           Name "Signal0"
+           Slot AlignableSlot "{099C70527B12DE2B}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.8378 0.8626 0.9222 1
+          }
+         }
+        }
+        SizeLayoutWidgetClass "{0D0840F922ACD686}" {
+         Name "Signal1Size"
+         Slot LayoutSlot "{EED98305EA5F6D20}" {
+          VerticalAlign 2
+          Padding 0 0 1 0
+         }
+         AllowWidthOverride 1
+         WidthOverride 2
+         AllowHeightOverride 1
+         HeightOverride 5
+         {
+          ImageWidgetClass "{7B67D45DA897CBE0}" {
+           Name "Signal1"
+           Slot AlignableSlot "{82D0934FA0D1780C}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.8378 0.8626 0.9222 1
+          }
+         }
+        }
+        SizeLayoutWidgetClass "{2BF4F05019EDC6F4}" {
+         Name "Signal2Size"
+         Slot LayoutSlot "{83D60832DB56D297}" {
+          VerticalAlign 2
+          Padding 0 0 7 0
+         }
+         AllowWidthOverride 1
+         WidthOverride 2
+         AllowHeightOverride 1
+         HeightOverride 7
+         {
+          ImageWidgetClass "{6437404379059216}" {
+           Name "Signal2"
+           Slot AlignableSlot "{8A4785D431DA426B}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.1715 0.1942 0.2664 1
+          }
+         }
+        }
+        SizeLayoutWidgetClass "{FA6C6376DE6E50E9}" {
+         Name "BatteryShellSize"
+         Slot LayoutSlot "{11F2E820B6B3E2C2}" {
+          VerticalAlign 1
+         }
+         AllowWidthOverride 1
+         WidthOverride 14
+         AllowHeightOverride 1
+         HeightOverride 8
+         {
+          OverlayWidgetClass "{43BF911956409FA9}" {
+           Name "BatteryShell"
+           Slot AlignableSlot "{C82FDEBDB6840985}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           {
+            SmartPanelWidgetClass "{FBC287114A77E29A}" {
+             Name "BatteryCase"
+             Slot OverlayWidgetSlot "{C8F5E020E7004463}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0.1715 0.1942 0.2664 1
+             style rounded_2px
+             "no focus" 1
+            }
+            SizeLayoutWidgetClass "{B635ED978CA9D6B6}" {
+             Name "BatteryLevelSize"
+             Slot OverlayWidgetSlot "{F6BCDE0E7D4E7AF2}" {
+              HorizontalAlign 0
+              VerticalAlign 1
+              Padding 2 0 0 0
+             }
+             AllowWidthOverride 1
+             WidthOverride 8
+             AllowHeightOverride 1
+             HeightOverride 4
+             {
+              SmartPanelWidgetClass "{7CB8AB0C290ED96F}" {
+               Name "BatteryLevel"
+               Slot AlignableSlot "{7D0D124F9C42AF73}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0.8378 0.8626 0.9222 1
+               style rounded_2px
+               "no focus" 1
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  SizeLayoutWidgetClass "{85A0D57A48CF0124}" {
+   Name "HomeIndicatorSize"
+   Slot OverlayWidgetSlot "{625B09BBBD872B19}" {
+    HorizontalAlign 1
+    VerticalAlign 2
+    Padding 0 0 0 5
+   }
+   AllowWidthOverride 1
+   WidthOverride 116
+   AllowHeightOverride 1
+   HeightOverride 18
+   {
+    ButtonWidgetClass "{69CB1DA104110C29}" {
+     Name "ButtonClose"
+     Slot AlignableSlot "{79A75C8AA657F4E0}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 1
+     components {
+      SCR_ButtonTextComponent "{787E70EE32A09F1D}" {
+       m_BackgroundDefault 0.868 0.896 0.965 0
+       m_BackgroundHovered 0.868 0.896 0.965 0.06
+       m_BackgroundSelected 0.868 0.896 0.965 0.12
+       m_BackgroundSelectedHovered 0.868 0.896 0.965 0.12
+       m_BackgroundClicked 0.868 0.896 0.965 0.12
+       m_sText ""
+      }
+     }
+     style blank
+     {
+      OverlayWidgetClass "{1375CE3D4B4C88F5}" {
+       Name "ButtonSurface"
+       Slot ButtonWidgetSlot "{48526DF6A5A2CD4B}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        SmartPanelWidgetClass "{A67859678B97F99A}" {
+         Name "Background"
+         Slot OverlayWidgetSlot "{56B78DA909C9CF71}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0 0 0 0
+         style rounded_6px
+         "no focus" 1
+        }
+        SizeLayoutWidgetClass "{0FCA3E6724CB87D3}" {
+         Name "HomePillBarSize"
+         Slot OverlayWidgetSlot "{7BC3DE4BFADF9157}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         AllowWidthOverride 1
+         WidthOverride 96
+         AllowHeightOverride 1
+         HeightOverride 4
+         {
+          SmartPanelWidgetClass "{3E498CB580E8B54D}" {
+           Name "HomePillBar"
+           Slot AlignableSlot "{6C003698488F93F6}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.8378 0.8626 0.9222 1
+           style rounded_6px
+           "no focus" 1
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  OverlayWidgetClass "{FC6829AF2C253F02}" {
+   Name "OfflineScreen"
+   Slot OverlayWidgetSlot "{0FBC722BA76A63E4}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   "Is Visible" 0
+   {
+    SmartPanelWidgetClass "{5C42E5E2BADE845C}" {
+     Name "OfflineBackdrop"
+     Slot OverlayWidgetSlot "{A8D98D1219B9090B}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.004 0.0048 0.0075 1
+     style rounded_6px
+     "no focus" 1
+    }
+    VerticalLayoutWidgetClass "{988A5A07AF9B3F4B}" {
+     Name "OfflineColumn"
+     Slot OverlayWidgetSlot "{BF80CD546E6B7B33}" {
+      HorizontalAlign 1
+      VerticalAlign 1
+      Padding 20 0 20 0
+     }
+     {
+      TextWidgetClass "{0FF467E22CFF94BA}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "OfflineTitle"
+       Slot LayoutSlot "{AD29288FA766E0B8}" {
+        HorizontalAlign 1
+        Padding 0 0 0 4
+       }
+       Color 0.8378 0.8626 0.9222 1
+       Text "#ELIFE-Phone_Status_Error"
+       "Font Size" 15
+       "Min Font Size" 14
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{289B3718DE3FFC52}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{77C693941CFFCA5F}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "OfflineHint"
+       Slot LayoutSlot "{8F7FDBEE9BA1F05B}" {
+        HorizontalAlign 1
+        Padding 0 0 0 12
+       }
+       Color 0.366 0.4024 0.5025 1
+       Text "#ELIFE-Phone_Status_ErrorHint"
+       "Font Size" 10
+       "Min Font Size" 9
+       "Horizontal Alignment" Center
+      }
+      SizeLayoutWidgetClass "{E2CCE1BFEDCCEE42}" {
+       Name "OfflineRetrySize"
+       Slot LayoutSlot "{AA81E37B125B3948}" {
+        HorizontalAlign 1
+       }
+       AllowWidthOverride 1
+       WidthOverride 84
+       AllowHeightOverride 1
+       HeightOverride 26
+       {
+        OverlayWidgetClass "{50235FCEE56EDE9C}" {
+         Name "OfflineRetryFrame"
+         Slot AlignableSlot "{4E2D0087E2A538C0}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         {
+          SmartPanelWidgetClass "{FDAF6CD1FF06E817}" {
+           Name "OfflineRetryFill"
+           Slot OverlayWidgetSlot "{FBA9EDD428055E79}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.0159 0.0194 0.0319 1
+           style rounded_6px
+           "no focus" 1
+          }
+          ButtonWidgetClass "{1F55FF2DB43939C4}" {
+           Name "OfflineRetry"
+           Slot OverlayWidgetSlot "{CB13708B2BF4F191}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 1 1 1 1
+           components {
+            SCR_ButtonTextComponent "{386B5B181697EFA9}" {
+             m_BackgroundDefault 0.91 0.929 0.973 0
+             m_BackgroundHovered 0.91 0.929 0.973 0.1
+             m_BackgroundSelected 0.91 0.929 0.973 0.16
+             m_BackgroundSelectedHovered 0.91 0.929 0.973 0.16
+             m_BackgroundClicked 0.91 0.929 0.973 0.16
+             m_sText ""
+            }
+           }
+           style blank
+           {
+            OverlayWidgetClass "{918CAD4B296C0717}" {
+             Name "ButtonSurface"
+             Slot ButtonWidgetSlot "{E5452FA27D9D7083}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             {
+              SmartPanelWidgetClass "{F75D1DBEFC184980}" {
+               Name "Background"
+               Slot OverlayWidgetSlot "{24159C58C116ACC1}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0 0 0 0
+               style rounded_6px
+               "no focus" 1
+              }
+              TextWidgetClass "{339D7DEDEAC4DAD1}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+               Name "OfflineRetryLabel"
+               Slot OverlayWidgetSlot "{74FFF78BA105FDEF}" {
+                HorizontalAlign 1
+                VerticalAlign 1
+               }
+               Color 0.8378 0.8626 0.9222 1
+               Text "#ELIFE-Phone_Status_Retry"
+               "Font Size" 10
+               "Min Font Size" 10
+               "Horizontal Alignment" Center
+               FontProperties FontProperties "{65ABA656FE25BEA3}" {
+                Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  SmartPanelWidgetClass "{EEC3E6EDD68A7B8B}" {
+   Name "ScreenOff"
+   Slot OverlayWidgetSlot "{F6AAD92493453154}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   "Is Visible" 0
+   Color 0.0009 0.0011 0.0015 1
+   style rounded_6px
+   "no focus" 1
+  }
+ }
+}

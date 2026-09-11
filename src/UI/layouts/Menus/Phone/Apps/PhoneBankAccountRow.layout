@@ -1,155 +1,215 @@
 SizeLayoutWidgetClass {
  Name "AccountRowSize"
- AllowWidthOverride 1
- WidthOverride 200
  AllowHeightOverride 1
- HeightOverride 43
+ HeightOverride 38
  {
-  OverlayWidgetClass "{7A3C91E100000001}" {
+  OverlayWidgetClass "{7BB916EECA92A1AC}" {
    Name "AccountRow"
-   Slot AlignableSlot "{7A3C91E100000002}" {
+   Slot AlignableSlot "{7FE393C4DE7735F2}" {
     HorizontalAlign 3
     VerticalAlign 3
+    Padding 0 0 0 2
    }
    {
-    SmartPanelWidgetClass "{607E7BDCB96F47B7}" {
-     Name "AccountRowBackground"
-     Slot OverlayWidgetSlot "{F4E4628CC1F4F523}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-     }
-     Color 0.12 0.13 0.17 1
-     style rounded_6px
-     "no focus" 1
-    }
-    ButtonWidgetClass "{7A3C91E100000003}" {
-     Name "AccountButton"
-     Slot OverlayWidgetSlot "{7A3C91E100000004}" {
+    BlurWidgetClass "{218CE87FFBF54B6C}" {
+     Name "GlassBlur"
+     Slot OverlayWidgetSlot "{8EA12EF06F064A80}" {
       HorizontalAlign 3
       VerticalAlign 3
      }
      Color 1 1 1 1
+     Intensity 0.7
+    }
+    SmartPanelWidgetClass "{ED224C49A17040E4}" {
+     Name "GlassScrim"
+     Slot OverlayWidgetSlot "{D6BE663D6D594FB2}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.004 0.0048 0.0075 0.55
+     style rounded_6px
+     "no focus" 1
+    }
+    SmartPanelWidgetClass "{646B336DFB69465C}" {
+     Name "GlassTint"
+     Slot OverlayWidgetSlot "{5EA54F6121704943}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.5837 0.6453 0.8073 0.14
+     style rounded_6px
+     "no focus" 1
+    }
+    SizeLayoutWidgetClass "{E666988936A64B33}" {
+     Name "GlassSpecularSize"
+     Slot OverlayWidgetSlot "{6D15A410D0F44C47}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+      Padding 6 0 6 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 1
+     {
+      ImageWidgetClass "{A677E3539240443C}" {
+       Name "GlassSpecular"
+       Slot AlignableSlot "{34466302AA95425D}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.8626 0.8964 0.964 0.18
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{65F791CAA3D64FE4}" {
+     Name "GlassHairlineSize"
+     Slot OverlayWidgetSlot "{424316000BD847A4}" {
+      HorizontalAlign 3
+      VerticalAlign 2
+      Padding 6 0 6 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 1
+     {
+      ImageWidgetClass "{FDD136179E77400B}" {
+       Name "GlassHairline"
+       Slot AlignableSlot "{2175BA50FEA1486F}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0015 0.0021 0.0033 0.26
+      }
+     }
+    }
+    ButtonWidgetClass "{529052548063181D}" {
+     Name "AccountButton"
+     Slot OverlayWidgetSlot "{D8A1E3710C03AACB}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 1
+     style blank
      components {
-      SCR_ButtonTextComponent "{7A3C91E100000005}" {
-       m_BackgroundDefault 0.329 0.51 0.91 0
-       m_BackgroundHovered 0.329 0.51 0.91 0.16
-       m_BackgroundSelected 0.329 0.51 0.91 0.26
+      SCR_ButtonTextComponent "{A890FF30A6182577}" {
+       m_BackgroundDefault 0.910 0.929 0.973 0
+       m_BackgroundHovered 0.910 0.929 0.973 0.06
+       m_BackgroundSelected 0.910 0.929 0.973 0.12
+       m_BackgroundSelectedHovered 0.910 0.929 0.973 0.12
+       m_BackgroundClicked 0.910 0.929 0.973 0.12
        m_sText ""
       }
      }
-     style blank
      {
-      OverlayWidgetClass "{7A3C91E100000006}" {
-       Name "AccountButtonOverlay"
-       Slot ButtonWidgetSlot "{7A3C91E100000007}" {
+      OverlayWidgetClass "{DD5EB3B67878C1A4}" {
+       Name "ButtonSurface"
+       Slot ButtonWidgetSlot "{7C76FFC3940B0306}" {
         HorizontalAlign 3
         VerticalAlign 3
        }
        {
-        HorizontalLayoutWidgetClass "{7A3C91E10000000A}" {
-         Name "AccountRowBody"
-         Slot OverlayWidgetSlot "{7A3C91E10000000B}" {
+        SmartPanelWidgetClass "{3C82AB5C1BD90B73}" {
+         Name "Background"
+         Slot OverlayWidgetSlot "{F1A7E5A749861361}" {
           HorizontalAlign 3
           VerticalAlign 3
-          Padding 5 5 5 5
+         }
+         Color 0 0 0 0
+         style rounded_6px
+         "no focus" 1
+        }
+        HorizontalLayoutWidgetClass "{160BF37774A5278E}" {
+         Name "AccountRowBody"
+         Slot OverlayWidgetSlot "{367C8FA811E15173}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+          Padding 8 5 8 5
          }
          {
-          SizeLayoutWidgetClass "{00D2FF56C72AE82E}" {
+          SizeLayoutWidgetClass "{98E01CCFFFE0B633}" {
            Name "AccountAvatarSize"
-           Slot LayoutSlot "{969607599E70FEDD}" {
-            Padding 0 0 6 0
+           Slot LayoutSlot "{2AA62336E22E3098}" {
+            VerticalAlign 1
+            Padding 0 0 8 0
            }
            AllowWidthOverride 1
-           WidthOverride 26
+           WidthOverride 24
            AllowHeightOverride 1
-           HeightOverride 26
+           HeightOverride 24
            {
-            OverlayWidgetClass "{7B4105E93A6CED62}" {
+            OverlayWidgetClass "{751BEE447BA3CBC9}" {
              Name "AccountAvatar"
-             Slot AlignableSlot "{1065791524C59321}" {
+             Slot AlignableSlot "{25FAD0C9D01ECAA7}" {
               HorizontalAlign 3
               VerticalAlign 3
              }
              {
-              SmartPanelWidgetClass "{E5C66991C4216B8C}" {
+              SmartPanelWidgetClass "{8B11CB6A9EA38590}" {
                Name "AccountAvatarFill"
-               Slot OverlayWidgetSlot "{41056B628A9B8289}" {
+               Slot OverlayWidgetSlot "{8E2828644F1CF49C}" {
                 HorizontalAlign 3
                 VerticalAlign 3
                }
-               Color 0.329 0.51 0.91 1
+               Color 0.0159 0.0194 0.0319 1
                style rounded_6px
                "no focus" 1
               }
-              TextWidgetClass "{2ED6BF0A5B9104C2}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+              TextWidgetClass "{844FC48555239C47}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
                Name "AccountAvatarGlyph"
-               Slot OverlayWidgetSlot "{B2B131CA087C4715}" {
+               Slot OverlayWidgetSlot "{8BFCE049AAB0FF3A}" {
                 HorizontalAlign 1
                 VerticalAlign 1
                }
-               Color 0.078 0.086 0.114 1
+               Color 0.8378 0.8626 0.9222 1
                Text ""
                "Font Size" 11
-               "Min Font Size" 10
+               "Min Font Size" 11
                "Horizontal Alignment" Center
-               FontProperties FontProperties "{5F33B1A4DF361F21}" {
-                Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+               FontProperties FontProperties "{F714C809A2FD68C0}" {
+                Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
                }
               }
              }
             }
            }
           }
-          VerticalLayoutWidgetClass "{7A3C91E10000000C}" {
+          VerticalLayoutWidgetClass "{C353DFAAE2A80AD7}" {
            Name "AccountCopy"
-           Slot LayoutSlot "{7A3C91E10000000D}" {
+           Slot LayoutSlot "{BC1307FF0127B856}" {
             SizeMode Fill
+            VerticalAlign 1
            }
            {
-            TextWidgetClass "{7A3C91E10000000E}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+            TextWidgetClass "{DBEADE13845971A2}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
              Name "AccountName"
-             Color 0.867 0.851 0.82 1
+             Color 0.8378 0.8626 0.9222 1
              Text ""
-             "Font Size" 10
+             "Font Size" 11
+             "Min Font Size" 10
+             "Horizontal Alignment" Left
+            }
+            TextWidgetClass "{A2E228C2DA978B29}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "AccountKind"
+             Color 0.366 0.4024 0.5025 1
+             Text ""
+             "Font Size" 9
              "Min Font Size" 9
              "Horizontal Alignment" Left
             }
-            TextWidgetClass "{7A3C91E10000000F}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-             Name "AccountKind"
-             Color 0.55 0.56 0.62 1
-             Text ""
-             "Font Size" 8
-             "Min Font Size" 7
-             "Horizontal Alignment" Left
-            }
            }
           }
-          TextWidgetClass "{7A3C91E100000010}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+          TextWidgetClass "{9529F571946C19A1}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
            Name "AccountBalance"
-           Slot LayoutSlot "{7A3C91E100000011}" {
-            Padding 5 0 3 0
+           Slot LayoutSlot "{4C8223746BF9301B}" {
+            VerticalAlign 1
+            Padding 8 0 0 0
            }
-           Color 0.976 0.859 0.298 1
+           Color 0.8378 0.8626 0.9222 1
            Text ""
-           "Font Size" 10
-           "Min Font Size" 9
-           "Horizontal Alignment" 2
-           "Vertical Alignment" 1
-           FontProperties FontProperties "{7A3C91E100000016}" {
-            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-           }
-          }
-          TextWidgetClass "{7A3C91E100000017}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-           Name "AccountChevron"
-           Slot LayoutSlot "{7A3C91E100000018}" {
-            Padding 0 0 0 0
-           }
-           Color 0.55 0.56 0.62 1
-           Text ">"
-           "Font Size" 10
+           "Font Size" 11
            "Min Font Size" 10
            "Horizontal Alignment" 2
-           "Vertical Alignment" 1
+           FontProperties FontProperties "{35E07D032707AC5B}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
           }
          }
         }

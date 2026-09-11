@@ -30,6 +30,14 @@ class ELIFE_DataRedactor
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Redacts a phone number for a bystander as a fixed placeholder rather than randomized digits -
+	//! nothing on a bystander's screen keys off a number, so there is no need to keep its shape.
+	static string RedactPhoneNumber()
+	{
+		return WidgetManager.Translate("#ELIFE-Phone_Number_Unknown");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Redacts numeric-looking text (phone numbers, PINs): keeps separators in place, randomizes digits.
 	static string RedactDigits(string real)
 	{

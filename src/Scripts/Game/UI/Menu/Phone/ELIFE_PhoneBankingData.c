@@ -91,7 +91,8 @@ class ELIFE_PhoneBankingService
 		if (negative)
 			sign = "-";
 
-		return sign + InsertThousands(major) + "." + minorText;
+		//! Unit suffixed, not prefixed, so the sign stays leading and figures keep a common left edge.
+		return sign + InsertThousands(major) + "." + minorText + " " + ELIFE_PhoneStyle.CURRENCY_SYMBOL;
 	}
 
 	//------------------------------------------------------------------------------------------------

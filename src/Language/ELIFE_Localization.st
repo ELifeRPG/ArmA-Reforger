@@ -258,6 +258,54 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
+  CustomStringTableItem "{2EE6B6AF90224628}" {
+   Id "ELIFE-Phone_Messages_Bucket_Today"
+   Target_en_us "Today"
+   Target_de_de "Heute"
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{4CFAAFAADC494735}" {
+   Id "ELIFE-Phone_Messages_Bucket_Yesterday"
+   Target_en_us "Yesterday"
+   Target_de_de "Gestern"
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{E01C39DA6099484F}" {
+   Id "ELIFE-Phone_Messages_Bucket_Last7Days"
+   Target_en_us "Last 7 Days"
+   Target_de_de "Letzte 7 Tage"
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{F97FFA6576074679}" {
+   Id "ELIFE-Phone_Messages_Bucket_Last14Days"
+   Target_en_us "Last 14 Days"
+   Target_de_de "Letzte 14 Tage"
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{3C0F014936C1433A}" {
+   Id "ELIFE-Phone_Messages_Bucket_LastMonth"
+   Target_en_us "Last Month"
+   Target_de_de "Letzter Monat"
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{000160E599FD4AC3}" {
+   Id "ELIFE-Phone_Messages_Bucket_Older"
+   Target_en_us "Older"
+   Target_de_de "Älter"
+   Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
   CustomStringTableItem "{6CA187B0B181A942}" {
    Id "ELIFE-Phone_Status_Loading"
    Target_en_us "Loading…"
@@ -279,6 +327,206 @@ StringTable {
    Target_en_us "Try again in a moment."
    Target_de_de "Versuche es gleich noch einmal."
    Modified 1757203200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{9FD4BAE3E4B4DC75}" {
+   Id "ELIFE-Phone_Nav_Back"
+   Target_en_us "Back"
+   Target_de_de "Zurück"
+   Modified 1757289600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A0E5CBF4F5C5ED86}" {
+   Id "ELIFE-Phone_Status_Retry"
+   Target_en_us "Try again"
+   Target_de_de "Erneut versuchen"
+   Modified 1757289600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{B1F6DC0506D6FE97}" {
+   Id "ELIFE-Phone_Lock_Enter"
+   Target_en_us "Enter PIN"
+   Target_de_de "PIN eingeben"
+   Modified 1757289600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{C207ED1617E70FA8}" {
+   Id "ELIFE-Phone_Lock_Wrong"
+   Target_en_us "Wrong PIN"
+   Target_de_de "Falsche PIN"
+   Modified 1757289600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{D318FE2728F810B9}" {
+   Id "ELIFE-Phone_Lock_NewMessages"
+   Target_en_us "New message"
+   Target_de_de "Neue Nachricht"
+   Modified 1757289600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{E4290F38390921CA}" {
+   Id "ELIFE-Phone_Settings_Number"
+   Target_en_us "Number"
+   Target_de_de "Nummer"
+   Modified 1757289600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{F53A10494A1A32DB}" {
+   Id "ELIFE-Phone_Settings_Section_Device"
+   Target_en_us "Device"
+   Target_de_de "Gerät"
+   Modified 1757289600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{064B215A5B2B43EC}" {
+   Id "ELIFE-Phone_Settings_Section_Security"
+   Target_en_us "Security"
+   Target_de_de "Sicherheit"
+   Modified 1757289600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{175C326B6C3C54FD}" {
+   Id "ELIFE-Phone_Settings_Lock"
+   Target_en_us "Lock phone"
+   Target_de_de "Telefon sperren"
+   Modified 1757289600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{28D437C7CD4D65A1}" {
+   Id "ELIFE-Phone_Home_NoUnread"
+   Target_en_us "No new messages"
+   Target_de_de "Keine neuen Nachrichten"
+   Modified 1757289600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A1B2C3D4E5F60701}" {
+   Id "ELIFE-Phone_Contacts_Form_Title"
+   Target_en_us "New Contact"
+   Target_de_de "Neuer Kontakt"
+   Modified 1757376000
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A1B2C3D4E5F60702}" {
+   Id "ELIFE-Phone_Contacts_Form_Number"
+   Target_en_us "Number"
+   Target_de_de "Nummer"
+   Modified 1757376000
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A1B2C3D4E5F60703}" {
+   Id "ELIFE-Phone_Contacts_Form_NumberPlaceholder"
+   Target_en_us "Enter a number"
+   Target_de_de "Nummer eingeben"
+   Modified 1757376000
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A1B2C3D4E5F60704}" {
+   Id "ELIFE-Phone_Contacts_Form_Name"
+   Target_en_us "Name"
+   Target_de_de "Name"
+   Modified 1757376000
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A1B2C3D4E5F60705}" {
+   Id "ELIFE-Phone_Contacts_Form_NamePlaceholder"
+   Target_en_us "Enter a name"
+   Target_de_de "Namen eingeben"
+   Modified 1757376000
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A1B2C3D4E5F60706}" {
+   Id "ELIFE-Phone_Contacts_Form_Save"
+   Target_en_us "Save"
+   Target_de_de "Speichern"
+   Modified 1757376000
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A1B2C3D4E5F60707}" {
+   Id "ELIFE-Phone_Contacts_Form_Saving"
+   Target_en_us "Saving…"
+   Target_de_de "Speichern…"
+   Modified 1757376000
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A1B2C3D4E5F60708}" {
+   Id "ELIFE-Phone_Contacts_Form_Incomplete"
+   Target_en_us "Enter a number and a name."
+   Target_de_de "Nummer und Namen eingeben."
+   Modified 1757376000
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A1B2C3D4E5F60709}" {
+   Id "ELIFE-Phone_Contacts_Form_SaveError"
+   Target_en_us "Couldn't save. Try again."
+   Target_de_de "Speichern fehlgeschlagen. Erneut versuchen."
+   Modified 1757376000
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A1B2C3D4E5F6070A}" {
+   Id "ELIFE-Phone_Contacts_Form_InvalidNumber"
+   Target_en_us "Enter an 8-digit number."
+   Target_de_de "Bitte eine 8-stellige Nummer eingeben."
+   Modified 1757376000
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A1B2C3D4E5F6070D}" {
+   Id "ELIFE-Phone_Contacts_Form_NumberHint"
+   Target_en_us "8 digits"
+   Target_de_de "8 Ziffern"
+   Modified 1757376000
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{3FB136E4A19C425C}" {
+   Id "ELIFE-Phone_Contacts_Detail_Message"
+   Target_en_us "Message"
+   Target_de_de "Nachricht"
+   Modified 1757980800
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A6029FE6883F09EE}" {
+   Id "ELIFE-Phone_Messages_ComposePlaceholder"
+   Target_en_us "Message"
+   Target_de_de "Nachricht"
+   Modified 1757980800
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A1B2C3D4E5F6070B}" {
+   Id "ELIFE-Phone_Contacts_Form_Duplicate"
+   Target_en_us "That number is already saved."
+   Target_de_de "Diese Nummer ist bereits gespeichert."
+   Modified 1757376000
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{73508AB340FEEE14}" {
+   Id "ELIFE-Phone_Number_Unknown"
+   Target_en_us "Unknown number"
+   Target_de_de "Unbekannte Nummer"
+   Modified 1789171200
    Author "Robin"
    LastChanged "Robin"
   }

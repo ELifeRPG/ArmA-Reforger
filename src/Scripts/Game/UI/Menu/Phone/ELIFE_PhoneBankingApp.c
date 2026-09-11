@@ -30,12 +30,14 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 
 	protected Widget m_wIndexPage;
 	protected Widget m_wStatementPage;
-	protected Widget m_wAccountScroll;
-	protected Widget m_wAccountList;
+	protected ScrollLayoutWidget m_wAccountScroll;
+	protected Widget m_wAccountGroups;
 	protected Widget m_wEmptyAccounts;
-	protected Widget m_wPostedScroll;
+	protected ScrollLayoutWidget m_wPostedScroll;
 	protected Widget m_wPostedList;
 	protected Widget m_wEmptyPosted;
+	protected Widget m_wPostedLabel;
+	protected TextWidget m_wIndexTitle;
 	protected TextWidget m_wStatementName;
 	protected TextWidget m_wStatementKind;
 	protected TextWidget m_wStatementBalance;
@@ -93,15 +95,22 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 		m_sOpenAccountId = accountId;
 
 		if (m_wStatementName)
+		{
 			m_wStatementName.SetText(account.m_sName);
+			m_wStatementName.SetColor(ELIFE_PhoneStyle.TextPrimary());
+		}
 
 		if (m_wStatementKind)
+		{
 			m_wStatementKind.SetText(KindLabel(account));
+			m_wStatementKind.SetColor(ELIFE_PhoneStyle.TextSecondary());
+		}
 
+		//! The balance is the one number on this page that carries the app's accent.
 		if (m_wStatementBalance)
 		{
 			m_wStatementBalance.SetText(ELIFE_PhoneBankingService.FormatMoney(account.m_iBalanceCents));
-			m_wStatementBalance.SetColor(new Color(0.525, 0.659, 0.937, 1));
+			m_wStatementBalance.SetColor(m_Accent);
 		}
 
 		FillPosted(account);
@@ -111,6 +120,11 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 
 		if (m_wStatementPage)
 			m_wStatementPage.SetVisible(true);
+
+		if (m_wNavTitle)
+			m_wNavTitle.SetText(account.m_sName);
+
+		TrackScroll(m_wPostedScroll, m_wStatementName);
 
 		NotifySubStateChanged();
 	}
@@ -129,12 +143,14 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 
 		m_wIndexPage = m_wRoot.FindAnyWidget("IndexPage");
 		m_wStatementPage = m_wRoot.FindAnyWidget("StatementPage");
-		m_wAccountScroll = m_wRoot.FindAnyWidget("AccountScroll");
-		m_wAccountList = m_wRoot.FindAnyWidget("AccountList");
+		m_wAccountScroll = ScrollLayoutWidget.Cast(m_wRoot.FindAnyWidget("AccountScroll"));
+		m_wAccountGroups = m_wRoot.FindAnyWidget("AccountGroups");
 		m_wEmptyAccounts = m_wRoot.FindAnyWidget("EmptyAccounts");
-		m_wPostedScroll = m_wRoot.FindAnyWidget("PostedScroll");
+		m_wPostedScroll = ScrollLayoutWidget.Cast(m_wRoot.FindAnyWidget("PostedScroll"));
 		m_wPostedList = m_wRoot.FindAnyWidget("PostedList");
 		m_wEmptyPosted = m_wRoot.FindAnyWidget("EmptyPosted");
+		m_wPostedLabel = m_wRoot.FindAnyWidget("PostedLabel");
+		m_wIndexTitle = TextWidget.Cast(m_wRoot.FindAnyWidget("LargeTitle"));
 		m_wStatementName = TextWidget.Cast(m_wRoot.FindAnyWidget("StatementName"));
 		m_wStatementKind = TextWidget.Cast(m_wRoot.FindAnyWidget("StatementKind"));
 		m_wStatementBalance = TextWidget.Cast(m_wRoot.FindAnyWidget("StatementBalance"));
@@ -166,6 +182,11 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 		if (m_wIndexPage)
 			m_wIndexPage.SetVisible(true);
 
+		if (m_wNavTitle)
+			m_wNavTitle.SetText(GetTitle());
+
+		TrackScroll(m_wAccountScroll, m_wIndexTitle);
+
 		NotifySubStateChanged();
 	}
 
@@ -175,7 +196,7 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 		if (m_aRowClicks)
 			m_aRowClicks.Clear();
 
-		ClearChildren(m_wAccountList);
+		ClearChildren(m_wAccountGroups);
 
 		int count = 0;
 		if (m_aAccounts)
@@ -184,54 +205,64 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 		if (m_wEmptyAccounts)
 			m_wEmptyAccounts.SetVisible(count == 0);
 
-		if (m_wAccountScroll)
-			m_wAccountScroll.SetVisible(count > 0);
-
-		if (!m_wAccountList || count == 0)
+		if (!m_wAccountGroups || count == 0)
 			return;
 
-		WorkspaceWidget workspace = GetGame().GetWorkspace();
-		if (!workspace)
-			return;
+		//! Personal and company accounts get separate groups, same CreateListGroup() path as Contacts/Messages.
+		array<ref ELIFE_PhoneBankAccount> personal = {};
+		array<ref ELIFE_PhoneBankAccount> company = {};
 
-		int i;
-		for (i = 0; i < count; i++)
+		for (int i = 0; i < count; i++)
 		{
 			ELIFE_PhoneBankAccount account = m_aAccounts.Get(i);
 			if (!account)
 				continue;
 
-			Widget row = workspace.CreateWidgets(LAYOUT_ACCOUNT_ROW, m_wAccountList);
+			if (account.m_eOwnerKind == ELIFE_EPhoneBankOwnerKind.COMPANY)
+				company.Insert(account);
+			else
+				personal.Insert(account);
+		}
+
+		bool isFirst = true;
+
+		if (!personal.IsEmpty())
+		{
+			FillAccountGroup(personal, "#ELIFE-Phone_Bank_Personal", isFirst);
+			isFirst = false;
+		}
+
+		if (!company.IsEmpty())
+			FillAccountGroup(company, "#ELIFE-Phone_Bank_Company", isFirst);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FillAccountGroup(notnull array<ref ELIFE_PhoneBankAccount> accounts, string header, bool isFirst)
+	{
+		Widget list = CreateListGroup(m_wAccountGroups, header, isFirst);
+		if (!list)
+			return;
+
+		int count = accounts.Count();
+		for (int i = 0; i < count; i++)
+		{
+			ELIFE_PhoneBankAccount account = accounts.Get(i);
+			if (!account)
+				continue;
+
+			Widget row = CreateListRow(LAYOUT_ACCOUNT_ROW, list, false);
 			if (!row)
 				continue;
 
-			//! CreateWidgets() doesn't give the returned root a fill slot by default.
-			LayoutSlot.SetSizeMode(row, LayoutSizeMode.Fill);
+			ELIFE_PhoneStyle.ApplyGlass(row, true);
 
-			if (i < count - 1)
-				LayoutSlot.SetPadding(row, 0, 0, 0, 5);
+			SetTextAndColor(row, "AccountName", account.m_sName, ELIFE_PhoneStyle.TextPrimary());
+			SetTextAndColor(row, "AccountKind", KindLabel(account), ELIFE_PhoneStyle.TextSecondary());
 
-			TextWidget nameWidget = TextWidget.Cast(row.FindAnyWidget("AccountName"));
-			if (nameWidget)
-				nameWidget.SetText(account.m_sName);
+			//! Balances stay neutral in the list; only the open statement's hero balance is accented.
+			SetTextAndColor(row, "AccountBalance", ELIFE_PhoneBankingService.FormatMoney(account.m_iBalanceCents), ELIFE_PhoneStyle.TextPrimary());
 
-			TextWidget kindWidget = TextWidget.Cast(row.FindAnyWidget("AccountKind"));
-			if (kindWidget)
-				kindWidget.SetText(KindLabel(account));
-
-			TextWidget balanceWidget = TextWidget.Cast(row.FindAnyWidget("AccountBalance"));
-			if (balanceWidget)
-				balanceWidget.SetText(ELIFE_PhoneBankingService.FormatMoney(account.m_iBalanceCents));
-
-			Color kindColor = KindColor(account);
-
-			Widget avatarFill = row.FindAnyWidget("AccountAvatarFill");
-			if (avatarFill)
-				avatarFill.SetColor(kindColor);
-
-			TextWidget avatarGlyph = TextWidget.Cast(row.FindAnyWidget("AccountAvatarGlyph"));
-			if (avatarGlyph && account.m_sName.Length() > 0)
-				avatarGlyph.SetText(account.m_sName.Substring(0, 1));
+			PaintAvatar(row, "AccountAvatarGlyph", "AccountAvatarFill", account.m_sName);
 
 			Widget buttonWidget = row.FindAnyWidget("AccountButton");
 			if (!buttonWidget)
@@ -257,60 +288,31 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 		if (m_wEmptyPosted)
 			m_wEmptyPosted.SetVisible(count == 0);
 
-		if (m_wPostedScroll)
-			m_wPostedScroll.SetVisible(count > 0);
+		if (m_wPostedLabel)
+			m_wPostedLabel.SetVisible(count > 0);
 
 		if (!m_wPostedList || count == 0)
 			return;
 
-		WorkspaceWidget workspace = GetGame().GetWorkspace();
-		if (!workspace)
-			return;
-
-		Color debit = new Color(0.867, 0.522, 0.522, 1);
-		Color credit = new Color(0.514, 0.812, 0.596, 1);
-
-		int i;
-		for (i = 0; i < count; i++)
+		for (int i = 0; i < count; i++)
 		{
 			ELIFE_PhoneBankTransaction tx = account.m_aTransactions.Get(i);
 			if (!tx)
 				continue;
 
-			Widget row = workspace.CreateWidgets(LAYOUT_TX_ROW, m_wPostedList);
+			Widget row = CreateListRow(LAYOUT_TX_ROW, m_wPostedList, i == count - 1);
 			if (!row)
 				continue;
 
-			LayoutSlot.SetSizeMode(row, LayoutSizeMode.Fill);
+			SetTextAndColor(row, "Memo", tx.m_sMemo, ELIFE_PhoneStyle.TextPrimary());
+			SetTextAndColor(row, "PostedAt", tx.m_sPostedAt, ELIFE_PhoneStyle.TextSecondary());
 
-			TextWidget dateWidget = TextWidget.Cast(row.FindAnyWidget("PostedAt"));
-			if (dateWidget)
-				dateWidget.SetText(tx.m_sPostedAt);
+			//! Direction is shown by the figure's colour only, no edge stripe down the row.
+			Color amountColor = ELIFE_PhoneStyle.Positive();
+			if (tx.m_iAmountCents < 0)
+				amountColor = ELIFE_PhoneStyle.Negative();
 
-			TextWidget memoWidget = TextWidget.Cast(row.FindAnyWidget("Memo"));
-			if (memoWidget)
-				memoWidget.SetText(tx.m_sMemo);
-
-			bool isDebit = tx.m_iAmountCents < 0;
-
-			TextWidget amountWidget = TextWidget.Cast(row.FindAnyWidget("Amount"));
-			if (amountWidget)
-			{
-				amountWidget.SetText(ELIFE_PhoneBankingService.FormatSignedMoney(tx.m_iAmountCents));
-				if (isDebit)
-					amountWidget.SetColor(debit);
-				else
-					amountWidget.SetColor(credit);
-			}
-
-			Widget dotWidget = row.FindAnyWidget("TxDot");
-			if (dotWidget)
-			{
-				if (isDebit)
-					dotWidget.SetColor(debit);
-				else
-					dotWidget.SetColor(credit);
-			}
+			SetTextAndColor(row, "Amount", ELIFE_PhoneBankingService.FormatSignedMoney(tx.m_iAmountCents), amountColor);
 		}
 	}
 
@@ -337,21 +339,15 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	{
 		if (account.m_eOwnerKind == ELIFE_EPhoneBankOwnerKind.COMPANY)
 		{
-			if (account.m_sOwnerName != "")
-				return WidgetManager.Translate("#ELIFE-Phone_Bank_Company") + " · " + account.m_sOwnerName;
+			string company = WidgetManager.Translate("#ELIFE-Phone_Bank_Company");
 
-			return WidgetManager.Translate("#ELIFE-Phone_Bank_Company");
+			//! Skip the owner suffix when it just repeats the account name already shown as the title.
+			if (account.m_sOwnerName != "" && account.m_sOwnerName != account.m_sName)
+				return company + " · " + account.m_sOwnerName;
+
+			return company;
 		}
 
 		return WidgetManager.Translate("#ELIFE-Phone_Bank_Personal");
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected Color KindColor(notnull ELIFE_PhoneBankAccount account)
-	{
-		if (account.m_eOwnerKind == ELIFE_EPhoneBankOwnerKind.COMPANY)
-			return new Color(0.851, 0.702, 0.024, 1);
-
-		return new Color(0.329, 0.510, 0.910, 1);
 	}
 }

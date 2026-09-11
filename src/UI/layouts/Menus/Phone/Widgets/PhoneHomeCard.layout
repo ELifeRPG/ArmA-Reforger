@@ -1,0 +1,240 @@
+SizeLayoutWidgetClass {
+ Name "HomeCardSize"
+ AllowHeightOverride 1
+ HeightOverride 58
+ {
+  OverlayWidgetClass "{C486B68C202485D4}" {
+   Name "HomeCard"
+   Slot AlignableSlot "{04E29AC58FFBBC08}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    BlurWidgetClass "{ABA444793E2483DA}" {
+     Name "GlassBlur"
+     Slot OverlayWidgetSlot "{F8D6355933023DB0}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 1
+     Intensity 0.7
+    }
+    SmartPanelWidgetClass "{5FB9EF141FD22B35}" {
+     Name "GlassScrim"
+     Slot OverlayWidgetSlot "{71407477F442212F}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.004 0.0048 0.0075 0.55
+     style rounded_6px
+     "no focus" 1
+    }
+    SmartPanelWidgetClass "{52BCFF25D73951AB}" {
+     Name "GlassTint"
+     Slot OverlayWidgetSlot "{ECCC4D227ED2B000}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.5837 0.6453 0.8073 0.14
+     style rounded_6px
+     "no focus" 1
+    }
+    SizeLayoutWidgetClass "{ECDF2DB78EA6EB8D}" {
+     Name "GlassSpecularSize"
+     Slot OverlayWidgetSlot "{CD99878065F8F2E9}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+      Padding 6 0 6 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 1
+     {
+      ImageWidgetClass "{9040CBCDB37497D9}" {
+       Name "GlassSpecular"
+       Slot AlignableSlot "{161CD356F0860E34}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.8626 0.8964 0.964 0.18
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{9E1217037A06DE24}" {
+     Name "GlassHairlineSize"
+     Slot OverlayWidgetSlot "{A4691BE70D411F16}" {
+      HorizontalAlign 3
+      VerticalAlign 2
+      Padding 6 0 6 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 1
+     {
+      ImageWidgetClass "{72165C5AD9297280}" {
+       Name "GlassHairline"
+       Slot AlignableSlot "{8C8F478278500377}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0015 0.0021 0.0033 0.26
+      }
+     }
+    }
+    ButtonWidgetClass "{B66A9E30DA77A5F3}" {
+     Name "CardButton"
+     Slot OverlayWidgetSlot "{1C12DAC9BEEAEA10}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 1
+     style blank
+     components {
+      SCR_ButtonTextComponent "{EE878E70FBD17B70}" {
+       m_BackgroundDefault 0.8626 0.8964 0.964 0
+       m_BackgroundHovered 0.8626 0.8964 0.964 0.08
+       m_BackgroundSelected 0.8626 0.8964 0.964 0.14
+       m_BackgroundSelectedHovered 0.8626 0.8964 0.964 0.14
+       m_BackgroundClicked 0.8626 0.8964 0.964 0.14
+       m_sText ""
+      }
+     }
+     {
+      OverlayWidgetClass "{718918D388C86BF7}" {
+       Name "ButtonSurface"
+       Slot ButtonWidgetSlot "{51F42D0B4197463B}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        SmartPanelWidgetClass "{600D852DCBA06AA7}" {
+         Name "Background"
+         Slot OverlayWidgetSlot "{98C3DDA904491ADB}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0 0 0 0
+         style rounded_6px
+         "no focus" 1
+        }
+        HorizontalLayoutWidgetClass "{9CDDFA6115F827EB}" {
+         Name "CardBody"
+         Slot OverlayWidgetSlot "{F43CE4EEE6BC28AF}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+          Padding 12 0 12 0
+         }
+         {
+          SizeLayoutWidgetClass "{3B893D5544D4B006}" {
+           Name "CardBadgeSize"
+           Slot LayoutSlot "{495DC4D50F78B5B1}" {
+            VerticalAlign 1
+            Padding 0 0 12 0
+           }
+           AllowWidthOverride 1
+           WidthOverride 34
+           AllowHeightOverride 1
+           HeightOverride 34
+           {
+            OverlayWidgetClass "{F9EBA1B4CD1534A7}" {
+             Name "CardBadge"
+             Slot AlignableSlot "{4D3BF3EE6D8B0C94}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             {
+              SmartPanelWidgetClass "{44E9BBCE510F72C4}" {
+               Name "CardBadgeFill"
+               Slot OverlayWidgetSlot "{A11BAFE511A5CA0D}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0.0159 0.0194 0.0319 1
+               style rounded_6px
+               "no focus" 1
+              }
+              TextWidgetClass "{95A85318048D0CEC}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+               Name "CardMark"
+               Slot OverlayWidgetSlot "{8416606F04D08FC5}" {
+                HorizontalAlign 1
+                VerticalAlign 1
+               }
+               "Is Visible" 0
+               Color 0.8378 0.8626 0.9222 1
+               Text ""
+               "Font Size" 24
+               "Min Font Size" 24
+               "Horizontal Alignment" Center
+               FontProperties FontProperties "{E0866C39E335ECE7}" {
+                Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+               }
+              }
+              SizeLayoutWidgetClass "{7522FF997ACE3A41}" {
+               Name "CardIconSize"
+               Slot OverlayWidgetSlot "{81CA2A09429C9C9B}" {
+                HorizontalAlign 1
+                VerticalAlign 1
+               }
+               AllowWidthOverride 1
+               WidthOverride 26
+               AllowHeightOverride 1
+               HeightOverride 26
+              }
+             }
+            }
+           }
+          }
+          VerticalLayoutWidgetClass "{10D3C58CB299B24A}" {
+           Name "CardCopy"
+           Slot LayoutSlot "{F26C0700BDC2D246}" {
+            SizeMode Fill
+            VerticalAlign 1
+           }
+           {
+            TextWidgetClass "{1E97A41352AB6680}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "CardLabel"
+             Slot LayoutSlot "{78267503EB04F097}" {
+              Padding 0 0 0 2
+             }
+             Color 0.1715 0.1942 0.2664 1
+             Text ""
+             "Font Size" 9
+             "Min Font Size" 9
+             "Horizontal Alignment" Left
+            }
+            TextWidgetClass "{2AC48A97BFF17E13}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "CardValue"
+             Color 0.8378 0.8626 0.9222 1
+             Text ""
+             "Font Size" 20
+             "Min Font Size" 16
+             "Horizontal Alignment" Left
+             FontProperties FontProperties "{33AA67F766C68D38}" {
+              Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+             }
+            }
+           }
+          }
+          TextWidgetClass "{BB2EDEFEBDAA8833}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "CardTrailing"
+           Slot LayoutSlot "{60F6BA38B6DFC0C2}" {
+            VerticalAlign 1
+            Padding 10 0 0 0
+           }
+           Color 0.366 0.4024 0.5025 1
+           Text ""
+           "Font Size" 10
+           "Min Font Size" 10
+           "Horizontal Alignment" 2
+           FontProperties FontProperties "{3EF90B7377633959}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

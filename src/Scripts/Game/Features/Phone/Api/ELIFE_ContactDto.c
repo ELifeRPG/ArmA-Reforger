@@ -12,14 +12,13 @@ class ELIFE_ContactDto : JsonApiStruct
 		RegV("displayName");
 	}
 
-	//------------------------------------------------------------------------------------------------
-	//! contactId stays real (list key, reveals nothing) - number/displayName are the actual private info.
+	//! contactId and displayName stay real; only the number is private info for a bystander's view.
 	ELIFE_ContactDto Redact()
 	{
 		ELIFE_ContactDto redacted = new ELIFE_ContactDto();
 		redacted.contactId = contactId;
-		redacted.number = ELIFE_DataRedactor.RedactDigits(number);
-		redacted.displayName = ELIFE_DataRedactor.RedactText(displayName);
+		redacted.number = ELIFE_DataRedactor.RedactPhoneNumber();
+		redacted.displayName = displayName;
 		return redacted;
 	}
 }
