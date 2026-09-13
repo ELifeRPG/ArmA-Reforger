@@ -104,6 +104,9 @@ class ELIFE_PhoneStyle
 	static const int DURATION_SHEET_MS = 320;
 	static const int TICK_MS = 16;
 
+	//! Off-screen start for the bottom-edge slide. Menu and peek share this path.
+	static const float PHONE_SLIDE_OFFSET = 700;
+
 	//! Spinner discipline: never flash. Delay before showing, minimum time on screen once shown.
 	static const int SPINNER_DELAY_MS = 150;
 	static const int SPINNER_MIN_VISIBLE_MS = 300;

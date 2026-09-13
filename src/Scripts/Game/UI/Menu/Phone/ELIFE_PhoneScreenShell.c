@@ -241,12 +241,12 @@ class ELIFE_PhoneScreenShell
 	protected ref ScriptInvoker m_OnBack = new ScriptInvoker();
 
 	//------------------------------------------------------------------------------------------------
-	//! The app registry. Order here is the order on the home screen, filling rows of four. Bank and Contacts keep their old character-mark glyph as a load fallback since their icon-set sprites are the newest additions.
+	//! Home-grid order, rows of four. Bank still uses the currency glyph until it has a wrapper sprite.
 	static array<ref ELIFE_PhoneAppEntry> BuildApps()
 	{
 		array<ref ELIFE_PhoneAppEntry> apps = {};
 		apps.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.MESSAGES, "#ELIFE-Phone_App_Messages", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "comments", ""));
-		apps.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.CONTACTS, "#ELIFE-Phone_App_Contacts", ELIFE_PhoneStyle.ICON_SET_CHAT, "squad", "@", 0.92));
+		apps.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.CONTACTS, "#ELIFE-Phone_App_Contacts", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "player", ""));
 		apps.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.BANK, "#ELIFE-Phone_App_Bank", ResourceName.Empty, "", ELIFE_PhoneStyle.CURRENCY_SYMBOL));
 		apps.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.MAP, "#ELIFE-Phone_App_Map", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "compass", ""));
 		apps.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.SETTINGS, "#ELIFE-Phone_App_Settings", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "settings", ""));
@@ -375,6 +375,9 @@ class ELIFE_PhoneScreenShell
 		phone.m_OnHubOpenChanged.Insert(OnHubOpenChanged);
 		ApplyHubGlass();
 		RefreshNotifications();
+
+		//! Seed from the cache now so the wake poll can still count as an arrival.
+		RaiseArrivedBanners();
 
 		//! Both screens name a thread through ELIFE_PhoneContactBook, so the contacts they resolve
 		//! against have to be asked for here too - neither one opens the app that would.
@@ -835,10 +838,8 @@ class ELIFE_PhoneScreenShell
 	// Notification banners
 	//------------------------------------------------------------------------------------------------
 
-	//! Diffs the payload against what this screen has already accounted for and banners whatever went
-	//! up. Runs on the bystander mirror too, off their redacted copy - the world RT is meant to show
-	//! the same screen as the menu, just with the names and bodies diffused.
-	protected void RaiseArrivedBanners()
+	//! Diff against what this screen has already accounted for and banner whatever went up.
+	void RaiseArrivedBanners()
 	{
 		if (!m_Phone)
 			return;
@@ -872,6 +873,20 @@ class ELIFE_PhoneScreenShell
 
 		foreach (ELIFE_ThreadDisplayDto threadDto : arrived)
 			ShowBanner(threadDto);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Peek: banner what's already waiting, then seed so later polls only raise new ones.
+	void RaisePendingBanners()
+	{
+		array<ref ELIFE_ThreadDisplayDto> pending = {};
+		CollectNotifications(pending);
+
+		foreach (ELIFE_ThreadDisplayDto threadDto : pending)
+			ShowBanner(threadDto);
+
+		m_bUnreadSeeded = false;
+		RaiseArrivedBanners();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1036,6 +1051,19 @@ class ELIFE_PhoneScreenShell
 
 			outThreads.Insert(threadDto);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Newest outstanding notification - the peek's door when the player takes the phone out.
+	string GetNewestNotificationThreadId()
+	{
+		array<ref ELIFE_ThreadDisplayDto> pending = {};
+		CollectNotifications(pending);
+
+		if (pending.IsEmpty() || !pending[0])
+			return "";
+
+		return pending[0].threadId;
 	}
 
 	//------------------------------------------------------------------------------------------------

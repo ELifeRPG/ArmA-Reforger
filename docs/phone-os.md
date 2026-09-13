@@ -46,6 +46,7 @@ frame. Enfusion cannot scale a widget tree — do not author a second size set.
 | The owner must operate it | It cannot depend on hover. Cosmetic hover (a tint under the cursor) is allowed. |
 | Type carries meaning | 9px minimum. Nothing smaller. |
 | World RT vs menu | Same screen state, content, and data. Presentational polish on the menu does not need an RT twin. |
+| A glance while the phone is away | The in-hand layout as a workspace widget — not a third canvas and not a menu. |
 
 ## Colour space
 
@@ -291,8 +292,8 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
 - **Lock.** Time and date on sharp wallpaper. At most one glass layer. Notifications
   are glass cards from the bottom, each carrying its sender's person mark. PIN pad is real,
   overlay altitude. Must read on the world RT at a glance.
-- **Notifications.** Three surfaces share one card component and must never drift
-  apart. A notification is about a **person** (a mark, not an app icon or status
+- **Notifications.** Four surfaces share one card component and must never drift
+  apart. A notification is about a **person** (a mark, not an app icon or status)
   dot), both text lines are `TextPrimary` (light glass reads mid-dark, so
   `TextSecondary` fails there per the accent table above), and the timestamp takes
   the accent.
@@ -302,10 +303,19 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
   | Lock list | Standing state | Every unread thread, rebuilt each lock render. |
   | Banner | An event | Awake-screen arrivals only, capped stack, self-dismisses after `BANNER_DURATION_MS`. Fades **both ways** — in on the present duration, out on the shorter state one, since arriving announces something and leaving is housekeeping. A **door**: taps hand the phone to the source app on that item. |
   | Hub | The backlog | Everything still standing, opened on demand as a dark-glass sheet over the current page — it takes the screen away rather than floating over it, unlike the light-glass cards it lists. |
+  | Peek | An event, phone away | The whole phone slides partway up from the bottom edge carrying a banner, holds, slides back. **Never a menu** — it fires unprompted, so it must not take the cursor or the input context; it is a bare workspace widget and the player keeps moving throughout. No world blur or dim: those mean "you are in the phone now", and a glance means the opposite. Nothing on it is clickable — acting on the message is taking the phone out. |
 
   A rising unread count is an arrival; a merely non-zero one is not — opening the
   phone must never replay old unread as fresh news, and a thread already open on
   screen must never banner or queue itself, since it is being read as it lands.
+  Seed the arrival baseline from whatever the screen already has when it opens;
+  the first poll after wake must still be able to count as news.
+
+  A peek is a banner surface, so it cannot be the lock screen — lock has no banner,
+  and its standing list sits at the bottom a glance would cut off.
+  Taking the phone out while a peek is up is the door: it hands the phone to the
+  source app on that item, same as tapping the banner. Never two copies of the
+  same phone. A second arrival while a peek is up restarts it; do not stack another.
 
   The **status-bar indicator** counts messages (three from one person is three
   things waiting); the **hub row** counts per-thread, since its body only shows the
@@ -322,6 +332,10 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
   nav glaze together, only once content passes underneath. At rest they are
   transparent. Home and lock never glaze — nothing scrolls under them. A permanently
   glazed status bar is a window chrome.
+- **Resume.** Putting the phone away is not a reset. Opening it again is the page
+  you left, including where you were inside the app. Lock still comes first if you
+  locked it. A peek door still wins. A hand-off that leaves the phone is not a
+  resume target.
 - **Back vs Home.** Back pops one level of an app's own stack; it never leaves the
   app. Leaving the app is the home pill's job alone. An app's root page — the
   first screen you land on from the home grid — carries no Back: there is nowhere

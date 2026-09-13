@@ -17,7 +17,6 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	protected float m_fSlideProgress;
 	protected bool m_bSlideOpening;
 
-	protected const float PHONE_SLIDE_OFFSET = 700;
 	protected const int PHONE_SLIDE_CLOSE_DELAY_MS = 280;
 
 	//------------------------------------------------------------------------------------------------
@@ -31,6 +30,8 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 
 		m_wRoot.SetVisible(true);
 		m_wRoot.SetOpacity(1);
+
+		ELIFE_PhonePeek.Hide();
 
 		m_wCaseBezel = m_wRoot.FindAnyWidget("BezelBackground");
 		m_wPhoneSize = m_wRoot.FindAnyWidget("PhoneSize");
@@ -87,7 +88,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void BindPhone(ELIFE_PhoneGadgetComponent phone)
+	void BindPhone(ELIFE_PhoneGadgetComponent phone, string doorThreadId = "")
 	{
 		m_BoundPhone = phone;
 
@@ -117,13 +118,24 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 
 		phone.m_OnScreenStateChanged.Insert(OnPhoneScreenStateChanged);
 
+		//! Peek door: same as tapping the banner.
+		if (doorThreadId != "")
+		{
+			m_Shell.ShowState(EPhoneScreenState.MESSAGES, false);
+			m_Shell.ApplySubState(doorThreadId);
+			phone.SetScreenState(EPhoneScreenState.MESSAGES);
+			phone.SetScreenSubState(doorThreadId);
+			return;
+		}
+
 		//! Drawing the phone powers it on, so an Off phone is shown as the screen it's about to become instead of black.
 		EPhoneScreenState state = phone.GetScreenState();
 		if (state == EPhoneScreenState.OFF)
 		{
-			state = EPhoneScreenState.HOME;
 			if (phone.WasLocked())
 				state = EPhoneScreenState.LOCKED;
+			else
+				state = phone.GetResumeState();
 		}
 
 		//! No entrance animation on the first frame - the whole phone is already sliding in.
@@ -177,7 +189,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 		m_bSlideOpening = true;
 
 		//! Applied immediately (not left to the first tick) so it never shows at rest for one frame.
-		AlignableSlot.SetPadding(m_wPhoneSize, m_fSlideRestLeft, m_fSlideRestTop, m_fSlideRestRight, m_fSlideRestBottom - PHONE_SLIDE_OFFSET);
+		AlignableSlot.SetPadding(m_wPhoneSize, m_fSlideRestLeft, m_fSlideRestTop, m_fSlideRestRight, m_fSlideRestBottom - ELIFE_PhoneStyle.PHONE_SLIDE_OFFSET);
 		if (m_wWorldBlur)
 			m_wWorldBlur.SetOpacity(0);
 
@@ -233,7 +245,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 			m_fSlideProgress = Math.Max(0, m_fSlideProgress - step);
 
 		float eased = ELIFE_PhoneStyle.EaseOut(m_fSlideProgress);
-		float bottom = m_fSlideRestBottom - (1 - eased) * PHONE_SLIDE_OFFSET;
+		float bottom = m_fSlideRestBottom - (1 - eased) * ELIFE_PhoneStyle.PHONE_SLIDE_OFFSET;
 		AlignableSlot.SetPadding(m_wPhoneSize, m_fSlideRestLeft, m_fSlideRestTop, m_fSlideRestRight, bottom);
 
 		if (m_wWorldBlur)

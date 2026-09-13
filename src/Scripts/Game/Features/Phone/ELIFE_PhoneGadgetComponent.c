@@ -199,9 +199,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 	protected int m_iPollIntervalMs;
 
-	//! Cadence follows the screen being on - fast while awake since polling is the only delivery path (no hub), slower while holstered since unread still has to be right when it comes back out.
+	//! Fast while awake (polling is the only delivery path). Slower while holstered — still frequent enough that a peek isn't a minute late.
 	protected const int POLL_INTERVAL_ACTIVE_MS = 2000;
-	protected const int POLL_INTERVAL_IDLE_MS = 60000;
+	protected const int POLL_INTERVAL_IDLE_MS = 15000;
 
 	[RplProp(onRplName: "OnScreenStateUpdated")]
 	protected EPhoneScreenState m_eScreenState;
@@ -220,6 +220,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 	//! Whether this phone was locked when its screen last went off - lets the owner power back on into LOCKED instead of always HOME.
 	protected bool m_bWasLocked;
+
+	//! Last in-phone page. Opening again lands here instead of always Home.
+	protected EPhoneScreenState m_eResumeState = EPhoneScreenState.HOME;
 
 	//! Defined in the phone's own Phone_UI.acp (reuses vanilla UI_Task_Succeded/Canceled.wav).
 	protected const string SOUND_EVENT_POWER_ON = "SOUND_PHONE_POWER_ON";
@@ -469,9 +472,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 		}
 
-		//! Messages only become reachable once the phone is on, so this is the earliest the poll can
-		//! run. One immediately, so the lock and home screens are right before the first interval
-		//! elapses rather than a minute later.
+		//! First chance to poll — don't wait a full idle interval for the opening screen to have mail.
 		ReschedulePoll();
 		PollMessages();
 	}
@@ -493,9 +494,15 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (interval == m_iPollIntervalMs)
 			return;
 
+		bool waking = interval == POLL_INTERVAL_ACTIVE_MS;
+
 		m_iPollIntervalMs = interval;
 		GetGame().GetCallqueue().Remove(PollMessages);
 		GetGame().GetCallqueue().CallLater(PollMessages, interval, true);
+
+		//! Screen just woke; don't wait a full interval for whatever arrived while it was off.
+		if (waking)
+			PollMessages();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1115,8 +1122,13 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		m_mData.Set(key, json);
 		SetDataStatus(key, ELIFE_EPhoneDataStatus.READY);
 
-		if (announce && m_SoundComponent)
+		if (!announce)
+			return;
+
+		if (m_SoundComponent)
 			m_SoundComponent.SoundEvent(SOUND_EVENT_NOTIFICATION);
+
+		ELIFE_PhonePeek.Show(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1214,10 +1226,14 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 		}
 
+		//! Power-on from Off only — don't clobber a page that's already showing.
+		if (m_eScreenState != EPhoneScreenState.OFF)
+			return;
+
 		if (m_bWasLocked)
 			SetScreenState(EPhoneScreenState.LOCKED);
 		else
-			SetScreenState(EPhoneScreenState.HOME);
+			SetScreenState(m_eResumeState);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1227,6 +1243,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (m_eScreenState == state)
 			return;
 
+		RememberResume(state);
 		Rpc(RpcAsk_SetScreenState, state);
 	}
 
@@ -1342,6 +1359,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (m_eScreenState != EPhoneScreenState.OFF)
 			m_bWasLocked = m_eScreenState == EPhoneScreenState.LOCKED;
 
+		RememberResume(m_eScreenState);
+
 		if (m_eScreenState == EPhoneScreenState.OFF)
 		{
 			StopScreenPulse();
@@ -1384,6 +1403,25 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	bool WasLocked()
 	{
 		return m_bWasLocked;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	EPhoneScreenState GetResumeState()
+	{
+		return m_eResumeState;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A hand-off that leaves the phone is not a resume target.
+	protected void RememberResume(EPhoneScreenState state)
+	{
+		if (state == EPhoneScreenState.OFF || state == EPhoneScreenState.LOCKED)
+			return;
+
+		if (state == EPhoneScreenState.MAP)
+			m_eResumeState = EPhoneScreenState.HOME;
+		else
+			m_eResumeState = state;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1450,7 +1488,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 			IEntity localCharacter = SCR_PlayerController.GetLocalControlledEntity();
 			if (charOwner && charOwner == localCharacter)
+			{
+				ELIFE_PhonePeek.TakeDoorAndHide();
 				ELIFE_PhoneToggle.RememberActivePhone(this);
+			}
 		}
 
 		if (mode != EGadgetMode.IN_HAND)
@@ -1581,14 +1622,18 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		ELIFE_PhoneToggle.RememberActivePhone(this);
 
+		ELIFE_PhonePeek.TakeDoorAndHide();
+		string doorThreadId = ELIFE_PhonePeek.ConsumeHandoff();
+
+		//! Power-on first so resume lands, then a peek door can overwrite it.
+		ToggleActive(true, SCR_EUseContext.FROM_ACTION);
+
 		ELIFE_PhoneMenu phoneMenu = ELIFE_PhoneMenu.Cast(menuManager.FindMenuByPreset(ChimeraMenuPreset.ELIFE_PhoneMenu));
 		if (!phoneMenu)
 			phoneMenu = ELIFE_PhoneMenu.Cast(menuManager.OpenMenu(ChimeraMenuPreset.ELIFE_PhoneMenu));
 
 		if (phoneMenu)
-			phoneMenu.BindPhone(this);
-
-		ToggleActive(true, SCR_EUseContext.FROM_ACTION);
+			phoneMenu.BindPhone(this, doorThreadId);
 	}
 
 	//------------------------------------------------------------------------------------------------
