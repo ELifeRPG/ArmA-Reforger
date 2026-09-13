@@ -482,6 +482,13 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True on the app's landing page, where the shell hides Back - GetSubState() is already "" exactly there, so apps get this for free.
+	bool IsAtRoot()
+	{
+		return GetSubState() == "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Override for apps with their own in-app navigation (e.g. Bank's open statement).
 	string GetSubState()
 	{
@@ -514,6 +521,9 @@ class ELIFE_PhoneAppBase
 	{
 		if (m_Phone)
 			m_Phone.SetScreenSubState(GetSubState());
+
+		if (m_Shell)
+			m_Shell.RefreshBackVisibility();
 	}
 
 	//------------------------------------------------------------------------------------------------

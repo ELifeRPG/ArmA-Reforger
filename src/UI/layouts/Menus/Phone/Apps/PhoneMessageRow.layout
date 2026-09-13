@@ -32,15 +32,74 @@ OverlayWidgetClass {
         VerticalAlign 3
        }
        {
+        BlurWidgetClass "{25217D6A809E2090}" {
+         Name "GlassBlur"
+         Slot OverlayWidgetSlot "{75B95AC384BBA0C1}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 1 1 1 1
+         Intensity 0.7
+        }
         SmartPanelWidgetClass "{25217D6A809E208F}" {
-         Name "BubbleFill"
+         Name "GlassScrim"
          Slot OverlayWidgetSlot "{75B95AC384BBA0C0}" {
           HorizontalAlign 3
           VerticalAlign 3
          }
-         Color 0.0159 0.0194 0.0319 1
+         Color 0.004 0.0048 0.0075 0.55
          style rounded_6px
          "no focus" 1
+        }
+        SmartPanelWidgetClass "{25217D6A809E2091}" {
+         Name "GlassTint"
+         Slot OverlayWidgetSlot "{75B95AC384BBA0C2}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.5837 0.6453 0.8073 0.14
+         style rounded_6px
+         "no focus" 1
+        }
+        SizeLayoutWidgetClass "{25217D6A809E2092}" {
+         Name "GlassSpecularSize"
+         Slot OverlayWidgetSlot "{75B95AC384BBA0C3}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 4 1 4 0
+         }
+         AllowHeightOverride 1
+         HeightOverride 1
+         {
+          ImageWidgetClass "{25217D6A809E2093}" {
+           Name "GlassSpecular"
+           Slot AlignableSlot "{75B95AC384BBA0C4}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.8626 0.8964 0.964 0.18
+          }
+         }
+        }
+        SizeLayoutWidgetClass "{25217D6A809E2094}" {
+         Name "GlassHairlineSize"
+         Slot OverlayWidgetSlot "{75B95AC384BBA0C5}" {
+          HorizontalAlign 3
+          VerticalAlign 2
+          Padding 4 0 4 0
+         }
+         AllowHeightOverride 1
+         HeightOverride 1
+         {
+          ImageWidgetClass "{25217D6A809E2095}" {
+           Name "GlassHairline"
+           Slot AlignableSlot "{75B95AC384BBA0C6}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.0015 0.0021 0.0033 0.26
+          }
+         }
         }
         TextWidgetClass "{E1808814E0344F8D}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
          Name "MessageBody"

@@ -152,6 +152,7 @@ class ELIFE_PhoneScreenShell
 	protected TextWidget m_wPinPrompt;
 	protected TextWidget m_wStatusNumber;
 	protected Widget m_wBackChipSize;
+	protected Widget m_wButtonBack;
 	protected TextWidget m_wBackChevron;
 	protected TextWidget m_wBackLabel;
 
@@ -253,6 +254,7 @@ class ELIFE_PhoneScreenShell
 		m_wNavActionLabel = TextWidget.Cast(screenRoot.FindAnyWidget("NavActionLabel"));
 		m_wStatusBarGlass = screenRoot.FindAnyWidget("StatusBarGlass");
 		m_wBackChipSize = screenRoot.FindAnyWidget("BackChipSize");
+		m_wButtonBack = screenRoot.FindAnyWidget("ButtonBack");
 
 		//! Built once - every widget in it lives in the screen, not in any one app.
 		m_Chrome.m_wStatusBarGlass = m_wStatusBarGlass;
@@ -460,7 +462,7 @@ class ELIFE_PhoneScreenShell
 
 		LayoutSlot.SetSizeMode(tile, LayoutSizeMode.Fill);
 
-		ELIFE_PhoneStyle.SetColorOf(tile, "TileFill", ELIFE_PhoneStyle.AccentDeepFor(app.m_eState));
+		ELIFE_PhoneStyle.ApplyGlass(tile, false, false, false, true, ELIFE_PhoneStyle.AccentDeepFor(app.m_eState));
 
 		PaintAppIcon(workspace, tile.FindAnyWidget("TileIconSize"), TextWidget.Cast(tile.FindAnyWidget("TileMark")), app, ICON_INK_TILE);
 
@@ -485,12 +487,13 @@ class ELIFE_PhoneScreenShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Puts an app's icon into a tile or a card badge: the imageset sprite when the app has one, otherwise its character mark. The two need different boxes because a text widget centres its line box (ascender to descender), not the visible letterform - squeezing a mark into a sprite-sized box would clip it, so the mark centres in the full tile/badge instead and is sized by cap height to match.
+	//! Puts an app's icon into a tile or a card badge: the imageset sprite when the app has one, otherwise its character mark. The two need different boxes because a text widget centres its line box (ascender to descender), not the visible letterform - squeezing a mark into a sprite-sized box would clip it, so the mark centres in the full tile/badge instead and is sized by cap height to match. Stays TextPrimary() regardless of app - the accent identity comes from the glass glow behind it, not the glyph itself.
 	protected void PaintAppIcon(notnull WorkspaceWidget workspace, Widget iconHost, TextWidget mark, ELIFE_PhoneAppEntry app, float ink)
 	{
 		if (!app)
 			return;
 
+		Color tint = ELIFE_PhoneStyle.TextPrimary();
 		bool loaded = false;
 
 		if (iconHost && app.m_sIconSet != ResourceName.Empty && app.m_sIconImage != "")
@@ -509,7 +512,7 @@ class ELIFE_PhoneScreenShell
 
 					if (loaded)
 					{
-						image.SetColor(ELIFE_PhoneStyle.TextPrimary());
+						image.SetColor(tint);
 						ELIFE_PhoneStyle.FitIcon(image, ink * ICON_SPRITE_PADDING * app.m_fIconScale);
 					}
 				}
@@ -524,7 +527,7 @@ class ELIFE_PhoneScreenShell
 			return;
 
 		mark.SetText(app.m_sGlyph);
-		mark.SetColor(ELIFE_PhoneStyle.TextPrimary());
+		mark.SetColor(tint);
 
 		//! Sized off the same ink target as a sprite, so the two carry equal weight side by side.
 		mark.SetExactFontSize(Math.Round(ink * ICON_MARK_CAP * app.m_fIconScale));
@@ -801,6 +804,7 @@ class ELIFE_PhoneScreenShell
 		//! The sub-state is passed into Open() so a page built on the passive copy lands directly in
 		//! the right place instead of briefly showing a wrong default.
 		m_App.Open(m_Phone, m_wAppHost, m_Phone.GetScreenSubState());
+		RefreshBackVisibility();
 
 		//! One entrance per screen: the page rises and fades in as a whole, no per-row stagger.
 		if (animateEntrance)
@@ -857,6 +861,15 @@ class ELIFE_PhoneScreenShell
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Back only pops a level of the open app's own stack - never leaves it, so an app's landing page
+	//! (IsAtRoot()) draws no Back at all. Leaving is the home pill's job alone.
+	void RefreshBackVisibility()
+	{
+		if (m_wButtonBack)
+			m_wButtonBack.SetVisible(m_App && !m_App.IsAtRoot());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! True when the open app consumed Back itself (statement -> account list, thread -> inbox).
 	bool AppConsumedBack()
 	{
@@ -902,8 +915,10 @@ class ELIFE_PhoneScreenShell
 			return;
 
 		SetText(card, "CardLabel", account.m_sName);
+		ELIFE_PhoneStyle.SetColorOf(card, "CardLabel", ELIFE_PhoneStyle.TextPrimary());
+
 		SetText(card, "CardValue", ELIFE_PhoneBankingService.FormatMoney(account.m_iBalanceCents));
-		ELIFE_PhoneStyle.SetColorOf(card, "CardValue", ELIFE_PhoneStyle.AccentBank());
+		ELIFE_PhoneStyle.SetTypeOf(card, "CardValue", ELIFE_PhoneStyle.TEXT_TITLE, true, ELIFE_PhoneStyle.AccentBank());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -917,16 +932,20 @@ class ELIFE_PhoneScreenShell
 		if (!newest)
 		{
 			SetText(card, "CardLabel", "#ELIFE-Phone_App_Messages");
+			ELIFE_PhoneStyle.SetColorOf(card, "CardLabel", ELIFE_PhoneStyle.TextPrimary());
 			SetText(card, "CardValue", "#ELIFE-Phone_Home_NoUnread");
-			ELIFE_PhoneStyle.SetColorOf(card, "CardValue", ELIFE_PhoneStyle.TextSecondary());
+			ELIFE_PhoneStyle.SetTypeOf(card, "CardValue", ELIFE_PhoneStyle.TEXT_BODY, false, ELIFE_PhoneStyle.TextPrimary());
 			return;
 		}
 
 		SetText(card, "CardLabel", ELIFE_PhoneContactBook.TitleFor(m_Phone, newest));
+		ELIFE_PhoneStyle.SetColorOf(card, "CardLabel", ELIFE_PhoneStyle.TextPrimary());
+
 		SetText(card, "CardValue", NewestBody(newest));
-		ELIFE_PhoneStyle.SetColorOf(card, "CardValue", ELIFE_PhoneStyle.TextPrimary());
+		ELIFE_PhoneStyle.SetTypeOf(card, "CardValue", ELIFE_PhoneStyle.TEXT_BODY, false, ELIFE_PhoneStyle.TextPrimary());
+
 		SetText(card, "CardTrailing", ELIFE_PhoneAppBase.FormatClock(newest.lastMessageAt));
-		ELIFE_PhoneStyle.SetColorOf(card, "CardTrailing", ELIFE_PhoneStyle.AccentMessages());
+		ELIFE_PhoneStyle.SetTypeOf(card, "CardTrailing", ELIFE_PhoneStyle.TEXT_CAPTION, false, ELIFE_PhoneStyle.AccentMessages());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -942,7 +961,7 @@ class ELIFE_PhoneScreenShell
 			LayoutSlot.SetPadding(card, 0, ELIFE_PhoneStyle.SPACE_2, 0, 0);
 
 		ELIFE_PhoneStyle.ApplyGlass(card, false, true);
-		ELIFE_PhoneStyle.SetColorOf(card, "CardBadgeFill", ELIFE_PhoneStyle.AccentDeepFor(state));
+		ELIFE_PhoneStyle.ApplyGlass(card.FindAnyWidget("CardBadge"), false, false, false, true, ELIFE_PhoneStyle.AccentDeepFor(state));
 
 		PaintAppIcon(workspace, card.FindAnyWidget("CardIconSize"), TextWidget.Cast(card.FindAnyWidget("CardMark")), FindApp(state), ICON_INK_CARD);
 

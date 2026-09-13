@@ -30,6 +30,8 @@ Do not start a parallel shell. Hook the existing one:
 5. Internal pages use `GetSubState` / `ApplySubState` / `NotifySubStateChanged` so
    the world RT stays on the same page as the menu. Handing the phone to another
    app is `OpenAppPage(state, subState)` — Contacts → Messages already does this.
+   Back visibility is automatic: the shell hides it whenever `GetSubState()` is
+   `""` (`IsAtRoot()`), so the root page needs no Back handling of its own.
 6. Strings go through localization (`ELIFE_Localization.st` + `en_us` / `de_de`).
    No hardcoded UI copy.
 
@@ -62,11 +64,13 @@ Glass means "this layer floats above that one and is lit by it."
 | Nothing is behind it | Solid. Do not add decoration just to give glass something to show. |
 | Page content: list cards, settings cards, form cards | Dark glass (`ApplyGlass(bar, true)`). Status and nav pass `chrome: true` for a heavier scrim over scrolling content — same look, not a third one. |
 | Controls that float at rest: home cards, lock notifications, PIN keys, compose bar, trailing nav pill | Light glass (`ApplyGlass(bar, false, true)`). |
+| Home app tiles, home card badges | Accent glass (`ApplyGlass(bar, false, false, false, true, accentColor)`) — the one place a surface is tinted per-app rather than dark or light. Pass that app's `AccentDeep*`. |
 | Back, large titles, app-page grounds | No glass. |
-| Message bubbles, home app tiles | Solid (open: do not turn these into glass until decided). |
+| Message bubbles | Decided: glass, not solid. Inbound is dark glass (`ApplyGlass(bubble, true)`); outbound is accent glass in the sender's own accent (`ApplyGlass(bubble, false, false, false, true, AccentDeepFor(state))`) — no `GlassGlow`, the coloured content is the bubble text itself, not an icon sitting on top of it. |
 
-Two looks only: dark and light. If both flags are passed, dark wins. Do not invent a
-sheet look, a chrome look, or a per-app recipe.
+Three looks: dark, light, accent. Flags are mutually exclusive — dark wins over
+light wins over accent. Do not invent a sheet look, a chrome look, or a fourth
+per-app recipe beyond these three.
 
 Hard limits:
 
@@ -76,14 +80,31 @@ Hard limits:
   so tint, specular, and hairline stay one pane). Chrome bars earn Opacity from
   scroll (`ApplyCollapse`). Every other glass surface must get `Opacity 1` from
   `ApplyGlass`. Editing the three alphas to fade a bar pulls the material apart.
+  `GlassGlow`, where present, has its own alpha precisely because it is a separate
+  layer, not part of that one pane — fading it independently is not the same
+  mistake.
 - One boolean (`GLASS_ENABLED`) swaps every stack for a flat panel at the same
   lightness.
 
-Recipe, not a third look: baked blurred wallpaper as refraction (or tint-only if
+Recipe, not a fourth look: baked blurred wallpaper as refraction (or tint-only if
 alignment is impossible), a near-white tint with no hue of its own (`GlassTint()`),
-a 1px top specular and 1px bottom hairline. Any new glass widget must carry the
-layer names `ApplyGlass` looks up — `GlassBlur`, `GlassScrim`, `GlassTint`,
-`GlassSpecular`, `GlassHairline` — clipped to `rounded_6px`.
+a top specular and a 1px bottom hairline. Specular still stretches the pane;
+`ApplyGlass` sets its height to `GLASS_SPECULAR_HEIGHT` (2) on every look — dark,
+light, and accent. A 1px bar reads as a stroke. Do not invent a min-width or
+centre it. Any new glass widget must carry the layer names `ApplyGlass` looks up
+— `GlassBlur`, `GlassScrim`, `GlassTint`, `GlassSpecular`, `GlassHairline` —
+clipped to `rounded_6px`. Accent glass is the same recipe with one substitution:
+the scrim mixes toward the app's own accent colour instead of a fixed neutral
+(`InkDeep()` for dark, `LightBase()` for light). The tint is never recoloured —
+it stays the one shared near-white material every look uses, accent included.
+
+A widget may additionally carry `GlassGlow`: a layer stacked above the content
+(the icon or glyph) instead of below it, painted with the accent colour at its
+own alpha, independent of the scrim/tint alphas. Only declare it where the
+accent is meant to read as part of the content itself rather than its backdrop —
+today that is only the home screen's app tiles and card badges. A widget with no
+`GlassGlow` child simply has no glow; accent glass on it behaves exactly like
+dark/light, just recoloured on the scrim.
 
 Radii: `STYLE_RADIUS_ELEMENT` / `STYLE_RADIUS_SCREEN` are `rounded_6px` (engine
 maximum for the case, cards, chips, badges, keys). `STYLE_RADIUS_DETAIL` is
@@ -114,7 +135,7 @@ desaturated. Neutrals stay neutral, tinted toward the OS anchor.
 | Title controls, selected/active, badges, the page's one named action | This app's `Accent*` |
 | The one figure the app is *about* (Bank balances; Messages unread) | That app's `Accent*` |
 | A filled surface this app owns | `AccentDeep*` |
-| Names, previews, kinds, captions | Neutral |
+| Names, previews, kinds, captions | Neutral (`TextPrimary`). Light glass still reads mid-dark — `Ink` is the wrong register, `TextSecondary` sits too close to the pane. |
 | A control that **hands the phone to another app** | The **destination** accent, on that control only. Chrome and title stay the host's. Never invent a third hue. |
 | Status bar | OS-owned. Never app-tinted. |
 | Home, lock, off | `AccentFor` falls through to Settings (the anchor neutral). Do not invent an OS hue. |
@@ -142,7 +163,8 @@ page's hue can only mean where the tap goes.
 top. A SmartPanel fill is a rounded square, not a circle. Do not point `Texture`
 at `UI/Textures/Common/circleFull.edds` or
 `UI/Textures/RadialMenu/RadialMenuMaskInverse.edds` — those are shader masks and
-draw as opaque squares. List marks are `AVATAR_SIZE` (24).
+draw as opaque squares. List marks are `AVATAR_SIZE` (28), initials at 12px —
+enough padding inside the circle that the glyph doesn't hug the edge.
 
 ## Actions — slot, then cost
 
@@ -252,7 +274,11 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
 - **Home.** Clock and date at the top; a 4-column app grid at the bottom. Above the
   grid: two cards from real data — what have I got, who wants me — each opens its
   app. Nothing invented. Page dots only if a second page exists. Labels: one line,
-  ellipsis, never shrunk.
+  ellipsis, never shrunk. Card type follows what the figure *is*, not one fixed
+  size for CardValue — a payload figure and a sentence preview earn different
+  weight and size. Same layout, many jobs: size, weight, and colour are set per
+  caller in script (`ELIFE_PhoneStyle.SetTypeOf`), not baked into the widget.
+  Card labels stay `TextPrimary`, not `Ink` or `TextSecondary`.
 - **Lock.** Time and date on sharp wallpaper. At most one glass layer. Notifications
   are glass cards from the bottom, accent as a small mark only. PIN pad is real,
   overlay altitude. Must read on the world RT at a glance.
@@ -263,6 +289,14 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
   nav glaze together, only once content passes underneath. At rest they are
   transparent. Home and lock never glaze — nothing scrolls under them. A permanently
   glazed status bar is a window chrome.
+- **Back vs Home.** Back pops one level of an app's own stack; it never leaves the
+  app. Leaving the app is the home pill's job alone. An app's root page — the
+  first screen you land on from the home grid — carries no Back: there is nowhere
+  shallower inside that app to go, so nothing is drawn in the leading slot. Back
+  only appears once a page has pushed past root (a thread inside Messages, a
+  contact's detail). Do not add a root-page Back that just re-triggers home — that
+  duplicates the home pill under a different name and teaches two gestures for
+  one action.
 - **Offline.** Phone-wide (`OfflineScreen`), same tier as `ScreenOff`. HTTP 0 means
   the Bridge never answered; any real HTTP code is that route's problem. Apps still
   show a loading skeleton for in-flight latency. One Retry: provision if there is no
@@ -278,10 +312,13 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
   areas are hard margins.
 - Type: `TEXT_DISPLAY` 46 / `TEXT_HERO` 26 / `TEXT_TITLE_LARGE` 20 / `TEXT_TITLE`
   15 / `TEXT_BODY` 11 / `TEXT_SUBHEAD` 10 / `TEXT_CAPTION` and `TEXT_FLOOR` 9.
-  Three weights at most. Bold for clock, titles, balances; regular for body and
-  captions. Figures that must column use fixed-width containers and right
-  alignment. `RobotoCondensed` is the current face (`FONT_REGULAR` / `FONT_BOLD`)
-  — do not add a second display font without a decision.
+  Home clock is its own size (`TEXT_CLOCK` 34). Lock time stays `TEXT_DISPLAY`.
+  Status-bar time stays `TEXT_CAPTION`. `ELIFE_PhoneClockUIComponent` only writes
+  the digits — it must not stamp a size. Three weights at most. Bold for clock,
+  titles, balances; regular for body and captions. Figures that must column use
+  fixed-width containers and right alignment. `RobotoCondensed` is the current
+  face (`FONT_REGULAR` / `FONT_BOLD`) — do not add a second display font without
+  a decision.
 - Depth: wallpaper → content → glass chrome → sheets → alerts. Named ZOrder
   constants only.
 - Motion: ease-out, no overshoot. ~250–350ms present, 150–200ms state, instant

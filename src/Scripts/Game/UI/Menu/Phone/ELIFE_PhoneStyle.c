@@ -15,7 +15,7 @@ class ELIFE_PhoneStyle
 	// Depth model
 	//
 	// Wallpaper/ground -> content -> chrome (status bar, nav bar, bottom bar) -> sheets -> alerts.
-	// Stacking only. Glass looks are a separate two-style system (dark / light), not an altitude.
+	// Stacking only. Glass looks are a separate three-style system (dark / light / accent), not an altitude.
 	//------------------------------------------------------------------------------------------------
 	static const int ZORDER_GROUND = 0;
 	static const int ZORDER_CONTENT = 10;
@@ -30,22 +30,31 @@ class ELIFE_PhoneStyle
 	//! Flat fallback path. Set false to swap every glass stack (tint + specular edge + hairline) for
 	//! one solid panel at the same lightness - one boolean, both canvases, no layout edits.
 	static const bool GLASS_ENABLED = true;
+	static const float GLASS_SPECULAR_HEIGHT = 2;
 
 	//! Alpha is the material (fixed per look, never per instance); Opacity is presence (applied to the whole bar so tint/specular/hairline composite as one layer - editing the three alphas separately would detach the specular line).
 	//! Dark glass's scrim has two strengths: GLASS_SCRIM_DARK for inline cards on a flat page ground, GLASS_SCRIM_DARK_CHROME for status/nav bars covering scrolling content. Same recipe otherwise.
 	static const float GLASS_SCRIM_DARK = 0.75;
 	static const float GLASS_SCRIM_DARK_CHROME = 0.95;
 	static const float GLASS_ALPHA_DARK = 0.01;
-	static const float GLASS_SPECULAR_DARK = 0.2;
+	static const float GLASS_SPECULAR_DARK = 0.3;
 	static const float GLASS_BLUR_DARK = 0.35;
 	static const float GLASS_HAIRLINE_ALPHA_DARK = 0.14;
 
 	//! Light glass - the brighter look (home cards, lock notifications, PIN keys, compose bar, trailing nav action at rest).
 	static const float GLASS_SCRIM_LIGHT = 0.4;
 	static const float GLASS_ALPHA_LIGHT = 0.05;
-	static const float GLASS_SPECULAR_LIGHT = 0.10;
+	static const float GLASS_SPECULAR_LIGHT = 0.07;
 	static const float GLASS_BLUR_LIGHT = 0.25;
 	static const float GLASS_HAIRLINE_ALPHA_LIGHT = 0.26;
+
+	//! Accent glass - same structure as dark/light, but the scrim mixes toward the app's own accent instead of a fixed neutral. GLASS_GLOW_ALPHA_ACCENT is the optional GlassGlow layer's own strength (see ApplyGlass).
+	static const float GLASS_SCRIM_ACCENT = 0.9;
+	static const float GLASS_ALPHA_ACCENT = 0.02;
+	static const float GLASS_SPECULAR_ACCENT = 0.26;
+	static const float GLASS_BLUR_ACCENT = 0.40;
+	static const float GLASS_HAIRLINE_ALPHA_ACCENT = 0.42;
+	static const float GLASS_GLOW_ALPHA_ACCENT = 0.25;
 
 	//------------------------------------------------------------------------------------------------
 	// Spacing - 4pt scale at this canvas (the 8pt scale of a 568-wide phone, halved for 236)
@@ -68,7 +77,7 @@ class ELIFE_PhoneStyle
 	//! not fit a value column (Settings' device id) or an editable field (the contact form).
 	static const float ROW_HEIGHT_STACKED = 46;
 
-	static const float AVATAR_SIZE = 24;
+	static const float AVATAR_SIZE = 28;
 
 	//------------------------------------------------------------------------------------------------
 	// Motion - ease-out translations, no springs, no overshoot. One entrance per screen.
@@ -169,6 +178,9 @@ class ELIFE_PhoneStyle
 	static const int TEXT_CAPTION = 9;
 	static const int TEXT_FLOOR = 9;
 
+	//! Home clock only - its own hero readout, distinct from lock's TEXT_DISPLAY (46) so the two screens don't fight for the same size.
+	static const int TEXT_CLOCK = 34;
+
 	//! The tolar is Everon's own in-game currency (modelled into the fuel station price display); Ŧ (U+0166) is our chosen mark since none is attested in game data. If it renders as a blank box, swap this to "TOL".
 	static const string CURRENCY_SYMBOL = "Ŧ";
 
@@ -242,13 +254,17 @@ class ELIFE_PhoneStyle
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Paints one glass surface (tint + 1px specular top highlight + 1px hairline bottom) on child widgets named GlassBlur/GlassScrim/GlassTint/GlassSpecular/GlassHairline. darkGlass/lightGlass select the look (mutually exclusive, dark wins/defaults); `chrome` just swaps the dark scrim for GLASS_SCRIM_DARK_CHROME for bars covering scrolling content. Sets Opacity 1 on the bar and every layer - callers that reveal from scroll (ApplyCollapse) must reset that afterwards. When GLASS_ENABLED is false, paints one flat solid panel instead (world render target fallback).
-	static void ApplyGlass(Widget bar, bool darkGlass = false, bool lightGlass = false, bool chrome = false)
+	//! Paints one glass surface on child widgets named GlassBlur/GlassScrim/GlassTint/GlassSpecular/GlassHairline(/GlassGlow). dark/light/accentGlass select the look (mutually exclusive, dark > light > accent); accentGlass mixes the scrim toward accentColor (defaults to AccentSettings()) and, if a GlassGlow child exists, paints that too. `chrome` swaps the dark scrim for the heavier GLASS_SCRIM_DARK_CHROME. Sets Opacity 1 on every layer - a caller revealing from scroll (ApplyCollapse) must reset that itself. Falls back to one flat solid panel when GLASS_ENABLED is false.
+	static void ApplyGlass(Widget bar, bool darkGlass = false, bool lightGlass = false, bool chrome = false, bool accentGlass = false, Color accentColor = null)
 	{
 		if (!bar)
 			return;
 
 		bool useLight = lightGlass && !darkGlass;
+		bool useAccent = accentGlass && !darkGlass && !lightGlass;
+
+		if (useAccent && !accentColor)
+			accentColor = AccentSettings();
 
 		float tintAlpha = GLASS_ALPHA_DARK;
 		float specularAlpha = GLASS_SPECULAR_DARK;
@@ -258,6 +274,7 @@ class ELIFE_PhoneStyle
 
 		float blurIntensity = GLASS_BLUR_DARK;
 		float hairlineAlpha = GLASS_HAIRLINE_ALPHA_DARK;
+		float glowAlpha = 0;
 		if (useLight)
 		{
 			tintAlpha = GLASS_ALPHA_LIGHT;
@@ -266,18 +283,32 @@ class ELIFE_PhoneStyle
 			blurIntensity = GLASS_BLUR_LIGHT;
 			hairlineAlpha = GLASS_HAIRLINE_ALPHA_LIGHT;
 		}
+		else if (useAccent)
+		{
+			tintAlpha = GLASS_ALPHA_ACCENT;
+			specularAlpha = GLASS_SPECULAR_ACCENT;
+			scrimAlpha = GLASS_SCRIM_ACCENT;
+			blurIntensity = GLASS_BLUR_ACCENT;
+			hairlineAlpha = GLASS_HAIRLINE_ALPHA_ACCENT;
+			glowAlpha = GLASS_GLOW_ALPHA_ACCENT;
+		}
 
 		BlurWidget blur = BlurWidget.Cast(bar.FindAnyWidget("GlassBlur"));
 		Widget scrim = bar.FindAnyWidget("GlassScrim");
 		Widget tint = bar.FindAnyWidget("GlassTint");
 		Widget specular = bar.FindAnyWidget("GlassSpecular");
 		Widget hairline = bar.FindAnyWidget("GlassHairline");
+		Widget glow = bar.FindAnyWidget("GlassGlow");
 
 		if (!GLASS_ENABLED)
 		{
 			//! Same perceived lightness, one layer, no edges. On a scrimmed surface the scrim is the
 			//! layer that survives, because it is the one already clipped to the shape.
-			Color solid = Mix(Surface(), GlassTint(), tintAlpha);
+			Color tintTowards = GlassTint();
+			if (useAccent)
+				tintTowards = accentColor;
+
+			Color solid = Mix(Surface(), tintTowards, tintAlpha);
 
 			if (scrim)
 			{
@@ -296,6 +327,9 @@ class ELIFE_PhoneStyle
 
 			if (hairline)
 				hairline.SetVisible(false);
+
+			if (glow)
+				glow.SetVisible(false);
 
 			//! The flat path is for the world render target, where a per-surface blur is exactly the
 			//! cost it exists to avoid.
@@ -316,9 +350,12 @@ class ELIFE_PhoneStyle
 
 		if (scrim)
 		{
+			//! Scrim is the base fill colour, and where each variant's hue actually comes from.
 			Color scrimBase = InkDeep();
 			if (useLight)
 				scrimBase = LightBase();
+			else if (useAccent)
+				scrimBase = accentColor;
 
 			scrim.SetColor(WithAlpha(scrimBase, scrimAlpha));
 			scrim.SetOpacity(1);
@@ -326,20 +363,43 @@ class ELIFE_PhoneStyle
 
 		if (tint)
 		{
+			//! Tint stays the same neutral near-white material for every variant, accent glass included.
 			tint.SetVisible(true);
 			tint.SetColor(WithAlpha(GlassTint(), tintAlpha));
 			tint.SetOpacity(1);
 		}
 
+		if (glow)
+		{
+			//! GlassGlow paints above the icon/glyph, not below it - only accent glass lights it.
+			if (useAccent)
+			{
+				glow.SetVisible(true);
+				glow.SetColor(WithAlpha(accentColor, glowAlpha));
+				glow.SetOpacity(1);
+			}
+			else
+			{
+				glow.SetVisible(false);
+			}
+		}
+
 		if (specular)
 		{
 			Color specularBase = GlassSpecularDark();
-			if (useLight)
+			if (useLight || useAccent)
 				specularBase = GlassSpecular();
 
 			specular.SetVisible(true);
 			specular.SetColor(WithAlpha(specularBase, specularAlpha));
 			specular.SetOpacity(1);
+
+			SizeLayoutWidget specularSize = SizeLayoutWidget.Cast(bar.FindAnyWidget("GlassSpecularSize"));
+			if (specularSize)
+			{
+				specularSize.EnableHeightOverride(true);
+				specularSize.SetHeightOverride(GLASS_SPECULAR_HEIGHT);
+			}
 		}
 
 		if (hairline)
@@ -365,6 +425,7 @@ class ELIFE_PhoneStyle
 		SetOpacityOf(bar, "GlassTint", presence);
 		SetOpacityOf(bar, "GlassSpecular", presence);
 		SetOpacityOf(bar, "GlassHairline", presence);
+		SetOpacityOf(bar, "GlassGlow", presence);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -406,6 +467,29 @@ class ELIFE_PhoneStyle
 
 		Widget widget = parent.FindAnyWidget(name);
 		if (widget)
+			widget.SetColor(color);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sets size, weight, and colour together on a shared TextWidget instead of leaving them as an unstated layout default.
+	static void SetTypeOf(Widget parent, string name, int size, bool bold, Color color = null)
+	{
+		if (!parent)
+			return;
+
+		TextWidget widget = TextWidget.Cast(parent.FindAnyWidget(name));
+		if (!widget)
+			return;
+
+		widget.SetExactFontSize(size);
+		widget.SetBold(bold);
+
+		if (bold)
+			widget.SetFont(FONT_BOLD);
+		else
+			widget.SetFont(FONT_REGULAR);
+
+		if (color)
 			widget.SetColor(color);
 	}
 }

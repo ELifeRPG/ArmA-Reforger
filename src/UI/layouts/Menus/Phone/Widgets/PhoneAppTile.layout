@@ -18,33 +18,72 @@ VerticalLayoutWidgetClass {
       VerticalAlign 3
      }
      {
-      SmartPanelWidgetClass "{E67D09F092FD5951}" {
-       Name "TileFill"
+      BlurWidgetClass "{99FD2AFFAA42703A}" {
+       Name "GlassBlur"
        Slot OverlayWidgetSlot "{631EA2A377D854CA}" {
         HorizontalAlign 3
         VerticalAlign 3
        }
-       Color 0.0159 0.0194 0.0319 1
+       Color 1 1 1 1
+       Intensity 0.7
+      }
+      SmartPanelWidgetClass "{E67D09F092FD5951}" {
+       Name "GlassScrim"
+       Slot OverlayWidgetSlot "{631EA2A377D854CB}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.004 0.0048 0.0075 0.55
+       style rounded_6px
+       "no focus" 1
+      }
+      SmartPanelWidgetClass "{E67D09F092FD5952}" {
+       Name "GlassTint"
+       Slot OverlayWidgetSlot "{631EA2A377D854CC}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.5837 0.6453 0.8073 0.14
        style rounded_6px
        "no focus" 1
       }
       SizeLayoutWidgetClass "{3990DD51CC34E349}" {
-       Name "TileSheenSize"
+       Name "GlassSpecularSize"
        Slot OverlayWidgetSlot "{F8ABF4A356B0F17A}" {
         HorizontalAlign 3
         VerticalAlign 0
-        Padding 2 1 2 0
+        Padding 4 1 4 0
        }
        AllowHeightOverride 1
        HeightOverride 1
        {
         ImageWidgetClass "{99FD2AFFAA42702F}" {
-         Name "TileSheen"
+         Name "GlassSpecular"
          Slot AlignableSlot "{CC51F3C992F56639}" {
           HorizontalAlign 3
           VerticalAlign 3
          }
-         Color 0.8626 0.8964 0.964 0.16
+         Color 0.8626 0.8964 0.964 0.18
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{3990DD51CC34E34A}" {
+       Name "GlassHairlineSize"
+       Slot OverlayWidgetSlot "{F8ABF4A356B0F17B}" {
+        HorizontalAlign 3
+        VerticalAlign 2
+        Padding 4 0 4 0
+       }
+       AllowHeightOverride 1
+       HeightOverride 1
+       {
+        ImageWidgetClass "{99FD2AFFAA42702E}" {
+         Name "GlassHairline"
+         Slot AlignableSlot "{CC51F3C992F5663A}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.0015 0.0021 0.0033 0.26
         }
        }
       }
@@ -74,6 +113,16 @@ VerticalLayoutWidgetClass {
        FontProperties FontProperties "{A15C49577223E930}" {
         Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
        }
+      }
+      SmartPanelWidgetClass "{E67D09F092FD5953}" {
+       Name "GlassGlow"
+       Slot OverlayWidgetSlot "{631EA2A377D854CD}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.5837 0.6453 0.8073 0
+       style rounded_6px
+       "no focus" 1
       }
       ButtonWidgetClass "{585646EA2F895440}" {
        Name "TileButton"

@@ -131,9 +131,9 @@ SizeLayoutWidgetClass {
             Padding 0 0 8 0
            }
            AllowWidthOverride 1
-           WidthOverride 24
+           WidthOverride 28
            AllowHeightOverride 1
-           HeightOverride 24
+           HeightOverride 28
            {
             OverlayWidgetClass "{13893D549BADA9D0}" {
              Name "ContactAvatar"
@@ -160,7 +160,7 @@ SizeLayoutWidgetClass {
                 VerticalAlign 1
                }
                Color 1 1 1 1
-               Size 24 24
+               Size 28 28
               }
               TextWidgetClass "{532D6577100CFF6B}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
                Name "ContactAvatarGlyph"
@@ -170,8 +170,8 @@ SizeLayoutWidgetClass {
                }
                Color 0.8378 0.8626 0.9222 1
                Text ""
-               "Font Size" 11
-               "Min Font Size" 11
+               "Font Size" 12
+               "Min Font Size" 12
                "Horizontal Alignment" Center
                FontProperties FontProperties "{ECEB887C79DB4BFF}" {
                 Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"

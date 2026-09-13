@@ -1,7 +1,7 @@
 SizeLayoutWidgetClass {
  Name "ThreadRowSize"
  AllowHeightOverride 1
- HeightOverride 36
+ HeightOverride 42
  {
   OverlayWidgetClass "{6C4E625757CCA8E0}" {
    Name "ThreadRow"
@@ -131,9 +131,9 @@ SizeLayoutWidgetClass {
             Padding 0 0 8 0
            }
            AllowWidthOverride 1
-           WidthOverride 24
+           WidthOverride 28
            AllowHeightOverride 1
-           HeightOverride 24
+           HeightOverride 28
            {
             OverlayWidgetClass "{4386D8110962F653}" {
              Name "ThreadAvatar"
@@ -160,7 +160,7 @@ SizeLayoutWidgetClass {
                 VerticalAlign 1
                }
                Color 1 1 1 1
-               Size 24 24
+               Size 28 28
               }
               TextWidgetClass "{C3C7D60B06AC1293}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
                Name "ThreadAvatarGlyph"
@@ -170,8 +170,8 @@ SizeLayoutWidgetClass {
                }
                Color 0.8378 0.8626 0.9222 1
                Text ""
-               "Font Size" 11
-               "Min Font Size" 11
+               "Font Size" 12
+               "Min Font Size" 12
                "Horizontal Alignment" Center
                FontProperties FontProperties "{527BE6DB35B1CDBD}" {
                 Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -234,7 +234,7 @@ SizeLayoutWidgetClass {
              Name "ThreadUnreadSize"
              Slot LayoutSlot "{CB9E28201A19A05D}" {
               HorizontalAlign 2
-              Padding 0 3 0 0
+              Padding 0 2 0 0
              }
              "Is Visible" 0
              AllowWidthOverride 1

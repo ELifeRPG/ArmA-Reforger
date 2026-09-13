@@ -1,7 +1,7 @@
 SizeLayoutWidgetClass {
  Name "HomeCardSize"
  AllowHeightOverride 1
- HeightOverride 58
+ HeightOverride 52
  {
   OverlayWidgetClass "{C486B68C202485D4}" {
    Name "HomeCard"
@@ -130,9 +130,9 @@ SizeLayoutWidgetClass {
             Padding 0 0 12 0
            }
            AllowWidthOverride 1
-           WidthOverride 34
+           WidthOverride 28
            AllowHeightOverride 1
-           HeightOverride 34
+           HeightOverride 28
            {
             OverlayWidgetClass "{F9EBA1B4CD1534A7}" {
              Name "CardBadge"
@@ -141,15 +141,74 @@ SizeLayoutWidgetClass {
               VerticalAlign 3
              }
              {
-              SmartPanelWidgetClass "{44E9BBCE510F72C4}" {
-               Name "CardBadgeFill"
+              BlurWidgetClass "{44E9BBCE510F72D0}" {
+               Name "GlassBlur"
                Slot OverlayWidgetSlot "{A11BAFE511A5CA0D}" {
                 HorizontalAlign 3
                 VerticalAlign 3
                }
-               Color 0.0159 0.0194 0.0319 1
+               Color 1 1 1 1
+               Intensity 0.7
+              }
+              SmartPanelWidgetClass "{44E9BBCE510F72C4}" {
+               Name "GlassScrim"
+               Slot OverlayWidgetSlot "{A11BAFE511A5CA0E}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0.004 0.0048 0.0075 0.55
                style rounded_6px
                "no focus" 1
+              }
+              SmartPanelWidgetClass "{44E9BBCE510F72D1}" {
+               Name "GlassTint"
+               Slot OverlayWidgetSlot "{A11BAFE511A5CA0F}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0.5837 0.6453 0.8073 0.14
+               style rounded_6px
+               "no focus" 1
+              }
+              SizeLayoutWidgetClass "{44E9BBCE510F72D2}" {
+               Name "GlassSpecularSize"
+               Slot OverlayWidgetSlot "{A11BAFE511A5CA10}" {
+                HorizontalAlign 3
+                VerticalAlign 0
+                Padding 2 1 2 0
+               }
+               AllowHeightOverride 1
+               HeightOverride 1
+               {
+                ImageWidgetClass "{44E9BBCE510F72D3}" {
+                 Name "GlassSpecular"
+                 Slot AlignableSlot "{A11BAFE511A5CA11}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 0.8626 0.8964 0.964 0.18
+                }
+               }
+              }
+              SizeLayoutWidgetClass "{44E9BBCE510F72D4}" {
+               Name "GlassHairlineSize"
+               Slot OverlayWidgetSlot "{A11BAFE511A5CA12}" {
+                HorizontalAlign 3
+                VerticalAlign 2
+                Padding 2 0 2 0
+               }
+               AllowHeightOverride 1
+               HeightOverride 1
+               {
+                ImageWidgetClass "{44E9BBCE510F72D5}" {
+                 Name "GlassHairline"
+                 Slot AlignableSlot "{A11BAFE511A5CA13}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 0.0015 0.0021 0.0033 0.26
+                }
+               }
               }
               TextWidgetClass "{95A85318048D0CEC}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
                Name "CardMark"
@@ -160,8 +219,8 @@ SizeLayoutWidgetClass {
                "Is Visible" 0
                Color 0.8378 0.8626 0.9222 1
                Text ""
-               "Font Size" 24
-               "Min Font Size" 24
+               "Font Size" 20
+               "Min Font Size" 20
                "Horizontal Alignment" Center
                FontProperties FontProperties "{E0866C39E335ECE7}" {
                 Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -174,9 +233,19 @@ SizeLayoutWidgetClass {
                 VerticalAlign 1
                }
                AllowWidthOverride 1
-               WidthOverride 26
+               WidthOverride 22
                AllowHeightOverride 1
-               HeightOverride 26
+               HeightOverride 22
+              }
+              SmartPanelWidgetClass "{44E9BBCE510F72D6}" {
+               Name "GlassGlow"
+               Slot OverlayWidgetSlot "{A11BAFE511A5CA14}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0.5837 0.6453 0.8073 0
+               style rounded_6px
+               "no focus" 1
               }
              }
             }
@@ -194,7 +263,7 @@ SizeLayoutWidgetClass {
              Slot LayoutSlot "{78267503EB04F097}" {
               Padding 0 0 0 2
              }
-             Color 0.1715 0.1942 0.2664 1
+             Color 0.8378 0.8626 0.9222 1
              Text ""
              "Font Size" 9
              "Min Font Size" 9
@@ -204,11 +273,11 @@ SizeLayoutWidgetClass {
              Name "CardValue"
              Color 0.8378 0.8626 0.9222 1
              Text ""
-             "Font Size" 20
-             "Min Font Size" 16
+             "Font Size" 11
+             "Min Font Size" 11
              "Horizontal Alignment" Left
              FontProperties FontProperties "{33AA67F766C68D38}" {
-              Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+              Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
              }
             }
            }
@@ -221,11 +290,11 @@ SizeLayoutWidgetClass {
            }
            Color 0.366 0.4024 0.5025 1
            Text ""
-           "Font Size" 10
-           "Min Font Size" 10
+           "Font Size" 9
+           "Min Font Size" 9
            "Horizontal Alignment" 2
            FontProperties FontProperties "{3EF90B7377633959}" {
-            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
            }
           }
          }

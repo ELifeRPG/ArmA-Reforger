@@ -1169,11 +1169,12 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 					LayoutSlot.SetHorizontalAlign(bubbleSize, LayoutHorizontalAlign.Right);
 			}
 
-			Color bubbleFill = ELIFE_PhoneStyle.SurfaceRaised();
+			//! Bubbles are glass, not a flat fill: inbound dark, outbound accent glass in this app's colour.
+			Widget bubble = row.FindAnyWidget("Bubble");
 			if (message.isOutbound)
-				bubbleFill = ELIFE_PhoneStyle.AccentDeepFor(EPhoneScreenState.MESSAGES);
-
-			ELIFE_PhoneStyle.SetColorOf(row, "BubbleFill", bubbleFill);
+				ELIFE_PhoneStyle.ApplyGlass(bubble, false, false, false, true, ELIFE_PhoneStyle.AccentDeepFor(EPhoneScreenState.MESSAGES));
+			else
+				ELIFE_PhoneStyle.ApplyGlass(bubble, true);
 
 			TextWidget body = TextWidget.Cast(row.FindAnyWidget("MessageBody"));
 			if (body)
