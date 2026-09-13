@@ -87,16 +87,18 @@ Hard limits:
   lightness.
 
 Recipe, not a fourth look: baked blurred wallpaper as refraction (or tint-only if
-alignment is impossible), a near-white tint with no hue of its own (`GlassTint()`),
-a top specular and a 1px bottom hairline. Specular still stretches the pane;
-`ApplyGlass` sets its height to `GLASS_SPECULAR_HEIGHT` (2) on every look — dark,
-light, and accent. A 1px bar reads as a stroke. Do not invent a min-width or
-centre it. Any new glass widget must carry the layer names `ApplyGlass` looks up
-— `GlassBlur`, `GlassScrim`, `GlassTint`, `GlassSpecular`, `GlassHairline` —
-clipped to `rounded_6px`. Accent glass is the same recipe with one substitution:
-the scrim mixes toward the app's own accent colour instead of a fixed neutral
-(`InkDeep()` for dark, `LightBase()` for light). The tint is never recoloured —
-it stays the one shared near-white material every look uses, accent included.
+alignment is impossible), a near-white tint with no hue of its own, a top specular
+and a 1px bottom hairline. Tint and specular each come in a dark and a light step;
+accent glass borrows the dark tint but the light specular, so both are always named
+per step (`GlassTintDark()`, `GlassSpecularLight()`) rather than a default plus an
+override. Specular still stretches the pane; `ApplyGlass` sets its height to
+`GLASS_SPECULAR_HEIGHT` (2) on every look — dark, light, and accent. A 1px bar
+reads as a stroke. Do not invent a min-width or centre it. Any new glass widget
+must carry the layer names `ApplyGlass` looks up — `GlassBlur`, `GlassScrim`,
+`GlassTint`, `GlassSpecular`, `GlassHairline` — clipped to `rounded_6px`. Accent
+glass is the same recipe with one substitution: the scrim mixes toward the app's
+own accent colour instead of a fixed neutral (`GlassBaseDark()` for dark,
+`GlassBaseLight()` for light). The tint is never recoloured with the app hue.
 
 A widget may additionally carry `GlassGlow`: a layer stacked above the content
 (the icon or glyph) instead of below it, painted with the accent colour at its
@@ -202,6 +204,13 @@ the word sits on the bar. A sixth app claims the slot the same way.
 Button children use `ButtonWidgetSlot`. The fill is a sibling in a wrapping frame,
 not a child of the button.
 
+A `ButtonWidgetClass` is never bare. Without `style blank` it draws the engine's
+default button texture — an opaque white quad over whatever it covers, with no
+error. Every clickable surface here carries the same three parts: `style blank`,
+an `SCR_ButtonTextComponent` holding the hover/pressed washes, and a
+`ButtonSurface` child on `ButtonWidgetSlot` with a transparent `Background`.
+Copy `CardButton` in `PhoneHomeCard.layout`; do not hand-roll a new one.
+
 ## Lists
 
 Any grouped index uses `CreateListGroup` / `CreateListRow` on `ELIFE_PhoneAppBase`.
@@ -280,8 +289,32 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
   caller in script (`ELIFE_PhoneStyle.SetTypeOf`), not baked into the widget.
   Card labels stay `TextPrimary`, not `Ink` or `TextSecondary`.
 - **Lock.** Time and date on sharp wallpaper. At most one glass layer. Notifications
-  are glass cards from the bottom, accent as a small mark only. PIN pad is real,
+  are glass cards from the bottom, each carrying its sender's person mark. PIN pad is real,
   overlay altitude. Must read on the world RT at a glance.
+- **Notifications.** Three surfaces share one card component and must never drift
+  apart. A notification is about a **person** (a mark, not an app icon or status
+  dot), both text lines are `TextPrimary` (light glass reads mid-dark, so
+  `TextSecondary` fails there per the accent table above), and the timestamp takes
+  the accent.
+
+  | Surface | Is | Rule |
+  |---|---|---|
+  | Lock list | Standing state | Every unread thread, rebuilt each lock render. |
+  | Banner | An event | Awake-screen arrivals only, capped stack, self-dismisses after `BANNER_DURATION_MS`. Fades **both ways** — in on the present duration, out on the shorter state one, since arriving announces something and leaving is housekeeping. A **door**: taps hand the phone to the source app on that item. |
+  | Hub | The backlog | Everything still standing, opened on demand as a dark-glass sheet over the current page — it takes the screen away rather than floating over it, unlike the light-glass cards it lists. |
+
+  A rising unread count is an arrival; a merely non-zero one is not — opening the
+  phone must never replay old unread as fresh news, and a thread already open on
+  screen must never banner or queue itself, since it is being read as it lands.
+
+  The **status-bar indicator** counts messages (three from one person is three
+  things waiting); the **hub row** counts per-thread, since its body only shows the
+  newest. Never confuse the two. Both surfaces are hidden entirely on lock and off —
+  a count is still information about who is contacting you, and the hub is bodies
+  one tap from a locked phone. **Clear** is a watermark per thread, not a read flag
+  and never a backend call — the next message pushes past it and the notification
+  returns, so clearing can never mean "ignore forever." Hub open state is
+  replicated so the world screen matches the menu.
 - **Settings.** Grouped rows, caption headers, right-aligned values, chevrons for
   pushes, toggles for booleans. Device ID, number, and PIN are real fields — values,
   not body copy.
@@ -319,11 +352,37 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
   fixed-width containers and right alignment. `RobotoCondensed` is the current
   face (`FONT_REGULAR` / `FONT_BOLD`) — do not add a second display font without
   a decision.
-- Depth: wallpaper → content → glass chrome → sheets → alerts. Named ZOrder
-  constants only.
+- Depth: six named tiers in `ELIFE_PhoneStyle`, set in
+  `ELIFE_PhoneScreenShell.ApplyDepth()`. Named constants only — never a literal
+  ZOrder, and never a new tier without a reason it can't sit in an existing one.
+
+  | Tier | Value | What sits here |
+  |---|---|---|
+  | `ZORDER_GROUND` | 0 | `ScreenGround`, `Wallpaper` |
+  | `ZORDER_CONTENT` | 10 | `ScreenStage` — lock, home, and every app page |
+  | `ZORDER_CHROME` | 20 | Nav bar — chrome the open **page** owns |
+  | `ZORDER_SHEET` | 30 | `NotificationHub` — and any future modal over one page (picker, confirm) |
+  | `ZORDER_SYSTEM` | 40 | Status bar, home pill — chrome the **phone** owns |
+  | `ZORDER_BANNER` | 50 | `NotificationBanner` — arrivals, over everything but an alert |
+  | `ZORDER_ALERT` | 60 | `ScreenOff`, `OfflineScreen` — phone-wide takeovers only |
+
+  Three rules decide the order. **Page chrome and OS chrome are different tiers**: a
+  sheet covers the nav bar, because Back and the named action operate on the page the
+  sheet is hiding, but it never covers the status bar or the home pill — that would be
+  a layer with no clock and no way out. **A banner outranks all of it**, because an
+  arrival interrupts whatever you are doing. **Alerts outrank the banner**, because a
+  dark screen or a dead Bridge is a statement about the whole phone, and drawing news
+  over either would misreport what the phone is doing.
+
+  Anything that covers the entire screen and blocks interaction is an alert; anything
+  that covers one page is a sheet. The home pill unwinds them in order — a sheet
+  first, then the app — so it always means "one layer back", never "jump to home".
 - Motion: ease-out, no overshoot. ~250–350ms present, 150–200ms state, instant
   focus. One entrance per screen. Pressed glass lightens one step; it does not
-  scale.
+  scale. **Anything given an entrance owes an exit.** A surface that eases in and
+  then disappears on a frame reads as a glitch, and is worse than never animating
+  it at all. Exits take the shorter state duration: arriving is an announcement,
+  leaving is housekeeping.
 - States: default / hovered / pressed / focused / disabled, plus loading and empty.
   Spinners: delay 150ms, stay at least 300ms. Skeleton rows when height is known.
 

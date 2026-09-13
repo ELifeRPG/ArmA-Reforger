@@ -16,6 +16,41 @@ class ELIFE_ThreadDto : JsonApiStruct
 		RegV("lastMessageAt");
 		RegV("messages");
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Delivery is at-least-once, so a poll can re-deliver a message this thread already holds.
+	bool HasMessage(string id)
+	{
+		foreach (ELIFE_MessageDto message : messages)
+		{
+			if (message && message.messageId == id)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Oldest first, the order a conversation reads in. sentAt is UTC ISO-8601, so string order is
+	//! chronological order. Insertion sort - a thread holds far too few messages for anything else to
+	//! pay for itself, and a merged thread is almost always already sorted.
+	void SortMessages()
+	{
+		int count = messages.Count();
+		for (int i = 1; i < count; i++)
+		{
+			ELIFE_MessageDto current = messages.Get(i);
+			int j = i - 1;
+
+			while (j >= 0 && messages.Get(j).sentAt > current.sentAt)
+			{
+				messages.Set(j + 1, messages.Get(j));
+				j--;
+			}
+
+			messages.Set(j + 1, current);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -28,6 +63,25 @@ class ELIFE_ThreadDisplayDto : ELIFE_ThreadDto
 	void ELIFE_ThreadDisplayDto()
 	{
 		RegV("displayName");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Deep copy - see ELIFE_MessageDto.Copy() for why the merge can't share references.
+	ELIFE_ThreadDisplayDto Copy()
+	{
+		ELIFE_ThreadDisplayDto copy = new ELIFE_ThreadDisplayDto();
+		copy.threadId = threadId;
+		copy.unreadCount = unreadCount;
+		copy.lastMessageAt = lastMessageAt;
+		copy.displayName = displayName;
+
+		foreach (string participant : participants)
+			copy.participants.Insert(participant);
+
+		foreach (ELIFE_MessageDto message : messages)
+			copy.messages.Insert(message.Copy());
+
+		return copy;
 	}
 
 	//------------------------------------------------------------------------------------------------

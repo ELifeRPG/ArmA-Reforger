@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------------
-//! Ease-out opacity/offset tween, ticked by hand on the call queue rather than via AnimateWidget - the world screen's widget tree lives outside any composited GUI layer (see ELIFE_PhoneScreenRenderComponent), so both canvases need the same manual driver to stay in step. Currently used only for the app-open entrance.
+//! Ease-out opacity/offset tween, ticked by hand on the call queue rather than via AnimateWidget - the world screen's widget tree lives outside any composited GUI layer (see ELIFE_PhoneScreenRenderComponent), so both canvases need the same manual driver to stay in step.
 class ELIFE_PhoneTween
 {
 	protected Widget m_wTarget;

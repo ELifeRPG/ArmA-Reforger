@@ -173,12 +173,35 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 	ref ScriptInvoker m_OnConnectivityChanged = new ScriptInvoker();
 
+	//! Whether the notification hub is open over the screen. Replicated for the same reason the screen
+	//! state is: the world render target has to be showing what the owner is actually looking at.
+	[RplProp(onRplName: "OnHubOpenUpdated")]
+	protected bool m_bHubOpen;
+
+	ref ScriptInvoker m_OnHubOpenChanged = new ScriptInvoker();
+
+	//! threadId -> unreadCount at dismissal. A later message pushes past that watermark and the notification returns - never replicated, since this is a per-reader gesture that must not touch read state.
+	protected ref map<string, int> m_mDismissedNotifications = new map<string, int>();
+
 	//! Held rather than local so OnContactSaved() can still read GetHttpCode() off it once the shared callback base has collapsed the failure to ERROR.
 	protected ref ELIFE_SaveContactCallback m_SaveContactCallback;
 	protected ref ELIFE_SendMessageCallback m_SendMessageCallback;
 	protected ref ELIFE_MarkThreadReadCallback m_MarkThreadReadCallback;
 
 	protected const int DATA_CACHE_TTL_MS = 15000;
+
+	//! Server-only. Cursor for the messages poll - the polledAt of the last updates response. Empty
+	//! means "never polled", which asks for every thread whole instead of a delta.
+	protected string m_sMessagesCursor;
+
+	//! Server-only. True while the in-flight messages fetch is the background poll, not something the owner asked for - a poll failure must not flip their app into an error state.
+	protected bool m_bPollInFlight;
+
+	protected int m_iPollIntervalMs;
+
+	//! Cadence follows the screen being on - fast while awake since polling is the only delivery path (no hub), slower while holstered since unread still has to be right when it comes back out.
+	protected const int POLL_INTERVAL_ACTIVE_MS = 2000;
+	protected const int POLL_INTERVAL_IDLE_MS = 60000;
 
 	[RplProp(onRplName: "OnScreenStateUpdated")]
 	protected EPhoneScreenState m_eScreenState;
@@ -202,7 +225,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected const string SOUND_EVENT_POWER_ON = "SOUND_PHONE_POWER_ON";
 	protected const string SOUND_EVENT_POWER_OFF = "SOUND_PHONE_POWER_OFF";
 
-	//! Reserved for a future notification feature (see Phone_UI.acp) - not triggered anywhere yet.
+	//! Played on the owner's machine when the messages poll raises their unread total - see ApplyData().
 	protected const string SOUND_EVENT_NOTIFICATION = "SOUND_PHONE_NOTIFICATION";
 
 	//! Outer LOD tier (see ELIFE_PhoneScreenRenderComponent.SYNC_RANGE_METERS); starts true so a
@@ -214,6 +237,15 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	{
 		super.OnPostInit(owner);
 		SetEventMask(owner, EntityEvent.INIT);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The poll is a repeating callqueue entry, so it has to be dropped with the phone that owns it.
+	override void OnDelete(IEntity owner)
+	{
+		StopPoll();
+
+		super.OnDelete(owner);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -272,6 +304,67 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected void OnConnectivityUpdated()
 	{
 		m_OnConnectivityChanged.Invoke();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Notification hub
+	//------------------------------------------------------------------------------------------------
+
+	bool IsHubOpen()
+	{
+		return m_bHubOpen;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner-driven, authority-applied - same shape as SetScreenState(), so the hub opens on the world
+	//! screen at the same moment it opens in the menu.
+	void SetHubOpen(bool open)
+	{
+		if (m_bHubOpen == open)
+			return;
+
+		Rpc(RpcAsk_SetHubOpen, open);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_SetHubOpen(bool open)
+	{
+		if (m_bHubOpen == open)
+			return;
+
+		m_bHubOpen = open;
+
+		//! onRplName doesn't fire on the authority itself - see OnPhoneIdUpdated().
+		OnHubOpenUpdated();
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnHubOpenUpdated()
+	{
+		m_OnHubOpenChanged.Invoke(m_bHubOpen);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while this thread's notification has been cleared and nothing new has arrived since.
+	bool IsNotificationDismissed(string threadId, int unreadCount)
+	{
+		int dismissedAt;
+		if (!m_mDismissedNotifications.Find(threadId, dismissedAt))
+			return false;
+
+		return unreadCount <= dismissedAt;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Records the watermark rather than a flag, so the next message on this thread notifies again.
+	void DismissNotification(string threadId, int unreadCount)
+	{
+		if (threadId == "")
+			return;
+
+		m_mDismissedNotifications.Set(threadId, unreadCount);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -371,7 +464,57 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		NoteConnectivity(status, httpCode);
 
 		if (status != ELIFE_EApiStatusCode.SUCCESS)
+		{
 			Print("ELIFE_PhoneGadgetComponent | power-on failed", LogLevel.ERROR);
+			return;
+		}
+
+		//! Messages only become reachable once the phone is on, so this is the earliest the poll can
+		//! run. One immediately, so the lock and home screens are right before the first interval
+		//! elapses rather than a minute later.
+		ReschedulePoll();
+		PollMessages();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Messages poll (Step 8) - the mod's delivery path, since the SignalR hub isn't reachable here
+	//------------------------------------------------------------------------------------------------
+
+	//! Server-only, and re-run whenever the screen state lands, since the cadence follows it.
+	protected void ReschedulePoll()
+	{
+		if (!Replication.IsServer() || m_sPhoneId == "")
+			return;
+
+		int interval = POLL_INTERVAL_IDLE_MS;
+		if (m_eScreenState != EPhoneScreenState.OFF)
+			interval = POLL_INTERVAL_ACTIVE_MS;
+
+		if (interval == m_iPollIntervalMs)
+			return;
+
+		m_iPollIntervalMs = interval;
+		GetGame().GetCallqueue().Remove(PollMessages);
+		GetGame().GetCallqueue().CallLater(PollMessages, interval, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void StopPoll()
+	{
+		m_iPollIntervalMs = 0;
+		GetGame().GetCallqueue().Remove(PollMessages);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PollMessages()
+	{
+		//! A fetch is already on its way; marking this one as the poll would mislabel that one's
+		//! failure as a background failure and swallow the owner's error state.
+		if (m_sPhoneId == "" || m_mPendingFetches.Contains(DATA_MESSAGES))
+			return;
+
+		m_bPollInFlight = true;
+		FetchData(DATA_MESSAGES);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -424,6 +567,11 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			PushDataError(key);
 			return;
 		}
+
+		//! An owner request adopts an in-flight poll as its own, so that fetch's failure is reported
+		//! to them rather than stayed quiet about.
+		if (key == DATA_MESSAGES)
+			m_bPollInFlight = false;
 
 		ELIFE_PhoneDataEntry entry;
 		if (m_mServerData.Find(key, entry) && System.GetTickCount() - entry.m_iFetchTime < DATA_CACHE_TTL_MS)
@@ -660,8 +808,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 		}
 
-		//! The unread badge comes from the messages payload, so it needs a re-fetch to clear.
-		FetchData(DATA_MESSAGES);
+		//! The unread badge comes from the messages payload, so it needs a re-fetch to clear - and a
+		//! full one, since a cursor poll only reports arrivals and would never mention this thread again.
+		FetchData(DATA_MESSAGES, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -684,9 +833,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Only place that knows a key's wire shape - route and response parsing. Everything downstream
-	//! (caching, pushing, rendering) is key-agnostic.
-	protected void FetchData(string key)
+	//! Only place that knows a key's wire shape - route and response parsing. Everything downstream (caching, pushing, rendering) is key-agnostic. full forces a cursor-less messages fetch, for a change the poll wouldn't observe (e.g. marking a thread read moves an unread count the "arrived since" cursor would never mention again).
+	protected void FetchData(string key, bool full = false)
 	{
 		//! A second fetch would just overwrite the pending callback and waste a round trip.
 		if (m_mPendingFetches.Contains(key))
@@ -709,9 +857,14 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		}
 		else if (key == DATA_MESSAGES)
 		{
-			//! No "since" cursor, so threads come back whole with bodies - the plain threads route
-			//! omits them and would need a second call per opened thread.
-			route = "messages/updates";
+			//! Cursor-less, threads come back whole with bodies - the plain threads route omits them
+			//! and would need a second call per opened thread. With a cursor the response is only
+			//! what arrived since it, which OnDataFetched() merges into the cache.
+			if (full || m_sMessagesCursor == "")
+				route = "messages/updates";
+			else
+				route = string.Format("messages/updates?since=%1", EncodeCursor(m_sMessagesCursor));
+
 			callback = new ELIFE_MessageUpdatesFetchCallback();
 		}
 		else
@@ -734,6 +887,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		m_mPendingFetches.Find(key, callback);
 		m_mPendingFetches.Remove(key);
 
+		bool wasPoll = key == DATA_MESSAGES && m_bPollInFlight;
+		if (key == DATA_MESSAGES)
+			m_bPollInFlight = false;
+
 		int httpCode = 0;
 		if (callback)
 			httpCode = callback.GetHttpCode();
@@ -741,6 +898,15 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		if (status != ELIFE_EApiStatusCode.SUCCESS || !data)
 		{
+			//! A background poll nobody asked for only warns - NoteConnectivity() above already drove
+			//! the phone-wide Offline screen, and an error state here would blank an app the owner
+			//! never asked to refresh.
+			if (wasPoll)
+			{
+				Print("ELIFE_PhoneGadgetComponent | messages poll failed", LogLevel.WARNING);
+				return;
+			}
+
 			Print(string.Format("ELIFE_PhoneGadgetComponent | fetch failed for '%1'", key), LogLevel.ERROR);
 			PushDataError(key);
 			return;
@@ -752,11 +918,18 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (jsonDto)
 			entry.m_sReal = jsonDto.GetRawJson();
 
-		entry.m_sRedacted = RedactPayload(key, data);
+		bool changed = true;
+		if (key == DATA_MESSAGES)
+			entry.m_sReal = MergeMessages(ELIFE_MessageUpdatesDto.Cast(data), changed);
+
+		entry.m_sRedacted = RedactPayload(key, entry.m_sReal);
 		entry.m_iFetchTime = System.GetTickCount();
 		m_mServerData.Set(key, entry);
 
-		PushData(key);
+		//! A quiet poll has nothing to tell anyone. An owner-requested fetch always answers, though -
+		//! their app is sitting on LOADING until something lands.
+		if (changed || !wasPoll)
+			PushData(key);
 
 		//! A messages fetch that landed first used redacted numbers as titles - rebuild it now that names exist.
 		if (key == DATA_CONTACTS)
@@ -764,17 +937,72 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected string RedactPayload(string key, JsonApiStruct data)
+	//! Folds an updates response into the cached payload, advances the cursor, and returns the merged JSON. A cursor-less response carries every thread whole so merging it is equivalent to replacing it.
+	protected string MergeMessages(ELIFE_MessageUpdatesDto response, out bool changed)
 	{
+		changed = true;
+
+		if (!response)
+			return "";
+
+		m_sMessagesCursor = response.polledAt;
+
+		ELIFE_PhoneDataEntry cached;
+		if (!m_mServerData.Find(DATA_MESSAGES, cached) || cached.m_sReal == "")
+			return response.GetRawJson();
+
+		ELIFE_MessageUpdatesDto current = new ELIFE_MessageUpdatesDto();
+		current.ExpandFromRAW(cached.m_sReal);
+
+		ELIFE_MessageUpdatesDto merged = current.MergedWith(response, changed);
+
+		//! Built fresh by MergedWith(), so this one may be Pack()ed - see ELIFE_PhoneJsonDto.
+		merged.Pack();
+		return merged.AsString();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A DateTimeOffset cursor can serialize with a "+00:00" offset, and a bare "+" in a query string
+	//! decodes as a space on the other side.
+	protected string EncodeCursor(string cursor)
+	{
+		string encoded = "";
+
+		int length = cursor.Length();
+		for (int i = 0; i < length; i++)
+		{
+			string character = cursor.Substring(i, 1);
+			if (character == "+")
+				encoded += "%2B";
+			else
+				encoded += character;
+		}
+
+		return encoded;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Takes the cached JSON rather than the response struct: for messages those differ, since a poll
+	//! response is only a delta and the bystander copy has to mirror the whole merged payload.
+	protected string RedactPayload(string key, string realJson)
+	{
+		if (realJson == "")
+			return "";
+
 		JsonApiStruct redacted;
 
-		ELIFE_ContactListDto contacts = ELIFE_ContactListDto.Cast(data);
-		if (contacts)
+		if (key == DATA_CONTACTS)
+		{
+			ELIFE_ContactListDto contacts = new ELIFE_ContactListDto();
+			contacts.ExpandFromRAW(realJson);
 			redacted = contacts.Redact();
-
-		ELIFE_MessageUpdatesDto updates = ELIFE_MessageUpdatesDto.Cast(data);
-		if (updates)
+		}
+		else if (key == DATA_MESSAGES)
+		{
+			ELIFE_MessageUpdatesDto updates = new ELIFE_MessageUpdatesDto();
+			updates.ExpandFromRAW(realJson);
 			redacted = updates.Redact(OwnerContactNames());
+		}
 
 		if (!redacted)
 			return "";
@@ -811,9 +1039,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (!m_mServerData.Find(DATA_MESSAGES, entry) || entry.m_sReal == "")
 			return;
 
-		ELIFE_MessageUpdatesDto updates = new ELIFE_MessageUpdatesDto();
-		updates.ExpandFromRAW(entry.m_sReal);
-		entry.m_sRedacted = RedactPayload(DATA_MESSAGES, updates);
+		entry.m_sRedacted = RedactPayload(DATA_MESSAGES, entry.m_sReal);
 		PushData(DATA_MESSAGES);
 	}
 
@@ -883,8 +1109,41 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//------------------------------------------------------------------------------------------------
 	protected void ApplyData(string key, string json)
 	{
+		//! Decided before the swap - the comparison is against what this machine was already holding.
+		bool announce = key == DATA_MESSAGES && ShouldAnnounce(json);
+
 		m_mData.Set(key, json);
 		SetDataStatus(key, ELIFE_EPhoneDataStatus.READY);
+
+		if (announce && m_SoundComponent)
+			m_SoundComponent.SoundEvent(SOUND_EVENT_NOTIFICATION);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the owner's unread total goes up on this machine - counting unread rather than messages means a re-delivered message can't double-announce. The first payload never announces.
+	protected bool ShouldAnnounce(string incomingJson)
+	{
+		if (!IsLocalCharacterOwner())
+			return false;
+
+		string previous = GetData(DATA_MESSAGES);
+		if (previous == "" || incomingJson == "")
+			return false;
+
+		return TotalUnread(incomingJson) > TotalUnread(previous);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int TotalUnread(string json)
+	{
+		ELIFE_MessageUpdatesDto updates = new ELIFE_MessageUpdatesDto();
+		updates.ExpandFromRAW(json);
+
+		int total = 0;
+		foreach (ELIFE_ThreadDto threadDto : updates.threads)
+			total += threadDto.unreadCount;
+
+		return total;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1053,6 +1312,20 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//------------------------------------------------------------------------------------------------
 	protected void ApplyScreenState()
 	{
+		//! Ahead of the LOD gate below: the poll cadence follows the screen being on, which has
+		//! nothing to do with whether this machine is close enough to draw it. No-ops off the
+		//! authority and whenever the tier hasn't actually changed.
+		ReschedulePoll();
+
+		//! The hub is a layer over the screen, so it cannot outlive the screen being awake - and a
+		//! locked phone must not be holding message bodies one tap behind the lock.
+		if (Replication.IsServer() && m_bHubOpen && (m_eScreenState == EPhoneScreenState.OFF || m_eScreenState == EPhoneScreenState.LOCKED))
+		{
+			m_bHubOpen = false;
+			OnHubOpenUpdated();
+			Replication.BumpMe();
+		}
+
 		if (!m_bLocallySynced)
 			return;
 
@@ -1208,6 +1481,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 			if (m_ScreenRenderComponent)
 				m_ScreenRenderComponent.OnScreenStateChanged(EPhoneScreenState.OFF);
+
+			//! This path sets the state field directly rather than going through ApplyScreenState(),
+			//! so the poll would otherwise stay on the active cadence for a holstered phone.
+			ReschedulePoll();
 		}
 	}
 

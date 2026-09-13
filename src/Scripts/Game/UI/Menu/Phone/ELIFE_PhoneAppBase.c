@@ -604,8 +604,14 @@ class ELIFE_PhoneAppBase
 	//! A list row's identity mark: an accent-filled circle with the name's initials; fallbackName only takes the ink if the sprite fails to load.
 	protected void PaintAvatar(notnull Widget row, string discName, string fallbackName, string glyphName, string name)
 	{
-		Color fill = ELIFE_PhoneStyle.AccentDeepFor(GetScreenState());
+		PaintAvatarInto(row, discName, fallbackName, glyphName, name, ELIFE_PhoneStyle.AccentDeepFor(GetScreenState()));
+	}
 
+	//------------------------------------------------------------------------------------------------
+	//! Same mark, with the fill passed in rather than taken from the open app - for callers that draw a
+	//! person outside any app page (the shell's notification cards), where there's no GetScreenState().
+	static void PaintAvatarInto(notnull Widget row, string discName, string fallbackName, string glyphName, string name, Color fill)
+	{
 		ImageWidget disc = ImageWidget.Cast(row.FindAnyWidget(discName));
 		bool round = false;
 		if (disc)
@@ -692,7 +698,8 @@ class ELIFE_PhoneAppBase
 
 	//------------------------------------------------------------------------------------------------
 	//! Monogram for an avatar badge - first + last initial ("Jane Doe" -> "JD"), or one letter/digit for a single word.
-	protected string Initials(string name)
+	//! Static so the shell can draw a person mark too (notification cards) without owning an app page.
+	static string Initials(string name)
 	{
 		if (name.Length() == 0)
 			return "";

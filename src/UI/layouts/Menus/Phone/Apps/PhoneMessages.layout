@@ -211,6 +211,167 @@ OverlayWidgetClass {
           }
          }
         }
+        SizeLayoutWidgetClass "{78814E5CE4A1463E}" {
+         Name "ThreadAddContactSize"
+         Slot LayoutSlot "{4BE1BA38268084C6}" {
+          Padding 12 4 12 8
+         }
+         "Is Visible" 0
+         AllowHeightOverride 1
+         HeightOverride 62
+         {
+          HorizontalLayoutWidgetClass "{4B3B16A72E5F8CA1}" {
+           Name "ThreadAddContactRow"
+           Slot AlignableSlot "{35FFE78A0621F760}" {
+            HorizontalAlign 0
+            VerticalAlign 0
+           }
+           {
+            SizeLayoutWidgetClass "{2B348BB28BF7A206}" {
+             Name "ActionAddContactSize"
+             Slot LayoutSlot "{6A4A5B1340BD1B13}" {
+              HorizontalAlign 0
+             }
+             AllowWidthOverride 1
+             WidthOverride 60
+             {
+              ButtonWidgetClass "{10B79A59E5B41FE9}" {
+               Name "ButtonAddContact"
+               Slot AlignableSlot "{A34985FD734058E3}" {
+                HorizontalAlign 3
+                VerticalAlign 0
+               }
+               Color 1 1 1 1
+               components {
+                SCR_ButtonTextComponent "{D22F5DC920C267CD}" {
+                 m_BackgroundDefault 0.91 0.929 0.973 0
+                 m_BackgroundHovered 0.91 0.929 0.973 0.1
+                 m_BackgroundSelected 0.91 0.929 0.973 0.16
+                 m_BackgroundSelectedHovered 0.91 0.929 0.973 0.16
+                 m_BackgroundClicked 0.91 0.929 0.973 0.16
+                 m_sText ""
+                }
+               }
+               style blank
+               {
+                VerticalLayoutWidgetClass "{D3FA4CE33535CA12}" {
+                 Name "ButtonSurface"
+                 Slot ButtonWidgetSlot "{4492AB91DF04457F}" {
+                  HorizontalAlign 3
+                  VerticalAlign 0
+                 }
+                 {
+                  SizeLayoutWidgetClass "{1FF928E8823B40FD}" {
+                   Name "AddContactDiscSize"
+                   Slot LayoutSlot "{5DCD6BD2CEF16483}" {
+                    HorizontalAlign 1
+                   }
+                   AllowWidthOverride 1
+                   WidthOverride 40
+                   AllowHeightOverride 1
+                   HeightOverride 40
+                   {
+                    OverlayWidgetClass "{3B0CCDDDBC6BEFB5}" {
+                     Name "AddContactFrame"
+                     Slot AlignableSlot "{8302A335CA0B8085}" {
+                      HorizontalAlign 3
+                      VerticalAlign 3
+                     }
+                     {
+                      SmartPanelWidgetClass "{230D5451290F1D43}" {
+                       Name "AddContactFallback"
+                       Slot OverlayWidgetSlot "{73DD4081F5FA2A8E}" {
+                        HorizontalAlign 3
+                        VerticalAlign 3
+                       }
+                       "Is Visible" 0
+                       Color 1 1 1 1
+                       style rounded_6px
+                       "no focus" 1
+                      }
+                      ImageWidgetClass "{40177F8EBEC0DD8E}" {
+                       Name "AddContactDisc"
+                       Slot OverlayWidgetSlot "{F37DC8918659F0A6}" {
+                        HorizontalAlign 1
+                        VerticalAlign 1
+                       }
+                       Color 1 1 1 1
+                       Size 40 40
+                      }
+                      ImageWidgetClass "{75597391FE7C86F8}" {
+                       Name "Background"
+                       Slot OverlayWidgetSlot "{2E6CDF746D8B6DC5}" {
+                        HorizontalAlign 1
+                        VerticalAlign 1
+                       }
+                       Color 0 0 0 0
+                       Size 40 40
+                      }
+                      SizeLayoutWidgetClass "{D8FE2B45190F408F}" {
+                       Name "AddContactIconSize"
+                       Slot OverlayWidgetSlot "{71714A32F658C6F6}" {
+                        HorizontalAlign 1
+                        VerticalAlign 1
+                       }
+                       "Is Visible" 0
+                       AllowWidthOverride 1
+                       WidthOverride 16
+                       AllowHeightOverride 1
+                       HeightOverride 16
+                       {
+                        ImageWidgetClass "{6259006F95039D4D}" {
+                         Name "AddContactIcon"
+                         Slot AlignableSlot "{F468D29728BD896A}" {
+                          HorizontalAlign 1
+                          VerticalAlign 1
+                         }
+                         Color 0.925 0.937 0.965 1
+                         Size 16 16
+                        }
+                       }
+                      }
+                      TextWidgetClass "{17D8637C0A717858}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                       Name "AddContactGlyph"
+                       Slot OverlayWidgetSlot "{9A075BD9A2B75B8F}" {
+                        HorizontalAlign 1
+                        VerticalAlign 1
+                       }
+                       "Is Visible" 0
+                       Color 0.925 0.937 0.965 1
+                       Text "…"
+                       "Font Size" 16
+                       "Min Font Size" 16
+                       "Horizontal Alignment" Center
+                       FontProperties FontProperties "{CF8E6BA74355E53B}" {
+                        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                  TextWidgetClass "{309B3005A96B9B7F}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                   Name "AddContactLabel"
+                   Slot LayoutSlot "{E8B94DB26D198F64}" {
+                    HorizontalAlign 1
+                    Padding 0 3 0 0
+                   }
+                   Color 0.366 0.4024 0.5025 1
+                   Text "#ELIFE-Phone_Messages_AddContact"
+                   "Font Size" 9
+                   "Min Font Size" 9
+                   "Horizontal Alignment" Center
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
         VerticalLayoutWidgetClass "{2243CFE6876FF9E0}" {
          Name "MessageList"
          Slot LayoutSlot "{0C4CFA44D9118CB8}" {

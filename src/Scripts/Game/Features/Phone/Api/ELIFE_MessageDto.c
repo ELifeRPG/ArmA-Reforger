@@ -17,6 +17,20 @@ class ELIFE_MessageDto : JsonApiStruct
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A fresh instance rather than a shared reference - the merged payload gets Pack()ed, which an
+	//! ExpandFromRAW'd struct can't survive (see ELIFE_PhoneJsonDto).
+	ELIFE_MessageDto Copy()
+	{
+		ELIFE_MessageDto copy = new ELIFE_MessageDto();
+		copy.messageId = messageId;
+		copy.from = from;
+		copy.body = body;
+		copy.sentAt = sentAt;
+		copy.isOutbound = isOutbound;
+		return copy;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! from is written as a display name here (not a lookup key), since a bystander can't match a
 	//! redacted number against the real contact list; body stays private text either way.
 	ELIFE_MessageDto Redact(map<string, string> contactNames)

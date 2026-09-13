@@ -1,7 +1,7 @@
 SizeLayoutWidgetClass {
  Name "NotificationCardSize"
  AllowHeightOverride 1
- HeightOverride 34
+ HeightOverride 40
  {
   OverlayWidgetClass "{4396C5B24103F35D}" {
    Name "NotificationCard"
@@ -88,25 +88,56 @@ SizeLayoutWidgetClass {
      }
      {
       SizeLayoutWidgetClass "{E33AC045B401F779}" {
-       Name "NotifyMarkSize"
+       Name "NotifyAvatarSize"
        Slot LayoutSlot "{22C52CBF5BA96604}" {
         VerticalAlign 1
         Padding 0 0 8 0
        }
        AllowWidthOverride 1
-       WidthOverride 6
+       WidthOverride 28
        AllowHeightOverride 1
-       HeightOverride 6
+       HeightOverride 28
        {
-        SmartPanelWidgetClass "{EE18FEC6189F158A}" {
-         Name "NotifyMark"
+        OverlayWidgetClass "{EE18FEC6189F158A}" {
+         Name "NotifyAvatar"
          Slot AlignableSlot "{C5B4CA0DDBFC6FB6}" {
           HorizontalAlign 3
           VerticalAlign 3
          }
-         Color 0.1147 0.5398 0.2085 1
-         style rounded_6px
-         "no focus" 1
+         {
+          SmartPanelWidgetClass "{7C2AD4A9E3B25F96}" {
+           Name "NotifyAvatarFallback"
+           Slot OverlayWidgetSlot "{7C2AD4A9E3B25F97}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           "Is Visible" 0
+           Color 0.0159 0.0194 0.0319 1
+           style rounded_6px
+           "no focus" 1
+          }
+          ImageWidgetClass "{7C2AD4A9E3B25F98}" {
+           Name "NotifyAvatarDisc"
+           Slot OverlayWidgetSlot "{7C2AD4A9E3B25F99}" {
+            HorizontalAlign 1
+            VerticalAlign 1
+           }
+           Color 1 1 1 1
+           Size 28 28
+          }
+          TextWidgetClass "{7C2AD4A9E3B25F9A}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "NotifyAvatarGlyph"
+           Slot OverlayWidgetSlot "{7C2AD4A9E3B25F9B}" {
+            HorizontalAlign 1
+            VerticalAlign 1
+           }
+           Color 0.8378 0.8626 0.9222 1
+           Text ""
+           "Font Size" 12
+           "Min Font Size" 12
+           "Horizontal Alignment" Center
+          }
+         }
         }
        }
       }
@@ -135,19 +166,116 @@ SizeLayoutWidgetClass {
         }
        }
       }
-      TextWidgetClass "{B683F9523F18937D}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-       Name "NotifyTime"
+      VerticalLayoutWidgetClass "{7C2ED4A9E3B25FE4}" {
+       Name "NotifyTrailing"
        Slot LayoutSlot "{51295EE961440505}" {
         VerticalAlign 1
         Padding 8 0 0 0
        }
-       Color 0.1715 0.1942 0.2664 1
-       Text ""
-       "Font Size" 9
-       "Min Font Size" 9
-       "Horizontal Alignment" 2
-       FontProperties FontProperties "{EC968CEC15A13CCC}" {
-        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       {
+        TextWidgetClass "{B683F9523F18937D}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "NotifyTime"
+         Slot LayoutSlot "{7C2ED4A9E3B25FE5}" {
+          HorizontalAlign 2
+         }
+         Color 0.1715 0.1942 0.2664 1
+         Text ""
+         "Font Size" 9
+         "Min Font Size" 9
+         "Horizontal Alignment" 2
+         FontProperties FontProperties "{EC968CEC15A13CCC}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        SizeLayoutWidgetClass "{7C2ED4A9E3B25FE6}" {
+         Name "NotifyCountSize"
+         Slot LayoutSlot "{7C2ED4A9E3B25FE7}" {
+          HorizontalAlign 2
+          Padding 0 2 0 0
+         }
+         "Is Visible" 0
+         AllowWidthOverride 1
+         WidthOverride 16
+         AllowHeightOverride 1
+         HeightOverride 14
+         {
+          OverlayWidgetClass "{7C2ED4A9E3B25FE8}" {
+           Name "NotifyCount"
+           Slot AlignableSlot "{7C2ED4A9E3B25FE9}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           {
+            SmartPanelWidgetClass "{7C2ED4A9E3B25FEA}" {
+             Name "NotifyCountFill"
+             Slot OverlayWidgetSlot "{7C2ED4A9E3B25FEB}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0.1147 0.5398 0.2085 1
+             style rounded_6px
+             "no focus" 1
+            }
+            TextWidgetClass "{7C2ED4A9E3B25FEC}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "NotifyCountValue"
+             Slot OverlayWidgetSlot "{7C2ED4A9E3B25FED}" {
+              HorizontalAlign 1
+              VerticalAlign 1
+             }
+             Color 0.004 0.0048 0.0075 1
+             Text ""
+             "Font Size" 9
+             "Min Font Size" 9
+             "Horizontal Alignment" Center
+             FontProperties FontProperties "{7C2ED4A9E3B25FEE}" {
+              Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{7C29D4A9E3B25F8F}" {
+     Name "NotifyButton"
+     Slot OverlayWidgetSlot "{7C29D4A9E3B25F90}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 1
+     style blank
+     "Is Visible" 0
+     components {
+      SCR_ButtonTextComponent "{7C29D4A9E3B25F91}" {
+       m_BackgroundDefault 0.8626 0.8964 0.964 0
+       m_BackgroundHovered 0.8626 0.8964 0.964 0.08
+       m_BackgroundSelected 0.8626 0.8964 0.964 0.14
+       m_BackgroundSelectedHovered 0.8626 0.8964 0.964 0.14
+       m_BackgroundClicked 0.8626 0.8964 0.964 0.14
+       m_sText ""
+      }
+     }
+     {
+      OverlayWidgetClass "{7C29D4A9E3B25F92}" {
+       Name "ButtonSurface"
+       Slot ButtonWidgetSlot "{7C29D4A9E3B25F93}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        SmartPanelWidgetClass "{7C29D4A9E3B25F94}" {
+         Name "Background"
+         Slot OverlayWidgetSlot "{7C29D4A9E3B25F95}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0 0 0 0
+         style rounded_6px
+         "no focus" 1
+        }
        }
       }
      }

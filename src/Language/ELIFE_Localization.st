@@ -370,7 +370,31 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
-  CustomStringTableItem "{E4290F38390921CA}" {
+  CustomStringTableItem "{7C2DD4A9E3B25FE1}" {
+   Id "ELIFE-Phone_Hub_Title"
+   Target_en_us "Notifications"
+   Target_de_de "Mitteilungen"
+   Modified 1757289600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{7C2DD4A9E3B25FE2}" {
+   Id "ELIFE-Phone_Hub_Clear"
+   Target_en_us "Clear all"
+   Target_de_de "Alle löschen"
+   Modified 1757289600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{7C2DD4A9E3B25FE3}" {
+   Id "ELIFE-Phone_Hub_Empty"
+   Target_en_us "Nothing new"
+   Target_de_de "Nichts Neues"
+   Modified 1757289600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{7C2FD4A9E3B25FF1}" {
    Id "ELIFE-Phone_Settings_Number"
    Target_en_us "Number"
    Target_de_de "Nummer"
@@ -378,7 +402,7 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
-  CustomStringTableItem "{F53A10494A1A32DB}" {
+  CustomStringTableItem "{7C2FD4A9E3B25FF2}" {
    Id "ELIFE-Phone_Settings_Section_Device"
    Target_en_us "Device"
    Target_de_de "Gerät"
@@ -386,7 +410,7 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
-  CustomStringTableItem "{064B215A5B2B43EC}" {
+  CustomStringTableItem "{7C2FD4A9E3B25FF3}" {
    Id "ELIFE-Phone_Settings_Section_Security"
    Target_en_us "Security"
    Target_de_de "Sicherheit"
@@ -394,7 +418,7 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
-  CustomStringTableItem "{175C326B6C3C54FD}" {
+  CustomStringTableItem "{7C2FD4A9E3B25FF4}" {
    Id "ELIFE-Phone_Settings_Lock"
    Target_en_us "Lock phone"
    Target_de_de "Telefon sperren"
@@ -558,6 +582,14 @@ StringTable {
    Id "ELIFE-Phone_Messages_Send"
    Target_en_us "Send"
    Target_de_de "Senden"
+   Modified 1789257600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{5162738A9BAC1D40}" {
+   Id "ELIFE-Phone_Messages_AddContact"
+   Target_en_us "Add to Contacts"
+   Target_de_de "Zu Kontakten hinzufügen"
    Modified 1789257600
    Author "Robin"
    LastChanged "Robin"

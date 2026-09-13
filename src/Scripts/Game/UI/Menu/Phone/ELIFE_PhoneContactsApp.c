@@ -137,6 +137,10 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	protected const string SUBSTATE_FORM = "new";
 	protected const string SUBSTATE_DETAIL_PREFIX = "c:";
 
+	//! Same form, prefilled - Messages' own hand-off for an unsaved number. Public/static since
+	//! Messages builds this value and Contacts reads it, mirroring SUBSTATE_CONTACT_PREFIX in reverse.
+	static const string SUBSTATE_FORM_NUMBER_PREFIX = "new:";
+
 	//! Enforced here, not via EditBoxFilterComponent - the engine refuses to attach that component to
 	//! a bare EditBoxWidget. Only stops a runaway string; the backend still judges the number's shape.
 	protected const int MAX_NUMBER_LENGTH = 24;
@@ -189,6 +193,10 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 
 	protected bool m_bFormOpen;
 
+	//! Set when the form was opened prefilled (Messages' hand-off for an unsaved number) - carried into
+	//! GetSubState() so the world RT reopens the same prefilled form, not a blank one.
+	protected string m_sPrefillNumber;
+
 	//! The contact whose detail page is open, held by contactId. Empty means the index is showing.
 	protected string m_sOpenContactId;
 
@@ -238,7 +246,12 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	override string GetSubState()
 	{
 		if (m_bFormOpen)
+		{
+			if (m_sPrefillNumber != "")
+				return SUBSTATE_FORM_NUMBER_PREFIX + m_sPrefillNumber;
+
 			return SUBSTATE_FORM;
+		}
 
 		if (m_sOpenContactId != "")
 			return SUBSTATE_DETAIL_PREFIX + m_sOpenContactId;
@@ -252,6 +265,12 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		if (subState == SUBSTATE_FORM)
 		{
 			OpenForm();
+			return;
+		}
+
+		if (subState.StartsWith(SUBSTATE_FORM_NUMBER_PREFIX))
+		{
+			OpenForm(subState.Substring(SUBSTATE_FORM_NUMBER_PREFIX.Length(), subState.Length() - SUBSTATE_FORM_NUMBER_PREFIX.Length()));
 			return;
 		}
 
@@ -400,6 +419,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		m_NameFocus = null;
 		m_List = null;
 		m_bFormOpen = false;
+		m_sPrefillNumber = "";
 		m_sOpenContactId = "";
 		m_bSaving = false;
 		m_bHasPendingResult = false;
@@ -428,9 +448,6 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 
 		if (m_wEmptyContacts)
 			m_wEmptyContacts.SetVisible(count == 0);
-
-		if (m_wContactScroll)
-			m_wContactScroll.SetVisible(count > 0);
 
 		if (!m_wContactGroups || count == 0)
 		{
@@ -753,6 +770,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	protected void ShowIndex()
 	{
 		m_bFormOpen = false;
+		m_sPrefillNumber = "";
 		m_sOpenContactId = "";
 		CancelSaving();
 
@@ -802,19 +820,21 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void OpenForm()
+	//! prefillNumber is Messages' hand-off for a number it doesn't recognize - empty for the normal Add.
+	void OpenForm(string prefillNumber = "")
 	{
 		if (m_bFormOpen)
 			return;
 
 		m_bFormOpen = true;
 		m_sOpenContactId = "";
+		m_sPrefillNumber = prefillNumber;
 
 		if (m_wDetailPage)
 			m_wDetailPage.SetVisible(false);
 
 		if (m_wNumberField)
-			m_wNumberField.SetText("");
+			m_wNumberField.SetText(prefillNumber);
 
 		if (m_wNameField)
 			m_wNameField.SetText("");

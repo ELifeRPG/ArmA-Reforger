@@ -14,14 +14,31 @@ class ELIFE_PhoneStyle
 	//------------------------------------------------------------------------------------------------
 	// Depth model
 	//
-	// Wallpaper/ground -> content -> chrome (status bar, nav bar, bottom bar) -> sheets -> alerts.
+	// Wallpaper/ground -> content -> page chrome -> sheets -> OS frame -> banners -> alerts.
 	// Stacking only. Glass looks are a separate three-style system (dark / light / accent), not an altitude.
 	//------------------------------------------------------------------------------------------------
 	static const int ZORDER_GROUND = 0;
 	static const int ZORDER_CONTENT = 10;
+
+	//! Chrome the open *page* owns - the nav bar's Back and named action. A sheet covers it, because
+	//! those controls act on the page the sheet is hiding.
 	static const int ZORDER_CHROME = 20;
+
+	//! A modal over a single page rather than over the whole phone - today the notification hub.
 	static const int ZORDER_SHEET = 30;
-	static const int ZORDER_ALERT = 40;
+
+	//! Chrome the *phone* owns: the status bar and the home pill. Above sheets on purpose - the status
+	//! bar is never app-tinted and never borrowed, and the home pill is the one way out of anything,
+	//! so a sheet that covered them would be a trap with no exit and no clock.
+	static const int ZORDER_SYSTEM = 40;
+
+	//! An arriving notification interrupts whatever page is open, so it outranks the page, its chrome
+	//! and the OS frame - but not the alert tier, since a dark screen or a dead Bridge is a statement
+	//! about the whole phone, and drawing news over either would misreport what it's doing.
+	static const int ZORDER_BANNER = 50;
+
+	//! Phone-wide takeovers only: ScreenOff and OfflineScreen.
+	static const int ZORDER_ALERT = 60;
 
 	//------------------------------------------------------------------------------------------------
 	//! The lock/home wallpaper uses one shipped dithered gradient texture (a flat ramp bands across 500px of near-black). Flip if the shipped texture runs bright-at-bottom.
@@ -34,26 +51,26 @@ class ELIFE_PhoneStyle
 
 	//! Alpha is the material (fixed per look, never per instance); Opacity is presence (applied to the whole bar so tint/specular/hairline composite as one layer - editing the three alphas separately would detach the specular line).
 	//! Dark glass's scrim has two strengths: GLASS_SCRIM_DARK for inline cards on a flat page ground, GLASS_SCRIM_DARK_CHROME for status/nav bars covering scrolling content. Same recipe otherwise.
-	static const float GLASS_SCRIM_DARK = 0.75;
+	static const float GLASS_SCRIM_DARK = 0.85;
 	static const float GLASS_SCRIM_DARK_CHROME = 0.95;
-	static const float GLASS_ALPHA_DARK = 0.01;
-	static const float GLASS_SPECULAR_DARK = 0.3;
+	static const float GLASS_ALPHA_DARK = 0.02;
+	static const float GLASS_SPECULAR_DARK = 0.15;
 	static const float GLASS_BLUR_DARK = 0.35;
-	static const float GLASS_HAIRLINE_ALPHA_DARK = 0.14;
+	static const float GLASS_HAIRLINE_ALPHA_DARK = 0.64;
 
 	//! Light glass - the brighter look (home cards, lock notifications, PIN keys, compose bar, trailing nav action at rest).
-	static const float GLASS_SCRIM_LIGHT = 0.4;
-	static const float GLASS_ALPHA_LIGHT = 0.05;
-	static const float GLASS_SPECULAR_LIGHT = 0.07;
-	static const float GLASS_BLUR_LIGHT = 0.25;
-	static const float GLASS_HAIRLINE_ALPHA_LIGHT = 0.26;
+	static const float GLASS_SCRIM_LIGHT = 0.7;
+	static const float GLASS_ALPHA_LIGHT = 0.14;
+	static const float GLASS_SPECULAR_LIGHT = 0.2;
+	static const float GLASS_BLUR_LIGHT = 0.4;
+	static const float GLASS_HAIRLINE_ALPHA_LIGHT = 0.46;
 
 	//! Accent glass - same structure as dark/light, but the scrim mixes toward the app's own accent instead of a fixed neutral. GLASS_GLOW_ALPHA_ACCENT is the optional GlassGlow layer's own strength (see ApplyGlass).
 	static const float GLASS_SCRIM_ACCENT = 0.9;
 	static const float GLASS_ALPHA_ACCENT = 0.02;
 	static const float GLASS_SPECULAR_ACCENT = 0.26;
 	static const float GLASS_BLUR_ACCENT = 0.40;
-	static const float GLASS_HAIRLINE_ALPHA_ACCENT = 0.42;
+	static const float GLASS_HAIRLINE_ALPHA_ACCENT = 0.62;
 	static const float GLASS_GLOW_ALPHA_ACCENT = 0.25;
 
 	//------------------------------------------------------------------------------------------------
@@ -111,12 +128,6 @@ class ELIFE_PhoneStyle
 	// Neutrals - anchor hue ~225 deg. sRGB design values in the comments.
 	//------------------------------------------------------------------------------------------------
 	static Color Ink() { return Srgb(0.051, 0.059, 0.082); }                 //!< #0D0F15
-
-	//! A step blacker than Ink(), still hue-tinted rather than pure #000. Dark glass's scrim mixes toward this so it reads as genuinely black glass, not just another near-black surface.
-	static Color InkDeep() { return Srgb(0.006, 0.007, 0.010); }             //!< #020203
-
-	//! Light glass's counterpart to InkDeep() - a light hue-tinted neutral its scrim mixes toward instead.
-	static Color LightBase() { return Srgb(0.320, 0.340, 0.370); }           //!< #51575E
 	static Color Surface() { return Srgb(0.090, 0.102, 0.137); }             //!< #171A23
 	static Color SurfaceRaised() { return Srgb(0.133, 0.149, 0.196); }       //!< #222632
 	static Color Hairline() { return Srgb(0.216, 0.239, 0.298); }            //!< #373D4C
@@ -124,15 +135,19 @@ class ELIFE_PhoneStyle
 	static Color TextSecondary() { return Srgb(0.639, 0.667, 0.737); }       //!< #A3AABC
 	static Color TextTertiary() { return Srgb(0.451, 0.478, 0.553); }        //!< #737A8D
 
-	//! The glass tint is a near-white pulled toward the anchor hue. The colour of a glass surface
-	//! comes through from the content below it - the tint never carries a hue of its own.
-	static Color GlassTint() { return Srgb(0.788, 0.824, 0.910); }           //!< #C9D2E8
-	static Color GlassSpecular() { return Srgb(0.900, 0.920, 0.970); }       //!< #E5EBF7
-	static Color GlassHairline() { return Srgb(0.020, 0.027, 0.043); }       //!< #05070B
+	//! The pane colour of each glass look - the only place a look's hue/lightness is decided (its GLASS_SCRIM_* alpha decides how solid it sits). Accent glass uses the app's own AccentDeep* instead.
+	static Color GlassBaseDark() { return Srgb(0.022, 0.027, 0.051); }       //!< #04070D
+	static Color GlassBaseLight() { return Srgb(0.34, 0.38, 0.5); }      //!< #566181
 
-	//! Dark glass's own specular colour - the same near-white line dimmed down to a mid grey, so it
-	//! reads as a faint edge catching light rather than a bright stroke laid over a near-black card.
-	static Color GlassSpecularDark() { return Srgb(0.370, 0.390, 0.450); }   //!< #5E6373
+	//! The veil over the scrim, and the specular line along its top edge - each comes in a dark and a light step so one can be tuned without moving the other. Accent glass takes the dark tint but the light specular.
+	static Color GlassTintDark() { return Srgb(0.68, 0.71, 0.82); }          //!< #AEB5D1
+	static Color GlassTintLight() { return Srgb(0.180, 0.220, 0.345); }      //!< #2D3858
+
+	//! GlassSpecularDark is the same near-white line dimmed to a mid grey, so it reads as a faint edge catching light rather than a bright stroke laid over a near-black card.
+	static Color GlassSpecularLight() { return Srgb(0.960, 0.973, 0.990); }  //!< #F5F8FC
+	static Color GlassSpecularDark() { return Srgb(0.480, 0.505, 0.580); }   //!< #7A8194
+
+	static Color GlassHairline() { return Srgb(0.020, 0.027, 0.043); }       //!< #05070B
 
 	//! The phone case as drawn in the in-hand bezel. Kept plain on purpose.
 	static Color Bezel() { return Srgb(0.071, 0.078, 0.102); }               //!< #12141A
@@ -304,8 +319,10 @@ class ELIFE_PhoneStyle
 		{
 			//! Same perceived lightness, one layer, no edges. On a scrimmed surface the scrim is the
 			//! layer that survives, because it is the one already clipped to the shape.
-			Color tintTowards = GlassTint();
-			if (useAccent)
+			Color tintTowards = GlassTintDark();
+			if (useLight)
+				tintTowards = GlassTintLight();
+			else if (useAccent)
 				tintTowards = accentColor;
 
 			Color solid = Mix(Surface(), tintTowards, tintAlpha);
@@ -351,9 +368,9 @@ class ELIFE_PhoneStyle
 		if (scrim)
 		{
 			//! Scrim is the base fill colour, and where each variant's hue actually comes from.
-			Color scrimBase = InkDeep();
+			Color scrimBase = GlassBaseDark();
 			if (useLight)
-				scrimBase = LightBase();
+				scrimBase = GlassBaseLight();
 			else if (useAccent)
 				scrimBase = accentColor;
 
@@ -363,9 +380,13 @@ class ELIFE_PhoneStyle
 
 		if (tint)
 		{
-			//! Tint stays the same neutral near-white material for every variant, accent glass included.
+			//! Never carries the app's own colour, even on accent glass - dark and accent share GlassTintDark(), light gets its own so it can be tuned independently.
+			Color tintColor = GlassTintDark();
+			if (useLight)
+				tintColor = GlassTintLight();
+
 			tint.SetVisible(true);
-			tint.SetColor(WithAlpha(GlassTint(), tintAlpha));
+			tint.SetColor(WithAlpha(tintColor, tintAlpha));
 			tint.SetOpacity(1);
 		}
 
@@ -388,7 +409,7 @@ class ELIFE_PhoneStyle
 		{
 			Color specularBase = GlassSpecularDark();
 			if (useLight || useAccent)
-				specularBase = GlassSpecular();
+				specularBase = GlassSpecularLight();
 
 			specular.SetVisible(true);
 			specular.SetColor(WithAlpha(specularBase, specularAlpha));
