@@ -143,14 +143,24 @@ SizeLayoutWidgetClass {
              }
              {
               SmartPanelWidgetClass "{DDA1A53B888A842F}" {
-               Name "ThreadAvatarFill"
+               Name "ThreadAvatarFallback"
                Slot OverlayWidgetSlot "{931E94DCD283A374}" {
                 HorizontalAlign 3
                 VerticalAlign 3
                }
+               "Is Visible" 0
                Color 0.0159 0.0194 0.0319 1
                style rounded_6px
                "no focus" 1
+              }
+              ImageWidgetClass "{A4B5C6D7E8F90123}" {
+               Name "ThreadAvatarDisc"
+               Slot OverlayWidgetSlot "{B5C6D7E8F9012345}" {
+                HorizontalAlign 1
+                VerticalAlign 1
+               }
+               Color 1 1 1 1
+               Size 24 24
               }
               TextWidgetClass "{C3C7D60B06AC1293}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
                Name "ThreadAvatarGlyph"

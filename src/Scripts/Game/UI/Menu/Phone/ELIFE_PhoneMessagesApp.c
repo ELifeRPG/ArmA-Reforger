@@ -22,6 +22,51 @@ class ELIFE_PhoneThreadRowClick : ScriptedWidgetEventHandler
 }
 
 //------------------------------------------------------------------------------------------------
+//! Nav trailing "Add" on the index - opens the contact picker, mirroring Contacts' own Add.
+class ELIFE_PhoneMessagesAddClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneMessagesApp m_App;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneMessagesApp app)
+	{
+		m_App = app;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App)
+			m_App.ShowPicker();
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class ELIFE_PhonePickerRowClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneMessagesApp m_App;
+	protected string m_sContactId;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneMessagesApp app, string contactId)
+	{
+		m_App = app;
+		m_sContactId = contactId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App && m_sContactId != "")
+			m_App.PickContact(m_sContactId);
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class ELIFE_PhoneSendClick : ScriptedWidgetEventHandler
 {
 	protected ELIFE_PhoneMessagesApp m_App;
@@ -43,9 +88,7 @@ class ELIFE_PhoneSendClick : ScriptedWidgetEventHandler
 }
 
 //------------------------------------------------------------------------------------------------
-//! Enter-to-send is NOT handled here via OnChange - that's a reserved engine event with a fixed
-//! signature, and overloading it is a hard compile error. BindCompose() instead subscribes to
-//! GetOnChangeFinal() on the field's SCR_EventHandlerComponent, which fires exactly on commit.
+//! OnChange is a reserved engine event, so enter-to-send is wired separately via BindCompose()'s GetOnChangeFinal() subscription instead.
 class ELIFE_PhoneComposeFocus : ScriptedWidgetEventHandler
 {
 	protected ELIFE_PhoneMessagesApp m_App;
@@ -73,6 +116,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	protected const ResourceName LAYOUT = "{8B7D4F2306E1A95C}UI/layouts/Menus/Phone/Apps/PhoneMessages.layout";
 	protected const ResourceName LAYOUT_THREAD_ROW = "{2D9F5081C6A73B4E}UI/layouts/Menus/Phone/Apps/PhoneThreadRow.layout";
 	protected const ResourceName LAYOUT_MESSAGE_ROW = "{6E48B3D9F20C517A}UI/layouts/Menus/Phone/Apps/PhoneMessageRow.layout";
+	protected const ResourceName LAYOUT_CONTACT_ROW = "{5C2E9A17B4D06F38}UI/layouts/Menus/Phone/Apps/PhoneContactRow.layout";
 
 	protected Widget m_wIndexPage;
 	protected Widget m_wThreadPage;
@@ -85,17 +129,25 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	protected TextWidget m_wIndexTitle;
 	protected TextWidget m_wThreadTitle;
 
+	//! The Add picker - a Messages sub-page, not a new app, mirroring Contacts' A-Z index.
+	protected Widget m_wPickerPage;
+	protected ScrollLayoutWidget m_wPickerScroll;
+	protected Widget m_wPickerGroups;
+	protected Widget m_wEmptyPicker;
+	protected bool m_bPickerOpen;
+
+	protected ref ELIFE_PhoneMessagesAddClick m_AddClick;
+	protected ref array<ref ELIFE_PhonePickerRowClick> m_aPickerRowClicks = {};
+
 	protected ref array<ref ELIFE_PhoneThreadRowClick> m_aRowClicks = {};
 
 	protected Widget m_wComposeBar;
 	protected EditBoxWidget m_wComposeField;
 	protected Widget m_wSendButton;
-	protected ImageWidget m_wSendDisc;
-	protected Widget m_wSendFallback;
-	protected ImageWidget m_wSendHover;
+	protected Widget m_wSendSize;
 	protected ImageWidget m_wSendIcon;
 	protected Widget m_wSendIconSize;
-	protected Widget m_wSendGlyph;
+	protected TextWidget m_wSendLabel;
 
 	protected ref ELIFE_PhoneSendClick m_SendClick;
 	protected ref ELIFE_PhoneComposeFocus m_ComposeFocus;
@@ -107,10 +159,13 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	protected const int MAX_BODY_LENGTH = 480;
 
 	//! LoadImageFromSet() fails closed on an unknown sprite name.
-	protected const string ICON_DISC = "circle";
+	protected const string ICON_ADD = "plus";
 
 	//! Chat atlas' paper-plane sprite - the wrapper set has no plane and no good stand-in for "send".
 	protected const string ICON_SEND = "whisper";
+	protected const float SEND_ICON_SIZE = 9;
+	protected const float SEND_ICON_GAP = 3;
+	protected const float SEND_PAD_H = 4;
 	protected ref ELIFE_MessageUpdatesDto m_Updates = new ELIFE_MessageUpdatesDto();
 	protected string m_sOpenThreadId;
 
@@ -129,6 +184,9 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	//! Same channel, for a saved contact - preferred over `n:` whenever an id is known.
 	static const string SUBSTATE_CONTACT_PREFIX = "c:";
 
+	//! The Add picker - a single fixed sub-page, exact-match like Contacts' SUBSTATE_FORM.
+	static const string SUBSTATE_PICKER = "pick";
+
 	//------------------------------------------------------------------------------------------------
 	override string GetTitle()
 	{
@@ -144,6 +202,12 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	override bool OnBack()
 	{
+		if (m_bPickerOpen)
+		{
+			ShowIndex();
+			return true;
+		}
+
 		if (m_sOpenThreadId != "" || m_sOpenNumber != "" || m_sOpenContactId != "")
 		{
 			ShowIndex();
@@ -156,6 +220,9 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	override string GetSubState()
 	{
+		if (m_bPickerOpen)
+			return SUBSTATE_PICKER;
+
 		if (m_sOpenThreadId != "")
 			return m_sOpenThreadId;
 
@@ -174,6 +241,12 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		if (subState == "")
 		{
 			ShowIndex();
+			return;
+		}
+
+		if (subState == SUBSTATE_PICKER)
+		{
+			ShowPicker();
 			return;
 		}
 
@@ -278,16 +351,23 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	//! Shared by both ways in, so an empty number-addressed conversation gets the same chrome as a real thread.
 	protected void ShowThreadPage()
 	{
+		m_bPickerOpen = false;
 		FillThread();
 
 		if (m_wIndexPage)
 			m_wIndexPage.SetVisible(false);
+
+		if (m_wPickerPage)
+			m_wPickerPage.SetVisible(false);
 
 		if (m_wThreadPage)
 			m_wThreadPage.SetVisible(true);
 
 		TrackScroll(m_wMessageScroll, m_wThreadTitle);
 		ScrollToLatest();
+
+		//! Compose is the commit on this page - the shared pill stays reserved for that, not Add.
+		HideNavAction();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -345,19 +425,18 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		m_wIndexTitle = TextWidget.Cast(m_wRoot.FindAnyWidget("LargeTitle"));
 		m_wThreadTitle = TextWidget.Cast(m_wRoot.FindAnyWidget("ThreadTitle"));
 
+		m_wPickerPage = m_wRoot.FindAnyWidget("PickerPage");
+		m_wPickerScroll = ScrollLayoutWidget.Cast(m_wRoot.FindAnyWidget("PickerScroll"));
+		m_wPickerGroups = m_wRoot.FindAnyWidget("PickerGroups");
+		m_wEmptyPicker = m_wRoot.FindAnyWidget("EmptyPicker");
+
 		m_wComposeBar = m_wRoot.FindAnyWidget("ComposeBar");
 		m_wComposeField = EditBoxWidget.Cast(m_wRoot.FindAnyWidget("ComposeField"));
 		m_wSendButton = m_wRoot.FindAnyWidget("ButtonSend");
-		m_wSendDisc = ImageWidget.Cast(m_wRoot.FindAnyWidget("SendDisc"));
-		m_wSendFallback = m_wRoot.FindAnyWidget("SendFallback");
+		m_wSendSize = m_wRoot.FindAnyWidget("SendSize");
 		m_wSendIconSize = m_wRoot.FindAnyWidget("SendIconSize");
 		m_wSendIcon = ImageWidget.Cast(m_wRoot.FindAnyWidget("SendIcon"));
-		m_wSendGlyph = m_wRoot.FindAnyWidget("SendGlyph");
-
-		//! Scoped: every button in this layout owns a "Background" widget for the hover tint.
-		Widget sendFrame = m_wRoot.FindAnyWidget("SendFrame");
-		if (sendFrame)
-			m_wSendHover = ImageWidget.Cast(sendFrame.FindAnyWidget("Background"));
+		m_wSendLabel = TextWidget.Cast(m_wRoot.FindAnyWidget("SendLabel"));
 
 		BindCompose();
 
@@ -391,15 +470,21 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		m_wComposeBar = null;
 		m_wComposeField = null;
 		m_wSendButton = null;
-		m_wSendDisc = null;
-		m_wSendFallback = null;
-		m_wSendHover = null;
+		m_wSendSize = null;
 		m_wSendIcon = null;
 		m_wSendIconSize = null;
-		m_wSendGlyph = null;
+		m_wSendLabel = null;
 		m_SendClick = null;
 		m_ComposeFocus = null;
 		m_bSending = false;
+
+		m_wPickerPage = null;
+		m_wPickerScroll = null;
+		m_wPickerGroups = null;
+		m_wEmptyPicker = null;
+		m_AddClick = null;
+		m_aPickerRowClicks.Clear();
+		m_bPickerOpen = false;
 
 		m_sOpenThreadId = "";
 		m_sOpenNumber = "";
@@ -415,6 +500,9 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		{
 			ReadUpdates();
 			FillIndex();
+
+			if (m_bPickerOpen)
+				FillPicker();
 
 			//! A `c:` hand-off can land before this payload does - re-resolve the number now.
 			if (m_sOpenContactId != "" && m_sOpenThreadId == "")
@@ -498,12 +586,16 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	protected void ShowIndex()
 	{
+		m_bPickerOpen = false;
 		m_sOpenThreadId = "";
 		m_sOpenNumber = "";
 		m_sOpenContactId = "";
 
 		if (m_wThreadPage)
 			m_wThreadPage.SetVisible(false);
+
+		if (m_wPickerPage)
+			m_wPickerPage.SetVisible(false);
 
 		if (m_wIndexPage)
 			m_wIndexPage.SetVisible(true);
@@ -512,8 +604,129 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 			m_wNavTitle.SetText(GetTitle());
 
 		TrackScroll(m_wThreadScroll, m_wIndexTitle);
+		ShowAddAction();
 
 		NotifySubStateChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Index's nav-trailing "Add" - same shared pill Contacts' index and form use, never a second FAB.
+	protected void ShowAddAction()
+	{
+		if (!m_AddClick)
+		{
+			m_AddClick = new ELIFE_PhoneMessagesAddClick();
+			m_AddClick.Bind(this);
+		}
+
+		ShowNavAction("#ELIFE-Phone_Messages_Add", m_Accent, m_AddClick, ICON_ADD);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Add's destination: every saved contact, A-Z like Contacts' own index. Book only - no
+	//! free-number compose from here.
+	void ShowPicker()
+	{
+		m_bPickerOpen = true;
+		m_sOpenThreadId = "";
+		m_sOpenNumber = "";
+		m_sOpenContactId = "";
+
+		if (m_wIndexPage)
+			m_wIndexPage.SetVisible(false);
+
+		if (m_wThreadPage)
+			m_wThreadPage.SetVisible(false);
+
+		if (m_wPickerPage)
+			m_wPickerPage.SetVisible(true);
+
+		if (m_wNavTitle)
+			m_wNavTitle.SetText("#ELIFE-Phone_Messages_New");
+
+		FillPicker();
+
+		//! No on-page large title, like Contacts' form - the nav title alone identifies the page.
+		TrackScroll(m_wPickerScroll, null);
+
+		//! Back is enough to leave; the picker commits nothing of its own.
+		HideNavAction();
+
+		NotifySubStateChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void PickContact(string contactId)
+	{
+		m_bPickerOpen = false;
+		OpenConversationWithContact(contactId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FillPicker()
+	{
+		m_aPickerRowClicks.Clear();
+		ClearChildren(m_wPickerGroups);
+
+		ELIFE_ContactListDto list = ELIFE_PhoneContactBook.Contacts(m_Phone);
+
+		int count = 0;
+		if (list)
+			count = list.items.Count();
+
+		if (m_wEmptyPicker)
+			m_wEmptyPicker.SetVisible(count == 0);
+
+		if (m_wPickerScroll)
+			m_wPickerScroll.SetVisible(count > 0);
+
+		if (!m_wPickerGroups || count == 0)
+			return;
+
+		array<ref ELIFE_ContactDto> sorted = ELIFE_PhoneContactBook.SortedByLastName(list);
+
+		string currentLetter = "";
+		Widget currentList = null;
+		bool isFirstGroup = true;
+
+		for (int i = 0; i < sorted.Count(); i++)
+		{
+			ELIFE_ContactDto contact = sorted.Get(i);
+			if (!contact)
+				continue;
+
+			string letter = ELIFE_PhoneContactBook.GroupLetter(contact);
+			if (letter != currentLetter || !currentList)
+			{
+				currentLetter = letter;
+				currentList = CreateListGroup(m_wPickerGroups, letter, isFirstGroup);
+				isFirstGroup = false;
+			}
+
+			if (!currentList)
+				continue;
+
+			//! isLast is always false - these are glass cards, not the hairline-row style it applies to.
+			Widget row = CreateListRow(LAYOUT_CONTACT_ROW, currentList, false);
+			if (!row)
+				continue;
+
+			ELIFE_PhoneStyle.ApplyGlass(row, true);
+
+			string name = ELIFE_PhoneContactBook.DisplayName(contact);
+			SetTextAndColor(row, "ContactName", name, ELIFE_PhoneStyle.TextPrimary());
+			SetTextAndColor(row, "ContactNumber", contact.number, ELIFE_PhoneStyle.TextSecondary());
+			PaintAvatar(row, "ContactAvatarDisc", "ContactAvatarFallback", "ContactAvatarGlyph", name);
+
+			Widget button = row.FindAnyWidget("ContactButton");
+			if (!button)
+				button = row;
+
+			ELIFE_PhonePickerRowClick click = new ELIFE_PhonePickerRowClick();
+			click.Bind(this, ELIFE_PhoneContactBook.KeyFor(contact));
+			button.AddHandler(click);
+			m_aPickerRowClicks.Insert(click);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -562,8 +775,8 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 			string participants = ELIFE_PhoneContactBook.TitleFor(m_Phone, threadDto);
 			SetTextAndColor(row, "ThreadParticipants", participants, ELIFE_PhoneStyle.TextPrimary());
 			SetTextAndColor(row, "ThreadPreview", ThreadPreview(threadDto), ELIFE_PhoneStyle.TextSecondary());
-			SetTextAndColor(row, "ThreadTime", FormatDayTime(threadDto.lastMessageAt), ELIFE_PhoneStyle.TextTertiary());
-			PaintAvatar(row, "ThreadAvatarGlyph", "ThreadAvatarFill", participants);
+			SetTextAndColor(row, "ThreadTime", RowTimestamp(threadDto), ELIFE_PhoneStyle.TextTertiary());
+			PaintAvatar(row, "ThreadAvatarDisc", "ThreadAvatarFallback", "ThreadAvatarGlyph", participants);
 
 			Widget unread = row.FindAnyWidget("ThreadUnreadSize");
 			if (unread)
@@ -605,6 +818,16 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 			return "#ELIFE-Phone_Messages_Bucket_LastMonth";
 
 		return "#ELIFE-Phone_Messages_Bucket_Older";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Today/Yesterday's bucket header already names the day, so the row only needs the clock; every older bucket shows the day too.
+	protected string RowTimestamp(notnull ELIFE_ThreadDto threadDto)
+	{
+		if (DaysSince(threadDto.lastMessageAt) <= 1)
+			return FormatClock(threadDto.lastMessageAt);
+
+		return FormatDayTime(threadDto.lastMessageAt);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -674,44 +897,66 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 			m_wSendButton.AddHandler(m_SendClick);
 		}
 
-		Color fill = ELIFE_PhoneStyle.AccentDeepFor(EPhoneScreenState.MESSAGES);
-
-		bool round = false;
-		if (m_wSendDisc)
-		{
-			round = m_wSendDisc.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_DISC);
-			m_wSendDisc.SetVisible(round);
-			m_wSendDisc.SetColor(fill);
-		}
-
-		if (m_wSendFallback)
-		{
-			m_wSendFallback.SetVisible(!round);
-			m_wSendFallback.SetColor(fill);
-		}
-
-		if (m_wSendHover)
-			m_wSendHover.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_DISC);
+		if (m_wSendLabel)
+			m_wSendLabel.SetText("#ELIFE-Phone_Messages_Send");
 
 		bool iconLoaded = false;
 		if (m_wSendIcon)
 		{
 			iconLoaded = m_wSendIcon.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_CHAT, ICON_SEND);
 			if (iconLoaded)
-			{
-				m_wSendIcon.SetColor(ELIFE_PhoneStyle.TextPrimary());
-
-				//! A fixed Size stretches the non-square atlas cell and shifts the ink off centre.
-				ELIFE_PhoneStyle.FitIcon(m_wSendIcon, 14);
-			}
+				ELIFE_PhoneStyle.FitIcon(m_wSendIcon, SEND_ICON_SIZE);
 		}
 
 		if (m_wSendIconSize)
+		{
 			m_wSendIconSize.SetVisible(iconLoaded);
 
-		//! Never an empty circle: the arrow glyph takes the ink if the sprite ever goes missing.
-		if (m_wSendGlyph)
-			m_wSendGlyph.SetVisible(!iconLoaded);
+			SizeLayoutWidget iconSize = SizeLayoutWidget.Cast(m_wSendIconSize);
+			if (iconSize)
+			{
+				if (iconLoaded)
+					iconSize.SetWidthOverride(SEND_ICON_SIZE);
+				else
+					iconSize.SetWidthOverride(0);
+			}
+		}
+
+		FitSendAction(iconLoaded);
+		PaintSendAction(true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Width hugs the localized word the same way the nav pill does.
+	protected void FitSendAction(bool iconLoaded)
+	{
+		if (!m_wSendSize || !m_wSendLabel)
+			return;
+
+		float textWidth, textHeight;
+		m_wSendLabel.GetTextSize(textWidth, textHeight);
+
+		float iconWidth = 0;
+		if (iconLoaded)
+			iconWidth = SEND_ICON_SIZE + SEND_ICON_GAP;
+
+		SizeLayoutWidget sendSize = SizeLayoutWidget.Cast(m_wSendSize);
+		if (sendSize)
+			sendSize.SetWidthOverride(textWidth + iconWidth + SEND_PAD_H * 2);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PaintSendAction(bool enabled)
+	{
+		Color color = ELIFE_PhoneStyle.TextTertiary();
+		if (enabled && m_Accent)
+			color = m_Accent;
+
+		if (m_wSendLabel)
+			m_wSendLabel.SetColor(color);
+
+		if (m_wSendIcon)
+			m_wSendIcon.SetColor(color);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -798,6 +1043,27 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 
 		if (m_wComposeField)
 			m_wComposeField.SetEnabled(enabled);
+
+		PaintSendAction(enabled);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Always empty now - an empty string still occupies the widget's line, so it is also hidden,
+	//! not just cleared, the same way a hidden RowHairline drops out of its row's height.
+	protected void HideThreadSubtitle()
+	{
+		if (!m_wRoot)
+			return;
+
+		Widget subtitle = m_wRoot.FindAnyWidget("ThreadSubtitle");
+		if (!subtitle)
+			return;
+
+		TextWidget text = TextWidget.Cast(subtitle);
+		if (text)
+			text.SetText("");
+
+		subtitle.SetVisible(false);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -821,7 +1087,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		if (!threadDto && (m_sOpenNumber != "" || m_sOpenContactId != ""))
 		{
 			SetTextAndColor(m_wRoot, "ThreadTitle", ELIFE_PhoneContactBook.TitleForOpen(m_Phone, m_sOpenContactId, m_sOpenNumber), ELIFE_PhoneStyle.TextPrimary());
-			SetText(m_wRoot, "ThreadSubtitle", "");
+			HideThreadSubtitle();
 			SyncThreadNavTitle();
 
 			if (m_wEmptyMessages)
@@ -834,7 +1100,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		if (!threadDto)
 		{
 			SetText(m_wRoot, "ThreadTitle", "");
-			SetText(m_wRoot, "ThreadSubtitle", "");
+			HideThreadSubtitle();
 			SyncThreadNavTitle();
 
 			if (m_wEmptyMessages)
@@ -843,8 +1109,10 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 			return;
 		}
 
+		//! Last activity posing as identity - the newest bubble already stamps "You · 23:43", and the
+		//! collapsed nav title keeps naming who this is. No number or last-seen belongs here either.
 		SetTextAndColor(m_wRoot, "ThreadTitle", ELIFE_PhoneContactBook.TitleFor(m_Phone, threadDto), ELIFE_PhoneStyle.TextPrimary());
-		SetTextAndColor(m_wRoot, "ThreadSubtitle", FormatDayTime(threadDto.lastMessageAt), ELIFE_PhoneStyle.TextSecondary());
+		HideThreadSubtitle();
 		SyncThreadNavTitle();
 
 		int count = threadDto.messages.Count();
@@ -902,12 +1170,8 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 			}
 
 			Color bubbleFill = ELIFE_PhoneStyle.SurfaceRaised();
-			Color bodyColor = ELIFE_PhoneStyle.TextPrimary();
 			if (message.isOutbound)
-			{
 				bubbleFill = ELIFE_PhoneStyle.AccentDeepFor(EPhoneScreenState.MESSAGES);
-				bodyColor = ELIFE_PhoneStyle.TextPrimary();
-			}
 
 			ELIFE_PhoneStyle.SetColorOf(row, "BubbleFill", bubbleFill);
 
@@ -917,7 +1181,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 				//! Only place in the phone UI with free text of unbounded length.
 				body.SetTextWrapping(true);
 				body.SetText(message.body);
-				body.SetColor(bodyColor);
+				body.SetColor(ELIFE_PhoneStyle.TextPrimary());
 			}
 		}
 	}

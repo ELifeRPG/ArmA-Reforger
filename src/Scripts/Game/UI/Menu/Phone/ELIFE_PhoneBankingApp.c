@@ -256,13 +256,9 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 
 			ELIFE_PhoneStyle.ApplyGlass(row, true);
 
+			//! Kind lives on the group header (Personal/Company) now, so it's not repeated per row.
 			SetTextAndColor(row, "AccountName", account.m_sName, ELIFE_PhoneStyle.TextPrimary());
-			SetTextAndColor(row, "AccountKind", KindLabel(account), ELIFE_PhoneStyle.TextSecondary());
-
-			//! Balances stay neutral in the list; only the open statement's hero balance is accented.
-			SetTextAndColor(row, "AccountBalance", ELIFE_PhoneBankingService.FormatMoney(account.m_iBalanceCents), ELIFE_PhoneStyle.TextPrimary());
-
-			PaintAvatar(row, "AccountAvatarGlyph", "AccountAvatarFill", account.m_sName);
+			SetTextAndColor(row, "AccountBalance", ELIFE_PhoneBankingService.FormatMoney(account.m_iBalanceCents), m_Accent);
 
 			Widget buttonWidget = row.FindAnyWidget("AccountButton");
 			if (!buttonWidget)

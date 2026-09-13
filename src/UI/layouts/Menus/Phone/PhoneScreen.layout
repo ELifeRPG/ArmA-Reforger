@@ -567,11 +567,13 @@ OverlayWidgetClass {
        Name "NavActionSize"
        Slot OverlayWidgetSlot "{87B1663E32170FD4}" {
         HorizontalAlign 2
-        VerticalAlign 3
+        VerticalAlign 1
         Padding 0 0 6 0
        }
        AllowWidthOverride 1
        WidthOverride 78
+       AllowHeightOverride 1
+       HeightOverride 20
        {
         OverlayWidgetClass "{5B98839DD20EF664}" {
          Name "NavActionFrame"
@@ -711,9 +713,9 @@ OverlayWidgetClass {
                  }
                  "Is Visible" 0
                  AllowWidthOverride 1
-                 WidthOverride 12
+                 WidthOverride 9
                  AllowHeightOverride 1
-                 HeightOverride 12
+                 HeightOverride 9
                  {
                   ImageWidgetClass "{1CE6F2AD08F364FC}" {
                    Name "NavActionIcon"
@@ -723,7 +725,7 @@ OverlayWidgetClass {
                    }
                    Color 1 1 1 1
                    Texture "{3262679C50EF4F01}UI/Textures/Icons/icons_wrapperUI.imageset"
-                   Size 12 12
+                   Size 9 9
                   }
                  }
                 }
@@ -734,12 +736,9 @@ OverlayWidgetClass {
                  }
                  Color 0.3814 0.4395 0.5771 1
                  Text ""
-                 "Font Size" 11
-                 "Min Font Size" 11
+                 "Font Size" 9
+                 "Min Font Size" 9
                  "Horizontal Alignment" 1
-                 FontProperties FontProperties "{655F5DD36281280F}" {
-                  Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-                 }
                 }
                }
               }

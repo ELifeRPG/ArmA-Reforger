@@ -65,6 +65,9 @@ class ELIFE_PhoneAppBase
 	//! Enough skeleton rows to fill the visible page without implying a count we don't know yet.
 	protected const int SKELETON_ROWS = 5;
 
+	//! Circle sprite for a person's avatar mark (Contacts rows, Messages threads/picker) - never accounts.
+	protected const string ICON_PERSON_MARK = "circle";
+
 	protected ELIFE_PhoneGadgetComponent m_Phone;
 
 	//! The screen this app is hosted by, so an app can hand the phone over to another one.
@@ -84,8 +87,9 @@ class ELIFE_PhoneAppBase
 	//! Horizontal padding either side of the pill's content, and the icon's own box + the gap it
 	//! keeps from the label. The pill is never a fixed width - see ShowNavAction().
 	protected const float NAV_ACTION_PAD_H = 10;
-	protected const float NAV_ACTION_ICON_SIZE = 12;
-	protected const float NAV_ACTION_ICON_GAP = 4;
+	protected const float NAV_ACTION_ICON_SIZE = 9;
+	protected const float NAV_ACTION_ICON_GAP = 3;
+	protected const float NAV_ACTION_CHIP_H = 20;
 
 	//! The nav bar's one trailing action slot (Contacts' "Add", a form's "Save"), claimed per-app in OnOpened().
 	protected Widget m_wNavActionSize;
@@ -170,7 +174,10 @@ class ELIFE_PhoneAppBase
 		{
 			iconLoaded = m_wNavActionIcon.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, iconSprite);
 			if (iconLoaded)
+			{
 				m_wNavActionIcon.SetColor(color);
+				ELIFE_PhoneStyle.FitIcon(m_wNavActionIcon, NAV_ACTION_ICON_SIZE);
+			}
 		}
 
 		if (m_wNavActionIcon)
@@ -202,7 +209,10 @@ class ELIFE_PhoneAppBase
 
 			SizeLayoutWidget pillSize = SizeLayoutWidget.Cast(m_wNavActionSize);
 			if (pillSize)
+			{
 				pillSize.SetWidthOverride(textWidth + iconWidth + NAV_ACTION_PAD_H * 2);
+				pillSize.SetHeightOverride(NAV_ACTION_CHIP_H);
+			}
 		}
 	}
 
@@ -491,10 +501,7 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Hand the phone to another app, landing on one page inside it - Contacts' "Message" opening the
-	//! thread with that contact's number. The sub-state travels with the request instead of being
-	//! written to the phone first, because the replicated value only comes back after a server round
-	//! trip and the app would open on its index in the meantime.
+	//! Hands the phone to another app on a target sub-state, passed with the request rather than written first since the replicated value only lands after a server round trip.
 	protected void OpenAppPage(EPhoneScreenState state, string subState)
 	{
 		if (m_Shell)
@@ -584,10 +591,26 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! An avatar tile carrying a name's initials, same construction as a home-screen app tile.
-	protected void PaintAvatar(notnull Widget row, string glyphName, string fillName, string name)
+	//! A list row's identity mark: an accent-filled circle with the name's initials; fallbackName only takes the ink if the sprite fails to load.
+	protected void PaintAvatar(notnull Widget row, string discName, string fallbackName, string glyphName, string name)
 	{
-		ELIFE_PhoneStyle.SetColorOf(row, fillName, ELIFE_PhoneStyle.AccentDeepFor(GetScreenState()));
+		Color fill = ELIFE_PhoneStyle.AccentDeepFor(GetScreenState());
+
+		ImageWidget disc = ImageWidget.Cast(row.FindAnyWidget(discName));
+		bool round = false;
+		if (disc)
+		{
+			round = disc.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
+			disc.SetVisible(round);
+			disc.SetColor(fill);
+		}
+
+		Widget fallback = row.FindAnyWidget(fallbackName);
+		if (fallback)
+		{
+			fallback.SetVisible(!round);
+			fallback.SetColor(fill);
+		}
 
 		TextWidget glyph = TextWidget.Cast(row.FindAnyWidget(glyphName));
 		if (!glyph)

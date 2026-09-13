@@ -121,80 +121,20 @@ SizeLayoutWidgetClass {
          Slot OverlayWidgetSlot "{367C8FA811E15173}" {
           HorizontalAlign 3
           VerticalAlign 3
-          Padding 8 5 8 5
+          Padding 8 11 8 11
          }
          {
-          SizeLayoutWidgetClass "{98E01CCFFFE0B633}" {
-           Name "AccountAvatarSize"
-           Slot LayoutSlot "{2AA62336E22E3098}" {
-            VerticalAlign 1
-            Padding 0 0 8 0
-           }
-           AllowWidthOverride 1
-           WidthOverride 24
-           AllowHeightOverride 1
-           HeightOverride 24
-           {
-            OverlayWidgetClass "{751BEE447BA3CBC9}" {
-             Name "AccountAvatar"
-             Slot AlignableSlot "{25FAD0C9D01ECAA7}" {
-              HorizontalAlign 3
-              VerticalAlign 3
-             }
-             {
-              SmartPanelWidgetClass "{8B11CB6A9EA38590}" {
-               Name "AccountAvatarFill"
-               Slot OverlayWidgetSlot "{8E2828644F1CF49C}" {
-                HorizontalAlign 3
-                VerticalAlign 3
-               }
-               Color 0.0159 0.0194 0.0319 1
-               style rounded_6px
-               "no focus" 1
-              }
-              TextWidgetClass "{844FC48555239C47}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-               Name "AccountAvatarGlyph"
-               Slot OverlayWidgetSlot "{8BFCE049AAB0FF3A}" {
-                HorizontalAlign 1
-                VerticalAlign 1
-               }
-               Color 0.8378 0.8626 0.9222 1
-               Text ""
-               "Font Size" 11
-               "Min Font Size" 11
-               "Horizontal Alignment" Center
-               FontProperties FontProperties "{F714C809A2FD68C0}" {
-                Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-               }
-              }
-             }
-            }
-           }
-          }
-          VerticalLayoutWidgetClass "{C353DFAAE2A80AD7}" {
-           Name "AccountCopy"
+          TextWidgetClass "{DBEADE13845971A2}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "AccountName"
            Slot LayoutSlot "{BC1307FF0127B856}" {
             SizeMode Fill
             VerticalAlign 1
            }
-           {
-            TextWidgetClass "{DBEADE13845971A2}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-             Name "AccountName"
-             Color 0.8378 0.8626 0.9222 1
-             Text ""
-             "Font Size" 11
-             "Min Font Size" 10
-             "Horizontal Alignment" Left
-            }
-            TextWidgetClass "{A2E228C2DA978B29}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-             Name "AccountKind"
-             Color 0.366 0.4024 0.5025 1
-             Text ""
-             "Font Size" 9
-             "Min Font Size" 9
-             "Horizontal Alignment" Left
-            }
-           }
+           Color 0.8378 0.8626 0.9222 1
+           Text ""
+           "Font Size" 11
+           "Min Font Size" 10
+           "Horizontal Alignment" Left
           }
           TextWidgetClass "{9529F571946C19A1}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
            Name "AccountBalance"

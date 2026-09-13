@@ -127,9 +127,8 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	protected const ResourceName LAYOUT = "{3F1A6C820D9B4E51}UI/layouts/Menus/Phone/Apps/PhoneContacts.layout";
 	protected const ResourceName LAYOUT_CONTACT_ROW = "{5C2E9A17B4D06F38}UI/layouts/Menus/Phone/Apps/PhoneContactRow.layout";
 
-	//! LoadImageFromSet() fails closed (no image, no error) on an unknown sprite name - "checkmark"
-	//! silently drew nothing before it turned out to be "check".
-	protected const string ICON_FAB_DISC = "circle";
+	//! LoadImageFromSet() fails closed (no image, no error) on an unknown sprite name - "checkmark" silently drew nothing before it turned out to be "check".
+	protected const string ICON_ADD = "plus";
 	protected const string ICON_SAVE = "check";
 	protected const string ICON_MESSAGE = "comments";
 
@@ -137,10 +136,6 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	//! SUBSTATE_DETAIL_PREFIX + contactId.
 	protected const string SUBSTATE_FORM = "new";
 	protected const string SUBSTATE_DETAIL_PREFIX = "c:";
-
-	//! Enforce Script has no string comparison operator, so characters are ranked by index into this
-	//! alphabet; anything not in it (accents, digits, symbols) just sorts after every known letter.
-	protected const string SORT_ALPHABET = "abcdefghijklmnopqrstuvwxyz";
 
 	//! Enforced here, not via EditBoxFilterComponent - the engine refuses to attach that component to
 	//! a bare EditBoxWidget. Only stops a runaway string; the backend still judges the number's shape.
@@ -174,8 +169,6 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	protected Widget m_wMessageIconSize;
 	protected Widget m_wMessageGlyph;
 	protected TextWidget m_wMessageLabel;
-	protected Widget m_wAddFabButton;
-	protected Widget m_wAddFabFrame;
 	protected ScrollLayoutWidget m_wFormScroll;
 	protected ImageWidget m_wFormAvatarDisc;
 	protected Widget m_wFormAvatarFallback;
@@ -289,8 +282,6 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		m_wContactGroups = m_wRoot.FindAnyWidget("ContactGroups");
 		m_wEmptyContacts = m_wRoot.FindAnyWidget("EmptyContacts");
 		m_wIndexTitle = TextWidget.Cast(m_wRoot.FindAnyWidget("LargeTitle"));
-		m_wAddFabButton = m_wRoot.FindAnyWidget("ButtonAddFab");
-		m_wAddFabFrame = m_wRoot.FindAnyWidget("AddFabFrame");
 
 		ELIFE_PhoneStyle.ApplyGlass(m_wRoot.FindAnyWidget("NumberCard"), true);
 		ELIFE_PhoneStyle.ApplyGlass(m_wRoot.FindAnyWidget("DetailCard"), true);
@@ -346,7 +337,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		}
 
 		TrackScroll(m_wContactScroll, m_wIndexTitle);
-		ShowAddFab();
+		ShowAddAction();
 
 		if (!m_Phone)
 			return;
@@ -387,8 +378,6 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		m_wNameFieldMeasure = null;
 		m_wFormError = null;
 		m_sFormError = "";
-		m_wAddFabButton = null;
-		m_wAddFabFrame = null;
 		m_wDetailPage = null;
 		m_wDetailScroll = null;
 		m_wDetailTitle = null;
@@ -451,7 +440,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 			return;
 		}
 
-		array<ref ELIFE_ContactDto> sorted = SortedByLastName();
+		array<ref ELIFE_ContactDto> sorted = ELIFE_PhoneContactBook.SortedByLastName(m_List);
 
 		string currentLetter = "";
 		Widget currentList = null;
@@ -463,7 +452,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 			if (!contact)
 				continue;
 
-			string letter = GroupLetter(contact);
+			string letter = ELIFE_PhoneContactBook.GroupLetter(contact);
 			if (letter != currentLetter || !currentList)
 			{
 				currentLetter = letter;
@@ -481,16 +470,17 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 
 			ELIFE_PhoneStyle.ApplyGlass(row, true);
 
-			SetTextAndColor(row, "ContactName", ContactName(contact), ELIFE_PhoneStyle.TextPrimary());
+			string name = ELIFE_PhoneContactBook.DisplayName(contact);
+			SetTextAndColor(row, "ContactName", name, ELIFE_PhoneStyle.TextPrimary());
 			SetTextAndColor(row, "ContactNumber", contact.number, ELIFE_PhoneStyle.TextSecondary());
-			PaintAvatar(row, "ContactAvatarGlyph", "ContactAvatarFill", ContactName(contact));
+			PaintAvatar(row, "ContactAvatarDisc", "ContactAvatarFallback", "ContactAvatarGlyph", name);
 
 			Widget button = row.FindAnyWidget("ContactButton");
 			if (!button)
 				button = row;
 
 			ELIFE_ContactRowClick click = new ELIFE_ContactRowClick();
-			click.Bind(this, ContactKey(contact));
+			click.Bind(this, ELIFE_PhoneContactBook.KeyFor(contact));
 			button.AddHandler(click);
 			m_aRowClicks.Insert(click);
 		}
@@ -498,121 +488,6 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		//! A refresh can rename or delete the contact an open detail page is showing, so re-read it.
 		if (m_sOpenContactId != "" && !FillDetail())
 			ShowIndex();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Selection sort by last name - an address book is small enough that O(n^2) doesn't matter, and
-	//! Enforce Script has no comparator-based array.Sort() for object arrays.
-	protected array<ref ELIFE_ContactDto> SortedByLastName()
-	{
-		array<ref ELIFE_ContactDto> items = {};
-		foreach (ELIFE_ContactDto contact : m_List.items)
-		{
-			if (contact)
-				items.Insert(contact);
-		}
-
-		array<bool> taken = {};
-		for (int i = 0; i < items.Count(); i++)
-			taken.Insert(false);
-
-		array<ref ELIFE_ContactDto> sorted = {};
-
-		for (int pass = 0; pass < items.Count(); pass++)
-		{
-			int bestIndex = -1;
-			string bestKey = "";
-
-			for (int i = 0; i < items.Count(); i++)
-			{
-				if (taken[i])
-					continue;
-
-				string key = LastName(items.Get(i));
-				if (bestIndex < 0 || CompareNames(key, bestKey) < 0)
-				{
-					bestIndex = i;
-					bestKey = key;
-				}
-			}
-
-			if (bestIndex < 0)
-				break;
-
-			taken[bestIndex] = true;
-			sorted.Insert(items.Get(bestIndex));
-		}
-
-		return sorted;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! strcmp()-style contract: negative if `a` sorts before `b`, positive if after, 0 if equal.
-	protected int CompareNames(string a, string b)
-	{
-		string la = a;
-		la.ToLower();
-
-		string lb = b;
-		lb.ToLower();
-
-		int lenA = la.Length();
-		int lenB = lb.Length();
-
-		int len = lenA;
-		if (lenB < len)
-			len = lenB;
-
-		for (int i = 0; i < len; i++)
-		{
-			string ca = la.Substring(i, 1);
-			string cb = lb.Substring(i, 1);
-
-			if (ca == cb)
-				continue;
-
-			return CharRank(ca) - CharRank(cb);
-		}
-
-		return lenA - lenB;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected int CharRank(string lowerChar)
-	{
-		int rank = SORT_ALPHABET.IndexOf(lowerChar);
-		if (rank < 0)
-			return SORT_ALPHABET.Length();
-
-		return rank;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Last whitespace-separated word of the display name - "Jane Doe" sorts/groups by "Doe". A
-	//! one-word name (or a bare number) has no real last name, so the whole thing stands in for it.
-	protected string LastName(notnull ELIFE_ContactDto contact)
-	{
-		string name = ContactName(contact);
-
-		array<string> words = {};
-		name.Split(" ", words, true);
-
-		if (words.IsEmpty())
-			return name;
-
-		return words.Get(words.Count() - 1);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected string GroupLetter(notnull ELIFE_ContactDto contact)
-	{
-		string last = LastName(contact);
-		if (last.Length() == 0)
-			return "#";
-
-		string letter = last.Substring(0, 1);
-		letter.ToUpper();
-		return letter;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -655,7 +530,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		if (!contact)
 			return false;
 
-		string name = ContactName(contact);
+		string name = ELIFE_PhoneContactBook.DisplayName(contact);
 
 		SetTextAndColor(m_wRoot, "DetailTitle", name, ELIFE_PhoneStyle.TextPrimary());
 		SetTextAndColor(m_wRoot, "DetailNumberLabel", "#ELIFE-Phone_Contacts_Form_Number", ELIFE_PhoneStyle.TextPrimary());
@@ -687,9 +562,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Write mode always paints from the left. The box itself is centered and sized to the string, so
-	//! the caret sits on the right of a centered run of letters instead of a left-aligned line in a
-	//! wide field.
+	//! Box is centered and sized to the string so the caret lands right after a centered run of letters, not mid-way through a wide field.
 	protected void FitNameField()
 	{
 		if (!m_wNameField || !m_wNameFieldSize || !m_wNameFieldMeasure)
@@ -773,7 +646,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		bool round = false;
 		if (disc)
 		{
-			round = disc.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_FAB_DISC);
+			round = disc.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
 			disc.SetVisible(round);
 			disc.SetColor(fill);
 		}
@@ -810,26 +683,6 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! contactId is the stable key; falls back to the number for a contact without one (FindContact
-	//! accepts either).
-	protected string ContactKey(notnull ELIFE_ContactDto contact)
-	{
-		if (contact.contactId != "")
-			return contact.contactId;
-
-		return contact.number;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected string ContactName(notnull ELIFE_ContactDto contact)
-	{
-		if (contact.displayName != "")
-			return contact.displayName;
-
-		return contact.number;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Icon-only circle like the Add FAB, but in MESSAGES' accent since it's a door into that app.
 	protected void ShowMessageAction()
 	{
@@ -847,7 +700,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		bool round = false;
 		if (m_wMessageDisc)
 		{
-			round = m_wMessageDisc.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_FAB_DISC);
+			round = m_wMessageDisc.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
 			m_wMessageDisc.SetVisible(round);
 			m_wMessageDisc.SetColor(fill);
 		}
@@ -859,7 +712,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		}
 
 		if (m_wMessageHover)
-			m_wMessageHover.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_FAB_DISC);
+			m_wMessageHover.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
 
 		bool iconLoaded = false;
 		if (m_wMessageIcon)
@@ -916,7 +769,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 			m_wNavTitle.SetText(GetTitle());
 
 		TrackScroll(m_wContactScroll, m_wIndexTitle);
-		ShowAddFab();
+		ShowAddAction();
 
 		NotifySubStateChanged();
 	}
@@ -936,45 +789,16 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Index page's floating "+", not the shared nav bar action - that pill stays reserved for Save.
-	//! Light glass on the atlas circle sprite; rectangular glass layers would square the button.
-	protected void ShowAddFab()
+	//! Index's commit-free "+" lives in the shared nav trailing pill, same slot the form's "Save" claims.
+	protected void ShowAddAction()
 	{
 		if (!m_AddClick)
 		{
 			m_AddClick = new ELIFE_ContactAddClick();
 			m_AddClick.Bind(this);
-			if (m_wAddFabButton)
-				m_wAddFabButton.AddHandler(m_AddClick);
 		}
 
-		LoadFabCircle("GlassScrim");
-		LoadFabCircle("GlassTint");
-		LoadFabCircle("Background");
-		ELIFE_PhoneStyle.ApplyGlass(m_wAddFabFrame, false, true);
-
-		TextWidget glyph = TextWidget.Cast(m_wRoot.FindAnyWidget("AddFabGlyph"));
-		if (glyph)
-			glyph.SetColor(m_Accent);
-
-		//! Clear explicitly - the index has no nav action, but the slot may still show "Save" from the form.
-		HideNavAction();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void LoadFabCircle(string name)
-	{
-		if (!m_wAddFabFrame)
-			return;
-
-		ImageWidget image = ImageWidget.Cast(m_wAddFabFrame.FindAnyWidget(name));
-		if (!image)
-			return;
-
-		if (!image.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_FAB_DISC))
-			return;
-
-		ELIFE_PhoneStyle.FitIcon(image, 44);
+		ShowNavAction("#ELIFE-Phone_Contacts_Index_Add", m_Accent, m_AddClick, ICON_ADD);
 	}
 
 	//------------------------------------------------------------------------------------------------

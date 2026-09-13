@@ -530,5 +530,37 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
+  CustomStringTableItem "{1D2E3F405162738A}" {
+   Id "ELIFE-Phone_Contacts_Index_Add"
+   Target_en_us "Add"
+   Target_de_de "Hinzufügen"
+   Modified 1789257600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{2E3F405162738A9B}" {
+   Id "ELIFE-Phone_Messages_Add"
+   Target_en_us "Add"
+   Target_de_de "Hinzufügen"
+   Modified 1789257600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{3F405162738A9BAC}" {
+   Id "ELIFE-Phone_Messages_New"
+   Target_en_us "New Message"
+   Target_de_de "Neue Nachricht"
+   Modified 1789257600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{405162738A9BAC1D}" {
+   Id "ELIFE-Phone_Messages_Send"
+   Target_en_us "Send"
+   Target_de_de "Senden"
+   Modified 1789257600
+   Author "Robin"
+   LastChanged "Robin"
+  }
  }
 }

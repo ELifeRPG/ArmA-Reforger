@@ -143,14 +143,24 @@ SizeLayoutWidgetClass {
              }
              {
               SmartPanelWidgetClass "{D1076B7E9F9E4EA3}" {
-               Name "ContactAvatarFill"
+               Name "ContactAvatarFallback"
                Slot OverlayWidgetSlot "{CB66FB3ACBE5864F}" {
                 HorizontalAlign 3
                 VerticalAlign 3
                }
+               "Is Visible" 0
                Color 0.0159 0.0194 0.0319 1
                style rounded_6px
                "no focus" 1
+              }
+              ImageWidgetClass "{D2087C8FA0AF5B41}" {
+               Name "ContactAvatarDisc"
+               Slot OverlayWidgetSlot "{E3198D90B1C06C52}" {
+                HorizontalAlign 1
+                VerticalAlign 1
+               }
+               Color 1 1 1 1
+               Size 24 24
               }
               TextWidgetClass "{532D6577100CFF6B}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
                Name "ContactAvatarGlyph"
