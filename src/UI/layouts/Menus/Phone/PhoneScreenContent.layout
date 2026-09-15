@@ -7,10 +7,10 @@ FrameWidgetClass {
    Slot FrameWidgetSlot "{3B92B4E6FFE672A3}" {
     OffsetLeft 0
     OffsetTop 0
-    SizeX 252
-    OffsetRight -252
-    SizeY 523
-    OffsetBottom -523
+    SizeX 256
+    OffsetRight -256
+    SizeY 552
+    OffsetBottom -552
    }
    {
     SizeLayoutWidgetClass "{8C6C131C64743C5D}" {
@@ -27,9 +27,9 @@ FrameWidgetClass {
       OffsetBottom 0
      }
      AllowWidthOverride 1
-     WidthOverride 252
+     WidthOverride 256
      AllowHeightOverride 1
-     HeightOverride 523
+     HeightOverride 552
     }
    }
   }

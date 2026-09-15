@@ -37,9 +37,22 @@ Do not start a parallel shell. Hook the existing one:
 
 ## Canvases
 
-One authored screen: **252 × 523**. The in-hand menu wraps it in a symmetric 5px
-frame (262 × 533 overall). The world render target is the same 252 × 523 with no
-frame. Enfusion cannot scale a widget tree — do not author a second size set.
+One authored screen: **256 × 552** (≈ 19.5:9), the same ratio as the mesh's screen
+face (84.13 × 181.41 mm). Enfusion cannot scale a widget tree — do not author a
+second size set.
+
+| Surface | Size | Why |
+|---|---|---|
+| Screen canvas (`PhoneScreen`) | 256 × 552 | The one size every app page is laid out at. |
+| World RT (`ContentRT`, `PhoneScreenHost`) | 256 × 552 | Same canvas, no case. Mapped straight onto the screen UVs. |
+| In-hand menu (`PhoneSize`) | 268 × 558 | Screen + 3px case per side, + 3px per side for the side buttons. Height has no button allowance. |
+| LOD screen texture | 512 × 1104 | A 2× bake of the canvas; any size works if it keeps the exact ratio. |
+
+The mesh is the source of truth. The screen face, its 0–1 UVs, the canvas, and the
+LOD bake share one ratio — change one and all of them change together. Size the
+phone in the world by scaling the whole mesh uniformly, which never touches the
+canvas. Case geometry is added *around* the screen: changing the case changes
+`PhoneSize`, never the screen inside it. Canvas pixels stay divisible by 4.
 
 | When | Do |
 |---|---|
@@ -109,10 +122,12 @@ today that is only the home screen's app tiles and card badges. A widget with no
 `GlassGlow` child simply has no glow; accent glass on it behaves exactly like
 dark/light, just recoloured on the scrim.
 
-Radii: `STYLE_RADIUS_ELEMENT` / `STYLE_RADIUS_SCREEN` are `rounded_6px` (engine
-maximum for the case, cards, chips, badges, keys). `STYLE_RADIUS_DETAIL` is
-`rounded_2px` for small inner details a 6px arc would swallow. Reforger ships
-nothing wider. Never fake a round corner with overlapping rectangles.
+Radii: `STYLE_RADIUS_ELEMENT` / `STYLE_RADIUS_SCREEN` are `rounded_6px` (SmartPanel
+maximum — screen, cards, chips, badges, keys). `STYLE_RADIUS_DETAIL` is
+`rounded_2px` for small inner details a 6px arc would swallow. A wider radius exists
+only as sprite pieces from the panel imagesets (corners + edges on `ImageWidget`),
+and is reserved for the case, not for anything on the screen. Never fake a round
+corner with overlapping rectangles.
 
 Altitude is tint lightness + hairline strength, not blur. Three altitudes: content,
 chrome, overlay.
@@ -348,10 +363,18 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
   the Bridge never answered; any real HTTP code is that route's problem. Apps still
   show a loading skeleton for in-flight latency. One Retry: provision if there is no
   identity yet, otherwise re-ask the last failed data.
-- **Case.** Menu canvas draws a thin 5px frame, `rounded_6px`, same specular recipe
-  as the bars. No chin, earpiece, antenna, brand, or side buttons. Home is an
-  on-screen pill, not a physical button and not a full-width band. On the world RT
-  the gadget model is the frame — screen contents only.
+- **Case.** Menu canvas draws a thin, solid, near-black case with a wider radius
+  than the screen, a case-coloured ring over the screen edge so the screen's
+  tighter corner reads as part of it, and flat side buttons as silhouette only. No
+  chin, earpiece, antenna, brand, or specular. Home is an on-screen pill, not a
+  physical button and not a full-width band. Every case-coloured piece is tinted
+  together from `Bezel()` plus a faint blend of the item's case colour — a new
+  piece that is not registered for painting is a bug. Every surface built from the
+  in-hand layout (menu, peek) runs the same case setup; the sprites are loaded in
+  script, so a surface that skips it draws square blocks. Anything the case lays over
+  the screen ignores the cursor. On the world RT the gadget model is the frame —
+  screen contents only, and the screen fits the RT through the mesh's own UVs, not
+  a UV transform on the material.
 
 ## Type, space, motion
 

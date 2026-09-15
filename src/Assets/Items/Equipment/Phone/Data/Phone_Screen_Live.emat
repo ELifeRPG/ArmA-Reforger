@@ -7,11 +7,4 @@ MatPBRBasic {
  RoughnessScale 0.2
  MetalnessScale 0
  BCRMap "$rendertarget"
- GlobalMapsUVTransform MatUVTransform "{6A3749456368CE90}" {
-  TilingU 3.85
-  TilingV -3.85
-  OffsetU -0.22
-  OffsetV 0.415
-  Rotation 90
- }
 }

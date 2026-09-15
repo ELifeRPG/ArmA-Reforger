@@ -8,11 +8,4 @@ MatPBRBasic {
  AOScale 1.5
  EmissiveMap "{6A2320A557854FE2}Assets/Items/Equipment/Phone/Data/phone_screen_LOD.edds"
  BCRMap "{6A2320A557854FE2}Assets/Items/Equipment/Phone/Data/phone_screen_LOD.edds"
- GlobalMapsUVTransform MatUVTransform "{6A38E0C4C3DC7FA0}" {
-  TilingU 3.9
-  TilingV -3.9
-  OffsetU -0.24
-  OffsetV 0.42
-  Rotation 90
- }
 }

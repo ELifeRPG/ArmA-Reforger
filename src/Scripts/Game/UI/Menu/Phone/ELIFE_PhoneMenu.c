@@ -3,7 +3,7 @@
 class ELIFE_PhoneMenu : ChimeraMenuBase
 {
 	protected Widget m_wRoot;
-	protected Widget m_wCaseBezel;
+	protected ref ELIFE_PhoneCase m_Case = new ELIFE_PhoneCase();
 	protected Widget m_wPhoneSize;
 	protected Widget m_wWorldBlur;
 	protected Widget m_wScreenOff;
@@ -33,7 +33,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 
 		ELIFE_PhonePeek.Hide();
 
-		m_wCaseBezel = m_wRoot.FindAnyWidget("BezelBackground");
+		m_Case.Init(m_wRoot);
 		m_wPhoneSize = m_wRoot.FindAnyWidget("PhoneSize");
 		m_wWorldBlur = m_wRoot.FindAnyWidget("WorldBlur");
 		m_wScreenOff = m_wRoot.FindAnyWidget("ScreenOff");
@@ -95,10 +95,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 		if (!m_wRoot)
 			return;
 
-		if (!m_wCaseBezel)
-			m_wCaseBezel = m_wRoot.FindAnyWidget("BezelBackground");
-
-		PaintCase(phone);
+		m_Case.Paint(phone);
 
 		if (!phone)
 			return;
@@ -146,38 +143,6 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	ELIFE_PhoneGadgetComponent GetBoundPhone()
 	{
 		return m_BoundPhone;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Blends the case colour over the OS's neutral bezel, capped so a white/silver phone doesn't wash out lighter than the screen it frames.
-	protected void PaintCase(ELIFE_PhoneGadgetComponent phone)
-	{
-		if (!m_wCaseBezel)
-			return;
-
-		Color baseColor = ELIFE_PhoneStyle.Bezel();
-
-		Color caseColor;
-		if (phone)
-			caseColor = phone.GetCaseColor();
-
-		if (!caseColor)
-		{
-			m_wCaseBezel.SetColor(baseColor);
-			return;
-		}
-
-		Color blended = ELIFE_PhoneStyle.Mix(baseColor, caseColor, 0.08);
-
-		float brightnessCap = 0.16;
-		float maxChannel = Math.Max(blended.R(), Math.Max(blended.G(), blended.B()));
-		if (maxChannel > brightnessCap)
-		{
-			float scale = brightnessCap / maxChannel;
-			blended = new Color(blended.R() * scale, blended.G() * scale, blended.B() * scale, 1);
-		}
-
-		m_wCaseBezel.SetColor(blended);
 	}
 
 	//------------------------------------------------------------------------------------------------

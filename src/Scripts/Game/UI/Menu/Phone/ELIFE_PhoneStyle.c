@@ -152,8 +152,7 @@ class ELIFE_PhoneStyle
 
 	static Color GlassHairline() { return Srgb(0.020, 0.027, 0.043); }       //!< #05070B
 
-	//! The phone case as drawn in the in-hand bezel. Kept plain on purpose.
-	static Color Bezel() { return Srgb(0.071, 0.078, 0.102); }               //!< #12141A
+	static Color Bezel() { return Srgb(0.020, 0.022, 0.026); }               //!< #050607
 
 	//------------------------------------------------------------------------------------------------
 	// Per-app accents - one family, hue rotating, Settings the most desaturated.
@@ -205,6 +204,25 @@ class ELIFE_PhoneStyle
 	//! Reforger's own icon sets. Public so both ELIFE_PhoneScreenShell (app tiles/home cards) and ELIFE_PhoneAppBase (nav actions) can load sprites without duplicating the GUID.
 	static const ResourceName ICON_SET_WRAPPER = "{3262679C50EF4F01}UI/Textures/Icons/icons_wrapperUI.imageset";
 	static const ResourceName ICON_SET_CHAT = "{1872FFA1133724A2}UI/Textures/Chat/chat.imageset";
+
+	//! In-hand case body: 12px-radius 9-slice pieces behind the inset screen.
+	static const ResourceName PANEL_SET_ROUNDED_CORNERS = "{2C22ACD0FB04A283}UI/Imagesets/Panels/panels_roundedCorners.imageset";
+	static const string BEZEL_FRAME_CORNER_TL = "full-12-corner-lefttop";
+	static const string BEZEL_FRAME_CORNER_TR = "full-12-corner-righttop";
+	static const string BEZEL_FRAME_CORNER_BL = "full-12-corner-leftbottom";
+	static const string BEZEL_FRAME_CORNER_BR = "full-12-corner-rightbottom";
+	static const string BEZEL_FRAME_EDGE_TOP = "full-12-corner-top";
+	static const string BEZEL_FRAME_EDGE_BOTTOM = "full-12-corner-bottom";
+	static const string BEZEL_FRAME_EDGE_LEFT = "full-12-corner-center-left";
+	static const string BEZEL_FRAME_EDGE_RIGHT = "full-12-corner-center-right";
+
+	//! Arc bands over the screen corners so its rounded_6px reads closer to the case's 12px radius.
+	static const ResourceName PANEL_SET_ROUNDED_OUTLINE = "{C734D98062E49E2E}UI/Imagesets/Panels/Outline/panels_roundedOutline.imageset";
+	//! 6px tier drawn at 12px on purpose; the 12px tier's band is too thin.
+	static const string SCREEN_ROUND_CORNER_TL = "full-6-corner-lefttop-edge";
+	static const string SCREEN_ROUND_CORNER_TR = "full-6-corner-righttop-edge";
+	static const string SCREEN_ROUND_CORNER_BL = "full-6-corner-leftbottom-edge";
+	static const string SCREEN_ROUND_CORNER_BR = "full-6-corner-rightbottom-edge";
 
 	//! Round shapes must come from the wrapper set's "circle" sprite via LoadImageFromSet() - circleFull.edds and RadialMenuMaskInverse.edds look like filled circles but have no real alpha and draw as opaque squares.
 

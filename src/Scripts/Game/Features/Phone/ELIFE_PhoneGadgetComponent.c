@@ -109,8 +109,8 @@ class ELIFE_PhoneGadgetComponentClass : SCR_GadgetComponentClass
 //! Provisioned against the backend on first equip. Items are not stackable.
 class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 {
-	protected const string BODY_SOURCE_MATERIAL = "Phone_Body_06D0DC3A5800CC7A";
-	protected const string SCREEN_SOURCE_MATERIAL = "Phone_Screen_7D200FDF0E0FC494";
+	protected const string BODY_SOURCE_MATERIAL = "Phone_Body_Graphite";
+	protected const string SCREEN_SOURCE_MATERIAL = "Phone_Screen_Live";
 
 	[Attribute("{32874067CF8A6EB2}Assets/Items/Equipment/Radios/Radio_ANPRC68/Data/Radio_ANPRC68_01.emat", UIWidgets.ResourceNamePicker, "Body material to re-assert on every screen swap (must match this variant's MeshObject body assignment).", "emat", category: "Phone")]
 	protected ResourceName m_sBodyMaterial;

@@ -14,6 +14,7 @@ class ELIFE_PhonePeek
 
 	protected Widget m_wRoot;
 	protected Widget m_wPhoneSize;
+	protected ref ELIFE_PhoneCase m_Case = new ELIFE_PhoneCase();
 	protected ref ELIFE_PhoneScreenShell m_Shell;
 
 	protected float m_fRestLeft, m_fRestTop, m_fRestRight, m_fRestBottom;
@@ -109,6 +110,9 @@ class ELIFE_PhonePeek
 		Widget dimmer = m_wRoot.FindAnyWidget("Dimmer");
 		if (dimmer)
 			dimmer.SetVisible(false);
+
+		m_Case.Init(m_wRoot);
+		m_Case.Paint(phone);
 
 		m_wPhoneSize = m_wRoot.FindAnyWidget("PhoneSize");
 
