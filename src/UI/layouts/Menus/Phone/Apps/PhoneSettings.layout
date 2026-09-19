@@ -19,12 +19,12 @@ OverlayWidgetClass {
       TextWidgetClass "{9E0307C7779F6257}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
        Name "LargeTitle"
        Slot LayoutSlot "{815A9B13E168B89F}" {
-        Padding 12 48 12 10
+        Padding 24 96 24 20
        }
        Color 0.8378 0.8626 0.9222 1
        Text ""
-       "Font Size" 20
-       "Min Font Size" 20
+       "Font Size" 40
+       "Min Font Size" 40
        "Horizontal Alignment" Left
        FontProperties FontProperties "{9B19FA7F5B63FE06}" {
         Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -33,18 +33,18 @@ OverlayWidgetClass {
       TextWidgetClass "{E0C4EEC4DC2D0649}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
        Name "SectionDevice"
        Slot LayoutSlot "{D7C027C8165232A3}" {
-        Padding 14 0 14 4
+        Padding 28 0 28 8
        }
        Color 0.1715 0.1942 0.2664 1
        Text "#ELIFE-Phone_Settings_Section_Device"
-       "Font Size" 9
-       "Min Font Size" 9
+       "Font Size" 18
+       "Min Font Size" 18
        "Horizontal Alignment" Left
       }
       OverlayWidgetClass "{8FE2EAC41A9471CE}" {
        Name "DeviceCard"
        Slot LayoutSlot "{FF856BE3B9240315}" {
-        Padding 12 0 12 0
+        Padding 24 0 24 0
        }
        {
         BlurWidgetClass "{A81C3E47D2B94F01}" {
@@ -63,7 +63,7 @@ OverlayWidgetClass {
           VerticalAlign 3
          }
          Color 0.004 0.0048 0.0075 0.55
-         style rounded_6px
+         style rounded_12px
          "no focus" 1
         }
         SmartPanelWidgetClass "{D03BB1CD759CB9E1}" {
@@ -73,7 +73,7 @@ OverlayWidgetClass {
           VerticalAlign 3
          }
          Color 0.5837 0.6453 0.8073 0.14
-         style rounded_6px
+         style rounded_12px
          "no focus" 1
         }
         SizeLayoutWidgetClass "{F25DD3EF97BED103}" {
@@ -81,10 +81,10 @@ OverlayWidgetClass {
          Slot OverlayWidgetSlot "{036EE4F0A8CFE214}" {
           HorizontalAlign 3
           VerticalAlign 0
-          Padding 6 0 6 0
+          Padding 12 0 12 0
          }
          AllowHeightOverride 1
-         HeightOverride 1
+         HeightOverride 2
          {
           ImageWidgetClass "{147FF501B9D0F325}" {
            Name "GlassSpecular"
@@ -101,10 +101,10 @@ OverlayWidgetClass {
          Slot OverlayWidgetSlot "{47A22834ECF32658}" {
           HorizontalAlign 3
           VerticalAlign 2
-          Padding 6 0 6 0
+          Padding 12 0 12 0
          }
          AllowHeightOverride 1
-         HeightOverride 1
+         HeightOverride 2
          {
           ImageWidgetClass "{58B33945FD043769}" {
            Name "GlassHairline"
@@ -129,7 +129,7 @@ OverlayWidgetClass {
             SizeMode Fill
            }
            AllowHeightOverride 1
-           HeightOverride 30
+           HeightOverride 60
            {
             OverlayWidgetClass "{4357B875B9D20B7F}" {
              Name "NumberRow"
@@ -143,7 +143,7 @@ OverlayWidgetClass {
                Slot OverlayWidgetSlot "{562A7C7E33AEEED1}" {
                 HorizontalAlign 3
                 VerticalAlign 3
-                Padding 10 0 10 0
+                Padding 20 0 20 0
                }
                {
                 TextWidgetClass "{4472BB6E1BBA3D6C}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
@@ -154,18 +154,18 @@ OverlayWidgetClass {
                  }
                  Color 0.8378 0.8626 0.9222 1
                  Text "#ELIFE-Phone_Settings_Number"
-                 "Font Size" 11
-                 "Min Font Size" 10
+                 "Font Size" 22
+                 "Min Font Size" 20
                  "Horizontal Alignment" Left
                 }
                 SizeLayoutWidgetClass "{C939E7D7229B3584}" {
                  Name "NumberValueSize"
                  Slot LayoutSlot "{6CE3AB6B5DB74853}" {
                   VerticalAlign 1
-                  Padding 8 0 0 0
+                  Padding 16 0 0 0
                  }
                  AllowWidthOverride 1
-                 WidthOverride 108
+                 WidthOverride 216
                  {
                   TextWidgetClass "{2EC2F83B5F6E2433}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
                    Name "NumberValue"
@@ -175,8 +175,8 @@ OverlayWidgetClass {
                    }
                    Color 0.366 0.4024 0.5025 1
                    Text ""
-                   "Font Size" 10
-                   "Min Font Size" 10
+                   "Font Size" 20
+                   "Min Font Size" 20
                    "Horizontal Alignment" 2
                    FontProperties FontProperties "{271F63BB52085230}" {
                     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -191,10 +191,10 @@ OverlayWidgetClass {
                Slot OverlayWidgetSlot "{03411DD9D40E5DE6}" {
                 HorizontalAlign 3
                 VerticalAlign 2
-                Padding 10 0 0 0
+                Padding 20 0 0 0
                }
                AllowHeightOverride 1
-               HeightOverride 1
+               HeightOverride 2
                {
                 ImageWidgetClass "{BD2DE217D3B741AE}" {
                  Name "RowHairline"
@@ -216,25 +216,25 @@ OverlayWidgetClass {
             SizeMode Fill
            }
            AllowHeightOverride 1
-           HeightOverride 46
+           HeightOverride 92
            {
             VerticalLayoutWidgetClass "{A6642413CB0FF0C1}" {
              Name "DeviceIdRowBody"
              Slot AlignableSlot "{F6512D5D13AE4072}" {
               HorizontalAlign 3
               VerticalAlign 1
-              Padding 10 0 10 0
+              Padding 20 0 20 0
              }
              {
               TextWidgetClass "{471D0CA6DB4F3BFF}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
                Name "DeviceIdLabel"
                Slot LayoutSlot "{F5FF837BA80EBAB5}" {
-                Padding 0 0 0 3
+                Padding 0 0 0 6
                }
                Color 0.8378 0.8626 0.9222 1
                Text "#ELIFE-Phone_Settings_DeviceId"
-               "Font Size" 11
-               "Min Font Size" 10
+               "Font Size" 22
+               "Min Font Size" 20
                "Horizontal Alignment" Left
               }
               TextWidgetClass "{CAAA76573DE3E377}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
@@ -244,8 +244,8 @@ OverlayWidgetClass {
                }
                Color 0.366 0.4024 0.5025 1
                Text ""
-               "Font Size" 10
-               "Min Font Size" 10
+               "Font Size" 20
+               "Min Font Size" 20
                "Horizontal Alignment" Left
                FontProperties FontProperties "{4C35E29B3C329D15}" {
                 Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -262,18 +262,18 @@ OverlayWidgetClass {
       TextWidgetClass "{07090D1FCB317CF0}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
        Name "SectionSecurity"
        Slot LayoutSlot "{2AD62D9CF626D8AF}" {
-        Padding 14 16 14 4
+        Padding 28 32 28 8
        }
        Color 0.1715 0.1942 0.2664 1
        Text "#ELIFE-Phone_Settings_Section_Security"
-       "Font Size" 9
-       "Min Font Size" 9
+       "Font Size" 18
+       "Min Font Size" 18
        "Horizontal Alignment" Left
       }
       OverlayWidgetClass "{C74D4FFD3C6627F9}" {
        Name "SecurityCard"
        Slot LayoutSlot "{7DA1B4A6428CA2B7}" {
-        Padding 12 0 12 30
+        Padding 24 0 24 60
        }
        {
         BlurWidgetClass "{7AD55B671F26598B}" {
@@ -292,7 +292,7 @@ OverlayWidgetClass {
           VerticalAlign 3
          }
          Color 0.004 0.0048 0.0075 0.55
-         style rounded_6px
+         style rounded_12px
          "no focus" 1
         }
         SmartPanelWidgetClass "{9CF77D8931487BAD}" {
@@ -302,7 +302,7 @@ OverlayWidgetClass {
           VerticalAlign 3
          }
          Color 0.5837 0.6453 0.8073 0.14
-         style rounded_6px
+         style rounded_12px
          "no focus" 1
         }
         SizeLayoutWidgetClass "{BE199FAB536A9DCF}" {
@@ -310,10 +310,10 @@ OverlayWidgetClass {
          Slot OverlayWidgetSlot "{CF2AA0BC647BAED0}" {
           HorizontalAlign 3
           VerticalAlign 0
-          Padding 6 0 6 0
+          Padding 12 0 12 0
          }
          AllowHeightOverride 1
-         HeightOverride 1
+         HeightOverride 2
          {
           ImageWidgetClass "{D03BB1CD758CBF01}" {
            Name "GlassSpecular"
@@ -330,10 +330,10 @@ OverlayWidgetClass {
          Slot OverlayWidgetSlot "{036DD4F0A8BFE204}" {
           HorizontalAlign 3
           VerticalAlign 2
-          Padding 6 0 6 0
+          Padding 12 0 12 0
          }
          AllowHeightOverride 1
-         HeightOverride 1
+         HeightOverride 2
          {
           ImageWidgetClass "{147EE501B9C0F315}" {
            Name "GlassHairline"
@@ -358,7 +358,7 @@ OverlayWidgetClass {
             SizeMode Fill
            }
            AllowHeightOverride 1
-           HeightOverride 30
+           HeightOverride 60
            {
             OverlayWidgetClass "{070FB0730048AA8A}" {
              Name "PinRow"
@@ -372,7 +372,7 @@ OverlayWidgetClass {
                Slot OverlayWidgetSlot "{6A94DAD1EC2A3AAD}" {
                 HorizontalAlign 3
                 VerticalAlign 3
-                Padding 10 0 10 0
+                Padding 20 0 20 0
                }
                {
                 TextWidgetClass "{ACE38A248676C362}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
@@ -383,18 +383,18 @@ OverlayWidgetClass {
                  }
                  Color 0.8378 0.8626 0.9222 1
                  Text "#ELIFE-Phone_Settings_Pin"
-                 "Font Size" 11
-                 "Min Font Size" 10
+                 "Font Size" 22
+                 "Min Font Size" 20
                  "Horizontal Alignment" Left
                 }
                 SizeLayoutWidgetClass "{D59460EB9A2C5ABD}" {
                  Name "PinValueSize"
                  Slot LayoutSlot "{F2B3CE8B0A6C02D8}" {
                   VerticalAlign 1
-                  Padding 8 0 0 0
+                  Padding 16 0 0 0
                  }
                  AllowWidthOverride 1
-                 WidthOverride 108
+                 WidthOverride 216
                  {
                   TextWidgetClass "{FC19ADA519C3BAB9}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
                    Name "PinValue"
@@ -404,8 +404,8 @@ OverlayWidgetClass {
                    }
                    Color 0.366 0.4024 0.5025 1
                    Text ""
-                   "Font Size" 10
-                   "Min Font Size" 10
+                   "Font Size" 20
+                   "Min Font Size" 20
                    "Horizontal Alignment" 2
                    FontProperties FontProperties "{58661ACA559E543D}" {
                     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -420,10 +420,10 @@ OverlayWidgetClass {
                Slot OverlayWidgetSlot "{60CCF427BF8CA9AD}" {
                 HorizontalAlign 3
                 VerticalAlign 2
-                Padding 10 0 0 0
+                Padding 20 0 0 0
                }
                AllowHeightOverride 1
-               HeightOverride 1
+               HeightOverride 2
                {
                 ImageWidgetClass "{95C2D41DEBAA84A2}" {
                  Name "RowHairline"
@@ -445,7 +445,7 @@ OverlayWidgetClass {
             SizeMode Fill
            }
            AllowHeightOverride 1
-           HeightOverride 30
+           HeightOverride 60
            {
             ButtonWidgetClass "{F4F9EC3FB86ABA19}" {
              Name "ButtonLock"
@@ -480,7 +480,7 @@ OverlayWidgetClass {
                   VerticalAlign 3
                  }
                  Color 0 0 0 0
-                 style rounded_6px
+                 style rounded_12px
                  "no focus" 1
                 }
                 HorizontalLayoutWidgetClass "{BE63C1B0E1F87795}" {
@@ -488,7 +488,7 @@ OverlayWidgetClass {
                  Slot OverlayWidgetSlot "{BDC4DA1EF9D488C2}" {
                   HorizontalAlign 3
                   VerticalAlign 3
-                  Padding 10 0 10 0
+                  Padding 20 0 20 0
                  }
                  {
                   TextWidgetClass "{D3297ACC217A75DE}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
@@ -499,20 +499,20 @@ OverlayWidgetClass {
                    }
                    Color 0.3814 0.4395 0.5771 1
                    Text "#ELIFE-Phone_Settings_Lock"
-                   "Font Size" 11
-                   "Min Font Size" 10
+                   "Font Size" 22
+                   "Min Font Size" 20
                    "Horizontal Alignment" Left
                   }
                   TextWidgetClass "{E1AA066E18FF8D63}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
                    Name "LockChevron"
                    Slot LayoutSlot "{3E047F93B187CB25}" {
                     VerticalAlign 1
-                    Padding 8 0 0 0
+                    Padding 16 0 0 0
                    }
                    Color 0.1715 0.1942 0.2664 1
                    Text "›"
-                   "Font Size" 15
-                   "Min Font Size" 15
+                   "Font Size" 30
+                   "Min Font Size" 30
                    "Horizontal Alignment" 2
                    FontProperties FontProperties "{94349CCF944F5D7E}" {
                     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"

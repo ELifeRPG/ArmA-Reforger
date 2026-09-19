@@ -26,12 +26,12 @@ OverlayWidgetClass {
         TextWidgetClass "{19FA03A661456864}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
          Name "LargeTitle"
          Slot LayoutSlot "{A18D57DF5E7D9411}" {
-          Padding 12 48 12 8
+          Padding 24 96 24 16
          }
          Color 0.8378 0.8626 0.9222 1
          Text ""
-         "Font Size" 20
-         "Min Font Size" 20
+         "Font Size" 40
+         "Min Font Size" 40
          "Horizontal Alignment" Left
          FontProperties FontProperties "{C487B47AB94172ED}" {
           Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -40,7 +40,7 @@ OverlayWidgetClass {
         VerticalLayoutWidgetClass "{15E50214AA25CC48}" {
          Name "ThreadGroups"
          Slot LayoutSlot "{329696566F576A89}" {
-          Padding 12 0 12 30
+          Padding 24 0 24 60
          }
         }
        }
@@ -52,7 +52,7 @@ OverlayWidgetClass {
      Slot OverlayWidgetSlot "{E41FFE1085AABFA5}" {
       HorizontalAlign 1
       VerticalAlign 1
-      Padding 20 0 20 0
+      Padding 40 0 40 0
      }
      "Is Visible" 0
      {
@@ -60,12 +60,12 @@ OverlayWidgetClass {
        Name "EmptyTitle"
        Slot LayoutSlot "{BC05C9993516259E}" {
         HorizontalAlign 1
-        Padding 0 0 0 4
+        Padding 0 0 0 8
        }
        Color 0.8378 0.8626 0.9222 1
        Text "#ELIFE-Phone_Messages_None"
-       "Font Size" 15
-       "Min Font Size" 14
+       "Font Size" 30
+       "Min Font Size" 28
        "Horizontal Alignment" Center
        FontProperties FontProperties "{20092634B67CF7B1}" {
         Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -78,8 +78,8 @@ OverlayWidgetClass {
        }
        Color 0.366 0.4024 0.5025 1
        Text "#ELIFE-Phone_Messages_NoneHint"
-       "Font Size" 10
-       "Min Font Size" 9
+       "Font Size" 20
+       "Min Font Size" 18
        "Horizontal Alignment" Center
       }
      }
@@ -112,7 +112,7 @@ OverlayWidgetClass {
         VerticalLayoutWidgetClass "{708192A3B4C5D6E7}" {
          Name "PickerGroups"
          Slot LayoutSlot "{8192A3B4C5D6E7F8}" {
-          Padding 12 48 12 30
+          Padding 24 96 24 60
          }
         }
        }
@@ -124,7 +124,7 @@ OverlayWidgetClass {
      Slot OverlayWidgetSlot "{A3B4C5D6E7F8091A}" {
       HorizontalAlign 1
       VerticalAlign 1
-      Padding 20 0 20 0
+      Padding 40 0 40 0
      }
      "Is Visible" 0
      {
@@ -132,12 +132,12 @@ OverlayWidgetClass {
        Name "EmptyPickerTitle"
        Slot LayoutSlot "{C5D6E7F8091A2B3C}" {
         HorizontalAlign 1
-        Padding 0 0 0 4
+        Padding 0 0 0 8
        }
        Color 0.8378 0.8626 0.9222 1
        Text "#ELIFE-Phone_Contacts_None"
-       "Font Size" 15
-       "Min Font Size" 14
+       "Font Size" 30
+       "Min Font Size" 28
        "Horizontal Alignment" Center
        FontProperties FontProperties "{D6E7F8091A2B3C4D}" {
         Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -150,8 +150,8 @@ OverlayWidgetClass {
        }
        Color 0.366 0.4024 0.5025 1
        Text "#ELIFE-Phone_Contacts_NoneHint"
-       "Font Size" 10
-       "Min Font Size" 9
+       "Font Size" 20
+       "Min Font Size" 18
        "Horizontal Alignment" Center
       }
      }
@@ -184,41 +184,30 @@ OverlayWidgetClass {
         VerticalLayoutWidgetClass "{BE4C9A3DECB1200E}" {
          Name "ThreadHeader"
          Slot LayoutSlot "{085E18AF3253D2DF}" {
-          Padding 12 48 12 10
+          Padding 24 96 24 20
          }
          {
           TextWidgetClass "{45B433150A974401}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
            Name "ThreadTitle"
            Color 0.8378 0.8626 0.9222 1
            Text ""
-           "Font Size" 20
-           "Min Font Size" 20
+           "Font Size" 40
+           "Min Font Size" 40
            "Horizontal Alignment" Left
            FontProperties FontProperties "{69AAEAEF9F9981BD}" {
             Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
            }
-          }
-          TextWidgetClass "{6D052BBE828B0F10}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-           Name "ThreadSubtitle"
-           Slot LayoutSlot "{2906613CC3223965}" {
-            Padding 0 2 0 0
-           }
-           Color 0.366 0.4024 0.5025 1
-           Text ""
-           "Font Size" 10
-           "Min Font Size" 9
-           "Horizontal Alignment" Left
           }
          }
         }
         SizeLayoutWidgetClass "{78814E5CE4A1463E}" {
          Name "ThreadAddContactSize"
          Slot LayoutSlot "{4BE1BA38268084C6}" {
-          Padding 12 4 12 8
+          Padding 24 8 24 16
          }
          "Is Visible" 0
          AllowHeightOverride 1
-         HeightOverride 62
+         HeightOverride 124
          {
           HorizontalLayoutWidgetClass "{4B3B16A72E5F8CA1}" {
            Name "ThreadAddContactRow"
@@ -233,7 +222,7 @@ OverlayWidgetClass {
               HorizontalAlign 0
              }
              AllowWidthOverride 1
-             WidthOverride 60
+             WidthOverride 120
              {
               ButtonWidgetClass "{10B79A59E5B41FE9}" {
                Name "ButtonAddContact"
@@ -267,9 +256,9 @@ OverlayWidgetClass {
                     HorizontalAlign 1
                    }
                    AllowWidthOverride 1
-                   WidthOverride 40
+                   WidthOverride 80
                    AllowHeightOverride 1
-                   HeightOverride 40
+                   HeightOverride 80
                    {
                     OverlayWidgetClass "{3B0CCDDDBC6BEFB5}" {
                      Name "AddContactFrame"
@@ -286,7 +275,7 @@ OverlayWidgetClass {
                        }
                        "Is Visible" 0
                        Color 1 1 1 1
-                       style rounded_6px
+                       style rounded_12px
                        "no focus" 1
                       }
                       ImageWidgetClass "{40177F8EBEC0DD8E}" {
@@ -296,7 +285,7 @@ OverlayWidgetClass {
                         VerticalAlign 1
                        }
                        Color 1 1 1 1
-                       Size 40 40
+                       Size 80 80
                       }
                       ImageWidgetClass "{75597391FE7C86F8}" {
                        Name "Background"
@@ -305,7 +294,7 @@ OverlayWidgetClass {
                         VerticalAlign 1
                        }
                        Color 0 0 0 0
-                       Size 40 40
+                       Size 80 80
                       }
                       SizeLayoutWidgetClass "{D8FE2B45190F408F}" {
                        Name "AddContactIconSize"
@@ -315,9 +304,9 @@ OverlayWidgetClass {
                        }
                        "Is Visible" 0
                        AllowWidthOverride 1
-                       WidthOverride 16
+                       WidthOverride 32
                        AllowHeightOverride 1
-                       HeightOverride 16
+                       HeightOverride 32
                        {
                         ImageWidgetClass "{6259006F95039D4D}" {
                          Name "AddContactIcon"
@@ -326,7 +315,7 @@ OverlayWidgetClass {
                           VerticalAlign 1
                          }
                          Color 0.925 0.937 0.965 1
-                         Size 16 16
+                         Size 32 32
                         }
                        }
                       }
@@ -339,8 +328,8 @@ OverlayWidgetClass {
                        "Is Visible" 0
                        Color 0.925 0.937 0.965 1
                        Text "…"
-                       "Font Size" 16
-                       "Min Font Size" 16
+                       "Font Size" 32
+                       "Min Font Size" 32
                        "Horizontal Alignment" Center
                        FontProperties FontProperties "{CF8E6BA74355E53B}" {
                         Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -354,12 +343,12 @@ OverlayWidgetClass {
                    Name "AddContactLabel"
                    Slot LayoutSlot "{E8B94DB26D198F64}" {
                     HorizontalAlign 1
-                    Padding 0 3 0 0
+                    Padding 0 6 0 0
                    }
                    Color 0.366 0.4024 0.5025 1
                    Text "#ELIFE-Phone_Messages_AddContact"
-                   "Font Size" 9
-                   "Min Font Size" 9
+                   "Font Size" 18
+                   "Min Font Size" 18
                    "Horizontal Alignment" Center
                   }
                  }
@@ -375,7 +364,7 @@ OverlayWidgetClass {
         VerticalLayoutWidgetClass "{2243CFE6876FF9E0}" {
          Name "MessageList"
          Slot LayoutSlot "{0C4CFA44D9118CB8}" {
-          Padding 12 0 12 66
+          Padding 24 0 24 132
          }
         }
        }
@@ -387,10 +376,10 @@ OverlayWidgetClass {
      Slot OverlayWidgetSlot "{B6AFE2B263738065}" {
       HorizontalAlign 3
       VerticalAlign 2
-      Padding 12 0 12 22
+      Padding 24 0 24 44
      }
      AllowHeightOverride 1
-     HeightOverride 34
+     HeightOverride 68
      {
       OverlayWidgetClass "{683EC2736465A4B5}" {
        Name "ComposeBar"
@@ -416,7 +405,7 @@ OverlayWidgetClass {
           VerticalAlign 3
          }
          Color 0.004 0.0048 0.0075 0.55
-         style rounded_6px
+         style rounded_12px
          "no focus" 1
         }
         SmartPanelWidgetClass "{8ED366449664177B}" {
@@ -426,7 +415,7 @@ OverlayWidgetClass {
           VerticalAlign 3
          }
          Color 0.5837 0.6453 0.8073 0.14
-         style rounded_6px
+         style rounded_12px
          "no focus" 1
         }
         SizeLayoutWidgetClass "{B8392B78C8FA4E60}" {
@@ -434,10 +423,10 @@ OverlayWidgetClass {
          Slot OverlayWidgetSlot "{5ED1CB498941B250}" {
           HorizontalAlign 3
           VerticalAlign 0
-          Padding 6 0 6 0
+          Padding 12 0 12 0
          }
          AllowHeightOverride 1
-         HeightOverride 1
+         HeightOverride 2
          {
           ImageWidgetClass "{74245ABBE2C40BB7}" {
            Name "GlassSpecular"
@@ -454,10 +443,10 @@ OverlayWidgetClass {
          Slot OverlayWidgetSlot "{C7BE516331F3D4ED}" {
           HorizontalAlign 3
           VerticalAlign 2
-          Padding 6 0 6 0
+          Padding 12 0 12 0
          }
          AllowHeightOverride 1
-         HeightOverride 1
+         HeightOverride 2
          {
           ImageWidgetClass "{18B6935D1F5BA0B8}" {
            Name "GlassHairline"
@@ -474,7 +463,7 @@ OverlayWidgetClass {
          Slot OverlayWidgetSlot "{771F0DBFF4C7423B}" {
           HorizontalAlign 3
           VerticalAlign 3
-          Padding 8 4 4 4
+          Padding 16 8 8 8
          }
          {
           EditBoxWidgetClass "{9E21E06FEE3F302F}" {
@@ -488,7 +477,7 @@ OverlayWidgetClass {
             SCR_EventHandlerComponent "{5C3BFF716443F052}" {
             }
            }
-           "Font Size" 11
+           "Font Size" 22
            "Use placeholder text" 1
            "Placeholder text" "#ELIFE-Phone_Messages_ComposePlaceholder"
           }
@@ -498,7 +487,7 @@ OverlayWidgetClass {
             VerticalAlign 3
            }
            AllowWidthOverride 1
-           WidthOverride 44
+           WidthOverride 88
            {
             ButtonWidgetClass "{879ADA174E509526}" {
              Name "ButtonSend"
@@ -533,7 +522,7 @@ OverlayWidgetClass {
                   VerticalAlign 3
                  }
                  Color 0 0 0 0
-                 style rounded_6px
+                 style rounded_12px
                  "no focus" 1
                 }
                 HorizontalLayoutWidgetClass "{AE8DAEC6974E85A3}" {
@@ -541,20 +530,20 @@ OverlayWidgetClass {
                  Slot OverlayWidgetSlot "{28032DACBDEB59DE}" {
                   HorizontalAlign 1
                   VerticalAlign 1
-                  Padding 6 0 6 0
+                  Padding 12 0 12 0
                  }
                  {
                   SizeLayoutWidgetClass "{886ED8C1D22CA090}" {
                    Name "SendIconSize"
                    Slot LayoutSlot "{0F9F0637199F6FE7}" {
                     VerticalAlign 1
-                    Padding 0 0 3 0
+                    Padding 0 0 6 0
                    }
                    "Is Visible" 0
                    AllowWidthOverride 1
-                   WidthOverride 9
+                   WidthOverride 18
                    AllowHeightOverride 1
-                   HeightOverride 9
+                   HeightOverride 18
                    {
                     ImageWidgetClass "{C7CAD22DA16F8CBB}" {
                      Name "SendIcon"
@@ -564,7 +553,7 @@ OverlayWidgetClass {
                      }
                      Color 0.373 0.761 0.494 1
                      Texture "{1872FFA1133724A2}UI/Textures/Chat/chat.imageset"
-                     Size 9 9
+                     Size 18 18
                     }
                    }
                   }
@@ -575,8 +564,8 @@ OverlayWidgetClass {
                    }
                    Color 0.373 0.761 0.494 1
                    Text "#ELIFE-Phone_Messages_Send"
-                   "Font Size" 9
-                   "Min Font Size" 9
+                   "Font Size" 18
+                   "Min Font Size" 18
                    "Horizontal Alignment" Left
                   }
                  }
@@ -598,7 +587,7 @@ OverlayWidgetClass {
      Slot OverlayWidgetSlot "{26AB4E69D3DA8F0E}" {
       HorizontalAlign 1
       VerticalAlign 1
-      Padding 20 0 20 0
+      Padding 40 0 40 0
      }
      "Is Visible" 0
      {
@@ -609,8 +598,8 @@ OverlayWidgetClass {
        }
        Color 0.366 0.4024 0.5025 1
        Text "#ELIFE-Phone_Messages_EmptyThread"
-       "Font Size" 10
-       "Min Font Size" 10
+       "Font Size" 20
+       "Min Font Size" 20
        "Horizontal Alignment" Center
       }
      }

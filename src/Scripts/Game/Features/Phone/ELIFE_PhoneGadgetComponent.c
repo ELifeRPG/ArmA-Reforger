@@ -31,7 +31,7 @@ enum ELIFE_EContactSaveResult
 }
 
 //------------------------------------------------------------------------------------------------
-//! How a send landed. UNDELIVERABLE means the API committed it (200) but named recipients who'll never get it - not the same as FAILED.
+//! UNDELIVERABLE: the API accepted it, but some recipients will never get it.
 enum ELIFE_EMessageSendResult
 {
 	SENT,
@@ -41,7 +41,14 @@ enum ELIFE_EMessageSendResult
 }
 
 //------------------------------------------------------------------------------------------------
-//! A subscriber number, client-side - mirrors just enough of the backend PhoneNumber's rule to reject an obviously malformed entry without a round trip.
+enum ELIFE_EUnlockResult
+{
+	WRONG,
+	BLOCKED
+}
+
+//------------------------------------------------------------------------------------------------
+//! Client-side sanity check for a subscriber number; the backend has the real rule.
 class ELIFE_PhoneNumber
 {
 	static const int DIGIT_COUNT = 8;
@@ -51,7 +58,7 @@ class ELIFE_PhoneNumber
 	protected static const string SEPARATORS = " -()/.";
 
 	//------------------------------------------------------------------------------------------------
-	//! True when raw holds exactly DIGIT_COUNT digits, ignoring an optional leading "+" and separators - says nothing about whether it's assigned to a phone.
+	//! Exactly DIGIT_COUNT digits, ignoring a leading "+" and separators.
 	static bool IsWellFormed(string raw)
 	{
 		int length = raw.Length();
@@ -105,8 +112,7 @@ class ELIFE_PhoneGadgetComponentClass : SCR_GadgetComponentClass
 }
 
 //------------------------------------------------------------------------------------------------
-//! Handheld phone gadget. Identity is this component (SPECIALIST_ITEM), never EGadgetType.GPS.
-//! Provisioned against the backend on first equip. Items are not stackable.
+//! Handheld phone gadget (SPECIALIST_ITEM). Provisioned against the backend on first equip.
 class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 {
 	protected const string BODY_SOURCE_MATERIAL = "Phone_Body_Graphite";
@@ -127,15 +133,30 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[Attribute("2", UIWidgets.EditBox, "Intensity of the emissive pulse layered on top of the active screen material.", "0 20", category: "Phone")]
 	protected float m_fScreenEmissiveIntensity;
 
-	[Attribute("0.03 0.03 0.035 1", UIWidgets.ColorPicker, "Case color tint applied to the phone menu UI bezel (should roughly match this variant's body material).", category: "Phone")]
-	protected ref Color m_CaseColor;
-
 	[RplProp(onRplName: "OnPhoneIdUpdated")]
 	protected string m_sPhoneId;
 
-	//! Not [RplProp] - a plain RplProp has no owner-only filter, so it'd leak the real number/PIN to bystanders. Pushed via PushIdentity()/ApplyIdentity() instead.
+	//! What this machine displays: the real identity for the registered owner, redacted for everyone else.
 	protected string m_sNumber;
 	protected string m_sPin;
+	protected bool m_bHasRealIdentity;
+
+	//! Safe for everyone, and an RplProp so late joiners and streamed-in phones get it too.
+	[RplProp(onRplName: "ApplyRedactedIdentity")]
+	protected string m_sRedactedPin;
+
+	//! Server-only. The real identity, only ever sent to the registered owner.
+	protected string m_sServerNumber;
+	protected string m_sServerPin;
+	protected string m_sServerOwnerCharacterId;
+
+	//! Server-only. The server is the only one allowed to take the phone off the lock screen.
+	protected bool m_bPinLocked;
+	protected int m_iUnlockFailures;
+	protected float m_fUnlockBlockedUntil;
+
+	protected const int UNLOCK_MAX_FAILURES = 5;
+	protected const float UNLOCK_COOLDOWN_MS = 30000;
 
 	protected ref ELIFE_ProvisionPhoneCallback m_ProvisionCallback;
 	protected ref ELIFE_BaseRestCallback m_PowerOnCallback;
@@ -155,51 +176,52 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//! Fires with the data key whenever this machine's copy or its status changes - apps re-render off it.
 	ref ScriptInvoker m_OnDataChanged = new ScriptInvoker();
 
-	//! Fires with the new EPhoneScreenState whenever the screen state actually lands on this machine - both the in-hand menu and the world screen render off it.
+	//! Fires when the screen state lands on this machine.
 	ref ScriptInvoker m_OnScreenStateChanged = new ScriptInvoker();
 
-	//! Fires once this phone's provisioned identity (id/number/PIN) lands or changes - provisioning finishes after the phone is first drawn, so UI must re-read rather than sample once.
+	//! Fires when the provisioned identity lands; it usually arrives after the first draw.
 	ref ScriptInvoker m_OnIdentityChanged = new ScriptInvoker();
 
-	//! Fires (ELIFE_EContactSaveResult) once a SaveContact() call resolves - separate from m_OnDataChanged so the form knows whether *its* submission landed.
+	//! Fires with ELIFE_EContactSaveResult when a SaveContact() call resolves.
 	ref ScriptInvoker m_OnContactSaveResult = new ScriptInvoker();
 
-	//! Fires (ELIFE_EMessageSendResult, threadId) once a SendMessage() call resolves; threadId is empty on failure, else the (possibly new) thread the message landed in.
+	//! Fires with (ELIFE_EUnlockResult, retryInMs) when the server rejects a PIN. Success arrives as a state change.
+	ref ScriptInvoker m_OnUnlockRejected = new ScriptInvoker();
+
+	//! Fires with (ELIFE_EMessageSendResult, threadId) when a send resolves; threadId is empty on failure.
 	ref ScriptInvoker m_OnMessageSendResult = new ScriptInvoker();
 
-	//! True once a Bridge request comes back with no real HTTP answer (curl-level failure, HTTP=0) and no later request has since gotten one - see ELIFE_PhoneScreenShell's OfflineScreen.
+	//! True after a Bridge request got no HTTP answer at all, until one does.
 	[RplProp(onRplName: "OnConnectivityUpdated")]
 	protected bool m_bOffline;
 
 	ref ScriptInvoker m_OnConnectivityChanged = new ScriptInvoker();
 
-	//! Whether the notification hub is open over the screen. Replicated for the same reason the screen
-	//! state is: the world render target has to be showing what the owner is actually looking at.
+	//! Replicated so bystanders see the hub too.
 	[RplProp(onRplName: "OnHubOpenUpdated")]
 	protected bool m_bHubOpen;
 
 	ref ScriptInvoker m_OnHubOpenChanged = new ScriptInvoker();
 
-	//! threadId -> unreadCount at dismissal. A later message pushes past that watermark and the notification returns - never replicated, since this is a per-reader gesture that must not touch read state.
+	//! threadId -> unread count at dismissal; a higher count notifies again. Local only, never replicated.
 	protected ref map<string, int> m_mDismissedNotifications = new map<string, int>();
 
-	//! Held rather than local so OnContactSaved() can still read GetHttpCode() off it once the shared callback base has collapsed the failure to ERROR.
+	//! Kept so OnContactSaved() can read the HTTP code after the base collapses failures to ERROR.
 	protected ref ELIFE_SaveContactCallback m_SaveContactCallback;
 	protected ref ELIFE_SendMessageCallback m_SendMessageCallback;
 	protected ref ELIFE_MarkThreadReadCallback m_MarkThreadReadCallback;
 
 	protected const int DATA_CACHE_TTL_MS = 15000;
 
-	//! Server-only. Cursor for the messages poll - the polledAt of the last updates response. Empty
-	//! means "never polled", which asks for every thread whole instead of a delta.
+	//! Server-only. polledAt of the last updates response; empty fetches every thread whole.
 	protected string m_sMessagesCursor;
 
-	//! Server-only. True while the in-flight messages fetch is the background poll, not something the owner asked for - a poll failure must not flip their app into an error state.
+	//! Server-only. The in-flight fetch is the background poll, whose failure mustn't error the owner's app.
 	protected bool m_bPollInFlight;
 
 	protected int m_iPollIntervalMs;
 
-	//! Fast while awake (polling is the only delivery path). Slower while holstered — still frequent enough that a peek isn't a minute late.
+	//! Polling is the only delivery path, so it stays frequent enough while holstered for a timely peek.
 	protected const int POLL_INTERVAL_ACTIVE_MS = 2000;
 	protected const int POLL_INTERVAL_IDLE_MS = 15000;
 
@@ -213,12 +235,13 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected ParametricMaterialInstanceComponent m_ScreenEmissiveMaterial;
 	protected float m_fScreenPulsePhase;
 	protected ELIFE_PhoneScreenRenderComponent m_ScreenRenderComponent;
+	protected ELIFE_PhoneScreenInteractComponent m_ScreenInteractComponent;
 	protected SoundComponent m_SoundComponent;
 	protected bool m_bLiveScreenActive;
 	protected ResourceName m_sAppliedScreenMaterial;
 	protected EPhoneScreenState m_ePrevScreenState = EPhoneScreenState.OFF;
 
-	//! Whether this phone was locked when its screen last went off - lets the owner power back on into LOCKED instead of always HOME.
+	//! Whether the screen was locked when it last went off, so power-on returns to LOCKED.
 	protected bool m_bWasLocked;
 
 	//! Last in-phone page. Opening again lands here instead of always Home.
@@ -231,8 +254,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//! Played on the owner's machine when the messages poll raises their unread total - see ApplyData().
 	protected const string SOUND_EVENT_NOTIFICATION = "SOUND_PHONE_NOTIFICATION";
 
-	//! Outer LOD tier (see ELIFE_PhoneScreenRenderComponent.SYNC_RANGE_METERS); starts true so a
-	//! client spawning already close doesn't wait a tick for the initial state.
+	//! Outer LOD tier. Starts true so a client spawning nearby gets the initial state at once.
 	protected bool m_bLocallySynced = true;
 
 	//------------------------------------------------------------------------------------------------
@@ -258,6 +280,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		m_ScreenEmissiveMaterial = ParametricMaterialInstanceComponent.Cast(owner.FindComponent(ParametricMaterialInstanceComponent));
 		m_ScreenRenderComponent = ELIFE_PhoneScreenRenderComponent.Cast(owner.FindComponent(ELIFE_PhoneScreenRenderComponent));
+		m_ScreenInteractComponent = ELIFE_PhoneScreenInteractComponent.Cast(owner.FindComponent(ELIFE_PhoneScreenInteractComponent));
 		m_SoundComponent = SoundComponent.Cast(owner.FindComponent(SoundComponent));
 	}
 
@@ -268,8 +291,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Fires on the owning client whenever m_sPhoneId actually changes - including once async
-	//! provisioning finishes, since capturing it at equip time (ModeSwitch) would always be empty.
+	//! Also fires when async provisioning finishes, which is always after equip.
 	protected void OnPhoneIdUpdated()
 	{
 		if (IsLocalCharacterOwner())
@@ -319,8 +341,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Owner-driven, authority-applied - same shape as SetScreenState(), so the hub opens on the world
-	//! screen at the same moment it opens in the menu.
+	//! Owner asks, server applies, so every screen opens the hub together.
 	void SetHubOpen(bool open)
 	{
 		if (m_bHubOpen == open)
@@ -371,7 +392,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! httpCode 0 means the request never got a real answer at all; any real HTTP code (even an error one) proves the Bridge is up, so that's not "offline".
+	//! httpCode 0 means no answer at all; any real HTTP code, even an error, means the Bridge is up.
 	protected void NoteConnectivity(ELIFE_EApiStatusCode status, int httpCode)
 	{
 		if (status == ELIFE_EApiStatusCode.SUCCESS)
@@ -396,8 +417,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Dev-only - only the owner ever needs the PIN again (the guard chain accepts "owner OR PIN"),
-	//! so it isn't reused after this - just shown in Settings.
+	//! Dev-only PIN generation. The server keeps it to verify unlocks; the owner sees it in Settings.
 	protected void ProvisionPhone(int playerId)
 	{
 		ELIFE_Api api = ELIFE_Api.GetInstance();
@@ -405,6 +425,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 
 		string characterId = ELIFE_CharacterIdentity.GetCharacterId(playerId);
+		m_sServerOwnerCharacterId = characterId;
 		string pin = string.Format("%1", Math.RandomIntInclusive(1000, 9999));
 		string body = string.Format("{\"characterId\":\"%1\",\"pin\":\"%2\"}", characterId, pin);
 
@@ -429,17 +450,19 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		}
 
 		m_sPhoneId = response.phoneId;
+		m_sServerNumber = response.number;
+		m_sServerPin = pin;
+		m_sRedactedPin = ELIFE_DataRedactor.RedactDigits(pin);
 		Replication.BumpMe();
 
-		//! onRplName only reliably fires on remote proxies, not the machine setting the value (see
-		//! RpcAsk_SetScreenState() below, which applies locally the same way) - on a listen server the
-		//! equipping player IS that machine, so OnPhoneIdUpdated() alone would never fire for them.
+		//! onRplName doesn't fire on the machine setting the value, so apply it here for a listen server.
 		OnPhoneIdUpdated();
 
-		PushIdentity(response.number, pin);
+		PushIdentityToOwner();
+		if (SCR_PlayerController.GetLocalControlledEntity())
+			ApplyRedactedIdentity();
 
-		//! Contacts/Messages guard chain requires the phone powered on - freshly provisioned phones
-		//! start off, so nothing in either app works until this runs once.
+		//! Apps need the phone powered on in the backend, and a new phone starts off.
 		PowerOnPhone();
 	}
 
@@ -478,7 +501,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	// Messages poll (Step 8) - the mod's delivery path, since the SignalR hub isn't reachable here
+	// Messages poll - the only delivery path, since the SignalR hub isn't reachable from here
 	//------------------------------------------------------------------------------------------------
 
 	//! Server-only, and re-run whenever the screen state lands, since the cadence follows it.
@@ -515,8 +538,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//------------------------------------------------------------------------------------------------
 	protected void PollMessages()
 	{
-		//! A fetch is already on its way; marking this one as the poll would mislabel that one's
-		//! failure as a background failure and swallow the owner's error state.
+		//! A fetch is already in flight; don't relabel it as the poll.
 		if (m_sPhoneId == "" || m_mPendingFetches.Contains(DATA_MESSAGES))
 			return;
 
@@ -551,8 +573,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Called by an app on open. Only the owner drives fetches - a bystander's screen just mirrors
-	//! whatever the owner's next refresh broadcasts.
+	//! Called by an app on open. Only the owner fetches; bystanders mirror the owner's broadcasts.
 	void RequestData(string key)
 	{
 		if (!IsLocalCharacterOwner())
@@ -575,8 +596,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 		}
 
-		//! An owner request adopts an in-flight poll as its own, so that fetch's failure is reported
-		//! to them rather than stayed quiet about.
+		//! An owner request adopts an in-flight poll so its failure gets reported.
 		if (key == DATA_MESSAGES)
 			m_bPollInFlight = false;
 
@@ -591,7 +611,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Owner-only manual nudge from the global Offline screen - re-provisions if that never landed, else re-fetches whatever data errored.
+	//! Owner-only retry from the Offline screen: re-provision if needed, else re-fetch what errored.
 	void RetryConnectivity()
 	{
 		if (!IsLocalCharacterOwner())
@@ -621,7 +641,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	// Contacts write path
 	//------------------------------------------------------------------------------------------------
 
-	//! Owner-only. number/displayName go to the Bridge exactly as typed - the backend is the only authority on what a number is.
+	//! Owner-only. Sent as typed; the backend validates the number.
 	void SaveContact(string number, string displayName)
 	{
 		if (!IsLocalCharacterOwner())
@@ -685,7 +705,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	// Messages write path
 	//------------------------------------------------------------------------------------------------
 
-	//! Owner-only. The API's send route is a fan-out over numbers, but the phone UI only ever addresses one conversation, so this wraps a single recipient.
+	//! Owner-only. Wraps the fan-out send route for a single recipient.
 	void SendMessage(string number, string body)
 	{
 		if (!IsLocalCharacterOwner())
@@ -760,7 +780,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One failure a player can act on (body too long) and one "try again" for everything else - same reasoning as ClassifySaveFailure().
+	//! Body too long is actionable; everything else is "try again".
 	protected ELIFE_EMessageSendResult ClassifySendFailure(int httpCode)
 	{
 		if (httpCode == 400 || httpCode == 413)
@@ -815,8 +835,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 		}
 
-		//! The unread badge comes from the messages payload, so it needs a re-fetch to clear - and a
-		//! full one, since a cursor poll only reports arrivals and would never mention this thread again.
+		//! Unread counts come from the payload, so re-fetch fully - a cursor poll wouldn't report this thread again.
 		FetchData(DATA_MESSAGES, true);
 	}
 
@@ -840,7 +859,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Only place that knows a key's wire shape - route and response parsing. Everything downstream (caching, pushing, rendering) is key-agnostic. full forces a cursor-less messages fetch, for a change the poll wouldn't observe (e.g. marking a thread read moves an unread count the "arrived since" cursor would never mention again).
+	//! Owns each key's route and response parsing. full forces a cursor-less messages fetch.
 	protected void FetchData(string key, bool full = false)
 	{
 		//! A second fetch would just overwrite the pending callback and waste a round trip.
@@ -864,9 +883,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		}
 		else if (key == DATA_MESSAGES)
 		{
-			//! Cursor-less, threads come back whole with bodies - the plain threads route omits them
-			//! and would need a second call per opened thread. With a cursor the response is only
-			//! what arrived since it, which OnDataFetched() merges into the cache.
+			//! Cursor-less returns every thread with bodies; with a cursor only what arrived since, merged in OnDataFetched().
 			if (full || m_sMessagesCursor == "")
 				route = "messages/updates";
 			else
@@ -905,9 +922,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		if (status != ELIFE_EApiStatusCode.SUCCESS || !data)
 		{
-			//! A background poll nobody asked for only warns - NoteConnectivity() above already drove
-			//! the phone-wide Offline screen, and an error state here would blank an app the owner
-			//! never asked to refresh.
+			//! A background poll failure only warns; the Offline screen already covers connectivity.
 			if (wasPoll)
 			{
 				Print("ELIFE_PhoneGadgetComponent | messages poll failed", LogLevel.WARNING);
@@ -919,7 +934,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 		}
 
-		//! Re-Pack()ing data would trip the engine's "Operation called twice" warning, so the raw text it was unpacked from is read back instead - see ELIFE_PhoneJsonDto.
+		//! Re-packing would warn "Operation called twice", so use the raw text it was unpacked from.
 		ELIFE_PhoneDataEntry entry = new ELIFE_PhoneDataEntry();
 		ELIFE_PhoneJsonDto jsonDto = ELIFE_PhoneJsonDto.Cast(data);
 		if (jsonDto)
@@ -933,8 +948,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		entry.m_iFetchTime = System.GetTickCount();
 		m_mServerData.Set(key, entry);
 
-		//! A quiet poll has nothing to tell anyone. An owner-requested fetch always answers, though -
-		//! their app is sitting on LOADING until something lands.
+		//! A quiet poll stays silent; an owner request always answers since its app is loading.
 		if (changed || !wasPoll)
 			PushData(key);
 
@@ -944,7 +958,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Folds an updates response into the cached payload, advances the cursor, and returns the merged JSON. A cursor-less response carries every thread whole so merging it is equivalent to replacing it.
+	//! Merges an updates response into the cache, advances the cursor, returns the merged JSON.
 	protected string MergeMessages(ELIFE_MessageUpdatesDto response, out bool changed)
 	{
 		changed = true;
@@ -969,8 +983,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A DateTimeOffset cursor can serialize with a "+00:00" offset, and a bare "+" in a query string
-	//! decodes as a space on the other side.
+	//! Encode "+" in the cursor offset, or it decodes as a space.
 	protected string EncodeCursor(string cursor)
 	{
 		string encoded = "";
@@ -989,8 +1002,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Takes the cached JSON rather than the response struct: for messages those differ, since a poll
-	//! response is only a delta and the bystander copy has to mirror the whole merged payload.
+	//! Takes the cached JSON: a poll response is only a delta, but bystanders mirror the merged payload.
 	protected string RedactPayload(string key, string realJson)
 	{
 		if (realJson == "")
@@ -1019,7 +1031,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Number -> saved name from the owner's real contacts cache - RedactPayload runs server-side, where only m_mServerData still has it.
+	//! Number -> name from the owner's contacts; only the server-side cache still has them here.
 	protected map<string, string> OwnerContactNames()
 	{
 		ELIFE_PhoneDataEntry entry;
@@ -1061,8 +1073,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		Rpc(RpcDo_DataOwner, key, entry.m_sReal);
 		Rpc(RpcDo_DataBystanders, key, entry.m_sRedacted);
 
-		//! Neither RPC self-delivers to a listen server's own view (same quirk as onRplName, see
-		//! OnPhoneIdUpdated()), so apply it directly here. A dedicated server has no view to render into.
+		//! Neither RPC reaches a listen server's own view, so apply it here.
 		if (!SCR_PlayerController.GetLocalControlledEntity())
 			return;
 
@@ -1073,8 +1084,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Only the owner is told a fetch failed - a bystander never asked, so to them it just looks like
-	//! the mirror stopped updating.
+	//! Only the owner hears about failures; bystanders just stop getting updates.
 	protected void PushDataError(string key)
 	{
 		Rpc(RpcDo_DataError, key);
@@ -1100,9 +1110,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! No RplCondition filter here - its per-recipient behavior for RPCs (vs. RplProp, where it's
-	//! documented) is unverified, and an entity with an owner may not broadcast at all under it.
-	//! Excluding the owner is done explicitly below instead, which is correct regardless.
+	//! No RplCondition - its behaviour on RPCs is unverified. The owner is skipped explicitly below.
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	protected void RpcDo_DataBystanders(string key, string json)
 	{
@@ -1132,7 +1140,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! True when the owner's unread total goes up on this machine - counting unread rather than messages means a re-delivered message can't double-announce. The first payload never announces.
+	//! Announce when the owner's unread total rises. Counting unread avoids double-announcing re-deliveries.
 	protected bool ShouldAnnounce(string incomingJson)
 	{
 		if (!IsLocalCharacterOwner())
@@ -1159,24 +1167,27 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Same owner-real/bystander-redacted split as PushData(), but for number/PIN this only runs once at provisioning - no cached copy to re-push to a late bystander. The number is masked with the
-	//! fixed "unknown number" placeholder like Contacts/Messages; the PIN keeps randomized digits since nothing displays it as a name-like value.
-	protected void PushIdentity(string number, string pin)
+	//! Server-only. Called at provisioning and whenever the registered owner takes the phone in hand.
+	protected void PushIdentityToOwner()
 	{
-		string redactedNumber = ELIFE_DataRedactor.RedactPhoneNumber();
-		string redactedPin = ELIFE_DataRedactor.RedactDigits(pin);
-
-		Rpc(RpcDo_IdentityOwner, number, pin);
-		Rpc(RpcDo_IdentityBystanders, redactedNumber, redactedPin);
-
-		//! Neither RPC self-delivers to a listen server's own view, so apply it directly here.
-		if (!SCR_PlayerController.GetLocalControlledEntity())
+		if (m_sServerNumber == "")
 			return;
 
+		Rpc(RpcDo_IdentityOwner, m_sServerNumber, m_sServerPin);
+
+		//! Owner RPCs don't reach a listen server's own view.
 		if (IsLocalCharacterOwner())
-			ApplyIdentity(number, pin);
-		else
-			ApplyIdentity(redactedNumber, redactedPin);
+			RpcDo_IdentityOwner(m_sServerNumber, m_sServerPin);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Number is the localised "unknown" placeholder, so it's built on each client rather than replicated.
+	protected void ApplyRedactedIdentity()
+	{
+		if (m_bHasRealIdentity || m_sRedactedPin == "")
+			return;
+
+		ApplyIdentity(ELIFE_DataRedactor.RedactPhoneNumber(), m_sRedactedPin);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1191,28 +1202,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
 	protected void RpcDo_IdentityOwner(string number, string pin)
 	{
+		m_bHasRealIdentity = true;
 		ApplyIdentity(number, pin);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! No RplCondition filter - see RpcDo_DataBystanders(); the owner is excluded explicitly below instead.
-	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	protected void RpcDo_IdentityBystanders(string number, string pin)
-	{
-		RplComponent rpl = RplComponent.Cast(GetOwner().FindComponent(RplComponent));
-		if (rpl && rpl.IsOwner())
-			return;
-
-		ApplyIdentity(number, pin);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	Color GetCaseColor()
-	{
-		if (!m_CaseColor)
-			m_CaseColor = new Color(0.03, 0.03, 0.035, 1);
-
-		return m_CaseColor;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1251,12 +1242,86 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_SetScreenState(EPhoneScreenState state)
 	{
+		//! Only RpcAsk_Unlock leaves the lock screen, so a locked phone also powers on locked.
+		if (m_bPinLocked && state != EPhoneScreenState.OFF)
+			state = EPhoneScreenState.LOCKED;
+
+		//! Without a known PIN the lock could never be undone, so a power-on lands on home instead.
+		if (state == EPhoneScreenState.LOCKED && m_sServerPin == "")
+		{
+			if (m_eScreenState != EPhoneScreenState.OFF)
+				return;
+
+			state = EPhoneScreenState.HOME;
+		}
+
+		if (state == EPhoneScreenState.LOCKED)
+			m_bPinLocked = true;
+
 		if (m_eScreenState == state)
 			return;
 
 		m_eScreenState = state;
 		ApplyScreenState();
 		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Unlock(string pin)
+	{
+		RememberResume(EPhoneScreenState.HOME);
+		Rpc(RpcAsk_Unlock, pin);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_Unlock(string pin)
+	{
+		if (!m_bPinLocked)
+			return;
+
+		float now = GetGame().GetWorld().GetWorldTime();
+		if (now < m_fUnlockBlockedUntil)
+		{
+			SendUnlockRejected(ELIFE_EUnlockResult.BLOCKED, m_fUnlockBlockedUntil - now);
+			return;
+		}
+
+		if (pin != m_sServerPin)
+		{
+			m_iUnlockFailures++;
+			if (m_iUnlockFailures < UNLOCK_MAX_FAILURES)
+			{
+				SendUnlockRejected(ELIFE_EUnlockResult.WRONG, 0);
+				return;
+			}
+
+			m_iUnlockFailures = 0;
+			m_fUnlockBlockedUntil = now + UNLOCK_COOLDOWN_MS;
+			SendUnlockRejected(ELIFE_EUnlockResult.BLOCKED, UNLOCK_COOLDOWN_MS);
+			return;
+		}
+
+		m_iUnlockFailures = 0;
+		m_bPinLocked = false;
+		RpcAsk_SetScreenState(EPhoneScreenState.HOME);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SendUnlockRejected(ELIFE_EUnlockResult result, float retryInMs)
+	{
+		Rpc(RpcDo_UnlockRejected, result, (int)retryInMs);
+
+		//! Owner RPCs don't reach a listen server's own view.
+		if (IsLocalCharacterOwner())
+			m_OnUnlockRejected.Invoke(result, (int)retryInMs);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_UnlockRejected(int result, int retryInMs)
+	{
+		m_OnUnlockRejected.Invoke(result, retryInMs);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1329,13 +1394,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//------------------------------------------------------------------------------------------------
 	protected void ApplyScreenState()
 	{
-		//! Ahead of the LOD gate below: the poll cadence follows the screen being on, which has
-		//! nothing to do with whether this machine is close enough to draw it. No-ops off the
-		//! authority and whenever the tier hasn't actually changed.
+		//! Before the LOD gate: poll cadence follows the screen being on, regardless of distance.
 		ReschedulePoll();
 
-		//! The hub is a layer over the screen, so it cannot outlive the screen being awake - and a
-		//! locked phone must not be holding message bodies one tap behind the lock.
+		//! Close the hub when the screen sleeps or locks, so message bodies aren't one tap behind the lock.
 		if (Replication.IsServer() && m_bHubOpen && (m_eScreenState == EPhoneScreenState.OFF || m_eScreenState == EPhoneScreenState.LOCKED))
 		{
 			m_bHubOpen = false;
@@ -1382,8 +1444,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Out of live-render range, every non-Off state shows the same generic LOD material rather than
-	//! per-app content - only Off gets its own distinct material.
+	//! Out of live range every non-Off state shares one LOD material.
 	protected ResourceName GetBakedScreenMaterial()
 	{
 		if (m_eScreenState == EPhoneScreenState.OFF)
@@ -1399,16 +1460,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Lets the menu draw the right screen on open instead of sitting on black until state round-trips to the authority.
+	//! Known before the power-on state round-trips, unlike GetScreenState().
 	bool WasLocked()
 	{
 		return m_bWasLocked;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	EPhoneScreenState GetResumeState()
-	{
-		return m_eResumeState;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1484,6 +1539,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 				if (m_sPhoneId == "")
 					ProvisionPhone(playerId);
+				else if (m_sServerOwnerCharacterId != "" && ELIFE_CharacterIdentity.GetCharacterId(playerId) == m_sServerOwnerCharacterId)
+					PushIdentityToOwner();
 			}
 
 			IEntity localCharacter = SCR_PlayerController.GetLocalControlledEntity();
@@ -1491,6 +1548,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			{
 				ELIFE_PhonePeek.TakeDoorAndHide();
 				ELIFE_PhoneToggle.RememberActivePhone(this);
+
+				if (m_ScreenInteractComponent)
+					m_ScreenInteractComponent.SetActive(true);
 			}
 		}
 
@@ -1511,6 +1571,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		if (mode == EGadgetMode.IN_HAND)
 		{
+			if (m_ScreenInteractComponent)
+				m_ScreenInteractComponent.SetActive(false);
+
 			if (m_ePrevScreenState != EPhoneScreenState.OFF && m_SoundComponent)
 				m_SoundComponent.SoundEvent(SOUND_EVENT_POWER_OFF);
 
@@ -1523,8 +1586,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			if (m_ScreenRenderComponent)
 				m_ScreenRenderComponent.OnScreenStateChanged(EPhoneScreenState.OFF);
 
-			//! This path sets the state field directly rather than going through ApplyScreenState(),
-			//! so the poll would otherwise stay on the active cadence for a holstered phone.
+			//! Sets the state directly, bypassing ApplyScreenState(), so reschedule the poll here.
 			ReschedulePoll();
 		}
 	}
@@ -1676,7 +1738,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Public so a screen can tell "operating this phone" from "looking at someone else's" - the latter must not resolve numbers against a redacted contact list.
+	//! Distinguishes operating this phone from looking at someone else's.
 	bool IsLocalCharacterOwner()
 	{
 		ChimeraCharacter characterOwner = GetCharacterOwner();

@@ -26,12 +26,12 @@ OverlayWidgetClass {
         TextWidgetClass "{A4BB2D2E19ED051A}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
          Name "LargeTitle"
          Slot LayoutSlot "{EBB2118EF19995C4}" {
-          Padding 12 48 12 8
+          Padding 24 96 24 16
          }
          Color 0.8378 0.8626 0.9222 1
          Text ""
-         "Font Size" 20
-         "Min Font Size" 20
+         "Font Size" 40
+         "Min Font Size" 40
          "Horizontal Alignment" Left
          FontProperties FontProperties "{A1FCF943812D29AE}" {
           Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -40,7 +40,7 @@ OverlayWidgetClass {
         VerticalLayoutWidgetClass "{54BACF67C436DADE}" {
          Name "AccountGroups"
          Slot LayoutSlot "{B03EF8DBF4B44171}" {
-          Padding 12 0 12 30
+          Padding 24 0 24 60
          }
         }
        }
@@ -52,7 +52,7 @@ OverlayWidgetClass {
      Slot OverlayWidgetSlot "{C0EE88DBB5568DC9}" {
       HorizontalAlign 1
       VerticalAlign 1
-      Padding 20 0 20 0
+      Padding 40 0 40 0
      }
      "Is Visible" 0
      {
@@ -60,12 +60,12 @@ OverlayWidgetClass {
        Name "EmptyTitle"
        Slot LayoutSlot "{4A702DC91A2E8D20}" {
         HorizontalAlign 1
-        Padding 0 0 0 4
+        Padding 0 0 0 8
        }
        Color 0.8378 0.8626 0.9222 1
        Text "#ELIFE-Phone_Bank_NoAccounts"
-       "Font Size" 15
-       "Min Font Size" 14
+       "Font Size" 30
+       "Min Font Size" 28
        "Horizontal Alignment" Center
        FontProperties FontProperties "{274769545F4D3C85}" {
         Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -78,8 +78,8 @@ OverlayWidgetClass {
        }
        Color 0.366 0.4024 0.5025 1
        Text "#ELIFE-Phone_Bank_NoAccountsHint"
-       "Font Size" 10
-       "Min Font Size" 9
+       "Font Size" 20
+       "Min Font Size" 18
        "Horizontal Alignment" Center
       }
      }
@@ -112,15 +112,15 @@ OverlayWidgetClass {
         VerticalLayoutWidgetClass "{554F9B947E8F75E2}" {
          Name "StatementHeader"
          Slot LayoutSlot "{8E1BCDE9D8C19D08}" {
-          Padding 12 48 12 6
+          Padding 24 96 24 12
          }
          {
           TextWidgetClass "{218A6E0976DB1956}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
            Name "StatementName"
            Color 0.8378 0.8626 0.9222 1
            Text ""
-           "Font Size" 20
-           "Min Font Size" 20
+           "Font Size" 40
+           "Min Font Size" 40
            "Horizontal Alignment" Left
            FontProperties FontProperties "{9FE97BC7DC38FDF8}" {
             Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -129,23 +129,23 @@ OverlayWidgetClass {
           TextWidgetClass "{A9712979230F0A63}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
            Name "StatementKind"
            Slot LayoutSlot "{B8E17158CA8AE410}" {
-            Padding 0 2 0 0
+            Padding 0 4 0 0
            }
            Color 0.366 0.4024 0.5025 1
            Text ""
-           "Font Size" 10
-           "Min Font Size" 9
+           "Font Size" 20
+           "Min Font Size" 18
            "Horizontal Alignment" Left
           }
           TextWidgetClass "{1EB091C521A4CEC5}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
            Name "StatementBalance"
            Slot LayoutSlot "{46445082588E6639}" {
-            Padding 0 10 0 0
+            Padding 0 20 0 0
            }
            Color 0.7446 0.3971 0.0684 1
            Text ""
-           "Font Size" 26
-           "Min Font Size" 24
+           "Font Size" 52
+           "Min Font Size" 48
            "Horizontal Alignment" Left
            FontProperties FontProperties "{A50234E5EF591C58}" {
             Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -156,18 +156,18 @@ OverlayWidgetClass {
         TextWidgetClass "{29ACB06887117F00}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
          Name "PostedLabel"
          Slot LayoutSlot "{D24C2E152120F826}" {
-          Padding 12 8 12 4
+          Padding 24 16 24 8
          }
          Color 0.1715 0.1942 0.2664 1
          Text "#ELIFE-Phone_Bank_Posted"
-         "Font Size" 9
-         "Min Font Size" 9
+         "Font Size" 18
+         "Min Font Size" 18
          "Horizontal Alignment" Left
         }
         VerticalLayoutWidgetClass "{AB6DECA040CB5048}" {
          Name "PostedList"
          Slot LayoutSlot "{A9FC99865B8284CE}" {
-          Padding 12 0 12 30
+          Padding 24 0 24 60
          }
         }
        }
@@ -179,7 +179,7 @@ OverlayWidgetClass {
      Slot OverlayWidgetSlot "{23EA23E4AF683DD5}" {
       HorizontalAlign 1
       VerticalAlign 2
-      Padding 20 0 20 60
+      Padding 40 0 40 120
      }
      "Is Visible" 0
      {
@@ -187,12 +187,12 @@ OverlayWidgetClass {
        Name "EmptyPostedTitle"
        Slot LayoutSlot "{5C66BD958113205E}" {
         HorizontalAlign 1
-        Padding 0 0 0 4
+        Padding 0 0 0 8
        }
        Color 0.8378 0.8626 0.9222 1
        Text "#ELIFE-Phone_Bank_NoPosted"
-       "Font Size" 15
-       "Min Font Size" 14
+       "Font Size" 30
+       "Min Font Size" 28
        "Horizontal Alignment" Center
        FontProperties FontProperties "{B4A83270E197E505}" {
         Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -205,8 +205,8 @@ OverlayWidgetClass {
        }
        Color 0.366 0.4024 0.5025 1
        Text "#ELIFE-Phone_Bank_NoPostedHint"
-       "Font Size" 10
-       "Min Font Size" 9
+       "Font Size" 20
+       "Min Font Size" 18
        "Horizontal Alignment" Center
       }
      }

@@ -6,24 +6,24 @@ OverlayWidgetClass {
    Slot OverlayWidgetSlot "{84F589FDD2917ADD}" {
     HorizontalAlign 3
     VerticalAlign 3
-    Padding 0 0 0 8
+    Padding 0 0 0 16
    }
    {
     TextWidgetClass "{0D59BF29CA67E239}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
      Name "MessageMeta"
      Slot LayoutSlot "{B31BDE3B35149111}" {
-      Padding 2 0 2 3
+      Padding 4 0 4 6
      }
      Color 0.1715 0.1942 0.2664 1
      Text ""
-     "Font Size" 9
-     "Min Font Size" 9
+     "Font Size" 18
+     "Min Font Size" 18
      "Horizontal Alignment" Left
     }
     SizeLayoutWidgetClass "{3AF98719C51392CA}" {
      Name "BubbleSize"
      AllowMaxDesiredWidth 1
-     MaxDesiredWidth 168
+     MaxDesiredWidth 336
      {
       OverlayWidgetClass "{1E8F5C23A6ED2CA5}" {
        Name "Bubble"
@@ -48,7 +48,7 @@ OverlayWidgetClass {
           VerticalAlign 3
          }
          Color 0.004 0.0048 0.0075 0.55
-         style rounded_6px
+         style rounded_12px
          "no focus" 1
         }
         SmartPanelWidgetClass "{25217D6A809E2091}" {
@@ -58,7 +58,7 @@ OverlayWidgetClass {
           VerticalAlign 3
          }
          Color 0.5837 0.6453 0.8073 0.14
-         style rounded_6px
+         style rounded_12px
          "no focus" 1
         }
         SizeLayoutWidgetClass "{25217D6A809E2092}" {
@@ -66,10 +66,10 @@ OverlayWidgetClass {
          Slot OverlayWidgetSlot "{75B95AC384BBA0C3}" {
           HorizontalAlign 3
           VerticalAlign 0
-          Padding 4 1 4 0
+          Padding 8 2 8 0
          }
          AllowHeightOverride 1
-         HeightOverride 1
+         HeightOverride 2
          {
           ImageWidgetClass "{25217D6A809E2093}" {
            Name "GlassSpecular"
@@ -86,10 +86,10 @@ OverlayWidgetClass {
          Slot OverlayWidgetSlot "{75B95AC384BBA0C5}" {
           HorizontalAlign 3
           VerticalAlign 2
-          Padding 4 0 4 0
+          Padding 8 0 8 0
          }
          AllowHeightOverride 1
-         HeightOverride 1
+         HeightOverride 2
          {
           ImageWidgetClass "{25217D6A809E2095}" {
            Name "GlassHairline"
@@ -106,12 +106,12 @@ OverlayWidgetClass {
          Slot OverlayWidgetSlot "{6F89C8F717608FE8}" {
           HorizontalAlign 3
           VerticalAlign 3
-          Padding 8 5 8 6
+          Padding 16 10 16 12
          }
          Color 0.8378 0.8626 0.9222 1
          Text ""
-         "Font Size" 11
-         "Min Font Size" 11
+         "Font Size" 22
+         "Min Font Size" 22
          "Horizontal Alignment" Left
         }
        }

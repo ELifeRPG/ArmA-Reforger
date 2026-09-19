@@ -1,26 +1,26 @@
 SizeLayoutWidgetClass {
  Name "SkeletonRowSize"
  AllowHeightOverride 1
- HeightOverride 34
+ HeightOverride 68
  {
   HorizontalLayoutWidgetClass "{BCA9641940AB3394}" {
    Name "SkeletonRow"
    Slot AlignableSlot "{034957AC913DC6A4}" {
     HorizontalAlign 3
     VerticalAlign 3
-    Padding 0 5 0 5
+    Padding 0 10 0 10
    }
    {
     SizeLayoutWidgetClass "{6DF6CDE5C89C3745}" {
      Name "SkeletonAvatarSize"
      Slot LayoutSlot "{A8B30540C9DD6B52}" {
       VerticalAlign 1
-      Padding 0 0 8 0
+      Padding 0 0 16 0
      }
      AllowWidthOverride 1
-     WidthOverride 24
+     WidthOverride 48
      AllowHeightOverride 1
-     HeightOverride 24
+     HeightOverride 48
      {
       SmartPanelWidgetClass "{681C1E6BF3AFE0C2}" {
        Name "SkeletonAvatar"
@@ -29,7 +29,7 @@ SizeLayoutWidgetClass {
         VerticalAlign 3
        }
        Color 0.0159 0.0194 0.0319 1
-       style rounded_6px
+       style rounded_12px
        "no focus" 1
       }
      }
@@ -44,12 +44,12 @@ SizeLayoutWidgetClass {
       SizeLayoutWidgetClass "{9D25EACBFD27D15D}" {
        Name "SkeletonLine0Size"
        Slot LayoutSlot "{3603804A726EE9E0}" {
-        Padding 0 0 0 5
+        Padding 0 0 0 10
        }
        AllowWidthOverride 1
-       WidthOverride 104
+       WidthOverride 208
        AllowHeightOverride 1
-       HeightOverride 8
+       HeightOverride 16
        {
         SmartPanelWidgetClass "{76567A68E2ADFB0D}" {
          Name "SkeletonLine0"
@@ -58,7 +58,7 @@ SizeLayoutWidgetClass {
           VerticalAlign 3
          }
          Color 0.0159 0.0194 0.0319 1
-         style rounded_2px
+         style rounded_4px
          "no focus" 1
         }
        }
@@ -66,9 +66,9 @@ SizeLayoutWidgetClass {
       SizeLayoutWidgetClass "{7D3BD85C5098B024}" {
        Name "SkeletonLine1Size"
        AllowWidthOverride 1
-       WidthOverride 62
+       WidthOverride 124
        AllowHeightOverride 1
-       HeightOverride 6
+       HeightOverride 12
        {
         SmartPanelWidgetClass "{ADBD8D78C5961784}" {
          Name "SkeletonLine1"
@@ -77,7 +77,7 @@ SizeLayoutWidgetClass {
           VerticalAlign 3
          }
          Color 0.0159 0.0194 0.0319 1
-         style rounded_2px
+         style rounded_4px
          "no focus" 1
         }
        }

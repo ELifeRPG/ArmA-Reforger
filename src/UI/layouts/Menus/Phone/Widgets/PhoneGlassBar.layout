@@ -34,7 +34,7 @@ OverlayWidgetClass {
     VerticalAlign 0
    }
    AllowHeightOverride 1
-   HeightOverride 1
+   HeightOverride 2
    {
     ImageWidgetClass "{C3C0E01F8F6FD9A6}" {
      Name "GlassSpecular"
@@ -53,7 +53,7 @@ OverlayWidgetClass {
     VerticalAlign 2
    }
    AllowHeightOverride 1
-   HeightOverride 1
+   HeightOverride 2
    {
     ImageWidgetClass "{4A291B69D03E6B61}" {
      Name "GlassHairline"

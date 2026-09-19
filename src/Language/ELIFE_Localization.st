@@ -42,6 +42,14 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
+  CustomStringTableItem "{A13B4CC6F798E540}" {
+   Id "ELIFE-Hint_Phone_Inspect"
+   Target_en_us "Hold <action name='CharacterInspect'/> to hold the phone up for a closer look."
+   Target_de_de "Halte <action name='CharacterInspect'/> gedrückt, um das Telefon näher zu betrachten."
+   Modified 1758240000
+   Author "Robin"
+   LastChanged "Robin"
+  }
   CustomStringTableItem "{A13B4CC6F798E53F}" {
    Id "ELIFE-Hint_Phone_Unequipped"
    Target_en_us "Equip a phone from your inventory."
@@ -359,6 +367,14 @@ StringTable {
    Target_en_us "Wrong PIN"
    Target_de_de "Falsche PIN"
    Modified 1757289600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{28DD39BE8A5E0192}" {
+   Id "ELIFE-Phone_Lock_Blocked"
+   Target_en_us "Too many attempts. Try again in %1 s"
+   Target_de_de "Zu viele Versuche. Erneut in %1 s"
+   Modified 1758240000
    Author "Robin"
    LastChanged "Robin"
   }

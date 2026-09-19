@@ -18,6 +18,8 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
   }
   ELIFE_PhoneScreenRenderComponent "{454687C5EE7005C9}" {
   }
+  ELIFE_PhoneScreenInteractComponent "{02FF61A53014FEE4}" {
+  }
   InventoryItemComponent "{5222EB4D0C73006B}" {
    Attributes SCR_ItemAttributeCollection "{61E1FE0A4B7C2903}" {
     ItemDisplayName ELIFE_PhoneInventoryUIInfo "{61E1FE0A4B7C2904}" {

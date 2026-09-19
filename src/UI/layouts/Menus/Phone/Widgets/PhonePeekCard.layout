@@ -1,7 +1,9 @@
 SizeLayoutWidgetClass {
  Name "NotificationCardSize"
+ AllowWidthOverride 1
+ WidthOverride 270
  AllowHeightOverride 1
- HeightOverride 80
+ HeightOverride 44
  {
   OverlayWidgetClass "{4396C5B24103F35D}" {
    Name "NotificationCard"
@@ -26,7 +28,7 @@ SizeLayoutWidgetClass {
       VerticalAlign 3
      }
      Color 0.004 0.0048 0.0075 0.55
-     style rounded_12px
+     style rounded_6px
      "no focus" 1
     }
     SmartPanelWidgetClass "{E17E88EDCE8E196C}" {
@@ -36,7 +38,7 @@ SizeLayoutWidgetClass {
       VerticalAlign 3
      }
      Color 0.5837 0.6453 0.8073 0.14
-     style rounded_12px
+     style rounded_6px
      "no focus" 1
     }
     SizeLayoutWidgetClass "{7AFD479AEACD2AD1}" {
@@ -44,10 +46,10 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{4A8C6F316F156B9A}" {
       HorizontalAlign 3
       VerticalAlign 0
-      Padding 12 0 12 0
+      Padding 7 0 7 0
      }
      AllowHeightOverride 1
-     HeightOverride 2
+     HeightOverride 1
      {
       ImageWidgetClass "{C683E7294FFDD94B}" {
        Name "GlassSpecular"
@@ -64,10 +66,10 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{115A6675E9F90D81}" {
       HorizontalAlign 3
       VerticalAlign 2
-      Padding 12 0 12 0
+      Padding 7 0 7 0
      }
      AllowHeightOverride 1
-     HeightOverride 2
+     HeightOverride 1
      {
       ImageWidgetClass "{26F3D48A5232A560}" {
        Name "GlassHairline"
@@ -84,19 +86,19 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{974078E4C46F1136}" {
       HorizontalAlign 3
       VerticalAlign 3
-      Padding 16 12 16 12
+      Padding 9 7 9 7
      }
      {
       SizeLayoutWidgetClass "{E33AC045B401F779}" {
        Name "NotifyAvatarSize"
        Slot LayoutSlot "{22C52CBF5BA96604}" {
         VerticalAlign 1
-        Padding 0 0 16 0
+        Padding 0 0 9 0
        }
        AllowWidthOverride 1
-       WidthOverride 56
+       WidthOverride 31
        AllowHeightOverride 1
-       HeightOverride 56
+       HeightOverride 31
        {
         OverlayWidgetClass "{EE18FEC6189F158A}" {
          Name "NotifyAvatar"
@@ -113,7 +115,7 @@ SizeLayoutWidgetClass {
            }
            "Is Visible" 0
            Color 0.0159 0.0194 0.0319 1
-           style rounded_12px
+           style rounded_6px
            "no focus" 1
           }
           ImageWidgetClass "{7C2AD4A9E3B25F98}" {
@@ -123,7 +125,7 @@ SizeLayoutWidgetClass {
             VerticalAlign 1
            }
            Color 1 1 1 1
-           Size 56 56
+           Size 31 31
           }
           TextWidgetClass "{7C2AD4A9E3B25F9A}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
            Name "NotifyAvatarGlyph"
@@ -133,8 +135,8 @@ SizeLayoutWidgetClass {
            }
            Color 0.8378 0.8626 0.9222 1
            Text ""
-           "Font Size" 24
-           "Min Font Size" 24
+           "Font Size" 13
+           "Min Font Size" 13
            "Horizontal Alignment" Center
           }
          }
@@ -152,16 +154,16 @@ SizeLayoutWidgetClass {
          Name "NotifyTitle"
          Color 0.8378 0.8626 0.9222 1
          Text ""
-         "Font Size" 22
-         "Min Font Size" 20
+         "Font Size" 12
+         "Min Font Size" 11
          "Horizontal Alignment" Left
         }
         TextWidgetClass "{3544544E0548A3BB}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
          Name "NotifyBody"
          Color 0.366 0.4024 0.5025 1
          Text ""
-         "Font Size" 18
-         "Min Font Size" 18
+         "Font Size" 10
+         "Min Font Size" 10
          "Horizontal Alignment" Left
         }
        }
@@ -170,7 +172,7 @@ SizeLayoutWidgetClass {
        Name "NotifyTrailing"
        Slot LayoutSlot "{51295EE961440505}" {
         VerticalAlign 1
-        Padding 16 0 0 0
+        Padding 9 0 0 0
        }
        {
         TextWidgetClass "{B683F9523F18937D}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
@@ -180,8 +182,8 @@ SizeLayoutWidgetClass {
          }
          Color 0.1715 0.1942 0.2664 1
          Text ""
-         "Font Size" 18
-         "Min Font Size" 18
+         "Font Size" 10
+         "Min Font Size" 10
          "Horizontal Alignment" 2
          FontProperties FontProperties "{EC968CEC15A13CCC}" {
           Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -191,13 +193,13 @@ SizeLayoutWidgetClass {
          Name "NotifyCountSize"
          Slot LayoutSlot "{7C2ED4A9E3B25FE7}" {
           HorizontalAlign 2
-          Padding 0 4 0 0
+          Padding 0 2 0 0
          }
          "Is Visible" 0
          AllowWidthOverride 1
-         WidthOverride 32
+         WidthOverride 18
          AllowHeightOverride 1
-         HeightOverride 28
+         HeightOverride 15
          {
           OverlayWidgetClass "{7C2ED4A9E3B25FE8}" {
            Name "NotifyCount"
@@ -213,7 +215,7 @@ SizeLayoutWidgetClass {
               VerticalAlign 3
              }
              Color 0.1147 0.5398 0.2085 1
-             style rounded_12px
+             style rounded_6px
              "no focus" 1
             }
             TextWidgetClass "{7C2ED4A9E3B25FEC}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
@@ -224,8 +226,8 @@ SizeLayoutWidgetClass {
              }
              Color 0.004 0.0048 0.0075 1
              Text ""
-             "Font Size" 18
-             "Min Font Size" 18
+             "Font Size" 10
+             "Min Font Size" 10
              "Horizontal Alignment" Center
              FontProperties FontProperties "{7C2ED4A9E3B25FEE}" {
               Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -273,7 +275,7 @@ SizeLayoutWidgetClass {
           VerticalAlign 3
          }
          Color 0 0 0 0
-         style rounded_12px
+         style rounded_6px
          "no focus" 1
         }
        }

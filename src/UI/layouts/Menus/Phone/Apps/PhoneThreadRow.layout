@@ -1,14 +1,14 @@
 SizeLayoutWidgetClass {
  Name "ThreadRowSize"
  AllowHeightOverride 1
- HeightOverride 42
+ HeightOverride 84
  {
   OverlayWidgetClass "{6C4E625757CCA8E0}" {
    Name "ThreadRow"
    Slot AlignableSlot "{48A93524FB2EA645}" {
     HorizontalAlign 3
     VerticalAlign 3
-    Padding 0 0 0 2
+    Padding 0 0 0 4
    }
    {
     BlurWidgetClass "{562EFD09BAAB430A}" {
@@ -27,7 +27,7 @@ SizeLayoutWidgetClass {
       VerticalAlign 3
      }
      Color 0.004 0.0048 0.0075 0.55
-     style rounded_6px
+     style rounded_12px
      "no focus" 1
     }
     SmartPanelWidgetClass "{1522C2401CC94211}" {
@@ -37,7 +37,7 @@ SizeLayoutWidgetClass {
       VerticalAlign 3
      }
      Color 0.5837 0.6453 0.8073 0.14
-     style rounded_6px
+     style rounded_12px
      "no focus" 1
     }
     SizeLayoutWidgetClass "{32673F6372144273}" {
@@ -45,10 +45,10 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{C1FE917A1ACD4998}" {
       HorizontalAlign 3
       VerticalAlign 0
-      Padding 6 0 6 0
+      Padding 12 0 12 0
      }
      AllowHeightOverride 1
-     HeightOverride 1
+     HeightOverride 2
      {
       ImageWidgetClass "{FA6043E8E8C74837}" {
        Name "GlassSpecular"
@@ -65,10 +65,10 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{8D4A7C2F1B5E4903}" {
       HorizontalAlign 3
       VerticalAlign 2
-      Padding 6 0 6 0
+      Padding 12 0 12 0
      }
      AllowHeightOverride 1
-     HeightOverride 1
+     HeightOverride 2
      {
       ImageWidgetClass "{3E9C5A7D2F4B4861}" {
        Name "GlassHairline"
@@ -113,7 +113,7 @@ SizeLayoutWidgetClass {
           VerticalAlign 3
          }
          Color 0 0 0 0
-         style rounded_6px
+         style rounded_12px
          "no focus" 1
         }
         HorizontalLayoutWidgetClass "{C5FC69D5C96F3028}" {
@@ -121,19 +121,19 @@ SizeLayoutWidgetClass {
          Slot OverlayWidgetSlot "{6E8295FE2368F645}" {
           HorizontalAlign 3
           VerticalAlign 3
-          Padding 8 5 8 5
+          Padding 16 10 16 10
          }
          {
           SizeLayoutWidgetClass "{D06C6C877843A968}" {
            Name "ThreadAvatarSize"
            Slot LayoutSlot "{B1F6A5A6CF4D65FD}" {
             VerticalAlign 1
-            Padding 0 0 8 0
+            Padding 0 0 16 0
            }
            AllowWidthOverride 1
-           WidthOverride 28
+           WidthOverride 56
            AllowHeightOverride 1
-           HeightOverride 28
+           HeightOverride 56
            {
             OverlayWidgetClass "{4386D8110962F653}" {
              Name "ThreadAvatar"
@@ -150,7 +150,7 @@ SizeLayoutWidgetClass {
                }
                "Is Visible" 0
                Color 0.0159 0.0194 0.0319 1
-               style rounded_6px
+               style rounded_12px
                "no focus" 1
               }
               ImageWidgetClass "{A4B5C6D7E8F90123}" {
@@ -160,7 +160,7 @@ SizeLayoutWidgetClass {
                 VerticalAlign 1
                }
                Color 1 1 1 1
-               Size 28 28
+               Size 56 56
               }
               TextWidgetClass "{C3C7D60B06AC1293}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
                Name "ThreadAvatarGlyph"
@@ -170,8 +170,8 @@ SizeLayoutWidgetClass {
                }
                Color 0.8378 0.8626 0.9222 1
                Text ""
-               "Font Size" 12
-               "Min Font Size" 12
+               "Font Size" 24
+               "Min Font Size" 24
                "Horizontal Alignment" Center
                FontProperties FontProperties "{527BE6DB35B1CDBD}" {
                 Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -192,8 +192,8 @@ SizeLayoutWidgetClass {
              Name "ThreadParticipants"
              Color 0.8378 0.8626 0.9222 1
              Text ""
-             "Font Size" 11
-             "Min Font Size" 10
+             "Font Size" 22
+             "Min Font Size" 20
              "Horizontal Alignment" Left
              FontProperties FontProperties "{5678ACF3CDE2011D}" {
               Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -203,8 +203,8 @@ SizeLayoutWidgetClass {
              Name "ThreadPreview"
              Color 0.366 0.4024 0.5025 1
              Text ""
-             "Font Size" 9
-             "Min Font Size" 9
+             "Font Size" 18
+             "Min Font Size" 18
              "Horizontal Alignment" Left
             }
            }
@@ -213,7 +213,7 @@ SizeLayoutWidgetClass {
            Name "ThreadTrailing"
            Slot LayoutSlot "{FC69832B30A8FCD1}" {
             VerticalAlign 1
-            Padding 8 0 0 0
+            Padding 16 0 0 0
            }
            {
             TextWidgetClass "{60F3573385F62689}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
@@ -223,8 +223,8 @@ SizeLayoutWidgetClass {
              }
              Color 0.1715 0.1942 0.2664 1
              Text ""
-             "Font Size" 9
-             "Min Font Size" 9
+             "Font Size" 18
+             "Min Font Size" 18
              "Horizontal Alignment" 2
              FontProperties FontProperties "{1F686C012CD422C5}" {
               Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -234,13 +234,13 @@ SizeLayoutWidgetClass {
              Name "ThreadUnreadSize"
              Slot LayoutSlot "{CB9E28201A19A05D}" {
               HorizontalAlign 2
-              Padding 0 2 0 0
+              Padding 0 4 0 0
              }
              "Is Visible" 0
              AllowWidthOverride 1
-             WidthOverride 16
+             WidthOverride 32
              AllowHeightOverride 1
-             HeightOverride 14
+             HeightOverride 28
              {
               OverlayWidgetClass "{422BE04F1C4901BE}" {
                Name "ThreadUnread"
@@ -256,7 +256,7 @@ SizeLayoutWidgetClass {
                   VerticalAlign 3
                  }
                  Color 0.1147 0.5398 0.2085 1
-                 style rounded_6px
+                 style rounded_12px
                  "no focus" 1
                 }
                 TextWidgetClass "{5F53DF4D4F58169A}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
@@ -267,8 +267,8 @@ SizeLayoutWidgetClass {
                  }
                  Color 0.004 0.0048 0.0075 1
                  Text ""
-                 "Font Size" 9
-                 "Min Font Size" 9
+                 "Font Size" 18
+                 "Min Font Size" 18
                  "Horizontal Alignment" Center
                  FontProperties FontProperties "{B4F0AA40055CFAB0}" {
                   Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"

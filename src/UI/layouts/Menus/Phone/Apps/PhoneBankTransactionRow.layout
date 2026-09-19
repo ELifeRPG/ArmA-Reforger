@@ -1,7 +1,7 @@
 SizeLayoutWidgetClass {
  Name "PostedRowSize"
  AllowHeightOverride 1
- HeightOverride 34
+ HeightOverride 68
  {
   OverlayWidgetClass "{AFA77B82F28FE4FD}" {
    Name "PostedRow"
@@ -15,7 +15,7 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{6215EAE1A5A863DC}" {
       HorizontalAlign 3
       VerticalAlign 3
-      Padding 0 5 0 5
+      Padding 0 10 0 10
      }
      {
       VerticalLayoutWidgetClass "{B148F7CAE7E3B9E5}" {
@@ -29,16 +29,16 @@ SizeLayoutWidgetClass {
          Name "Memo"
          Color 0.8378 0.8626 0.9222 1
          Text ""
-         "Font Size" 11
-         "Min Font Size" 10
+         "Font Size" 22
+         "Min Font Size" 20
          "Horizontal Alignment" Left
         }
         TextWidgetClass "{90F78B3929D96AC3}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
          Name "PostedAt"
          Color 0.366 0.4024 0.5025 1
          Text ""
-         "Font Size" 9
-         "Min Font Size" 9
+         "Font Size" 18
+         "Min Font Size" 18
          "Horizontal Alignment" Left
          FontProperties FontProperties "{FF794D2697FDBA79}" {
           Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -50,12 +50,12 @@ SizeLayoutWidgetClass {
        Name "Amount"
        Slot LayoutSlot "{401F3EB82D4FD184}" {
         VerticalAlign 1
-        Padding 8 0 0 0
+        Padding 16 0 0 0
        }
        Color 0.8378 0.8626 0.9222 1
        Text ""
-       "Font Size" 11
-       "Min Font Size" 10
+       "Font Size" 22
+       "Min Font Size" 20
        "Horizontal Alignment" 2
        FontProperties FontProperties "{7D4672F8462AE748}" {
         Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -70,7 +70,7 @@ SizeLayoutWidgetClass {
       VerticalAlign 2
      }
      AllowHeightOverride 1
-     HeightOverride 1
+     HeightOverride 2
      {
       ImageWidgetClass "{7A013D0B164535E2}" {
        Name "RowHairline"

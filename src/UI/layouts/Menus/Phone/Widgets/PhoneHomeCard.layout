@@ -1,7 +1,7 @@
 SizeLayoutWidgetClass {
  Name "HomeCardSize"
  AllowHeightOverride 1
- HeightOverride 52
+ HeightOverride 104
  {
   OverlayWidgetClass "{C486B68C202485D4}" {
    Name "HomeCard"
@@ -26,7 +26,7 @@ SizeLayoutWidgetClass {
       VerticalAlign 3
      }
      Color 0.004 0.0048 0.0075 0.55
-     style rounded_6px
+     style rounded_12px
      "no focus" 1
     }
     SmartPanelWidgetClass "{52BCFF25D73951AB}" {
@@ -36,7 +36,7 @@ SizeLayoutWidgetClass {
       VerticalAlign 3
      }
      Color 0.5837 0.6453 0.8073 0.14
-     style rounded_6px
+     style rounded_12px
      "no focus" 1
     }
     SizeLayoutWidgetClass "{ECDF2DB78EA6EB8D}" {
@@ -44,10 +44,10 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{CD99878065F8F2E9}" {
       HorizontalAlign 3
       VerticalAlign 0
-      Padding 6 0 6 0
+      Padding 12 0 12 0
      }
      AllowHeightOverride 1
-     HeightOverride 1
+     HeightOverride 2
      {
       ImageWidgetClass "{9040CBCDB37497D9}" {
        Name "GlassSpecular"
@@ -64,10 +64,10 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{A4691BE70D411F16}" {
       HorizontalAlign 3
       VerticalAlign 2
-      Padding 6 0 6 0
+      Padding 12 0 12 0
      }
      AllowHeightOverride 1
-     HeightOverride 1
+     HeightOverride 2
      {
       ImageWidgetClass "{72165C5AD9297280}" {
        Name "GlassHairline"
@@ -112,7 +112,7 @@ SizeLayoutWidgetClass {
           VerticalAlign 3
          }
          Color 0 0 0 0
-         style rounded_6px
+         style rounded_12px
          "no focus" 1
         }
         HorizontalLayoutWidgetClass "{9CDDFA6115F827EB}" {
@@ -120,19 +120,19 @@ SizeLayoutWidgetClass {
          Slot OverlayWidgetSlot "{F43CE4EEE6BC28AF}" {
           HorizontalAlign 3
           VerticalAlign 3
-          Padding 12 0 12 0
+          Padding 24 0 24 0
          }
          {
           SizeLayoutWidgetClass "{3B893D5544D4B006}" {
            Name "CardBadgeSize"
            Slot LayoutSlot "{495DC4D50F78B5B1}" {
             VerticalAlign 1
-            Padding 0 0 12 0
+            Padding 0 0 24 0
            }
            AllowWidthOverride 1
-           WidthOverride 28
+           WidthOverride 56
            AllowHeightOverride 1
-           HeightOverride 28
+           HeightOverride 56
            {
             OverlayWidgetClass "{F9EBA1B4CD1534A7}" {
              Name "CardBadge"
@@ -157,7 +157,7 @@ SizeLayoutWidgetClass {
                 VerticalAlign 3
                }
                Color 0.004 0.0048 0.0075 0.55
-               style rounded_6px
+               style rounded_12px
                "no focus" 1
               }
               SmartPanelWidgetClass "{44E9BBCE510F72D1}" {
@@ -167,7 +167,7 @@ SizeLayoutWidgetClass {
                 VerticalAlign 3
                }
                Color 0.5837 0.6453 0.8073 0.14
-               style rounded_6px
+               style rounded_12px
                "no focus" 1
               }
               SizeLayoutWidgetClass "{44E9BBCE510F72D2}" {
@@ -175,10 +175,10 @@ SizeLayoutWidgetClass {
                Slot OverlayWidgetSlot "{A11BAFE511A5CA10}" {
                 HorizontalAlign 3
                 VerticalAlign 0
-                Padding 2 1 2 0
+                Padding 4 2 4 0
                }
                AllowHeightOverride 1
-               HeightOverride 1
+               HeightOverride 2
                {
                 ImageWidgetClass "{44E9BBCE510F72D3}" {
                  Name "GlassSpecular"
@@ -195,10 +195,10 @@ SizeLayoutWidgetClass {
                Slot OverlayWidgetSlot "{A11BAFE511A5CA12}" {
                 HorizontalAlign 3
                 VerticalAlign 2
-                Padding 2 0 2 0
+                Padding 4 0 4 0
                }
                AllowHeightOverride 1
-               HeightOverride 1
+               HeightOverride 2
                {
                 ImageWidgetClass "{44E9BBCE510F72D5}" {
                  Name "GlassHairline"
@@ -219,8 +219,8 @@ SizeLayoutWidgetClass {
                "Is Visible" 0
                Color 0.8378 0.8626 0.9222 1
                Text ""
-               "Font Size" 20
-               "Min Font Size" 20
+               "Font Size" 40
+               "Min Font Size" 40
                "Horizontal Alignment" Center
                FontProperties FontProperties "{E0866C39E335ECE7}" {
                 Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -233,9 +233,9 @@ SizeLayoutWidgetClass {
                 VerticalAlign 1
                }
                AllowWidthOverride 1
-               WidthOverride 22
+               WidthOverride 44
                AllowHeightOverride 1
-               HeightOverride 22
+               HeightOverride 44
               }
               SmartPanelWidgetClass "{44E9BBCE510F72D6}" {
                Name "GlassGlow"
@@ -244,7 +244,7 @@ SizeLayoutWidgetClass {
                 VerticalAlign 3
                }
                Color 0.5837 0.6453 0.8073 0
-               style rounded_6px
+               style rounded_12px
                "no focus" 1
               }
              }
@@ -261,20 +261,20 @@ SizeLayoutWidgetClass {
             TextWidgetClass "{1E97A41352AB6680}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
              Name "CardLabel"
              Slot LayoutSlot "{78267503EB04F097}" {
-              Padding 0 0 0 2
+              Padding 0 0 0 4
              }
              Color 0.8378 0.8626 0.9222 1
              Text ""
-             "Font Size" 9
-             "Min Font Size" 9
+             "Font Size" 18
+             "Min Font Size" 18
              "Horizontal Alignment" Left
             }
             TextWidgetClass "{2AC48A97BFF17E13}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
              Name "CardValue"
              Color 0.8378 0.8626 0.9222 1
              Text ""
-             "Font Size" 11
-             "Min Font Size" 11
+             "Font Size" 22
+             "Min Font Size" 22
              "Horizontal Alignment" Left
              FontProperties FontProperties "{33AA67F766C68D38}" {
               Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -286,12 +286,12 @@ SizeLayoutWidgetClass {
            Name "CardTrailing"
            Slot LayoutSlot "{60F6BA38B6DFC0C2}" {
             VerticalAlign 1
-            Padding 10 0 0 0
+            Padding 20 0 0 0
            }
            Color 0.366 0.4024 0.5025 1
            Text ""
-           "Font Size" 9
-           "Min Font Size" 9
+           "Font Size" 18
+           "Min Font Size" 18
            "Horizontal Alignment" 2
            FontProperties FontProperties "{3EF90B7377633959}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"

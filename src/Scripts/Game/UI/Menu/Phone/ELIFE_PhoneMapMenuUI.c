@@ -1,6 +1,5 @@
 //------------------------------------------------------------------------------------------------
-//! Vanilla fullscreen map, opened from the phone's Map app. Closing it returns to the phone
-//! home screen instead of dropping the player back into the game world.
+//! Vanilla fullscreen map opened from the phone. Closing it returns to the phone.
 class ELIFE_PhoneMapMenuUI : SCR_MapMenuUI
 {
 	//------------------------------------------------------------------------------------------------
@@ -8,8 +7,7 @@ class ELIFE_PhoneMapMenuUI : SCR_MapMenuUI
 	{
 		super.OnMenuClose();
 
-		// Defer by one tick so the map menu is fully removed from the MenuManager stack before
-		// the phone menu opens on top of it (mirrors the same-frame guard in ELIFE_PhoneMenu.OnMapApp).
+		// Deferred a tick so the map menu is off the stack before the phone menu reopens.
 		GetGame().GetCallqueue().CallLater(ReopenPhoneMenuDeferred, 0, false);
 	}
 

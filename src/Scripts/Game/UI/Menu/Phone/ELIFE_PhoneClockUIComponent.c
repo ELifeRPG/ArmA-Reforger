@@ -29,7 +29,7 @@ class ELIFE_PhoneClockUIComponent : ScriptedWidgetComponent
 
 		if (m_ClockTimeText)
 		{
-			//! Size stays on the widget: StatusTime is TEXT_CAPTION, HomeClock is TEXT_CLOCK, LockTime is TEXT_DISPLAY. This handler is shared — stamping TEXT_CLOCK here blew the status bar up to the home clock.
+			//! Font size stays on the widget - this handler is shared by clocks of different sizes.
 			OnClockUpdate();
 			GetGame().GetCallqueue().CallLater(OnClockUpdate, 1000, true);
 		}

@@ -10,7 +10,7 @@ OverlayWidgetClass {
    "Is Visible" 0
    Color 0.8378 0.8626 0.9222 1
    Texture "{3262679C50EF4F01}UI/Textures/Icons/icons_wrapperUI.imageset"
-   Size 26 26
+   Size 52 52
   }
  }
 }

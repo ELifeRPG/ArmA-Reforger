@@ -127,29 +127,25 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	protected const ResourceName LAYOUT = "{3F1A6C820D9B4E51}UI/layouts/Menus/Phone/Apps/PhoneContacts.layout";
 	protected const ResourceName LAYOUT_CONTACT_ROW = "{5C2E9A17B4D06F38}UI/layouts/Menus/Phone/Apps/PhoneContactRow.layout";
 
-	//! LoadImageFromSet() fails closed (no image, no error) on an unknown sprite name - "checkmark" silently drew nothing before it turned out to be "check".
+	//! Wrapper-set sprite names; an unknown name silently draws nothing.
 	protected const string ICON_ADD = "plus";
 	protected const string ICON_SAVE = "check";
 	protected const string ICON_MESSAGE = "comments";
 
-	//! Sub-state values: "" is the index, SUBSTATE_FORM is the (single) add form, a detail page is
-	//! SUBSTATE_DETAIL_PREFIX + contactId.
+	//! Sub-states: "" index, SUBSTATE_FORM add form, SUBSTATE_DETAIL_PREFIX + contactId detail page.
 	protected const string SUBSTATE_FORM = "new";
 	protected const string SUBSTATE_DETAIL_PREFIX = "c:";
 
-	//! Same form, prefilled - Messages' own hand-off for an unsaved number. Public/static since
-	//! Messages builds this value and Contacts reads it, mirroring SUBSTATE_CONTACT_PREFIX in reverse.
+	//! Prefilled form for an unsaved number; built by Messages.
 	static const string SUBSTATE_FORM_NUMBER_PREFIX = "new:";
 
-	//! Enforced here, not via EditBoxFilterComponent - the engine refuses to attach that component to
-	//! a bare EditBoxWidget. Only stops a runaway string; the backend still judges the number's shape.
+	//! EditBoxFilterComponent can't attach to a bare EditBoxWidget, so lengths are capped here.
 	protected const int MAX_NUMBER_LENGTH = 24;
 	protected const int MAX_NAME_LENGTH = 40;
 
-	//! EditBox write mode is left-aligned. Hug the box to the string and keep the box centered so
-	//! typing still reads as centered text.
-	protected const float NAME_FIELD_PAD = 8;
-	protected const float NAME_FIELD_MAX = 216;
+	//! Write mode is left-aligned, so the name box hugs its text and stays centred.
+	protected const float NAME_FIELD_PAD = 16;
+	protected const float NAME_FIELD_MAX = 432;
 
 	protected ScrollLayoutWidget m_wContactScroll;
 	protected Widget m_wContactGroups;
@@ -193,8 +189,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 
 	protected bool m_bFormOpen;
 
-	//! Set when the form was opened prefilled (Messages' hand-off for an unsaved number) - carried into
-	//! GetSubState() so the world RT reopens the same prefilled form, not a blank one.
+	//! Set when opened prefilled, so GetSubState() reopens the same form on other screens.
 	protected string m_sPrefillNumber;
 
 	//! The contact whose detail page is open, held by contactId. Empty means the index is showing.
@@ -336,8 +331,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		m_NumberFocus = BindField(m_wNumberField, "NumberFieldRule");
 		m_NameFocus = BindField(m_wNameField, "NameFieldRule");
 
-		//! OnChange cannot be overloaded on a ScriptedWidgetEventHandler - reserved engine event.
-		//! The field's SCR_EventHandlerComponent already owns it and exposes GetOnChange() per keystroke.
+		//! OnChange is reserved on ScriptedWidgetEventHandler, so use the field's SCR_EventHandlerComponent.
 		if (m_wNameField)
 		{
 			SCR_EventHandlerComponent nameEvents = SCR_EventHandlerComponent.Cast(m_wNameField.FindHandler(SCR_EventHandlerComponent));
@@ -559,8 +553,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! ApplyCollapse() only cross-fades opacity between the nav title and DetailTitle, so a rename
-	//! from a refresh needs this to reach the collapsed (scrolled-down) title too.
+	//! Keeps the collapsed nav title in sync after a rename.
 	protected void SyncDetailNavTitle()
 	{
 		if (m_wNavTitle && m_wDetailTitle)
@@ -579,7 +572,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Box is centered and sized to the string so the caret lands right after a centered run of letters, not mid-way through a wide field.
+	//! Sized to the string so the caret follows centred text.
 	protected void FitNameField()
 	{
 		if (!m_wNameField || !m_wNameFieldSize || !m_wNameFieldMeasure)
@@ -614,8 +607,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Placeholder already says "8 digits". Don't nag while they are still typing a short number;
-	//! show the error when they leave a bad value, or as soon as it is too long to become valid.
+	//! Only flag the number once the field is left, or once it's too long to ever be valid.
 	protected void RefreshNumberError(bool leaving)
 	{
 		string number = "";
@@ -738,7 +730,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 			if (iconLoaded)
 			{
 				m_wMessageIcon.SetColor(ELIFE_PhoneStyle.TextPrimary());
-				ELIFE_PhoneStyle.FitIcon(m_wMessageIcon, 16);
+				ELIFE_PhoneStyle.FitIcon(m_wMessageIcon, 32);
 			}
 		}
 
@@ -756,8 +748,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Hands off to Messages by contactId, not number - sub-state is replicated, and a number would
-	//! print on a bystander's screen before Messages could redact it.
+	//! Hands off by contactId - sub-state replicates, and a raw number would show on bystanders' screens.
 	void MessageOpenContact()
 	{
 		if (m_sOpenContactId == "")
@@ -852,8 +843,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		if (m_wNavTitle)
 			m_wNavTitle.SetText("#ELIFE-Phone_Contacts_Form_Title");
 
-		//! No on-page large title — the hero name is the identity, like detail. Nav shows
-		//! "New Contact" once the bar collapses.
+		//! No large title; the name is the heading and the nav bar shows "New Contact" when collapsed.
 		TrackScroll(m_wFormScroll, null);
 
 		if (!m_SaveClick)
@@ -950,8 +940,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Finishes at once if the label never appeared, otherwise waits out SPINNER_MIN_VISIBLE_MS so it
-	//! doesn't flash and vanish.
+	//! Keeps "Saving…" up for SPINNER_MIN_VISIBLE_MS once it has appeared.
 	protected void EndSaving()
 	{
 		GetGame().GetCallqueue().Remove(ShowSavingLabel);

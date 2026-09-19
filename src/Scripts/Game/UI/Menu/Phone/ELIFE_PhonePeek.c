@@ -1,26 +1,25 @@
 //------------------------------------------------------------------------------------------------
-//! Holstered notification glance. Not a menu: no cursor, no input context, one at a time.
+//! Holstered notification glance: a banner strip slides in from the top edge, holds, and slides back.
+//! Not a menu: no cursor, no input context, one at a time.
 class ELIFE_PhonePeek
 {
 	protected static ref ELIFE_PhonePeek s_Instance;
 
-	protected const ResourceName LAYOUT = "{72F2A11B5C8D3A24}UI/layouts/Menus/Phone/PhoneMenu.layout";
+	protected const ResourceName LAYOUT = "{5A3C91E7D2B84F0F}UI/layouts/Menus/Phone/PhonePeek.layout";
 
-	//! How far along the menu's slide path the peek rests. 0 is fully up, 1 is fully off-screen.
-	protected const float PEEK_SLIDE_FRACTION = 0.62;
+	//! Top padding of the strip at rest and fully hidden.
+	protected const float PEEK_REST_TOP = 24;
+	protected const float PEEK_HIDDEN_TOP = -180;
 
-	//! Hold past the banner so the phone does not start leaving while you are still reading.
+	//! Hold past the banner so it does not start leaving while you are still reading.
 	protected const int PEEK_HOLD_MS = 5500;
 
 	protected Widget m_wRoot;
-	protected Widget m_wPhoneSize;
-	protected ref ELIFE_PhoneCase m_Case = new ELIFE_PhoneCase();
+	protected Widget m_wPeekSize;
 	protected ref ELIFE_PhoneScreenShell m_Shell;
 
-	protected float m_fRestLeft, m_fRestTop, m_fRestRight, m_fRestBottom;
 	protected float m_fProgress;
 	protected bool m_bOpening;
-	protected float m_fSlideOffset;
 
 	//! Taken when the phone comes out; consumed by the menu on the same open.
 	protected static string s_sHandoffThreadId;
@@ -100,27 +99,32 @@ class ELIFE_PhonePeek
 		if (!m_wRoot)
 			return false;
 
-		//! Menu layout is a fullscreen overlay; a glance must not dim the world or eat clicks.
-		IgnoreCursorTree(m_wRoot);
-
-		Widget worldBlur = m_wRoot.FindAnyWidget("WorldBlur");
-		if (worldBlur)
-			worldBlur.SetVisible(false);
-
-		Widget dimmer = m_wRoot.FindAnyWidget("Dimmer");
-		if (dimmer)
-			dimmer.SetVisible(false);
-
-		m_Case.Init(m_wRoot);
-		m_Case.Paint(phone);
-
-		m_wPhoneSize = m_wRoot.FindAnyWidget("PhoneSize");
-
-		if (!BindScreen(phone))
+		m_wPeekSize = m_wRoot.FindAnyWidget("PeekSize");
+		Widget host = m_wRoot.FindAnyWidget("PeekHost");
+		if (!m_wPeekSize || !host)
 		{
 			Close();
 			return false;
 		}
+
+		Widget screen = workspace.CreateWidgets(ELIFE_PhoneScreenRenderComponent.PHONE_SCREEN_LAYOUT, host);
+		if (!screen)
+		{
+			Close();
+			return false;
+		}
+
+		//! CreateWidgets() doesn't give the returned root a fill slot by default.
+		AlignableSlot.SetHorizontalAlign(screen, LayoutHorizontalAlign.Stretch);
+		AlignableSlot.SetVerticalAlign(screen, LayoutVerticalAlign.Stretch);
+
+		m_Shell = new ELIFE_PhoneScreenShell();
+		m_Shell.Init(screen, phone, false);
+		m_Shell.UseBannerOnly();
+
+		//! Banners only raise on an awake screen; lock would suppress them.
+		m_Shell.ShowState(EPhoneScreenState.HOME, false);
+		m_Shell.RaisePendingBanners();
 
 		PlaySlideIn();
 
@@ -129,32 +133,11 @@ class ELIFE_PhonePeek
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected bool BindScreen(notnull ELIFE_PhoneGadgetComponent phone)
-	{
-		Widget screen = m_wRoot.FindAnyWidget("PhoneScreen");
-		if (!screen)
-			return false;
-
-		m_Shell = new ELIFE_PhoneScreenShell();
-		m_Shell.Init(screen, phone, false);
-
-		//! Lock has no banner, and its list sits at the bottom a glance would cut off.
-		m_Shell.ShowState(EPhoneScreenState.HOME, false);
-
-		m_Shell.RaisePendingBanners();
-		IgnoreCursorTree(m_wRoot);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Second arrival while already up: banner the new one and restart the hold.
 	protected void Restart()
 	{
 		if (m_Shell)
-		{
 			m_Shell.RaiseArrivedBanners();
-			IgnoreCursorTree(m_wRoot);
-		}
 
 		m_bOpening = true;
 
@@ -169,13 +152,6 @@ class ELIFE_PhonePeek
 	//------------------------------------------------------------------------------------------------
 	protected void PlaySlideIn()
 	{
-		if (!m_wPhoneSize)
-			return;
-
-		AlignableSlot.GetPadding(m_wPhoneSize, m_fRestLeft, m_fRestTop, m_fRestRight, m_fRestBottom);
-
-		m_fSlideOffset = ELIFE_PhoneStyle.PHONE_SLIDE_OFFSET * PEEK_SLIDE_FRACTION;
-
 		m_fProgress = 0;
 		m_bOpening = true;
 
@@ -209,7 +185,7 @@ class ELIFE_PhonePeek
 	//------------------------------------------------------------------------------------------------
 	protected void Tick()
 	{
-		if (!m_wPhoneSize)
+		if (!m_wPeekSize)
 		{
 			GetGame().GetCallqueue().Remove(Tick);
 			return;
@@ -231,9 +207,9 @@ class ELIFE_PhonePeek
 	protected void Apply()
 	{
 		float eased = ELIFE_PhoneStyle.EaseOut(m_fProgress);
-		float bottom = m_fRestBottom - ELIFE_PhoneStyle.PHONE_SLIDE_OFFSET + eased * (ELIFE_PhoneStyle.PHONE_SLIDE_OFFSET - m_fSlideOffset);
+		float top = PEEK_HIDDEN_TOP + eased * (PEEK_REST_TOP - PEEK_HIDDEN_TOP);
 
-		AlignableSlot.SetPadding(m_wPhoneSize, m_fRestLeft, m_fRestTop, m_fRestRight, bottom);
+		AlignableSlot.SetPadding(m_wPeekSize, 0, top, 0, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -255,23 +231,7 @@ class ELIFE_PhonePeek
 			m_wRoot = null;
 		}
 
-		m_wPhoneSize = null;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static void IgnoreCursorTree(Widget widget)
-	{
-		if (!widget)
-			return;
-
-		widget.SetFlags(WidgetFlags.IGNORE_CURSOR);
-
-		Widget child = widget.GetChildren();
-		while (child)
-		{
-			IgnoreCursorTree(child);
-			child = child.GetSibling();
-		}
+		m_wPeekSize = null;
 	}
 
 	//------------------------------------------------------------------------------------------------

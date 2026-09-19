@@ -11,6 +11,11 @@ Output is Enfusion `.layout` and Script under `src/UI/layouts/Menus/Phone/` and
 in the widgets those files already use (`OverlayWidget`, `SmartPanelWidget`,
 `ImageWidget`, `SizeLayoutWidget`, `TextWidget`, `ScrollLayoutWidget`).
 
+**Every pixel size in this doc and in the code is authored at 2× the original 268 × 552
+design** (the render target is 536 × 1104) so the screen stays sharp on the 3D model.
+Numbers below are the 2× values. See [`docs/phone-3d-screen.md`](phone-3d-screen.md)
+for how the screen is drawn, clicked and inspected in the world.
+
 ## Extending — a sixth app
 
 Do not start a parallel shell. Hook the existing one:
@@ -28,7 +33,7 @@ Do not start a parallel shell. Hook the existing one:
    Claim the trailing slot with `ShowNavAction` if the page has one named action;
    it is reset hidden on every bind.
 5. Internal pages use `GetSubState` / `ApplySubState` / `NotifySubStateChanged` so
-   the world RT stays on the same page as the menu. Handing the phone to another
+   every viewer's copy of the screen (the owner's and bystanders') stays on the same page. Handing the phone to another
    app is `OpenAppPage(state, subState)` — Contacts → Messages already does this.
    Back visibility is automatic: the shell hides it whenever `GetSubState()` is
    `""` (`IsAtRoot()`), so the root page needs no Back handling of its own.
@@ -37,29 +42,33 @@ Do not start a parallel shell. Hook the existing one:
 
 ## Canvases
 
-One authored screen: **256 × 552** (≈ 19.5:9), the same ratio as the mesh's screen
-face (84.13 × 181.41 mm). Enfusion cannot scale a widget tree — do not author a
-second size set.
+One authored screen: **536 × 1104** (≈ 19.5:9), the same ratio as the mesh's screen
+face (≈ 92 × 189 mm, measured). Enfusion cannot scale a widget tree — neither
+`RTTextureWidget.SetResolutionScale()` nor a `ScaleWidget` scales the children of a
+widget-content render target — so sizes are authored at 2× rather than scaled at
+runtime. Do not author a second size set.
 
 | Surface | Size | Why |
 |---|---|---|
-| Screen canvas (`PhoneScreen`) | 256 × 552 | The one size every app page is laid out at. |
-| World RT (`ContentRT`, `PhoneScreenHost`) | 256 × 552 | Same canvas, no case. Mapped straight onto the screen UVs. |
-| In-hand menu (`PhoneSize`) | 268 × 558 | Screen + 3px case per side, + 3px per side for the side buttons. Height has no button allowance. |
-| LOD screen texture | 512 × 1104 | A 2× bake of the canvas; any size works if it keeps the exact ratio. |
+| Screen canvas (`PhoneScreen`) | 536 × 1104 | The one size every app page is laid out at. |
+| World RT (`ContentRT`, `PhoneScreenHost`) | 536 × 1104 | Same canvas, no case. Mapped straight onto the screen UVs. `ELIFE_PhoneScreenRenderComponent.CANVAS_*` and the click mapping read the same numbers. |
+| Peek strip (`PeekSize`, `PhonePeek.layout`) | 270 × 148 | The holstered glance only. Drawn in the workspace, not on the 2× render target, so it uses the compact card (`PhonePeekCard.layout`, 270 × 44: the 2× `PhoneNotificationCard` at 0.55×, same widget names; title 12, body and time 10). 0.55 was measured so the peek reads the same size as the banner on the held phone's screen — don't enlarge it "for a HUD"; it looked oversized. Room for three cards, 24px below the top edge. Its time text is lightened, since it sits over an arbitrary world. No phone shape. |
+| LOD screen texture | 512 × 1104 | Baked separately from the canvas; it must keep the mesh's ratio (re-check it against 536 × 1104 if the bake is redone). |
 
 The mesh is the source of truth. The screen face, its 0–1 UVs, the canvas, and the
 LOD bake share one ratio — change one and all of them change together. Size the
 phone in the world by scaling the whole mesh uniformly, which never touches the
 canvas. Case geometry is added *around* the screen: changing the case changes
-`PhoneSize`, never the screen inside it. Canvas pixels stay divisible by 4.
+`PhoneSize`, never the screen inside it. Canvas pixels stay divisible by 4. If the
+canvas size changes, update `PhoneScreenContent.layout`, `CANVAS_*`, and every
+hardcoded size together, then re-measure the screen plane (`SCREEN_LOCAL_*`).
 
 | When | Do |
 |---|---|
-| The owner must operate it | It cannot depend on hover. Cosmetic hover (a tint under the cursor) is allowed. |
-| Type carries meaning | 9px minimum. Nothing smaller. |
-| World RT vs menu | Same screen state, content, and data. Presentational polish on the menu does not need an RT twin. |
-| A glance while the phone is away | The in-hand layout as a workspace widget — not a third canvas and not a menu. |
+| The owner must operate it | The owner clicks the 3D screen with the mouse (raycast onto the mesh). It cannot depend on hover. Cosmetic hover (a tint under the cursor) is allowed. |
+| Type carries meaning | 18px minimum. Nothing smaller. |
+| World screen vs peek | Same banner card and data. The in-hand phone has no separate 2D layer any more — the model's screen is the only full copy. |
+| A glance while the phone is away | The peek: a banner strip as a workspace widget — not a third canvas and not a menu. |
 
 ## Colour space
 
@@ -102,14 +111,14 @@ Hard limits:
 
 Recipe, not a fourth look: baked blurred wallpaper as refraction (or tint-only if
 alignment is impossible), a near-white tint with no hue of its own, a top specular
-and a 1px bottom hairline. Tint and specular each come in a dark and a light step;
+and a 2px bottom hairline. Tint and specular each come in a dark and a light step;
 accent glass borrows the dark tint but the light specular, so both are always named
 per step (`GlassTintDark()`, `GlassSpecularLight()`) rather than a default plus an
 override. Specular still stretches the pane; `ApplyGlass` sets its height to
-`GLASS_SPECULAR_HEIGHT` (2) on every look — dark, light, and accent. A 1px bar
-reads as a stroke. Do not invent a min-width or centre it. Any new glass widget
+`GLASS_SPECULAR_HEIGHT` (4) on every look — dark, light, and accent. A hairline-thin
+bar reads as a stroke. Do not invent a min-width or centre it. Any new glass widget
 must carry the layer names `ApplyGlass` looks up — `GlassBlur`, `GlassScrim`,
-`GlassTint`, `GlassSpecular`, `GlassHairline` — clipped to `rounded_6px`. Accent
+`GlassTint`, `GlassSpecular`, `GlassHairline` — clipped to `rounded_12px`. Accent
 glass is the same recipe with one substitution: the scrim mixes toward the app's
 own accent colour instead of a fixed neutral (`GlassBaseDark()` for dark,
 `GlassBaseLight()` for light). The tint is never recoloured with the app hue.
@@ -122,12 +131,13 @@ today that is only the home screen's app tiles and card badges. A widget with no
 `GlassGlow` child simply has no glow; accent glass on it behaves exactly like
 dark/light, just recoloured on the scrim.
 
-Radii: `STYLE_RADIUS_ELEMENT` / `STYLE_RADIUS_SCREEN` are `rounded_6px` (SmartPanel
-maximum — screen, cards, chips, badges, keys). `STYLE_RADIUS_DETAIL` is
-`rounded_2px` for small inner details a 6px arc would swallow. A wider radius exists
-only as sprite pieces from the panel imagesets (corners + edges on `ImageWidget`),
-and is reserved for the case, not for anything on the screen. Never fake a round
-corner with overlapping rectangles.
+Radii: `STYLE_RADIUS_ELEMENT` / `STYLE_RADIUS_SCREEN` are `rounded_12px` (screen,
+cards, chips, badges, keys — the 6px design radius at 2×). `STYLE_RADIUS_DETAIL` is
+`rounded_4px` for small inner details a 12px arc would swallow. Vanilla `custom.styles`
+also ships `rounded_2px`, `rounded_6px` and outline variants, but those are 1× radii and look
+square on this canvas. A wider radius exists only as sprite pieces from the panel
+imagesets (corners + edges on `ImageWidget`). Never fake a
+round corner with overlapping rectangles.
 
 Altitude is tint lightness + hairline strength, not blur. Three altitudes: content,
 chrome, overlay.
@@ -181,7 +191,7 @@ page's hue can only mean where the tap goes.
 top. A SmartPanel fill is a rounded square, not a circle. Do not point `Texture`
 at `UI/Textures/Common/circleFull.edds` or
 `UI/Textures/RadialMenu/RadialMenuMaskInverse.edds` — those are shader masks and
-draw as opaque squares. List marks are `AVATAR_SIZE` (28), initials at 12px —
+draw as opaque squares. List marks are `AVATAR_SIZE` (56), initials at 24px —
 enough padding inside the circle that the glyph doesn't hug the edge.
 
 ## Actions — slot, then cost
@@ -205,7 +215,7 @@ Decide in order:
    (Back). If this screen is the only place it would mean this, it is a word.
 
 Back and the trailing label are a **pair of words**: caption size (`TEXT_CAPTION` /
-9), regular, not bold. The pill is a chip the same hold as Back, not the full
+18), regular, not bold. The pill is a chip the same hold as Back, not the full
 nav bar; width hugs the label. A leading icon sits at that same size — it marks
 the action, it does not replace the word or enlarge the control. Do not glass
 Back to match the pill. A bare `+` in that corner, with no word, is the floating
@@ -233,12 +243,12 @@ Any grouped index uses `CreateListGroup` / `CreateListRow` on `ELIFE_PhoneAppBas
 Do not re-author `PhoneListGroup.layout` per app.
 
 **Host.** An empty `VerticalLayoutWidget` under the scroll body (`ContactGroups`,
-`AccountGroups`, `ThreadGroups`). Content inset `Padding 12 0 12 30`. The layout
+`AccountGroups`, `ThreadGroups`). Content inset `Padding 24 0 24 60`. The layout
 holds no section widgets; groups are created at fill time.
 
 **Fill.** `ClearChildren` the host, then walk the data in order. Open a new group
 when the section key changes. `isFirst` is `true` only for the first group —
-later groups get `LIST_GROUP_GAP` (6) above them. Append rows to the returned
+later groups get `LIST_GROUP_GAP` (12) above them. Append rows to the returned
 `GroupList`, not to the host.
 
 ```
@@ -249,7 +259,7 @@ ELIFE_PhoneStyle.ApplyGlass(row, true);
 
 `CreateListRow(..., isLast)` only hides `RowHairline`. Glass cards have none, so
 `isLast` is always `false` there. `CreateListRow` stretches horizontally; do not
-use `LayoutSizeMode.Fill` or leftover height is divided across rows. The 2px gap
+use `LayoutSizeMode.Fill` or leftover height is divided across rows. The 4px gap
 between cards is the row overlay's own bottom padding.
 
 | When | Do |
@@ -318,7 +328,7 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
   | Lock list | Standing state | Every unread thread, rebuilt each lock render. |
   | Banner | An event | Awake-screen arrivals only, capped stack, self-dismisses after `BANNER_DURATION_MS`. Fades **both ways** — in on the present duration, out on the shorter state one, since arriving announces something and leaving is housekeeping. A **door**: taps hand the phone to the source app on that item. |
   | Hub | The backlog | Everything still standing, opened on demand as a dark-glass sheet over the current page — it takes the screen away rather than floating over it, unlike the light-glass cards it lists. |
-  | Peek | An event, phone away | The whole phone slides partway up from the bottom edge carrying a banner, holds, slides back. **Never a menu** — it fires unprompted, so it must not take the cursor or the input context; it is a bare workspace widget and the player keeps moving throughout. No world blur or dim: those mean "you are in the phone now", and a glance means the opposite. Nothing on it is clickable — acting on the message is taking the phone out. |
+  | Peek | An event, phone away | A banner strip at the top centre slides down from the top edge, holds, slides back. **Never a menu** — it fires unprompted, so it must not take the cursor or the input context; it is a bare workspace widget and the player keeps moving throughout. It is the banner layer of a real `PhoneScreen` (every other layer hidden) painted with the compact 1× card (`ELIFE_PhoneScreenShell.UseCompactBanners()`), not a phone shape. Keep `PhonePeekCard.layout` in step with `PhoneNotificationCard.layout`. No world blur or dim: those mean "you are in the phone now", and a glance means the opposite. Nothing on it is clickable — acting on the message is taking the phone out. |
 
   A rising unread count is an arrival; a merely non-zero one is not — opening the
   phone must never replay old unread as fresh news, and a thread already open on
@@ -326,8 +336,7 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
   Seed the arrival baseline from whatever the screen already has when it opens;
   the first poll after wake must still be able to count as news.
 
-  A peek is a banner surface, so it cannot be the lock screen — lock has no banner,
-  and its standing list sits at the bottom a glance would cut off.
+  A peek is a banner surface, so it cannot be the lock screen — lock has no banner.
   Taking the phone out while a peek is up is the door: it hands the phone to the
   source app on that item, same as tapping the banner. Never two copies of the
   same phone. A second arrival while a peek is up restarts it; do not stack another.
@@ -339,7 +348,7 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
   one tap from a locked phone. **Clear** is a watermark per thread, not a read flag
   and never a backend call — the next message pushes past it and the notification
   returns, so clearing can never mean "ignore forever." Hub open state is
-  replicated so the world screen matches the menu.
+  replicated so a bystander's copy of the screen matches the owner's.
 - **Settings.** Grouped rows, caption headers, right-aligned values, chevrons for
   pushes, toggles for booleans. Device ID, number, and PIN are real fields — values,
   not body copy.
@@ -363,26 +372,17 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
   the Bridge never answered; any real HTTP code is that route's problem. Apps still
   show a loading skeleton for in-flight latency. One Retry: provision if there is no
   identity yet, otherwise re-ask the last failed data.
-- **Case.** Menu canvas draws a thin, solid, near-black case with a wider radius
-  than the screen, a case-coloured ring over the screen edge so the screen's
-  tighter corner reads as part of it, and flat side buttons as silhouette only. No
-  chin, earpiece, antenna, brand, or specular. Home is an on-screen pill, not a
-  physical button and not a full-width band. Every case-coloured piece is tinted
-  together from `Bezel()` plus a faint blend of the item's case colour — a new
-  piece that is not registered for painting is a bug. Every surface built from the
-  in-hand layout (menu, peek) runs the same case setup; the sprites are loaded in
-  script, so a surface that skips it draws square blocks. Anything the case lays over
-  the screen ignores the cursor. On the world RT the gadget model is the frame —
-  screen contents only, and the screen fits the RT through the mesh's own UVs, not
-  a UV transform on the material.
+- **Case.** There is no 2D case. The gadget model is the frame; the screen is contents
+  only, and fits the RT through the mesh's own UVs, not a UV transform on the material.
+  The peek is a banner strip with no phone shape.
 
 ## Type, space, motion
 
-- Spacing: `SPACE_1`…`SPACE_6` (4pt). Leading inset `INSET_LEADING` (12). Safe
+- Spacing: `SPACE_1`…`SPACE_6` (8pt scale). Leading inset `INSET_LEADING` (24). Safe
   areas are hard margins.
-- Type: `TEXT_DISPLAY` 46 / `TEXT_HERO` 26 / `TEXT_TITLE_LARGE` 20 / `TEXT_TITLE`
-  15 / `TEXT_BODY` 11 / `TEXT_SUBHEAD` 10 / `TEXT_CAPTION` and `TEXT_FLOOR` 9.
-  Home clock is its own size (`TEXT_CLOCK` 34). Lock time stays `TEXT_DISPLAY`.
+- Type: `TEXT_DISPLAY` 92 / `TEXT_HERO` 52 / `TEXT_TITLE_LARGE` 40 / `TEXT_TITLE`
+  30 / `TEXT_BODY` 22 / `TEXT_SUBHEAD` 20 / `TEXT_CAPTION` and `TEXT_FLOOR` 18.
+  Home clock is its own size (`TEXT_CLOCK` 68). Lock time stays `TEXT_DISPLAY`.
   Status-bar time stays `TEXT_CAPTION`. `ELIFE_PhoneClockUIComponent` only writes
   the digits — it must not stamp a size. Three weights at most. Bold for clock,
   titles, balances; regular for body and captions. Figures that must column use

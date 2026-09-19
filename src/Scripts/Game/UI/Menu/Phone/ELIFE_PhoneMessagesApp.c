@@ -110,7 +110,7 @@ class ELIFE_PhoneSendClick : ScriptedWidgetEventHandler
 }
 
 //------------------------------------------------------------------------------------------------
-//! OnChange is a reserved engine event, so enter-to-send is wired separately via BindCompose()'s GetOnChangeFinal() subscription instead.
+//! OnChange is reserved, so enter-to-send hooks GetOnChangeFinal() in BindCompose().
 class ELIFE_PhoneComposeFocus : ScriptedWidgetEventHandler
 {
 	protected ELIFE_PhoneMessagesApp m_App;
@@ -202,22 +202,19 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 
 	//! Chat atlas' paper-plane sprite - the wrapper set has no plane and no good stand-in for "send".
 	protected const string ICON_SEND = "whisper";
-	protected const float SEND_ICON_SIZE = 9;
-	protected const float SEND_ICON_GAP = 3;
-	protected const float SEND_PAD_H = 4;
+	protected const float SEND_ICON_SIZE = 18;
+	protected const float SEND_ICON_GAP = 6;
+	protected const float SEND_PAD_H = 8;
 	protected ref ELIFE_MessageUpdatesDto m_Updates = new ELIFE_MessageUpdatesDto();
 	protected string m_sOpenThreadId;
 
-	//! A conversation addressed by number, not thread id - Contacts' "Message" on someone who has
-	//! never written. Promotes itself to the real thread once one shows up in an update.
+	//! Conversation addressed by number (no thread yet); switches to the real thread once one appears.
 	protected string m_sOpenNumber;
 
-	//! The contact this empty conversation is with, when opened from Contacts. Replicated sub-state
-	//! carries this id rather than the number, which must not reach a bystander's screen.
+	//! Contact for an empty conversation opened from Contacts. Sub-state carries this, not the number.
 	protected string m_sOpenContactId;
 
-	//! Sub-state prefix for a number hand-off (a thread id never starts with it). Public/static since
-	//! Contacts builds this value and Messages reads it.
+	//! Sub-state prefix for a number hand-off; built by Contacts.
 	static const string SUBSTATE_NUMBER_PREFIX = "n:";
 
 	//! Same channel, for a saved contact - preferred over `n:` whenever an id is known.
@@ -316,8 +313,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Contacts' hand-off. Keeps the id even if the contact list hasn't landed yet - OnDataChanged
-	//! resolves the number once it does, rather than dropping the hand-off.
+	//! Keeps the id even before contacts load; OnDataChanged resolves the number later.
 	void OpenConversationWithContact(string contactId)
 	{
 		ELIFE_ContactDto contact = ELIFE_PhoneContactBook.FindById(m_Phone, contactId);
@@ -411,8 +407,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! ApplyCollapse() only cross-fades opacity between the nav title and ThreadTitle, so every
-	//! FillThread() branch has to call this or the collapsed title goes stale.
+	//! Every FillThread() branch must call this, or the collapsed nav title goes stale.
 	protected void SyncThreadNavTitle()
 	{
 		if (m_wNavTitle && m_wThreadTitle)
@@ -420,8 +415,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Runs twice, one tick apart: the row just created this frame hasn't been through layout yet, so
-	//! an immediate SetSliderPos(0, 1) lands one row short and the second call corrects it.
+	//! Run twice a tick apart - the new row hasn't been laid out yet on the first call.
 	protected void ScrollToLatest()
 	{
 		if (!m_wMessageScroll)
@@ -499,8 +493,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		m_Phone.m_OnDataChanged.Insert(OnDataChanged);
 		m_Phone.m_OnMessageSendResult.Insert(OnMessageSendResult);
 
-		//! Draw what we already have, then refresh - the fetch lands later via OnDataChanged.
-		//! Which page ends up visible is decided by Open()'s ApplySubState() call right after this.
+		//! Draw the cache now; the fetch lands via OnDataChanged. Open() picks the visible page after.
 		ReadUpdates();
 		FillIndex();
 		m_Phone.RequestData(ELIFE_PhoneGadgetComponent.DATA_MESSAGES);
@@ -619,9 +612,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A message that arrives into the conversation already on screen has been read by definition. Only
-	//! OpenThread() marks a thread, so without this the count climbs again while the player sits there
-	//! watching the message land - and the thread walks back into the notification hub behind them.
+	//! A message landing in the open thread is read, so mark it or it returns to the hub.
 	protected void MarkOpenThreadRead()
 	{
 		if (!m_Phone || m_sOpenThreadId == "")
@@ -631,8 +622,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		if (!threadDto || threadDto.unreadCount <= 0)
 			return;
 
-		//! Keyed on the count, not a flag: a successful mark clears it to zero, so this cannot re-fire
-		//! on its own answer - only a genuinely new arrival moves the number again.
+		//! Keyed on the count, so the mark's own answer (zero) can't re-trigger it.
 		if (threadDto.unreadCount == m_iMarkedUnread)
 			return;
 
@@ -649,8 +639,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		if (json != "")
 			m_Updates.ExpandFromRAW(json);
 
-		//! Owner payload still has raw numbers in `from`; a bystander payload is already redacted to a
-		//! name and must not go through the contact book again.
+		//! Owner payloads carry raw numbers; bystander payloads are already redacted names.
 		if (m_Phone && m_Phone.IsLocalCharacterOwner())
 			ResolveOwnerSenders();
 	}
@@ -711,8 +700,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Add's destination: every saved contact, A-Z like Contacts' own index. Book only - no
-	//! free-number compose from here.
+	//! Contact picker for a new conversation: saved contacts only, A-Z.
 	void ShowPicker()
 	{
 		m_bPickerOpen = true;
@@ -818,8 +806,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Threads arrive ordered by lastMessageAt desc, matching the bucket order, so grouping is a
-	//! single pass with no re-sort needed.
+	//! Threads arrive newest first, so bucketing is a single pass.
 	protected void FillIndex()
 	{
 		ApplyDataStatus(ELIFE_PhoneGadgetComponent.DATA_MESSAGES);
@@ -909,7 +896,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Today/Yesterday's bucket header already names the day, so the row only needs the clock; every older bucket shows the day too.
+	//! Today/Yesterday headers already name the day; older rows show it too.
 	protected string RowTimestamp(notnull ELIFE_ThreadDto threadDto)
 	{
 		if (DaysSince(threadDto.lastMessageAt) <= 1)
@@ -919,8 +906,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Calendar days between now and an ISO timestamp, both UTC - uses System.GetUnixTime() (real
-	//! wall-clock), not the in-game day/night cycle, which runs on its own calendar.
+	//! Real wall-clock UTC days, not the in-game calendar.
 	protected int DaysSince(string iso)
 	{
 		if (iso.Length() < 10)
@@ -1161,7 +1147,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 			if (iconLoaded)
 			{
 				m_wAddContactIcon.SetColor(ELIFE_PhoneStyle.TextPrimary());
-				ELIFE_PhoneStyle.FitIcon(m_wAddContactIcon, 16);
+				ELIFE_PhoneStyle.FitIcon(m_wAddContactIcon, 32);
 			}
 		}
 
@@ -1210,25 +1196,6 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Always empty now - an empty string still occupies the widget's line, so it is also hidden,
-	//! not just cleared, the same way a hidden RowHairline drops out of its row's height.
-	protected void HideThreadSubtitle()
-	{
-		if (!m_wRoot)
-			return;
-
-		Widget subtitle = m_wRoot.FindAnyWidget("ThreadSubtitle");
-		if (!subtitle)
-			return;
-
-		TextWidget text = TextWidget.Cast(subtitle);
-		if (text)
-			text.SetText("");
-
-		subtitle.SetVisible(false);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	protected string ThreadPreview(notnull ELIFE_ThreadDto threadDto)
 	{
 		int count = threadDto.messages.Count();
@@ -1249,7 +1216,6 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		if (!threadDto && (m_sOpenNumber != "" || m_sOpenContactId != ""))
 		{
 			SetTextAndColor(m_wRoot, "ThreadTitle", ELIFE_PhoneContactBook.TitleForOpen(m_Phone, m_sOpenContactId, m_sOpenNumber), ELIFE_PhoneStyle.TextPrimary());
-			HideThreadSubtitle();
 			SyncThreadNavTitle();
 			UpdateAddContactAction(ComposeRecipient());
 
@@ -1263,7 +1229,6 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		if (!threadDto)
 		{
 			SetText(m_wRoot, "ThreadTitle", "");
-			HideThreadSubtitle();
 			SyncThreadNavTitle();
 			UpdateAddContactAction("");
 
@@ -1273,10 +1238,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 			return;
 		}
 
-		//! Last activity posing as identity - the newest bubble already stamps "You · 23:43", and the
-		//! collapsed nav title keeps naming who this is. No number or last-seen belongs here either.
 		SetTextAndColor(m_wRoot, "ThreadTitle", ELIFE_PhoneContactBook.TitleFor(m_Phone, threadDto), ELIFE_PhoneStyle.TextPrimary());
-		HideThreadSubtitle();
 		SyncThreadNavTitle();
 		UpdateAddContactAction(ComposeRecipient());
 
@@ -1366,5 +1328,4 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 
 		return null;
 	}
-
 }

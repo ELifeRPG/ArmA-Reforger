@@ -1,9 +1,9 @@
 //------------------------------------------------------------------------------------------------
-//! Mouse-wheel scrolling for a ScrollLayoutWidget - the engine doesn't do this on its own, bound once per scroll widget by TrackScroll().
+//! Mouse-wheel scrolling for a ScrollLayoutWidget, which the engine doesn't provide.
 class ELIFE_PhoneWheelScroll : ScriptedWidgetEventHandler
 {
 	//! Pixels per wheel notch, roughly two message bubbles.
-	protected const float STEP = 64;
+	protected const float STEP = 128;
 
 	protected ScrollLayoutWidget m_wScroll;
 
@@ -22,16 +22,16 @@ class ELIFE_PhoneWheelScroll : ScriptedWidgetEventHandler
 		float posX, posY;
 		m_wScroll.GetSliderPosPixels(posX, posY);
 
-		//! wheel is positive away from the user, i.e. "go up the page", so subtract.
+		//! Positive wheel scrolls up the page.
 		m_wScroll.SetSliderPosPixels(posX, posY - wheel * STEP);
 
-		//! Consumed, or the wheel keeps travelling up to the menu behind the phone.
+		//! Consumed so the wheel doesn't reach the menu behind.
 		return true;
 	}
 }
 
 //------------------------------------------------------------------------------------------------
-//! The shell chrome an app is lent while it is open, bundled instead of passed as a growing arg list.
+//! Shell chrome lent to the open app.
 class ELIFE_PhoneChrome
 {
 	Widget m_wStatusBarGlass;
@@ -48,7 +48,7 @@ class ELIFE_PhoneChrome
 }
 
 //------------------------------------------------------------------------------------------------
-//! One phone app, hosted by either the in-hand phone menu or the world screen's render target through ELIFE_PhoneScreenShell.
+//! Base for a phone app page, hosted by ELIFE_PhoneScreenShell.
 class ELIFE_PhoneAppBase
 {
 	protected const ResourceName LAYOUT_STATUS = "{9C6B03E5A187D24F}UI/layouts/Menus/Phone/Apps/PhoneAppStatus.layout";
@@ -56,21 +56,20 @@ class ELIFE_PhoneAppBase
 
 	protected const ResourceName LAYOUT_LIST_GROUP = "{7C28D4A9E3B25F8D}UI/layouts/Menus/Phone/Widgets/PhoneListGroup.layout";
 
-	protected const float LIST_GROUP_GAP = 6;
+	protected const float LIST_GROUP_GAP = 12;
 
-	//! Scroll distance for the large title to hand over to the inline title and the nav bar to earn its glass.
-	protected const float COLLAPSE_DISTANCE = 22;
+	//! Scroll distance over which the large title collapses into the nav bar.
+	protected const float COLLAPSE_DISTANCE = 44;
 	protected const int COLLAPSE_TICK_MS = 33;
 
-	//! Enough skeleton rows to fill the visible page without implying a count we don't know yet.
+	//! Enough skeleton rows to fill the page.
 	protected const int SKELETON_ROWS = 5;
 
-	//! Circle sprite for a person's avatar mark (Contacts rows, Messages threads/picker) - never accounts.
+	//! Circle sprite for person avatars.
 	protected const string ICON_PERSON_MARK = "circle";
 
 	protected ELIFE_PhoneGadgetComponent m_Phone;
 
-	//! The screen this app is hosted by, so an app can hand the phone over to another one.
 	protected ELIFE_PhoneScreenShell m_Shell;
 
 	protected Widget m_wRoot;
@@ -84,14 +83,13 @@ class ELIFE_PhoneAppBase
 	protected TextWidget m_wNavTitle;
 	protected ref Color m_Accent;
 
-	//! Horizontal padding either side of the pill's content, and the icon's own box + the gap it
-	//! keeps from the label. The pill is never a fixed width - see ShowNavAction().
-	protected const float NAV_ACTION_PAD_H = 10;
-	protected const float NAV_ACTION_ICON_SIZE = 9;
-	protected const float NAV_ACTION_ICON_GAP = 3;
-	protected const float NAV_ACTION_CHIP_H = 20;
+	//! Nav action pill padding and icon box. The pill hugs its content - see ShowNavAction().
+	protected const float NAV_ACTION_PAD_H = 20;
+	protected const float NAV_ACTION_ICON_SIZE = 18;
+	protected const float NAV_ACTION_ICON_GAP = 6;
+	protected const float NAV_ACTION_CHIP_H = 40;
 
-	//! The nav bar's one trailing action slot (Contacts' "Add", a form's "Save"), claimed per-app in OnOpened().
+	//! The nav bar's trailing action slot, claimed per app in OnOpened().
 	protected Widget m_wNavActionSize;
 	protected Widget m_wNavActionButton;
 	protected Widget m_wNavActionChip;
@@ -102,7 +100,7 @@ class ELIFE_PhoneAppBase
 
 	protected ScrollLayoutWidget m_TrackedScroll;
 
-	//! Wheel handlers kept alive here - an uncollected-but-unreferenced handler silently stops firing.
+	//! Kept alive here; an unreferenced handler silently stops firing.
 	protected ref array<ref ELIFE_PhoneWheelScroll> m_aWheelHandlers = {};
 	protected ref array<ScrollLayoutWidget> m_aWheelBound = {};
 	protected float m_fCollapse = -1;
@@ -110,7 +108,7 @@ class ELIFE_PhoneAppBase
 	protected int m_iSkeletonShownAt;
 
 	//------------------------------------------------------------------------------------------------
-	//! Called by the shell before Open(). The accent is the app's own, from ELIFE_PhoneStyle.
+	//! Called by the shell before Open().
 	void BindChrome(notnull ELIFE_PhoneChrome chrome)
 	{
 		m_wStatusBarGlass = chrome.m_wStatusBarGlass;
@@ -125,19 +123,17 @@ class ELIFE_PhoneAppBase
 		m_wNavActionLabel = chrome.m_wNavActionLabel;
 		m_Accent = chrome.m_Accent;
 
-		//! Hidden until an app's OnOpened() claims it - otherwise the previous app's label/handler
-		//! would still be sitting on it for the first frame of the next one.
+		//! Hidden until claimed, so the previous app's label doesn't linger for a frame.
 		if (m_wNavActionButton)
 			m_wNavActionButton.SetVisible(false);
 
-		//! Light glass at rest - the committing control. ApplyCollapse fades the pill away once the
-		//! nav bar has earned its own glass, so the action sits inline on the glaze.
+		//! Light glass at rest; ApplyCollapse fades the pill once the nav bar has glass.
 		if (m_wNavActionChip)
 			ELIFE_PhoneStyle.ApplyGlass(m_wNavActionChip, false, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Claims the nav bar's trailing action slot; safe to call again to relabel it, replacing rather than stacking the click handler.
+	//! Claims the nav bar's trailing action. Calling again relabels it without stacking handlers.
 	protected void ShowNavAction(string label, Color color, ScriptedWidgetEventHandler clickHandler, string iconSprite = "")
 	{
 		if (!m_wNavActionButton || !m_wNavActionLabel)
@@ -160,7 +156,7 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Relabels the action without touching its enabled state, so "Save" -> "Saving…" doesn't re-enable a disabled button; pill width hugs the localized text.
+	//! Relabels without touching the enabled state, so "Saving…" doesn't re-enable the button.
 	protected void SetNavActionLabel(string label, Color color, string iconSprite = "")
 	{
 		if (!m_wNavActionLabel)
@@ -183,7 +179,7 @@ class ELIFE_PhoneAppBase
 		if (m_wNavActionIcon)
 			m_wNavActionIcon.SetVisible(iconLoaded);
 
-		//! The wrapper's own visibility gates the icon, and its width collapses to zero when absent so the pill doesn't reserve a gap.
+		//! Collapses the icon slot when there's no icon.
 		if (m_wNavActionIconSize)
 		{
 			m_wNavActionIconSize.SetVisible(iconLoaded);
@@ -232,7 +228,7 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Disabled during a save round trip so a second tap cannot fire a second request.
+	//! Disabled during a save so a second tap can't send a second request.
 	protected void SetNavActionEnabled(bool enabled)
 	{
 		if (m_wNavActionButton)
@@ -240,7 +236,7 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! initialSubState restores nav state on open, so OnOpened() shouldn't broadcast its own default.
+	//! initialSubState restores nav state, so OnOpened() shouldn't broadcast its own default.
 	void Open(notnull ELIFE_PhoneGadgetComponent phone, notnull Widget host, string initialSubState = "")
 	{
 		m_Phone = phone;
@@ -248,12 +244,12 @@ class ELIFE_PhoneAppBase
 		if (!m_wRoot)
 			return;
 
-		//! Last child of the root, so it draws over the app's own content.
+		//! Last child, so it draws over the app's content.
 		m_wStatusOverlay = CreateStretched(LAYOUT_STATUS, m_wRoot);
 		if (m_wStatusOverlay)
 			m_wSkeletonList = m_wStatusOverlay.FindAnyWidget("SkeletonList");
 
-		//! Index pages name their large title "LargeTitle"; detail pages hand their own heading to TrackScroll() instead.
+		//! Index pages use "LargeTitle"; detail pages pass their own heading to TrackScroll().
 		TextWidget indexTitle = TextWidget.Cast(m_wRoot.FindAnyWidget("LargeTitle"));
 		if (indexTitle)
 		{
@@ -303,7 +299,7 @@ class ELIFE_PhoneAppBase
 	// Nav bar transition
 	//------------------------------------------------------------------------------------------------
 
-	//! Points the shell's nav bar at the scroll view/title that owns the current page; called again on push with the detail page's pair.
+	//! Points the nav bar at the scroll view and title of the current page.
 	protected void TrackScroll(ScrollLayoutWidget scroll, TextWidget largeTitle)
 	{
 		BindWheel(scroll);
@@ -320,14 +316,13 @@ class ELIFE_PhoneAppBase
 			return;
 		}
 
-		//! Applied straight away so a restored page doesn't flash an uncollapsed bar for a frame.
+		//! Applied now so a restored page doesn't flash an uncollapsed bar.
 		TickCollapse();
 		GetGame().GetCallqueue().CallLater(TickCollapse, COLLAPSE_TICK_MS, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Gives a scroll widget its wheel, once. Pages are tracked again every time they are shown, so
-	//! without the guard a thread reopened five times would scroll five notches per notch.
+	//! Binds the wheel once per scroll widget; pages get re-tracked every time they show.
 	protected void BindWheel(ScrollLayoutWidget scroll)
 	{
 		if (!scroll || m_aWheelBound.Contains(scroll))
@@ -364,7 +359,7 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! 0 = at rest (transparent bars, large title showing), 1 = collapsed (glass bars, inline title).
+	//! 0 = at rest (large title, clear bars), 1 = collapsed (inline title, glass bars).
 	protected void ApplyCollapse(float progress)
 	{
 		if (m_fCollapse == progress)
@@ -378,8 +373,7 @@ class ELIFE_PhoneAppBase
 		if (m_wNavBarGlass)
 			m_wNavBarGlass.SetOpacity(progress);
 
-		//! The trailing action is a light-glass pill only while the bar is transparent. Once the
-		//! bar has earned its glass the action sits on it as a label - fading the pill, not the word.
+		//! Once the bar has glass, the action becomes a plain label on it.
 		ELIFE_PhoneStyle.SetGlassPresence(m_wNavActionChip, 1 - progress);
 
 		if (m_wNavTitle)
@@ -393,7 +387,7 @@ class ELIFE_PhoneAppBase
 	// Loading / error states
 	//------------------------------------------------------------------------------------------------
 
-	//! Covers the app only while it has nothing at all to show; a failed refresh keeps existing data on screen rather than blanking the page.
+	//! Only while there's nothing to show; a failed refresh keeps existing data.
 	protected void ApplyDataStatus(string key)
 	{
 		if (!m_wStatusOverlay || !m_Phone)
@@ -435,8 +429,7 @@ class ELIFE_PhoneAppBase
 
 			AlignableSlot.SetHorizontalAlign(row, LayoutHorizontalAlign.Stretch);
 
-			//! Rows fade back toward the ground down the page, so the block reads as "more below"
-			//! rather than as five real rows that failed to fill in.
+			//! Rows fade toward the ground down the page.
 			row.SetOpacity(1 - i * 0.15);
 		}
 
@@ -446,8 +439,7 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Once skeletons are up they stay up for SPINNER_MIN_VISIBLE_MS. A loading state that appears and
-	//! vanishes inside a couple of frames reads as a glitch, not as progress.
+	//! Skeletons stay at least SPINNER_MIN_VISIBLE_MS so they don't flash.
 	protected void HideStatus()
 	{
 		GetGame().GetCallqueue().Remove(ShowSkeletons);
@@ -475,28 +467,28 @@ class ELIFE_PhoneAppBase
 	// Navigation contract
 	//------------------------------------------------------------------------------------------------
 
-	//! Return true if Back was consumed (e.g. statement -> account list).
+	//! Return true if Back was consumed.
 	bool OnBack()
 	{
 		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! True on the app's landing page, where the shell hides Back - GetSubState() is already "" exactly there, so apps get this for free.
+	//! True on the landing page, where the shell hides Back.
 	bool IsAtRoot()
 	{
 		return GetSubState() == "";
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Override for apps with their own in-app navigation (e.g. Bank's open statement).
+	//! Override for apps with in-app navigation.
 	string GetSubState()
 	{
 		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Restore navigation from a GetSubState() value received from another instance of this app.
+	//! Restores navigation from a GetSubState() value.
 	void ApplySubState(string subState)
 	{
 	}
@@ -508,7 +500,7 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Hands the phone to another app on a target sub-state, passed with the request rather than written first since the replicated value only lands after a server round trip.
+	//! Hands the phone to another app. subState goes with the request since the replicated value lags.
 	protected void OpenAppPage(EPhoneScreenState state, string subState)
 	{
 		if (m_Shell)
@@ -516,7 +508,7 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Call after any internal navigation change (see GetSubState()).
+	//! Call after any internal navigation change.
 	protected void NotifySubStateChanged()
 	{
 		if (m_Phone)
@@ -558,7 +550,6 @@ class ELIFE_PhoneAppBase
 	// Shared building blocks
 	//------------------------------------------------------------------------------------------------
 
-	//! CreateWidgets() gives the new root no fill slot, so stretch it to the parent here.
 	protected Widget CreateStretched(ResourceName layout, notnull Widget parent)
 	{
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
@@ -576,7 +567,7 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One row in a vertical list, separated by an inset hairline instead of a per-row card; isLast drops the trailing hairline.
+	//! A list row with an inset hairline separator; isLast drops it.
 	protected Widget CreateListRow(ResourceName layout, notnull Widget list, bool isLast = false)
 	{
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
@@ -587,7 +578,7 @@ class ELIFE_PhoneAppBase
 		if (!row)
 			return null;
 
-		//! Stretch, not LayoutSizeMode.Fill - Fill would divide the list's leftover height between rows.
+		//! Stretch, not Fill - Fill would split leftover height between rows.
 		AlignableSlot.SetHorizontalAlign(row, LayoutHorizontalAlign.Stretch);
 
 		Widget hairline = row.FindAnyWidget("RowHairline");
@@ -601,15 +592,14 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A list row's identity mark: an accent-filled circle with the name's initials; fallbackName only takes the ink if the sprite fails to load.
+	//! Accent-filled circle with the name's initials.
 	protected void PaintAvatar(notnull Widget row, string discName, string fallbackName, string glyphName, string name)
 	{
 		PaintAvatarInto(row, discName, fallbackName, glyphName, name, ELIFE_PhoneStyle.AccentDeepFor(GetScreenState()));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Same mark, with the fill passed in rather than taken from the open app - for callers that draw a
-	//! person outside any app page (the shell's notification cards), where there's no GetScreenState().
+	//! Same mark with an explicit fill, for callers outside an app page.
 	static void PaintAvatarInto(notnull Widget row, string discName, string fallbackName, string glyphName, string name, Color fill)
 	{
 		ImageWidget disc = ImageWidget.Cast(row.FindAnyWidget(discName));
@@ -637,7 +627,7 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Creates one section group (header + row container) from PhoneListGroup.layout; returns the empty "GroupList" widget to append rows into, or null.
+	//! Creates a section group from PhoneListGroup.layout and returns its "GroupList" container, or null.
 	protected Widget CreateListGroup(notnull Widget parent, string headerText, bool isFirst = false)
 	{
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
@@ -697,8 +687,7 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Monogram for an avatar badge - first + last initial ("Jane Doe" -> "JD"), or one letter/digit for a single word.
-	//! Static so the shell can draw a person mark too (notification cards) without owning an app page.
+	//! Initials for an avatar: first and last ("Jane Doe" -> "JD"), or one character for a single word.
 	static string Initials(string name)
 	{
 		if (name.Length() == 0)
@@ -727,7 +716,7 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "2026-08-29T14:32:10Z" -> "14:32". The API sends UTC and the phone shows it as-is.
+	//! "2026-08-29T14:32:10Z" -> "14:32". Shown in UTC as sent.
 	static string FormatClock(string isoTimestamp)
 	{
 		if (isoTimestamp.Length() < 16)

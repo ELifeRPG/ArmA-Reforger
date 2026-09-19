@@ -8,12 +8,12 @@ VerticalLayoutWidgetClass "{F248694B6008475C}" {
    Name "GroupHeaderLabel"
    Slot LayoutSlot "{77F8C28EB1C742A1}" {
     HorizontalAlign 3
-    Padding 0 0 0 4
+    Padding 0 0 0 8
    }
    Color 0.745 0.397 0.0685 1
    Text ""
-   "Font Size" 9
-   "Min Font Size" 9
+   "Font Size" 18
+   "Min Font Size" 18
    "Horizontal Alignment" Left
   }
   VerticalLayoutWidgetClass "{2D6E0E63C1AF4A55}" {

@@ -15,7 +15,7 @@ OverlayWidgetClass {
    Slot OverlayWidgetSlot "{26775FB146FCF42E}" {
     HorizontalAlign 3
     VerticalAlign 0
-    Padding 12 44 12 0
+    Padding 24 88 24 0
    }
    "Fill Origin" Top
   }

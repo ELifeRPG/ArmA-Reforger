@@ -1,14 +1,14 @@
 SizeLayoutWidgetClass {
  Name "ContactRowSize"
  AllowHeightOverride 1
- HeightOverride 38
+ HeightOverride 80
  {
   OverlayWidgetClass "{D718C2535A7A3133}" {
    Name "ContactRow"
    Slot AlignableSlot "{2C5837814308B37A}" {
     HorizontalAlign 3
     VerticalAlign 3
-    Padding 0 0 0 2
+    Padding 0 0 0 4
    }
    {
     BlurWidgetClass "{78BE6A08EC914454}" {
@@ -27,7 +27,7 @@ SizeLayoutWidgetClass {
       VerticalAlign 3
      }
      Color 0.004 0.0048 0.0075 0.55
-     style rounded_6px
+     style rounded_12px
      "no focus" 1
     }
     SmartPanelWidgetClass "{31510A86F3824135}" {
@@ -37,7 +37,7 @@ SizeLayoutWidgetClass {
       VerticalAlign 3
      }
      Color 0.5837 0.6453 0.8073 0.14
-     style rounded_6px
+     style rounded_12px
      "no focus" 1
     }
     SizeLayoutWidgetClass "{92E10997849C4875}" {
@@ -45,10 +45,10 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{C9CA27FC43CF4E3B}" {
       HorizontalAlign 3
       VerticalAlign 0
-      Padding 6 0 6 0
+      Padding 12 0 12 0
      }
      AllowHeightOverride 1
-     HeightOverride 1
+     HeightOverride 2
      {
       ImageWidgetClass "{5BDBF9D76FDF4EB0}" {
        Name "GlassSpecular"
@@ -65,10 +65,10 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{4F2A8E1C9D3B4576}" {
       HorizontalAlign 3
       VerticalAlign 2
-      Padding 6 0 6 0
+      Padding 12 0 12 0
      }
      AllowHeightOverride 1
-     HeightOverride 1
+     HeightOverride 2
      {
       ImageWidgetClass "{D3B4A62F1E5C4897}" {
        Name "GlassHairline"
@@ -113,7 +113,7 @@ SizeLayoutWidgetClass {
           VerticalAlign 3
          }
          Color 0 0 0 0
-         style rounded_6px
+         style rounded_12px
          "no focus" 1
         }
         HorizontalLayoutWidgetClass "{649DB4EC5C857960}" {
@@ -121,19 +121,19 @@ SizeLayoutWidgetClass {
          Slot OverlayWidgetSlot "{9C3AFF5EC1F6294B}" {
           HorizontalAlign 3
           VerticalAlign 3
-          Padding 8 5 8 5
+          Padding 16 10 16 10
          }
          {
           SizeLayoutWidgetClass "{718A74F99767CEA0}" {
            Name "ContactAvatarSize"
            Slot LayoutSlot "{54DEE03CED3F0FBA}" {
             VerticalAlign 1
-            Padding 0 0 8 0
+            Padding 0 0 16 0
            }
            AllowWidthOverride 1
-           WidthOverride 28
+           WidthOverride 56
            AllowHeightOverride 1
-           HeightOverride 28
+           HeightOverride 56
            {
             OverlayWidgetClass "{13893D549BADA9D0}" {
              Name "ContactAvatar"
@@ -150,7 +150,7 @@ SizeLayoutWidgetClass {
                }
                "Is Visible" 0
                Color 0.0159 0.0194 0.0319 1
-               style rounded_6px
+               style rounded_12px
                "no focus" 1
               }
               ImageWidgetClass "{D2087C8FA0AF5B41}" {
@@ -160,7 +160,7 @@ SizeLayoutWidgetClass {
                 VerticalAlign 1
                }
                Color 1 1 1 1
-               Size 28 28
+               Size 56 56
               }
               TextWidgetClass "{532D6577100CFF6B}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
                Name "ContactAvatarGlyph"
@@ -170,8 +170,8 @@ SizeLayoutWidgetClass {
                }
                Color 0.8378 0.8626 0.9222 1
                Text ""
-               "Font Size" 12
-               "Min Font Size" 12
+               "Font Size" 24
+               "Min Font Size" 24
                "Horizontal Alignment" Center
                FontProperties FontProperties "{ECEB887C79DB4BFF}" {
                 Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -192,16 +192,16 @@ SizeLayoutWidgetClass {
              Name "ContactName"
              Color 0.8378 0.8626 0.9222 1
              Text ""
-             "Font Size" 11
-             "Min Font Size" 10
+             "Font Size" 22
+             "Min Font Size" 20
              "Horizontal Alignment" Left
             }
             TextWidgetClass "{D37F8BDC76BD4CA0}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
              Name "ContactNumber"
              Color 0.366 0.4024 0.5025 1
              Text ""
-             "Font Size" 9
-             "Min Font Size" 9
+             "Font Size" 18
+             "Min Font Size" 18
              "Horizontal Alignment" Left
              FontProperties FontProperties "{1C289052A58D9312}" {
               Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"

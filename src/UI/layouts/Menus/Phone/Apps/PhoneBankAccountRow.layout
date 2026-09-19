@@ -1,14 +1,14 @@
 SizeLayoutWidgetClass {
  Name "AccountRowSize"
  AllowHeightOverride 1
- HeightOverride 38
+ HeightOverride 76
  {
   OverlayWidgetClass "{7BB916EECA92A1AC}" {
    Name "AccountRow"
    Slot AlignableSlot "{7FE393C4DE7735F2}" {
     HorizontalAlign 3
     VerticalAlign 3
-    Padding 0 0 0 2
+    Padding 0 0 0 4
    }
    {
     BlurWidgetClass "{218CE87FFBF54B6C}" {
@@ -27,7 +27,7 @@ SizeLayoutWidgetClass {
       VerticalAlign 3
      }
      Color 0.004 0.0048 0.0075 0.55
-     style rounded_6px
+     style rounded_12px
      "no focus" 1
     }
     SmartPanelWidgetClass "{646B336DFB69465C}" {
@@ -37,7 +37,7 @@ SizeLayoutWidgetClass {
       VerticalAlign 3
      }
      Color 0.5837 0.6453 0.8073 0.14
-     style rounded_6px
+     style rounded_12px
      "no focus" 1
     }
     SizeLayoutWidgetClass "{E666988936A64B33}" {
@@ -45,10 +45,10 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{6D15A410D0F44C47}" {
       HorizontalAlign 3
       VerticalAlign 0
-      Padding 6 0 6 0
+      Padding 12 0 12 0
      }
      AllowHeightOverride 1
-     HeightOverride 1
+     HeightOverride 2
      {
       ImageWidgetClass "{A677E3539240443C}" {
        Name "GlassSpecular"
@@ -65,10 +65,10 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{424316000BD847A4}" {
       HorizontalAlign 3
       VerticalAlign 2
-      Padding 6 0 6 0
+      Padding 12 0 12 0
      }
      AllowHeightOverride 1
-     HeightOverride 1
+     HeightOverride 2
      {
       ImageWidgetClass "{FDD136179E77400B}" {
        Name "GlassHairline"
@@ -113,7 +113,7 @@ SizeLayoutWidgetClass {
           VerticalAlign 3
          }
          Color 0 0 0 0
-         style rounded_6px
+         style rounded_12px
          "no focus" 1
         }
         HorizontalLayoutWidgetClass "{160BF37774A5278E}" {
@@ -121,7 +121,7 @@ SizeLayoutWidgetClass {
          Slot OverlayWidgetSlot "{367C8FA811E15173}" {
           HorizontalAlign 3
           VerticalAlign 3
-          Padding 8 11 8 11
+          Padding 16 22 16 22
          }
          {
           TextWidgetClass "{DBEADE13845971A2}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
@@ -132,20 +132,20 @@ SizeLayoutWidgetClass {
            }
            Color 0.8378 0.8626 0.9222 1
            Text ""
-           "Font Size" 11
-           "Min Font Size" 10
+           "Font Size" 22
+           "Min Font Size" 20
            "Horizontal Alignment" Left
           }
           TextWidgetClass "{9529F571946C19A1}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
            Name "AccountBalance"
            Slot LayoutSlot "{4C8223746BF9301B}" {
             VerticalAlign 1
-            Padding 8 0 0 0
+            Padding 16 0 0 0
            }
            Color 0.8378 0.8626 0.9222 1
            Text ""
-           "Font Size" 11
-           "Min Font Size" 10
+           "Font Size" 22
+           "Min Font Size" 20
            "Horizontal Alignment" 2
            FontProperties FontProperties "{35E07D032707AC5B}" {
             Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"

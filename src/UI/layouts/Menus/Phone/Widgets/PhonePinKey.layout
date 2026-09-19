@@ -1,9 +1,9 @@
 SizeLayoutWidgetClass {
  Name "PinKeySize"
  AllowWidthOverride 1
- WidthOverride 56
+ WidthOverride 112
  AllowHeightOverride 1
- HeightOverride 32
+ HeightOverride 64
  {
   OverlayWidgetClass "{8864A188D3E3386C}" {
    Name "PinKey"
@@ -28,7 +28,7 @@ SizeLayoutWidgetClass {
       VerticalAlign 3
      }
      Color 0.004 0.0048 0.0075 0.55
-     style rounded_6px
+     style rounded_12px
      "no focus" 1
     }
     SmartPanelWidgetClass "{4A2E7E7181181770}" {
@@ -38,7 +38,7 @@ SizeLayoutWidgetClass {
       VerticalAlign 3
      }
      Color 0.5837 0.6453 0.8073 0.14
-     style rounded_6px
+     style rounded_12px
      "no focus" 1
     }
     SizeLayoutWidgetClass "{DFF904965B90CBB5}" {
@@ -46,10 +46,10 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{7D30AD4B9724F9A7}" {
       HorizontalAlign 3
       VerticalAlign 0
-      Padding 6 0 6 0
+      Padding 12 0 12 0
      }
      AllowHeightOverride 1
-     HeightOverride 1
+     HeightOverride 2
      {
       ImageWidgetClass "{2CC27A6BE7E6F6D1}" {
        Name "GlassSpecular"
@@ -66,10 +66,10 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{51AA924205FAED0C}" {
       HorizontalAlign 3
       VerticalAlign 2
-      Padding 6 0 6 0
+      Padding 12 0 12 0
      }
      AllowHeightOverride 1
-     HeightOverride 1
+     HeightOverride 2
      {
       ImageWidgetClass "{AB4B2FEBBFB0958A}" {
        Name "GlassHairline"
@@ -114,7 +114,7 @@ SizeLayoutWidgetClass {
           VerticalAlign 3
          }
          Color 0 0 0 0
-         style rounded_6px
+         style rounded_12px
          "no focus" 1
         }
         TextWidgetClass "{28EA58D7A05BC407}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
@@ -125,8 +125,8 @@ SizeLayoutWidgetClass {
          }
          Color 0.8378 0.8626 0.9222 1
          Text ""
-         "Font Size" 19
-         "Min Font Size" 19
+         "Font Size" 38
+         "Min Font Size" 38
          "Horizontal Alignment" Center
          FontProperties FontProperties "{D75057FC999C6629}" {
           Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
