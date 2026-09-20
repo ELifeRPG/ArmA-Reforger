@@ -1791,6 +1791,27 @@ class ELIFE_PhoneScreenShell
 	}
 
 	//------------------------------------------------------------------------------------------------
+	bool AcceptsPinKeys()
+	{
+		return m_bInteractive && m_eState == EPhoneScreenState.LOCKED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Keyboard entry, same path as the on-screen keys.
+	void PinKeyDigit(int digit)
+	{
+		if (AcceptsPinKeys())
+			PinPush(digit);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void PinKeyBackspace()
+	{
+		if (AcceptsPinKeys())
+			PinBackspace();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void PinBackspace()
 	{
 		if (m_bUnlockPending || IsPinBlocked())

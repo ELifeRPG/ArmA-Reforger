@@ -68,7 +68,13 @@ class ELIFE_PhoneAppBase
 	//! Circle sprite for person avatars.
 	protected const string ICON_PERSON_MARK = "circle";
 
+	protected const string ICON_COPY = "copy";
+	protected const string ICON_COPIED = "check";
+	protected const float COPY_ICON_SIZE = 32;
+	protected const int COPY_CONFIRM_MS = 1500;
+
 	protected ELIFE_PhoneGadgetComponent m_Phone;
+	protected ImageWidget m_wCopyIcon;
 
 	protected ELIFE_PhoneScreenShell m_Shell;
 
@@ -265,6 +271,9 @@ class ELIFE_PhoneAppBase
 	void Close()
 	{
 		OnClosing();
+
+		GetGame().GetCallqueue().Remove(ResetCopyIcon);
+		m_wCopyIcon = null;
 
 		StopTrackingScroll();
 
@@ -537,6 +546,12 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected bool IsOwner()
+	{
+		return m_Phone && m_Phone.IsLocalCharacterOwner();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void OnOpened()
 	{
 	}
@@ -544,6 +559,53 @@ class ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	protected void OnClosing()
 	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Shows the copy control to the owner only (bystander copies hold stand-in values) and returns its button.
+	protected SCR_ButtonTextComponent BindCopyControl(string iconName, string chipName, string buttonName)
+	{
+		m_wCopyIcon = ImageWidget.Cast(m_wRoot.FindAnyWidget(iconName));
+
+		bool owner = IsOwner();
+		Widget chip = m_wRoot.FindAnyWidget(chipName);
+		if (chip)
+			chip.SetVisible(owner);
+
+		Widget button = m_wRoot.FindAnyWidget(buttonName);
+		if (button)
+			button.SetVisible(owner);
+
+		ShowCopyIcon(ICON_COPY);
+
+		return SCR_ButtonTextComponent.GetButtonText(buttonName, m_wRoot);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Copies to the clipboard and briefly shows a check mark.
+	protected void CopyToClipboard(string text)
+	{
+		if (text == "")
+			return;
+
+		System.ExportToClipboard(text);
+
+		ShowCopyIcon(ICON_COPIED);
+		GetGame().GetCallqueue().Remove(ResetCopyIcon);
+		GetGame().GetCallqueue().CallLater(ResetCopyIcon, COPY_CONFIRM_MS, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ResetCopyIcon()
+	{
+		ShowCopyIcon(ICON_COPY);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowCopyIcon(string sprite)
+	{
+		if (m_wCopyIcon && m_wCopyIcon.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, sprite))
+			ELIFE_PhoneStyle.FitIcon(m_wCopyIcon, COPY_ICON_SIZE);
 	}
 
 	//------------------------------------------------------------------------------------------------

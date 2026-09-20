@@ -1136,7 +1136,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (m_SoundComponent)
 			m_SoundComponent.SoundEvent(SOUND_EVENT_NOTIFICATION);
 
-		ELIFE_PhonePeek.Show(this);
+		if (ELIFE_PhonePrefs.IsPeekEnabled())
+			ELIFE_PhonePeek.Show(this);
 	}
 
 	//------------------------------------------------------------------------------------------------

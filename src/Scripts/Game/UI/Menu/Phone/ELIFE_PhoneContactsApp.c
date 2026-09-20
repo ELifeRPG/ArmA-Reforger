@@ -352,6 +352,10 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		TrackScroll(m_wContactScroll, m_wIndexTitle);
 		ShowAddAction();
 
+		SCR_ButtonTextComponent detailCopyButton = BindCopyControl("DetailCopyIcon", "DetailCopyChipSize", "ButtonDetailCopy");
+		if (detailCopyButton)
+			detailCopyButton.m_OnClicked.Insert(OnDetailCopy);
+
 		if (!m_Phone)
 			return;
 
@@ -510,6 +514,9 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		m_sOpenContactId = contactId;
 		m_bFormOpen = false;
 
+		GetGame().GetCallqueue().Remove(ResetCopyIcon);
+		ShowCopyIcon(ICON_COPY);
+
 		if (!FillDetail())
 		{
 			m_sOpenContactId = "";
@@ -550,6 +557,17 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		PaintHeroAvatar(m_wDetailAvatarDisc, m_wDetailAvatarFallback, m_wDetailAvatarGlyph, name);
 		SyncDetailNavTitle();
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnDetailCopy()
+	{
+		if (!IsOwner())
+			return;
+
+		ELIFE_ContactDto contact = FindContact(m_sOpenContactId);
+		if (contact)
+			CopyToClipboard(contact.number);
 	}
 
 	//------------------------------------------------------------------------------------------------

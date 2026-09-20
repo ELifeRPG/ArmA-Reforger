@@ -610,5 +610,21 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
+  CustomStringTableItem "{62738A9BAC1D4051}" {
+   Id "ELIFE-Phone_Settings_Section_Notifications"
+   Target_en_us "Notifications"
+   Target_de_de "Benachrichtigungen"
+   Modified 1789257600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{738A9BAC1D405162}" {
+   Id "ELIFE-Phone_Settings_Peek"
+   Target_en_us "Notification peek"
+   Target_de_de "Vorschau-Banner"
+   Modified 1789257600
+   Author "Robin"
+   LastChanged "Robin"
+  }
  }
 }

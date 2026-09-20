@@ -316,7 +316,11 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
   Card labels stay `TextPrimary`, not `Ink` or `TextSecondary`.
 - **Lock.** Time and date on sharp wallpaper. At most one glass layer. Notifications
   are glass cards from the bottom, each carrying its sender's person mark. PIN pad is real,
-  overlay altitude. Must read on the world RT at a glance.
+  overlay altitude. The keyboard (digit row, numpad, Backspace) is polled per frame in
+  `ELIFE_PhoneMenu.OnMenuUpdate` via `Debug.KeyState`, never as input actions in
+  `chimeraInputCommon.conf`, where the new actions broke mouse look. It drives the same
+  `PinPush` / `PinBackspace` as the on-screen keys, so the server check, error hold and
+  cooldown are shared, and it is ignored off the lock screen. Must read on the world RT at a glance.
 - **Notifications.** Four surfaces share one card component and must never drift
   apart. A notification is about a **person** (a mark, not an app icon or status)
   dot), both text lines are `TextPrimary` (light glass reads mid-dark, so
@@ -351,7 +355,15 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
   replicated so a bystander's copy of the screen matches the owner's.
 - **Settings.** Grouped rows, caption headers, right-aligned values, chevrons for
   pushes, toggles for booleans. Device ID, number, and PIN are real fields — values,
-  not body copy.
+  not body copy. The PIN shows as `****` until the owner taps its row (an eye icon at the trailing edge: `private`, struck
+  through, while masked; `public`, open, while shown — local to that viewer, never replicated); bystander copies only ever hold random digits and offer no reveal.
+  The number row carries a `copy` icon the same way (whole row is the tap, owner only) that puts the number
+  on the clipboard and shows `check` for 1.5 s. Contact detail's number row does the same.
+  The switch is a whole-row button: accent track when on, `Hairline` track when off,
+  circle-sprite knob left/right. Preferences are local to the player
+  (`ELIFE_PhoneUserSettings`, an engine `ModuleGameSettings` saved with the game's user
+  settings; `ELIFE_PhonePrefs` is the accessor), never replicated. *Notification peek* off = the
+  sound still plays, the holstered strip does not.
 - **Navigation.** Large title collapses to the inline title on scroll. Status and
   nav glaze together, only once content passes underneath. At rest they are
   transparent. Home and lock never glaze — nothing scrolls under them. A permanently

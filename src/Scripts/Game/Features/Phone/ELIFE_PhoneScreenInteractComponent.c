@@ -77,7 +77,7 @@ class ELIFE_PhoneScreenInteractComponent : ScriptComponent
 	protected const float ALIGN_OFFSET_RIGHT = 0;
 	protected const float ALIGN_OFFSET_UP = -0.01;
 	//! Size multiplier while inspecting. Visual only - hit-testing runs in the phone's local space.
-	protected const float ALIGN_SCALE = 1.15;
+	protected const float ALIGN_SCALE = 1.25;
 
 	protected float m_fAlignBlend;
 	//! Own toggle, since the engine's inspection is off for the phone and the arm must keep its hold pose.

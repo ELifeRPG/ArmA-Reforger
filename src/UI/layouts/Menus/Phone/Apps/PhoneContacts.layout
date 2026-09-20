@@ -746,39 +746,110 @@ OverlayWidgetClass {
              AllowHeightOverride 1
              HeightOverride 60
              {
-              HorizontalLayoutWidgetClass "{83287BDD168C8AF8}" {
-               Name "DetailNumberRow"
-               Slot AlignableSlot "{E06BB67B5FF9D295}" {
+              OverlayWidgetClass "{5E10A4C7B2D93F7B}" {
+               Name "DetailNumberRowOverlay"
+               Slot AlignableSlot "{5E10A4C7B2D93F7C}" {
                 HorizontalAlign 3
                 VerticalAlign 3
-                Padding 20 0 20 0
                }
                {
-                TextWidgetClass "{569592CF2FBF095A}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-                 Name "DetailNumberLabel"
-                 Slot LayoutSlot "{F4156222F984EEBE}" {
-                  VerticalAlign 1
-                  SizeMode Fill
+                HorizontalLayoutWidgetClass "{83287BDD168C8AF8}" {
+                 Name "DetailNumberRow"
+                 Slot OverlayWidgetSlot "{E06BB67B5FF9D295}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                  Padding 20 0 20 0
                  }
-                 Color 0.8378 0.8626 0.9222 1
-                 Text "#ELIFE-Phone_Contacts_Form_Number"
-                 "Font Size" 22
-                 "Min Font Size" 20
-                 "Horizontal Alignment" Left
+                 {
+                  TextWidgetClass "{569592CF2FBF095A}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                   Name "DetailNumberLabel"
+                   Slot LayoutSlot "{F4156222F984EEBE}" {
+                    VerticalAlign 1
+                    SizeMode Fill
+                   }
+                   Color 0.8378 0.8626 0.9222 1
+                   Text "#ELIFE-Phone_Contacts_Form_Number"
+                   "Font Size" 22
+                   "Min Font Size" 20
+                   "Horizontal Alignment" Left
+                  }
+                  TextWidgetClass "{4EEF7B7451859F83}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                   Name "DetailNumberValue"
+                   Slot LayoutSlot "{CFD6D357462D2DAC}" {
+                    VerticalAlign 1
+                    Padding 16 0 0 0
+                   }
+                   Color 0.366 0.4024 0.5025 1
+                   Text ""
+                   "Font Size" 22
+                   "Min Font Size" 20
+                   "Horizontal Alignment" 2
+                   FontProperties FontProperties "{E28F5F427E31127F}" {
+                    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                   }
+                  }
+                  SizeLayoutWidgetClass "{5E10A4C7B2D93F70}" {
+                   Name "DetailCopyChipSize"
+                   Slot LayoutSlot "{5E10A4C7B2D93F71}" {
+                    VerticalAlign 1
+                    Padding 16 0 0 0
+                   }
+                   AllowWidthOverride 1
+                   WidthOverride 32
+                   AllowHeightOverride 1
+                   HeightOverride 32
+                   {
+                    ImageWidgetClass "{5E10A4C7B2D93F72}" {
+                     Name "DetailCopyIcon"
+                     Slot AlignableSlot "{5E10A4C7B2D93F73}" {
+                      HorizontalAlign 1
+                      VerticalAlign 1
+                     }
+                     Color 0.8378 0.8626 0.9222 1
+                     Size 32 32
+                    }
+                   }
+                  }
+                 }
                 }
-                TextWidgetClass "{4EEF7B7451859F83}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-                 Name "DetailNumberValue"
-                 Slot LayoutSlot "{CFD6D357462D2DAC}" {
-                  VerticalAlign 1
-                  Padding 16 0 0 0
+                ButtonWidgetClass "{5E10A4C7B2D93F74}" {
+                 Name "ButtonDetailCopy"
+                 Slot OverlayWidgetSlot "{5E10A4C7B2D93F75}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
                  }
-                 Color 0.366 0.4024 0.5025 1
-                 Text ""
-                 "Font Size" 22
-                 "Min Font Size" 20
-                 "Horizontal Alignment" 2
-                 FontProperties FontProperties "{E28F5F427E31127F}" {
-                  Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                 Color 1 1 1 1
+                 style blank
+                 components {
+                  SCR_ButtonTextComponent "{5E10A4C7B2D93F76}" {
+                   m_BackgroundDefault 0.910 0.929 0.973 0
+                   m_BackgroundHovered 0.910 0.929 0.973 0.06
+                   m_BackgroundSelected 0.910 0.929 0.973 0.12
+                   m_BackgroundSelectedHovered 0.910 0.929 0.973 0.12
+                   m_BackgroundClicked 0.910 0.929 0.973 0.12
+                   m_sText ""
+                  }
+                 }
+                 {
+                  OverlayWidgetClass "{5E10A4C7B2D93F77}" {
+                   Name "ButtonSurface"
+                   Slot ButtonWidgetSlot "{5E10A4C7B2D93F78}" {
+                    HorizontalAlign 3
+                    VerticalAlign 3
+                   }
+                   {
+                    SmartPanelWidgetClass "{5E10A4C7B2D93F79}" {
+                     Name "Background"
+                     Slot OverlayWidgetSlot "{5E10A4C7B2D93F7A}" {
+                      HorizontalAlign 3
+                      VerticalAlign 3
+                     }
+                     Color 0 0 0 0
+                     style rounded_12px
+                     "no focus" 1
+                    }
+                   }
+                  }
                  }
                 }
                }

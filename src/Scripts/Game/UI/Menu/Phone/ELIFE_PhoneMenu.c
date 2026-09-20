@@ -8,6 +8,13 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	protected bool m_bHolsterOnClose = true;
 	protected bool m_bIsClosing;
 
+	//! Previous-frame key state, for press edges.
+	protected ref array<bool> m_aDigitHeld = {false, false, false, false, false, false, false, false, false, false};
+	protected bool m_bBackHeld;
+	protected ref array<int> m_aDigitKeys = {KeyCode.KC_0, KeyCode.KC_1, KeyCode.KC_2, KeyCode.KC_3, KeyCode.KC_4, KeyCode.KC_5, KeyCode.KC_6, KeyCode.KC_7, KeyCode.KC_8, KeyCode.KC_9};
+	protected ref array<int> m_aNumpadKeys = {KeyCode.KC_NUMPAD0, KeyCode.KC_NUMPAD1, KeyCode.KC_NUMPAD2, KeyCode.KC_NUMPAD3, KeyCode.KC_NUMPAD4, KeyCode.KC_NUMPAD5, KeyCode.KC_NUMPAD6, KeyCode.KC_NUMPAD7, KeyCode.KC_NUMPAD8, KeyCode.KC_NUMPAD9};
+	protected bool m_bPinKeysActive;
+
 	//------------------------------------------------------------------------------------------------
 	override void OnMenuOpen()
 	{
@@ -25,6 +32,49 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 		inputManager.AddActionListener("MenuBackWB", EActionTrigger.DOWN, OnCloseAction);
 		inputManager.AddActionListener("MenuOpenWB", EActionTrigger.DOWN, OnCloseAction);
 #endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Keyboard PIN entry, polled instead of using input actions.
+	override void OnMenuUpdate(float tDelta)
+	{
+		super.OnMenuUpdate(tDelta);
+
+		if (m_bIsClosing)
+			return;
+
+		ELIFE_PhoneScreenController controller = GetScreenController();
+		if (!controller || !controller.AcceptsPinKeys())
+		{
+			m_bPinKeysActive = false;
+			return;
+		}
+
+		//! First frame on the lock screen only records key state, so a key held from before types nothing.
+		bool typing = m_bPinKeysActive;
+		m_bPinKeysActive = true;
+
+		for (int digit = 0; digit < 10; digit++)
+		{
+			bool down = IsDigitDown(digit);
+			if (typing && down && !m_aDigitHeld[digit])
+				controller.OnPinDigit(digit);
+
+			m_aDigitHeld[digit] = down;
+		}
+
+		bool backDown = Debug.KeyState(KeyCode.KC_BACK) != 0;
+		if (typing && backDown && !m_bBackHeld)
+			controller.OnPinBackspace();
+
+		m_bBackHeld = backDown;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Top-row or numpad digit.
+	protected bool IsDigitDown(int digit)
+	{
+		return Debug.KeyState(m_aDigitKeys[digit]) != 0 || Debug.KeyState(m_aNumpadKeys[digit]) != 0;
 	}
 
 	//------------------------------------------------------------------------------------------------

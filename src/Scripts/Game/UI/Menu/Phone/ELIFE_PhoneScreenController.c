@@ -118,6 +118,26 @@ class ELIFE_PhoneScreenController
 	}
 
 	//------------------------------------------------------------------------------------------------
+	bool AcceptsPinKeys()
+	{
+		return m_Shell && m_Shell.AcceptsPinKeys();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnPinDigit(int digit)
+	{
+		if (m_Shell)
+			m_Shell.PinKeyDigit(digit);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnPinBackspace()
+	{
+		if (m_Shell)
+			m_Shell.PinKeyBackspace();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void PutAway()
 	{
 		ELIFE_PhoneMenu menu = ELIFE_PhoneMenu.GetOpen();
