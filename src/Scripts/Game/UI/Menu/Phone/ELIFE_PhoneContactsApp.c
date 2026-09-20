@@ -134,7 +134,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 
 	//! Sub-states: "" index, SUBSTATE_FORM add form, SUBSTATE_DETAIL_PREFIX + contactId detail page.
 	protected const string SUBSTATE_FORM = "new";
-	protected const string SUBSTATE_DETAIL_PREFIX = "c:";
+	static const string SUBSTATE_DETAIL_PREFIX = "c:";
 
 	//! Prefilled form for an unsaved number; built by Messages.
 	static const string SUBSTATE_FORM_NUMBER_PREFIX = "new:";

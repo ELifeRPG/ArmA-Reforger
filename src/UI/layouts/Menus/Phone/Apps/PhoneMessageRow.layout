@@ -118,6 +118,222 @@ OverlayWidgetClass {
       }
      }
     }
+    ButtonWidgetClass {
+     Name "MessageActionButton1"
+     Slot LayoutSlot {
+      HorizontalAlign 0
+      Padding 0 8 0 0
+     }
+     "Is Visible" 0
+     style blank
+     {
+      OverlayWidgetClass {
+       Name "MessageActionFrame1"
+       Slot ButtonWidgetSlot {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        SmartPanelWidgetClass {
+         Name "MessageActionFill1"
+         Slot OverlayWidgetSlot {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.5837 0.6453 0.8073 0.22
+         style rounded_12px
+         "no focus" 1
+        }
+        HorizontalLayoutWidgetClass {
+         Name "MessageActionRow1"
+         Slot OverlayWidgetSlot {
+          HorizontalAlign 3
+          VerticalAlign 3
+          Padding 12 6 14 6
+         }
+         {
+          SizeLayoutWidgetClass {
+           Name "MessageActionIconSize1"
+           Slot LayoutSlot {
+            VerticalAlign 1
+            Padding 0 0 6 0
+           }
+           AllowWidthOverride 1
+           WidthOverride 16
+           AllowHeightOverride 1
+           HeightOverride 16
+           {
+            ImageWidgetClass {
+             Name "MessageActionIcon1"
+             Slot AlignableSlot {
+              HorizontalAlign 1
+              VerticalAlign 1
+             }
+             Color 0.925 0.937 0.965 1
+             Size 16 16
+            }
+           }
+          }
+          TextWidgetClass : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "MessageActionLabel1"
+           Slot LayoutSlot {
+            VerticalAlign 1
+           }
+           Text ""
+           "Font Size" 16
+           "Min Font Size" 16
+           "Horizontal Alignment" Left
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass {
+     Name "MessageActionButton2"
+     Slot LayoutSlot {
+      HorizontalAlign 0
+      Padding 0 8 0 0
+     }
+     "Is Visible" 0
+     style blank
+     {
+      OverlayWidgetClass {
+       Name "MessageActionFrame2"
+       Slot ButtonWidgetSlot {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        SmartPanelWidgetClass {
+         Name "MessageActionFill2"
+         Slot OverlayWidgetSlot {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.5837 0.6453 0.8073 0.22
+         style rounded_12px
+         "no focus" 1
+        }
+        HorizontalLayoutWidgetClass {
+         Name "MessageActionRow2"
+         Slot OverlayWidgetSlot {
+          HorizontalAlign 3
+          VerticalAlign 3
+          Padding 12 6 14 6
+         }
+         {
+          SizeLayoutWidgetClass {
+           Name "MessageActionIconSize2"
+           Slot LayoutSlot {
+            VerticalAlign 1
+            Padding 0 0 6 0
+           }
+           AllowWidthOverride 1
+           WidthOverride 16
+           AllowHeightOverride 1
+           HeightOverride 16
+           {
+            ImageWidgetClass {
+             Name "MessageActionIcon2"
+             Slot AlignableSlot {
+              HorizontalAlign 1
+              VerticalAlign 1
+             }
+             Color 0.925 0.937 0.965 1
+             Size 16 16
+            }
+           }
+          }
+          TextWidgetClass : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "MessageActionLabel2"
+           Slot LayoutSlot {
+            VerticalAlign 1
+           }
+           Text ""
+           "Font Size" 16
+           "Min Font Size" 16
+           "Horizontal Alignment" Left
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass {
+     Name "MessageActionButton3"
+     Slot LayoutSlot {
+      HorizontalAlign 0
+      Padding 0 8 0 0
+     }
+     "Is Visible" 0
+     style blank
+     {
+      OverlayWidgetClass {
+       Name "MessageActionFrame3"
+       Slot ButtonWidgetSlot {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        SmartPanelWidgetClass {
+         Name "MessageActionFill3"
+         Slot OverlayWidgetSlot {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.5837 0.6453 0.8073 0.22
+         style rounded_12px
+         "no focus" 1
+        }
+        HorizontalLayoutWidgetClass {
+         Name "MessageActionRow3"
+         Slot OverlayWidgetSlot {
+          HorizontalAlign 3
+          VerticalAlign 3
+          Padding 12 6 14 6
+         }
+         {
+          SizeLayoutWidgetClass {
+           Name "MessageActionIconSize3"
+           Slot LayoutSlot {
+            VerticalAlign 1
+            Padding 0 0 6 0
+           }
+           AllowWidthOverride 1
+           WidthOverride 16
+           AllowHeightOverride 1
+           HeightOverride 16
+           {
+            ImageWidgetClass {
+             Name "MessageActionIcon3"
+             Slot AlignableSlot {
+              HorizontalAlign 1
+              VerticalAlign 1
+             }
+             Color 0.925 0.937 0.965 1
+             Size 16 16
+            }
+           }
+          }
+          TextWidgetClass : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "MessageActionLabel3"
+           Slot LayoutSlot {
+            VerticalAlign 1
+           }
+           Text ""
+           "Font Size" 16
+           "Min Font Size" 16
+           "Horizontal Alignment" Left
+          }
+         }
+        }
+       }
+      }
+     }
+    }
    }
   }
  }

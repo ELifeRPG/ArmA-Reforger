@@ -66,6 +66,56 @@ class ELIFE_ThreadAddContactClick : ScriptedWidgetEventHandler
 }
 
 //------------------------------------------------------------------------------------------------
+//! Chip under a message bubble: Save for an unknown number, Open for a saved contact.
+class ELIFE_MessageNumberClick : ScriptedWidgetEventHandler
+{
+	protected const float HOVER_LIGHTEN = 0.18;
+
+	protected ELIFE_PhoneMessagesApp m_App;
+	protected string m_sNumber;
+	protected Widget m_wFill;
+	protected ref Color m_Base;
+	protected ref Color m_Hover;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneMessagesApp app, string number, Widget fill, Color base)
+	{
+		m_App = app;
+		m_sNumber = number;
+		m_wFill = fill;
+		m_Base = base;
+		m_Hover = ELIFE_PhoneStyle.Mix(base, new Color(1, 1, 1, 1), HOVER_LIGHTEN);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnMouseEnter(Widget w, int x, int y)
+	{
+		if (m_wFill && m_Hover)
+			m_wFill.SetColor(m_Hover);
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnMouseLeave(Widget w, Widget enterW, int x, int y)
+	{
+		if (m_wFill && m_Base)
+			m_wFill.SetColor(m_Base);
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App && m_sNumber != "")
+			m_App.OpenNumberInContacts(m_sNumber);
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class ELIFE_PhonePickerRowClick : ScriptedWidgetEventHandler
 {
 	protected ELIFE_PhoneMessagesApp m_App;
@@ -162,6 +212,11 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	protected ref array<ref ELIFE_PhonePickerRowClick> m_aPickerRowClicks = {};
 
 	protected ref array<ref ELIFE_PhoneThreadRowClick> m_aRowClicks = {};
+	protected ref array<ref ELIFE_MessageNumberClick> m_aNumberClicks = {};
+
+	//! Lowercased display names and their contacts for the open thread, built once per FillThread.
+	protected ref array<string> m_aMentionNames = {};
+	protected ref array<ref ELIFE_ContactDto> m_aMentionContacts = {};
 
 	protected Widget m_wComposeBar;
 	protected EditBoxWidget m_wComposeField;
@@ -182,6 +237,13 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 
 	//! API answers 400 for an over-long body; this only stops an obviously oversized one client-side.
 	protected const int MAX_BODY_LENGTH = 480;
+
+	protected const int NUMBER_LENGTH = 8;
+	protected const int MAX_CHIPS = 3;
+	protected const string DIGITS = "0123456789";
+	protected const string WORD_SEPARATORS = " \t\r\n.,;:!?-_()[]{}<>\"'/\\+*&#@";
+	protected const string ICON_CHIP_OPEN = "player";
+	protected const float CHIP_ICON_SIZE = 16;
 
 	//! LoadImageFromSet() fails closed on an unknown sprite name.
 	protected const string ICON_ADD = "plus";
@@ -536,6 +598,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		m_sOpenNumber = "";
 		m_sOpenContactId = "";
 		m_aRowClicks.Clear();
+		m_aNumberClicks.Clear();
 
 		m_wAddContactSize = null;
 		m_wAddContactButton = null;
@@ -1209,6 +1272,8 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	protected void FillThread()
 	{
 		ClearChildren(m_wMessageList);
+		m_aNumberClicks.Clear();
+		BuildMentionIndex();
 
 		ELIFE_ThreadDto threadDto = FindThread(m_sOpenThreadId);
 
@@ -1311,7 +1376,225 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 				body.SetText(message.body);
 				body.SetColor(ELIFE_PhoneStyle.TextPrimary());
 			}
+
+			FillNumberAction(row, message);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Collects each run of exactly NUMBER_LENGTH digits once; longer runs are not numbers.
+	protected void FindNumbers(string text, notnull array<string> numbers)
+	{
+		string run = "";
+
+		for (int i = 0; i <= text.Length(); i++)
+		{
+			string ch = "";
+			if (i < text.Length())
+				ch = text.Get(i);
+
+			if (ch != "" && DIGITS.Contains(ch))
+			{
+				run += ch;
+				continue;
+			}
+
+			if (run.Length() == NUMBER_LENGTH && numbers.Find(run) < 0)
+				numbers.Insert(run);
+
+			run = "";
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Lowercases the saved contacts' names once, skipping the thread partner.
+	protected void BuildMentionIndex()
+	{
+		m_aMentionNames.Clear();
+		m_aMentionContacts.Clear();
+
+		ELIFE_ContactListDto list = ELIFE_PhoneContactBook.Contacts(m_Phone);
+		if (!list)
+			return;
+
+		string partner = ComposeRecipient();
+
+		foreach (ELIFE_ContactDto contact : list.items)
+		{
+			if (!contact || contact.number == partner)
+				continue;
+
+			string name = ELIFE_PhoneContactBook.DisplayName(contact);
+			if (name == "")
+				continue;
+
+			name.ToLower();
+			m_aMentionNames.Insert(name);
+			m_aMentionContacts.Insert(contact);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Saved contacts named in the text as whole words, in written order.
+	protected void FindMentionedContacts(string text, notnull array<ref ELIFE_ContactDto> found)
+	{
+		string haystack = text;
+		haystack.ToLower();
+
+		array<int> positions = {};
+		array<string> names = {};
+
+		foreach (int index, string name : m_aMentionNames)
+		{
+			int position = WordIndex(haystack, name);
+			if (position < 0)
+				continue;
+
+			//! Sorted insert by position.
+			int slot = positions.Count();
+			while (slot > 0 && positions.Get(slot - 1) > position)
+				slot--;
+
+			positions.InsertAt(position, slot);
+			names.InsertAt(name, slot);
+			found.InsertAt(m_aMentionContacts.Get(index), slot);
+		}
+
+		//! Drop a name contained in a longer matched one ("Peter" next to "Peter Mueller").
+		for (int i = found.Count() - 1; i >= 0; i--)
+		{
+			for (int j = 0; j < names.Count(); j++)
+			{
+				if (j != i && names.Get(j).Length() > names.Get(i).Length() && names.Get(j).Contains(names.Get(i)))
+				{
+					found.RemoveOrdered(i);
+					names.RemoveOrdered(i);
+					break;
+				}
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Index of the first whole-word occurrence, or -1.
+	protected int WordIndex(string haystack, string word)
+	{
+		int from = 0;
+		while (from < haystack.Length())
+		{
+			int index = haystack.IndexOfFrom(from, word);
+			if (index < 0)
+				return -1;
+
+			int end = index + word.Length();
+			bool startOk = index == 0 || !IsWordChar(haystack.Get(index - 1));
+			bool endOk = end >= haystack.Length() || !IsWordChar(haystack.Get(end));
+			if (startOk && endOk)
+				return index;
+
+			from = index + 1;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool IsWordChar(string ch)
+	{
+		return !WORD_SEPARATORS.Contains(ch);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Chips for numbers first, then mentioned contacts; incoming messages on the owner's view only.
+	protected void FillNumberAction(notnull Widget row, notnull ELIFE_MessageDto message)
+	{
+		if (message.isOutbound || !IsOwner())
+			return;
+
+		array<string> targets = {};
+		array<string> labels = {};
+		array<string> icons = {};
+
+		array<string> numbers = {};
+		FindNumbers(message.body, numbers);
+
+		string ownNumber = m_Phone.GetNumber();
+
+		foreach (string number : numbers)
+		{
+			if (number == ownNumber)
+				continue;
+
+			ELIFE_ContactDto contact = ELIFE_PhoneContactBook.FindByNumber(m_Phone, number);
+			if (contact)
+			{
+				AddChip(targets, labels, icons, number, WidgetManager.Translate("#ELIFE-Phone_Messages_ChipOpen", ELIFE_PhoneContactBook.DisplayName(contact)), ICON_CHIP_OPEN);
+				continue;
+			}
+
+			AddChip(targets, labels, icons, number, WidgetManager.Translate("#ELIFE-Phone_Messages_ChipSave", number), ICON_ADD_CONTACT);
+		}
+
+		array<ref ELIFE_ContactDto> mentioned = {};
+		FindMentionedContacts(message.body, mentioned);
+
+		foreach (ELIFE_ContactDto mention : mentioned)
+			AddChip(targets, labels, icons, mention.number, WidgetManager.Translate("#ELIFE-Phone_Messages_ChipOpen", ELIFE_PhoneContactBook.DisplayName(mention)), ICON_CHIP_OPEN);
+
+		Color fill = ELIFE_PhoneStyle.AccentDeepFor(EPhoneScreenState.CONTACTS);
+		int count = Math.Min(targets.Count(), MAX_CHIPS);
+
+		for (int i = 0; i < count; i++)
+		{
+			string suffix = (i + 1).ToString();
+			Widget button = row.FindAnyWidget("MessageActionButton" + suffix);
+			if (!button)
+				continue;
+
+			SetTextAndColor(row, "MessageActionLabel" + suffix, labels.Get(i), ELIFE_PhoneStyle.TextPrimary());
+			ELIFE_PhoneStyle.SetColorOf(row, "MessageActionFill" + suffix, fill);
+
+			ImageWidget iconWidget = ImageWidget.Cast(row.FindAnyWidget("MessageActionIcon" + suffix));
+			Widget iconSize = row.FindAnyWidget("MessageActionIconSize" + suffix);
+			if (iconWidget)
+			{
+				bool loaded = iconWidget.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, icons.Get(i));
+				if (loaded)
+					ELIFE_PhoneStyle.FitIcon(iconWidget, CHIP_ICON_SIZE);
+
+				if (iconSize)
+					iconSize.SetVisible(loaded);
+			}
+
+			ELIFE_MessageNumberClick click = new ELIFE_MessageNumberClick();
+			click.Bind(this, targets.Get(i), row.FindAnyWidget("MessageActionFill" + suffix), fill);
+			button.AddHandler(click);
+			m_aNumberClicks.Insert(click);
+			button.SetVisible(true);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One chip per number, so a saved number that is also written as a name shows once.
+	protected void AddChip(notnull array<string> targets, notnull array<string> labels, notnull array<string> icons, string number, string label, string icon)
+	{
+		if (targets.Find(number) >= 0)
+			return;
+
+		targets.Insert(number);
+		labels.Insert(label);
+		icons.Insert(icon);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Contact detail for a saved number, the prefilled add form otherwise.
+	void OpenNumberInContacts(string number)
+	{
+		ELIFE_ContactDto contact = ELIFE_PhoneContactBook.FindByNumber(m_Phone, number);
+		if (contact)
+			OpenAppPage(EPhoneScreenState.CONTACTS, ELIFE_PhoneContactsApp.SUBSTATE_DETAIL_PREFIX + contact.contactId);
+		else
+			OpenAppPage(EPhoneScreenState.CONTACTS, ELIFE_PhoneContactsApp.SUBSTATE_FORM_NUMBER_PREFIX + number);
 	}
 
 	//------------------------------------------------------------------------------------------------

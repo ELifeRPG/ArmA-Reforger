@@ -610,6 +610,22 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
+  CustomStringTableItem "{7A8B9CADBECFD0E1}" {
+   Id "ELIFE-Phone_Messages_ChipSave"
+   Target_en_us "Save %1"
+   Target_de_de "%1 speichern"
+   Modified 1789257600
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{8B9CADBECFD0E1F2}" {
+   Id "ELIFE-Phone_Messages_ChipOpen"
+   Target_en_us "Open %1"
+   Target_de_de "%1 öffnen"
+   Modified 1789257600
+   Author "Robin"
+   LastChanged "Robin"
+  }
   CustomStringTableItem "{62738A9BAC1D4051}" {
    Id "ELIFE-Phone_Settings_Section_Notifications"
    Target_en_us "Notifications"
