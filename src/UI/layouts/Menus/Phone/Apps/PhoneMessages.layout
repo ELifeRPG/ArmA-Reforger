@@ -14,7 +14,7 @@ OverlayWidgetClass {
       HorizontalAlign 3
       VerticalAlign 3
      }
-     Color 0.0383 0.0466 0.0723 0.20
+     Color 0.8626 0.8964 0.964 0.4
      {
       VerticalLayoutWidgetClass "{72036252CDF00E44}" {
        Name "ThreadScrollBody"
@@ -100,7 +100,7 @@ OverlayWidgetClass {
       HorizontalAlign 3
       VerticalAlign 3
      }
-     Color 0.0383 0.0466 0.0723 0.55
+     Color 0.8626 0.8964 0.964 0.4
      {
       VerticalLayoutWidgetClass "{5E6F708192A3B4C5}" {
        Name "PickerScrollBody"
@@ -172,7 +172,7 @@ OverlayWidgetClass {
       HorizontalAlign 3
       VerticalAlign 3
      }
-     Color 0.0383 0.0466 0.0723 0.55
+     Color 0.8626 0.8964 0.964 0.4
      {
       VerticalLayoutWidgetClass "{4FC03E2231203B41}" {
        Name "MessageScrollBody"

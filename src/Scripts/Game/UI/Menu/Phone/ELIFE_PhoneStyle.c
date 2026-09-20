@@ -102,6 +102,8 @@ class ELIFE_PhoneStyle
 	static Color TextPrimary() { return Srgb(0.925, 0.937, 0.965); }         //!< #ECEFF6
 	static Color TextSecondary() { return Srgb(0.639, 0.667, 0.737); }       //!< #A3AABC
 	static Color TextTertiary() { return Srgb(0.451, 0.478, 0.553); }        //!< #737A8D
+	static Color ScrollbarRest() { return ScrollbarTint(0.4); }
+	static Color ScrollbarTint(float alpha) { return new Color(0.8626, 0.8964, 0.964, alpha); }
 
 	//! Scrim colour per glass look; accent glass uses the app's AccentDeep instead.
 	static Color GlassBaseDark() { return Srgb(0.022, 0.027, 0.051); }       //!< #04070D

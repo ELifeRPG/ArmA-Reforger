@@ -14,7 +14,7 @@ OverlayWidgetClass {
       HorizontalAlign 3
       VerticalAlign 3
      }
-     Color 0.0383 0.0466 0.0723 0.20
+     Color 0.8626 0.8964 0.964 0.4
      {
       VerticalLayoutWidgetClass "{F8D6102C4BD1B9C9}" {
        Name "AccountScrollBody"
@@ -100,7 +100,7 @@ OverlayWidgetClass {
       HorizontalAlign 3
       VerticalAlign 3
      }
-     Color 0.0383 0.0466 0.0723 0.20
+     Color 0.8626 0.8964 0.964 0.4
      {
       VerticalLayoutWidgetClass "{620AB01D33EC533A}" {
        Name "PostedScrollBody"

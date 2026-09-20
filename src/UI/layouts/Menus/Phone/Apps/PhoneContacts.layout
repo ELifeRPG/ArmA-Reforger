@@ -14,7 +14,7 @@ OverlayWidgetClass {
       HorizontalAlign 3
       VerticalAlign 3
      }
-     Color 0.0383 0.0466 0.0723 0.20
+     Color 0.8626 0.8964 0.964 0.4
      {
       VerticalLayoutWidgetClass "{7E52CCD2C6FEA24C}" {
        Name "ScrollBody"
@@ -100,7 +100,7 @@ OverlayWidgetClass {
       HorizontalAlign 3
       VerticalAlign 3
      }
-     Color 0.0383 0.0466 0.0723 0.55
+     Color 0.8626 0.8964 0.964 0.4
      {
       VerticalLayoutWidgetClass "{CD0B9A1E66C3096D}" {
        Name "FormScrollBody"
@@ -406,7 +406,7 @@ OverlayWidgetClass {
       HorizontalAlign 3
       VerticalAlign 3
      }
-     Color 0.0383 0.0466 0.0723 0.55
+     Color 0.8626 0.8964 0.964 0.4
      {
       VerticalLayoutWidgetClass "{63E5A491C60927A5}" {
        Name "DetailScrollBody"

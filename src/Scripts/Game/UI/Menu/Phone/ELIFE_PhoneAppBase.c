@@ -14,16 +14,24 @@ class ELIFE_PhoneWheelScroll : ScriptedWidgetEventHandler
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Scrolls by wheel notches; positive scrolls up the page.
+	static void Scroll(ScrollLayoutWidget scroll, float wheel)
+	{
+		if (!scroll)
+			return;
+
+		float posX, posY;
+		scroll.GetSliderPosPixels(posX, posY);
+		scroll.SetSliderPosPixels(posX, posY - wheel * STEP);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool OnMouseWheel(Widget w, int x, int y, int wheel)
 	{
 		if (!m_wScroll)
 			return false;
 
-		float posX, posY;
-		m_wScroll.GetSliderPosPixels(posX, posY);
-
-		//! Positive wheel scrolls up the page.
-		m_wScroll.SetSliderPosPixels(posX, posY - wheel * STEP);
+		Scroll(m_wScroll, wheel);
 
 		//! Consumed so the wheel doesn't reach the menu behind.
 		return true;
@@ -312,6 +320,9 @@ class ELIFE_PhoneAppBase
 	protected void TrackScroll(ScrollLayoutWidget scroll, TextWidget largeTitle)
 	{
 		BindWheel(scroll);
+
+		if (scroll)
+			scroll.SetColor(ELIFE_PhoneStyle.ScrollbarRest());
 
 		m_TrackedScroll = scroll;
 		m_wLargeTitle = largeTitle;

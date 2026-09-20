@@ -25,6 +25,15 @@ class ELIFE_PhoneScreenClickHandler : ScriptedWidgetEventHandler
 
 		return false;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnMouseButtonUp(Widget w, int x, int y, int button)
+	{
+		if (button == 0 && m_Owner)
+			m_Owner.OnScreenRelease();
+
+		return false;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -69,6 +78,27 @@ class ELIFE_PhoneScreenInteractComponent : ScriptComponent
 	protected const string INSPECT_CONTEXT = "CharacterWeaponInspectionContext";
 
 	protected const string INSPECT_ACTION = "CharacterInspect";
+
+	//! Widgets get no wheel event from the 3D screen, so the raw action is read here.
+	protected const string WHEEL_ACTION = "MouseWheel";
+
+	//! The engine's scrollbar never sees the 3D cursor, so the strip along a scroll view's right edge (canvas px) is its track.
+	protected const float SCROLLBAR_GRAB_WIDTH = 24;
+	protected const float SCROLLBAR_MIN_THUMB = 24;
+
+	//! Scrollbar tint alphas above the rest state.
+	protected const float SCROLLBAR_ALPHA_HOVER = 0.7;
+	protected const float SCROLLBAR_ALPHA_DRAG = 1.0;
+
+	protected ScrollLayoutWidget m_DragScroll;
+	protected ScrollLayoutWidget m_StyledScroll;
+	protected float m_fStyledAlpha = -1;
+	protected float m_fStyleX = -1;
+	protected float m_fStyleY = -1;
+	protected float m_fDragStartY;
+	protected float m_fDragStartFraction;
+	//! Thumb travel in physical px, captured at grab so a re-layout mid-drag can't jump it.
+	protected float m_fDragTravel;
 
 	protected const float ALIGN_BLEND_SECONDS = 0.25;
 	//! Eye-to-screen-centre distance while inspecting. Fixed because following the swaying hand made the phone pulse in size.
@@ -128,6 +158,8 @@ class ELIFE_PhoneScreenInteractComponent : ScriptComponent
 	{
 		m_bWasActive = false;
 		m_bInspecting = false;
+		m_DragScroll = null;
+		StyleScrollbar(null, 0);
 		DetachClickHandler();
 		UpdateHover(null, 0, 0);
 		SetInspectListening(false);
@@ -168,17 +200,239 @@ class ELIFE_PhoneScreenInteractComponent : ScriptComponent
 
 		AttachClickHandlerIfNeeded(phoneMenu);
 
+		UpdateScrollbarDrag();
+
 		float canvasX, canvasY;
-		if (!ComputeCanvasPoint(canvasX, canvasY))
+		bool onScreen = ComputeCanvasPoint(canvasX, canvasY);
+		UpdateScrollbarStyle(onScreen, canvasX, canvasY);
+
+		if (!onScreen)
 		{
 			UpdateHover(null, 0, 0);
 			return;
 		}
 
+		HandleWheel(inputManager, canvasX, canvasY);
+
 		if (Math.AbsFloat(canvasX - m_fHoverX) < HOVER_RETEST_PX && Math.AbsFloat(canvasY - m_fHoverY) < HOVER_RETEST_PX)
 			return;
 
 		UpdateHover(m_ScreenRender.GetScreenCanvasHost(), canvasX, canvasY);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Scrolls the page under the cursor, or the page's middle when the cursor rests on the header.
+	protected void HandleWheel(InputManager inputManager, float canvasX, float canvasY)
+	{
+		if (!inputManager)
+			return;
+
+		float wheel = inputManager.GetActionValue(WHEEL_ACTION);
+		if (wheel == 0)
+			return;
+
+		Widget canvasHost = m_ScreenRender.GetScreenCanvasHost();
+		if (!canvasHost)
+			return;
+
+		ScrollLayoutWidget scroll = FindScrollAt(canvasHost, canvasX, canvasY);
+		if (!scroll)
+			scroll = FindScrollAt(canvasHost, canvasX, CANVAS_HEIGHT * 0.5);
+
+		//! One notch per frame however the device reports it.
+		ELIFE_PhoneWheelScroll.Scroll(scroll, Math.Clamp(wheel, -1, 1));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drag tint while dragging, hover tint on a scrollable page's strip.
+	protected void UpdateScrollbarStyle(bool onScreen, float canvasX, float canvasY)
+	{
+		if (m_DragScroll)
+		{
+			m_fStyleX = -1;
+			StyleScrollbar(m_DragScroll, SCROLLBAR_ALPHA_DRAG);
+			return;
+		}
+
+		if (onScreen && Math.AbsFloat(canvasX - m_fStyleX) < HOVER_RETEST_PX && Math.AbsFloat(canvasY - m_fStyleY) < HOVER_RETEST_PX)
+			return;
+
+		m_fStyleX = canvasX;
+		m_fStyleY = canvasY;
+
+		Widget canvasHost = m_ScreenRender.GetScreenCanvasHost();
+		if (!onScreen || !canvasHost)
+		{
+			StyleScrollbar(null, 0);
+			return;
+		}
+
+		ScrollLayoutWidget scroll = FindScrollbarAt(canvasHost, canvasX, canvasY);
+		float viewHeight, contentHeight;
+		if (scroll && !GetScrollExtents(scroll, viewHeight, contentHeight))
+			scroll = null;
+
+		StyleScrollbar(scroll, SCROLLBAR_ALPHA_HOVER);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tints one scrollbar and rests the previous one; null clears.
+	protected void StyleScrollbar(ScrollLayoutWidget scroll, float alpha)
+	{
+		if (scroll == m_StyledScroll && alpha == m_fStyledAlpha)
+			return;
+
+		if (m_StyledScroll && m_StyledScroll != scroll)
+			m_StyledScroll.SetColor(ELIFE_PhoneStyle.ScrollbarRest());
+
+		m_StyledScroll = scroll;
+		m_fStyledAlpha = alpha;
+
+		if (scroll)
+			scroll.SetColor(ELIFE_PhoneStyle.ScrollbarTint(alpha));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnScreenRelease()
+	{
+		m_DragScroll = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The scroll view whose scrollbar strip is under the point. Also counts under the nav bar unless something clickable is in the way.
+	protected ScrollLayoutWidget FindScrollbarAt(Widget canvasHost, float canvasX, float canvasY)
+	{
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace)
+			return null;
+
+		Widget hit = HitTestRecursive(canvasHost, canvasX, canvasY);
+		ScrollLayoutWidget scroll = ScrollAncestor(hit);
+		if (!scroll)
+		{
+			if (hit && FindHandlerAncestor(hit))
+				return null;
+
+			scroll = FindScrollAt(canvasHost, canvasX, CANVAS_HEIGHT * 0.5);
+		}
+
+		if (!scroll)
+			return null;
+
+		float left, top, width, height;
+		scroll.GetScreenPos(left, top);
+		scroll.GetScreenSize(width, height);
+
+		float pointX = workspace.DPIScale(canvasX);
+		float pointY = workspace.DPIScale(canvasY);
+		if (pointX < left + width - workspace.DPIScale(SCROLLBAR_GRAB_WIDTH) || pointX > left + width)
+			return null;
+
+		if (pointY < top || pointY > top + height)
+			return null;
+
+		return scroll;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Physical px of the content and the view, or false when there is nothing to scroll.
+	protected bool GetScrollExtents(notnull ScrollLayoutWidget scroll, out float viewHeight, out float contentHeight)
+	{
+		float width;
+		scroll.GetScreenSize(width, viewHeight);
+
+		Widget body = scroll.GetChildren();
+		if (!body)
+			return false;
+
+		body.GetScreenSize(width, contentHeight);
+		return viewHeight > 0 && contentHeight > viewHeight + 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Grabbing the thumb drags from where it was picked up; pressing the track first centres the thumb on the cursor.
+	protected bool BeginScrollbarDrag(Widget canvasHost, float canvasX, float canvasY)
+	{
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		ScrollLayoutWidget scroll = FindScrollbarAt(canvasHost, canvasX, canvasY);
+		if (!workspace || !scroll)
+			return false;
+
+		float viewHeight, contentHeight;
+		if (!GetScrollExtents(scroll, viewHeight, contentHeight))
+			return false;
+
+		float thumb = Math.Clamp(viewHeight * viewHeight / contentHeight, workspace.DPIScale(SCROLLBAR_MIN_THUMB), viewHeight);
+		float travel = viewHeight - thumb;
+		if (travel <= 0)
+			return false;
+
+		float left, top;
+		scroll.GetScreenPos(left, top);
+
+		float pointY = workspace.DPIScale(canvasY);
+
+		float sliderX, sliderY;
+		scroll.GetSliderPos(sliderX, sliderY);
+
+		float thumbTop = top + sliderY * travel;
+		if (pointY < thumbTop || pointY > thumbTop + thumb)
+		{
+			sliderY = Math.Clamp((pointY - top - thumb * 0.5) / travel, 0, 1);
+			scroll.SetSliderPos(sliderX, sliderY);
+		}
+
+		m_DragScroll = scroll;
+		m_fDragStartY = pointY;
+		m_fDragStartFraction = sliderY;
+		m_fDragTravel = travel;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Follows the cursor while dragging, even past the screen edge.
+	protected void UpdateScrollbarDrag()
+	{
+		if (!m_DragScroll)
+			return;
+
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace || m_fDragTravel <= 0)
+		{
+			m_DragScroll = null;
+			return;
+		}
+
+		float canvasX, canvasY;
+		if (!ComputeCanvasPoint(canvasX, canvasY, false))
+			return;
+
+		float fraction = Math.Clamp(m_fDragStartFraction + (workspace.DPIScale(canvasY) - m_fDragStartY) / m_fDragTravel, 0, 1);
+
+		float sliderX, sliderY;
+		m_DragScroll.GetSliderPos(sliderX, sliderY);
+		m_DragScroll.SetSliderPos(sliderX, fraction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected ScrollLayoutWidget FindScrollAt(Widget canvasHost, float canvasX, float canvasY)
+	{
+		return ScrollAncestor(HitTestRecursive(canvasHost, canvasX, canvasY));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected ScrollLayoutWidget ScrollAncestor(Widget w)
+	{
+		while (w)
+		{
+			ScrollLayoutWidget scroll = ScrollLayoutWidget.Cast(w);
+			if (scroll)
+				return scroll;
+
+			w = w.GetParent();
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -194,7 +448,7 @@ class ELIFE_PhoneScreenInteractComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Maps the mouse position to canvas pixels. False if it misses the screen rect (e.g. hits the bezel).
-	protected bool ComputeCanvasPoint(out float canvasX, out float canvasY)
+	protected bool ComputeCanvasPoint(out float canvasX, out float canvasY, bool requireInside = true)
 	{
 		vector localHit;
 		if (!TryGetPlaneHit(localHit))
@@ -207,7 +461,7 @@ class ELIFE_PhoneScreenInteractComponent : ScriptComponent
 		float u = vector.Dot(fromOrigin, SCREEN_LOCAL_RIGHT) / rightLenSq;
 		float v = vector.Dot(fromOrigin, SCREEN_LOCAL_UP) / upLenSq;
 
-		if (u < 0 || u > 1 || v < 0 || v > 1)
+		if (requireInside && (u < 0 || u > 1 || v < 0 || v > 1))
 			return false;
 
 		canvasX = u * CANVAS_WIDTH;
@@ -473,6 +727,9 @@ class ELIFE_PhoneScreenInteractComponent : ScriptComponent
 
 		Widget canvasHost = m_ScreenRender.GetScreenCanvasHost();
 		if (!canvasHost)
+			return;
+
+		if (BeginScrollbarDrag(canvasHost, canvasX, canvasY))
 			return;
 
 		Widget target = HitTestRecursive(canvasHost, canvasX, canvasY);

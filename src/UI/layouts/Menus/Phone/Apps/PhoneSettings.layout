@@ -7,7 +7,7 @@ OverlayWidgetClass {
     HorizontalAlign 3
     VerticalAlign 3
    }
-   Color 0.0383 0.0466 0.0723 0.55
+   Color 0.8626 0.8964 0.964 0.4
    {
     VerticalLayoutWidgetClass "{1BC1FE684D0B3444}" {
      Name "SettingsBody"
