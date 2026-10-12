@@ -216,7 +216,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 
 	//! Lowercased display names and their contacts for the open thread, built once per FillThread.
 	protected ref array<string> m_aMentionNames = {};
-	protected ref array<ref ELIFE_ContactDto> m_aMentionContacts = {};
+	protected ref array<ref ELIFE_ContactSummary> m_aMentionContacts = {};
 
 	protected Widget m_wComposeBar;
 	protected EditBoxWidget m_wComposeField;
@@ -267,7 +267,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	protected const float SEND_ICON_SIZE = 18;
 	protected const float SEND_ICON_GAP = 6;
 	protected const float SEND_PAD_H = 8;
-	protected ref ELIFE_MessageUpdatesDto m_Updates = new ELIFE_MessageUpdatesDto();
+	protected ref ELIFE_MessageUpdates m_Updates = new ELIFE_MessageUpdates();
 	protected string m_sOpenThreadId;
 
 	//! Conversation addressed by number (no thread yet); switches to the real thread once one appears.
@@ -366,7 +366,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	void OpenConversationWith(string number)
 	{
-		ELIFE_ContactDto contact = ELIFE_PhoneContactBook.FindByNumber(m_Phone, number);
+		ELIFE_ContactSummary contact = ELIFE_PhoneContactBook.FindByNumber(m_Phone, number);
 		string contactId = "";
 		if (contact)
 			contactId = contact.contactId;
@@ -378,7 +378,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	//! Keeps the id even before contacts load; OnDataChanged resolves the number later.
 	void OpenConversationWithContact(string contactId)
 	{
-		ELIFE_ContactDto contact = ELIFE_PhoneContactBook.FindById(m_Phone, contactId);
+		ELIFE_ContactSummary contact = ELIFE_PhoneContactBook.FindById(m_Phone, contactId);
 		string number = "";
 		if (contact)
 			number = contact.number;
@@ -393,7 +393,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 
 		if (number != "")
 		{
-			ELIFE_ThreadDto existing = FindThreadWith(number);
+			ELIFE_MessageThreadUpdate existing = FindThreadWith(number);
 			if (existing)
 			{
 				OpenThread(existing.threadId);
@@ -412,12 +412,12 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 
 	//------------------------------------------------------------------------------------------------
 	//! Only matches one-to-one conversations - nothing creates group threads yet.
-	protected ELIFE_ThreadDto FindThreadWith(string number)
+	protected ELIFE_MessageThreadUpdate FindThreadWith(string number)
 	{
 		if (number == "")
 			return null;
 
-		foreach (ELIFE_ThreadDto threadDto : m_Updates.threads)
+		foreach (ELIFE_MessageThreadUpdate threadDto : m_Updates.threads)
 		{
 			foreach (string participant : threadDto.participants)
 			{
@@ -627,13 +627,13 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 			//! A `c:` hand-off can land before this payload does - re-resolve the number now.
 			if (m_sOpenContactId != "" && m_sOpenThreadId == "")
 			{
-				ELIFE_ContactDto contact = ELIFE_PhoneContactBook.FindById(m_Phone, m_sOpenContactId);
+				ELIFE_ContactSummary contact = ELIFE_PhoneContactBook.FindById(m_Phone, m_sOpenContactId);
 				if (contact)
 					m_sOpenNumber = contact.number;
 
 				if (m_sOpenNumber != "")
 				{
-					ELIFE_ThreadDto existing = FindThreadWith(m_sOpenNumber);
+					ELIFE_MessageThreadUpdate existing = FindThreadWith(m_sOpenNumber);
 					if (existing)
 					{
 						OpenThread(existing.threadId);
@@ -657,7 +657,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		//! A number-addressed conversation promotes itself the moment its thread actually arrives.
 		if (m_sOpenNumber != "")
 		{
-			ELIFE_ThreadDto arrived = FindThreadWith(m_sOpenNumber);
+			ELIFE_MessageThreadUpdate arrived = FindThreadWith(m_sOpenNumber);
 			if (arrived)
 			{
 				OpenThread(arrived.threadId);
@@ -681,7 +681,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		if (!m_Phone || m_sOpenThreadId == "")
 			return;
 
-		ELIFE_ThreadDto threadDto = FindThread(m_sOpenThreadId);
+		ELIFE_MessageThreadUpdate threadDto = FindThread(m_sOpenThreadId);
 		if (!threadDto || threadDto.unreadCount <= 0)
 			return;
 
@@ -696,7 +696,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	protected void ReadUpdates()
 	{
-		m_Updates = new ELIFE_MessageUpdatesDto();
+		m_Updates = new ELIFE_MessageUpdates();
 
 		string json = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_MESSAGES);
 		if (json != "")
@@ -710,12 +710,12 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	protected void ResolveOwnerSenders()
 	{
-		foreach (ELIFE_ThreadDisplayDto threadDto : m_Updates.threads)
+		foreach (ELIFE_MessageThreadUpdate threadDto : m_Updates.threads)
 		{
 			if (!threadDto)
 				continue;
 
-			foreach (ELIFE_MessageDto message : threadDto.messages)
+			foreach (ELIFE_PhoneMessage message : threadDto.messages)
 			{
 				if (message && !message.isOutbound)
 					message.from = ELIFE_PhoneContactBook.NameFor(m_Phone, message.from);
@@ -822,7 +822,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		if (!m_wPickerGroups || count == 0)
 			return;
 
-		array<ref ELIFE_ContactDto> sorted = ELIFE_PhoneContactBook.SortedByLastName(list);
+		array<ref ELIFE_ContactSummary> sorted = ELIFE_PhoneContactBook.SortedByLastName(list);
 
 		string currentLetter = "";
 		Widget currentList = null;
@@ -830,7 +830,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 
 		for (int i = 0; i < sorted.Count(); i++)
 		{
-			ELIFE_ContactDto contact = sorted.Get(i);
+			ELIFE_ContactSummary contact = sorted.Get(i);
 			if (!contact)
 				continue;
 
@@ -890,7 +890,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 
 		for (int i = 0; i < count; i++)
 		{
-			ELIFE_ThreadDto threadDto = m_Updates.threads.Get(i);
+			ELIFE_MessageThreadUpdate threadDto = m_Updates.threads.Get(i);
 
 			string bucket = DateBucket(threadDto);
 			if (bucket != currentBucket || !currentList)
@@ -936,7 +936,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 
 	//------------------------------------------------------------------------------------------------
 	//! By real calendar day, not a rolling 24h window - "Yesterday" is the previous calendar date.
-	protected string DateBucket(notnull ELIFE_ThreadDto threadDto)
+	protected string DateBucket(notnull ELIFE_MessageThreadUpdate threadDto)
 	{
 		int days = DaysSince(threadDto.lastMessageAt);
 
@@ -960,7 +960,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 
 	//------------------------------------------------------------------------------------------------
 	//! Today/Yesterday headers already name the day; older rows show it too.
-	protected string RowTimestamp(notnull ELIFE_ThreadDto threadDto)
+	protected string RowTimestamp(notnull ELIFE_MessageThreadUpdate threadDto)
 	{
 		if (DaysSince(threadDto.lastMessageAt) <= 1)
 			return FormatClock(threadDto.lastMessageAt);
@@ -1136,7 +1136,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		if (m_sOpenNumber != "")
 			return m_sOpenNumber;
 
-		ELIFE_ThreadDto threadDto = FindThread(m_sOpenThreadId);
+		ELIFE_MessageThreadUpdate threadDto = FindThread(m_sOpenThreadId);
 		if (!threadDto)
 			return "";
 
@@ -1259,7 +1259,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected string ThreadPreview(notnull ELIFE_ThreadDto threadDto)
+	protected string ThreadPreview(notnull ELIFE_MessageThreadUpdate threadDto)
 	{
 		int count = threadDto.messages.Count();
 		if (count == 0)
@@ -1275,7 +1275,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		m_aNumberClicks.Clear();
 		BuildMentionIndex();
 
-		ELIFE_ThreadDto threadDto = FindThread(m_sOpenThreadId);
+		ELIFE_MessageThreadUpdate threadDto = FindThread(m_sOpenThreadId);
 
 		//! A conversation opened onto a person has no thread yet - expected, not a missing thread.
 		if (!threadDto && (m_sOpenNumber != "" || m_sOpenContactId != ""))
@@ -1320,13 +1320,13 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 
 		for (int i = 0; i < count; i++)
 		{
-			ELIFE_MessageDto message = threadDto.messages.Get(i);
+			ELIFE_PhoneMessage message = threadDto.messages.Get(i);
 
 			Widget row = CreateListRow(LAYOUT_MESSAGE_ROW, m_wMessageList);
 			if (!row)
 				continue;
 
-			//! `from` is already a name (resolved in ReadUpdates() or by MessageDto.Redact()) - don't re-look it up.
+			//! `from` is already a name (resolved in ReadUpdates() or by ELIFE_PhoneMessage.Redact()) - don't re-look it up.
 			string sender = message.from;
 			if (message.isOutbound)
 				sender = you;
@@ -1419,7 +1419,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 
 		string partner = ComposeRecipient();
 
-		foreach (ELIFE_ContactDto contact : list.items)
+		foreach (ELIFE_ContactSummary contact : list.items)
 		{
 			if (!contact || contact.number == partner)
 				continue;
@@ -1436,7 +1436,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 
 	//------------------------------------------------------------------------------------------------
 	//! Saved contacts named in the text as whole words, in written order.
-	protected void FindMentionedContacts(string text, notnull array<ref ELIFE_ContactDto> found)
+	protected void FindMentionedContacts(string text, notnull array<ref ELIFE_ContactSummary> found)
 	{
 		string haystack = text;
 		haystack.ToLower();
@@ -1506,7 +1506,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 
 	//------------------------------------------------------------------------------------------------
 	//! Chips for numbers first, then mentioned contacts; incoming messages on the owner's view only.
-	protected void FillNumberAction(notnull Widget row, notnull ELIFE_MessageDto message)
+	protected void FillNumberAction(notnull Widget row, notnull ELIFE_PhoneMessage message)
 	{
 		if (message.isOutbound || !IsOwner())
 			return;
@@ -1525,7 +1525,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 			if (number == ownNumber)
 				continue;
 
-			ELIFE_ContactDto contact = ELIFE_PhoneContactBook.FindByNumber(m_Phone, number);
+			ELIFE_ContactSummary contact = ELIFE_PhoneContactBook.FindByNumber(m_Phone, number);
 			if (contact)
 			{
 				AddChip(targets, labels, icons, number, WidgetManager.Translate("#ELIFE-Phone_Messages_ChipOpen", ELIFE_PhoneContactBook.DisplayName(contact)), ICON_CHIP_OPEN);
@@ -1535,10 +1535,10 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 			AddChip(targets, labels, icons, number, WidgetManager.Translate("#ELIFE-Phone_Messages_ChipSave", number), ICON_ADD_CONTACT);
 		}
 
-		array<ref ELIFE_ContactDto> mentioned = {};
+		array<ref ELIFE_ContactSummary> mentioned = {};
 		FindMentionedContacts(message.body, mentioned);
 
-		foreach (ELIFE_ContactDto mention : mentioned)
+		foreach (ELIFE_ContactSummary mention : mentioned)
 			AddChip(targets, labels, icons, mention.number, WidgetManager.Translate("#ELIFE-Phone_Messages_ChipOpen", ELIFE_PhoneContactBook.DisplayName(mention)), ICON_CHIP_OPEN);
 
 		Color fill = ELIFE_PhoneStyle.AccentDeepFor(EPhoneScreenState.CONTACTS);
@@ -1590,7 +1590,7 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	//! Contact detail for a saved number, the prefilled add form otherwise.
 	void OpenNumberInContacts(string number)
 	{
-		ELIFE_ContactDto contact = ELIFE_PhoneContactBook.FindByNumber(m_Phone, number);
+		ELIFE_ContactSummary contact = ELIFE_PhoneContactBook.FindByNumber(m_Phone, number);
 		if (contact)
 			OpenAppPage(EPhoneScreenState.CONTACTS, ELIFE_PhoneContactsApp.SUBSTATE_DETAIL_PREFIX + contact.contactId);
 		else
@@ -1598,12 +1598,12 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected ELIFE_ThreadDto FindThread(string threadId)
+	protected ELIFE_MessageThreadUpdate FindThread(string threadId)
 	{
 		if (threadId == "")
 			return null;
 
-		foreach (ELIFE_ThreadDto threadDto : m_Updates.threads)
+		foreach (ELIFE_MessageThreadUpdate threadDto : m_Updates.threads)
 		{
 			if (threadDto.threadId == threadId)
 				return threadDto;

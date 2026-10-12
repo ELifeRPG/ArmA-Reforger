@@ -877,13 +877,13 @@ class ELIFE_PhoneScreenShell
 		if (json == "")
 			return;
 
-		ELIFE_MessageUpdatesDto updates = new ELIFE_MessageUpdatesDto();
+		ELIFE_MessageUpdates updates = new ELIFE_MessageUpdates();
 		updates.ExpandFromRAW(json);
 
 		//! Record every thread, so one dropping to zero and rising again reads as new.
-		array<ref ELIFE_ThreadDisplayDto> arrived = {};
+		array<ref ELIFE_MessageThreadUpdate> arrived = {};
 
-		foreach (ELIFE_ThreadDisplayDto threadDto : updates.threads)
+		foreach (ELIFE_MessageThreadUpdate threadDto : updates.threads)
 		{
 			if (!threadDto)
 				continue;
@@ -899,7 +899,7 @@ class ELIFE_PhoneScreenShell
 
 		m_bUnreadSeeded = true;
 
-		foreach (ELIFE_ThreadDisplayDto threadDto : arrived)
+		foreach (ELIFE_MessageThreadUpdate threadDto : arrived)
 			ShowBanner(threadDto);
 	}
 
@@ -907,10 +907,10 @@ class ELIFE_PhoneScreenShell
 	//! Peek: banner what's already waiting, then seed so later polls only raise new ones.
 	void RaisePendingBanners()
 	{
-		array<ref ELIFE_ThreadDisplayDto> pending = {};
+		array<ref ELIFE_MessageThreadUpdate> pending = {};
 		CollectNotifications(pending);
 
-		foreach (ELIFE_ThreadDisplayDto threadDto : pending)
+		foreach (ELIFE_MessageThreadUpdate threadDto : pending)
 			ShowBanner(threadDto);
 
 		m_bUnreadSeeded = false;
@@ -942,7 +942,7 @@ class ELIFE_PhoneScreenShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void ShowBanner(notnull ELIFE_ThreadDisplayDto threadDto)
+	protected void ShowBanner(notnull ELIFE_MessageThreadUpdate threadDto)
 	{
 		if (!m_wNotificationBanner || !CanRaiseBanner())
 			return;
@@ -1053,7 +1053,7 @@ class ELIFE_PhoneScreenShell
 
 	//------------------------------------------------------------------------------------------------
 	//! Threads with an undismissed notification, newest first (payload order).
-	protected void CollectNotifications(notnull array<ref ELIFE_ThreadDisplayDto> outThreads)
+	protected void CollectNotifications(notnull array<ref ELIFE_MessageThreadUpdate> outThreads)
 	{
 		if (!m_Phone)
 			return;
@@ -1062,10 +1062,10 @@ class ELIFE_PhoneScreenShell
 		if (json == "")
 			return;
 
-		ELIFE_MessageUpdatesDto updates = new ELIFE_MessageUpdatesDto();
+		ELIFE_MessageUpdates updates = new ELIFE_MessageUpdates();
 		updates.ExpandFromRAW(json);
 
-		foreach (ELIFE_ThreadDisplayDto threadDto : updates.threads)
+		foreach (ELIFE_MessageThreadUpdate threadDto : updates.threads)
 		{
 			if (!threadDto || threadDto.unreadCount <= 0)
 				continue;
@@ -1085,7 +1085,7 @@ class ELIFE_PhoneScreenShell
 	//! Newest outstanding notification - the peek's door when the phone is drawn.
 	string GetNewestNotificationThreadId()
 	{
-		array<ref ELIFE_ThreadDisplayDto> pending = {};
+		array<ref ELIFE_MessageThreadUpdate> pending = {};
 		CollectNotifications(pending);
 
 		if (pending.IsEmpty() || !pending[0])
@@ -1098,12 +1098,12 @@ class ELIFE_PhoneScreenShell
 	//! Indicator and hub read one list, so they can't disagree.
 	protected void RefreshNotifications()
 	{
-		array<ref ELIFE_ThreadDisplayDto> pending = {};
+		array<ref ELIFE_MessageThreadUpdate> pending = {};
 		CollectNotifications(pending);
 
 		//! Counts messages, not threads.
 		int unread = 0;
-		foreach (ELIFE_ThreadDisplayDto threadDto : pending)
+		foreach (ELIFE_MessageThreadUpdate threadDto : pending)
 			unread += threadDto.unreadCount;
 
 		RefreshNotificationIndicator(unread);
@@ -1127,7 +1127,7 @@ class ELIFE_PhoneScreenShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void FillHub(notnull array<ref ELIFE_ThreadDisplayDto> pending)
+	protected void FillHub(notnull array<ref ELIFE_MessageThreadUpdate> pending)
 	{
 		if (!m_wHubList)
 			return;
@@ -1152,7 +1152,7 @@ class ELIFE_PhoneScreenShell
 
 		for (int i = 0; i < count; i++)
 		{
-			ELIFE_ThreadDisplayDto threadDto = pending.Get(i);
+			ELIFE_MessageThreadUpdate threadDto = pending.Get(i);
 
 			Widget card = workspace.CreateWidgets(LAYOUT_NOTIFICATION, m_wHubList);
 			if (!card)
@@ -1214,10 +1214,10 @@ class ELIFE_PhoneScreenShell
 		if (!m_Phone)
 			return;
 
-		array<ref ELIFE_ThreadDisplayDto> pending = {};
+		array<ref ELIFE_MessageThreadUpdate> pending = {};
 		CollectNotifications(pending);
 
-		foreach (ELIFE_ThreadDisplayDto threadDto : pending)
+		foreach (ELIFE_MessageThreadUpdate threadDto : pending)
 			m_Phone.DismissNotification(threadDto.threadId, threadDto.unreadCount);
 
 		RefreshNotifications();
@@ -1225,7 +1225,7 @@ class ELIFE_PhoneScreenShell
 
 	//------------------------------------------------------------------------------------------------
 	//! Paints a card for the lock list, banners and hub. compact scales tokens for the 1x card.
-	protected void PaintNotificationCard(notnull Widget card, notnull ELIFE_ThreadDto threadDto, bool showCount = false, bool compact = false)
+	protected void PaintNotificationCard(notnull Widget card, notnull ELIFE_MessageThreadUpdate threadDto, bool showCount = false, bool compact = false)
 	{
 		float unit = 1;
 		if (compact)
@@ -1602,7 +1602,7 @@ class ELIFE_PhoneScreenShell
 		if (!card)
 			return;
 
-		ELIFE_ThreadDto newest = NewestUnreadThread();
+		ELIFE_MessageThreadUpdate newest = NewestUnreadThread();
 		if (!newest)
 		{
 			SetText(card, "CardLabel", "#ELIFE-Phone_App_Messages");
@@ -1655,7 +1655,7 @@ class ELIFE_PhoneScreenShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected ELIFE_ThreadDto NewestUnreadThread()
+	protected ELIFE_MessageThreadUpdate NewestUnreadThread()
 	{
 		if (!m_Phone)
 			return null;
@@ -1664,11 +1664,11 @@ class ELIFE_PhoneScreenShell
 		if (json == "")
 			return null;
 
-		ELIFE_MessageUpdatesDto updates = new ELIFE_MessageUpdatesDto();
+		ELIFE_MessageUpdates updates = new ELIFE_MessageUpdates();
 		updates.ExpandFromRAW(json);
 
-		ELIFE_ThreadDto newest;
-		foreach (ELIFE_ThreadDto threadDto : updates.threads)
+		ELIFE_MessageThreadUpdate newest;
+		foreach (ELIFE_MessageThreadUpdate threadDto : updates.threads)
 		{
 			if (threadDto.unreadCount <= 0)
 				continue;
@@ -1733,7 +1733,7 @@ class ELIFE_PhoneScreenShell
 		if (json == "")
 			return;
 
-		ELIFE_MessageUpdatesDto updates = new ELIFE_MessageUpdatesDto();
+		ELIFE_MessageUpdates updates = new ELIFE_MessageUpdates();
 		updates.ExpandFromRAW(json);
 
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
@@ -1742,7 +1742,7 @@ class ELIFE_PhoneScreenShell
 
 		int shown = 0;
 
-		foreach (ELIFE_ThreadDto threadDto : updates.threads)
+		foreach (ELIFE_MessageThreadUpdate threadDto : updates.threads)
 		{
 			if (shown >= LOCK_NOTIFICATION_LIMIT)
 				break;
@@ -1765,7 +1765,7 @@ class ELIFE_PhoneScreenShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected string NewestBody(notnull ELIFE_ThreadDto threadDto)
+	protected string NewestBody(notnull ELIFE_MessageThreadUpdate threadDto)
 	{
 		int count = threadDto.messages.Count();
 		if (count == 0)

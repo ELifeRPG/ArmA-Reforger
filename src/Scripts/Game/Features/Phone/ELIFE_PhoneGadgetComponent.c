@@ -158,8 +158,19 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected const int UNLOCK_MAX_FAILURES = 5;
 	protected const float UNLOCK_COOLDOWN_MS = 30000;
 
-	protected ref ELIFE_ProvisionPhoneCallback m_ProvisionCallback;
-	protected ref ELIFE_BaseRestCallback m_PowerOnCallback;
+	//! Server-only. The PIN sent with the in-flight provisioning request, kept until OnPhoneProvisioned().
+	protected string m_sPendingPin;
+
+	//! Server-only. Set once the backend confirms power-on; a phone that's off answers every app route with 409.
+	protected bool m_bBackendPoweredOn;
+
+	//! Held so handlers can read the HTTP code - the base callback collapses every failure to ERROR.
+	protected ref ELIFE_ProvisionedPhoneCallback m_ProvisionCallback;
+	protected ref ELIFE_PhonePowerStateCallback m_PowerOnCallback;
+	protected ref ELIFE_SavedContactCallback m_SaveContactCallback;
+	protected ref ELIFE_SentMessageCallback m_SendMessageCallback;
+	protected ref ELIFE_BaseRestCallback m_MarkThreadReadCallback;
+	protected ref ELIFE_MessageUpdatesCallback m_MessagesFetchCallback;
 	protected int m_iOwnerPlayerId;
 
 	static const string DATA_CONTACTS = "contacts";
@@ -167,7 +178,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 	//! Server-only: the real payload per key plus its pre-built bystander copy.
 	protected ref map<string, ref ELIFE_PhoneDataEntry> m_mServerData = new map<string, ref ELIFE_PhoneDataEntry>();
-	protected ref map<string, ref ELIFE_BaseRestCallback> m_mPendingFetches = new map<string, ref ELIFE_BaseRestCallback>();
+	protected ref map<string, bool> m_mPendingFetches = new map<string, bool>();
+	protected ref ELIFE_ContactsFetchCallback m_ContactsFetchCallback;
 
 	//! What this machine got pushed - real payload for the owner, redacted copy for everyone else.
 	protected ref map<string, string> m_mData = new map<string, string>();
@@ -205,11 +217,6 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 	//! threadId -> unread count at dismissal; a higher count notifies again. Local only, never replicated.
 	protected ref map<string, int> m_mDismissedNotifications = new map<string, int>();
-
-	//! Kept so OnContactSaved() can read the HTTP code after the base collapses failures to ERROR.
-	protected ref ELIFE_SaveContactCallback m_SaveContactCallback;
-	protected ref ELIFE_SendMessageCallback m_SendMessageCallback;
-	protected ref ELIFE_MarkThreadReadCallback m_MarkThreadReadCallback;
 
 	protected const int DATA_CACHE_TTL_MS = 15000;
 
@@ -405,6 +412,16 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! 0 when there's no callback to ask, which NoteConnectivity() reads as no answer.
+	protected int HttpCodeOf(RestCallback callback)
+	{
+		if (!callback)
+			return 0;
+
+		return callback.GetHttpCode();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	string GetNumber()
 	{
 		return m_sNumber;
@@ -424,25 +441,22 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (!api)
 			return;
 
-		string characterId = ELIFE_CharacterIdentity.GetCharacterId(playerId);
-		m_sServerOwnerCharacterId = characterId;
-		string pin = string.Format("%1", Math.RandomIntInclusive(1000, 9999));
-		string body = string.Format("{\"characterId\":\"%1\",\"pin\":\"%2\"}", characterId, pin);
+		ELIFE_ProvisionPhoneRequest request = new ELIFE_ProvisionPhoneRequest();
+		request.characterId = ELIFE_CharacterIdentity.GetCharacterId(playerId);
+		request.pin = string.Format("%1", Math.RandomIntInclusive(1000, 9999));
 
-		m_ProvisionCallback = new ELIFE_ProvisionPhoneCallback();
-		m_ProvisionCallback.SetCallback(this, "OnPhoneProvisioned", pin);
-		api.GetElifeApi().POST(m_ProvisionCallback, "phones", body);
+		m_sServerOwnerCharacterId = request.characterId;
+		m_sPendingPin = request.pin;
+		m_bBackendPoweredOn = false;
+		m_ProvisionCallback = api.ProvisionPhone(request, this, "OnPhoneProvisioned");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void OnPhoneProvisioned(ELIFE_EApiStatusCode status, JsonApiStruct data, string pin)
+	void OnPhoneProvisioned(ELIFE_EApiStatusCode status, JsonApiStruct data)
 	{
-		int httpCode = 0;
-		if (m_ProvisionCallback)
-			httpCode = m_ProvisionCallback.GetHttpCode();
-		NoteConnectivity(status, httpCode);
+		NoteConnectivity(status, HttpCodeOf(m_ProvisionCallback));
 
-		ELIFE_ProvisionPhoneResponseDto response = ELIFE_ProvisionPhoneResponseDto.Cast(data);
+		ELIFE_ProvisionedPhone response = ELIFE_ProvisionedPhone.Cast(data);
 		if (status != ELIFE_EApiStatusCode.SUCCESS || !response)
 		{
 			Print("ELIFE_PhoneGadgetComponent | provisioning failed", LogLevel.ERROR);
@@ -451,8 +465,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		m_sPhoneId = response.phoneId;
 		m_sServerNumber = response.number;
-		m_sServerPin = pin;
-		m_sRedactedPin = ELIFE_DataRedactor.RedactDigits(pin);
+		m_sServerPin = m_sPendingPin;
+		m_sRedactedPin = ELIFE_DataRedactor.RedactDigits(m_sPendingPin);
 		Replication.BumpMe();
 
 		//! onRplName doesn't fire on the machine setting the value, so apply it here for a listen server.
@@ -473,27 +487,30 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (!api)
 			return;
 
-		string characterId = ELIFE_CharacterIdentity.GetCharacterId(m_iOwnerPlayerId);
-		string body = string.Format("{\"characterId\":\"%1\",\"isPoweredOn\":true}", characterId);
+		//! The owner needs no PIN here, but the generated request always carries the field, so send the real one.
+		ELIFE_SetPhonePowerRequest request = new ELIFE_SetPhonePowerRequest();
+		request.characterId = ELIFE_CharacterIdentity.GetCharacterId(m_iOwnerPlayerId);
+		request.isPoweredOn = true;
+		request.pin = m_sServerPin;
 
-		m_PowerOnCallback = new ELIFE_BaseRestCallback();
-		m_PowerOnCallback.SetCallback(this, "OnPhonePoweredOn");
-		api.GetElifeApi().POST(m_PowerOnCallback, string.Format("phones/%1/power", m_sPhoneId), body);
+		m_PowerOnCallback = api.SetPhonePower(request, m_sPhoneId, this, "OnPhonePoweredOn");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void OnPhonePoweredOn(ELIFE_EApiStatusCode status, JsonApiStruct data)
+	void OnPhonePoweredOn(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
 	{
-		int httpCode = 0;
-		if (m_PowerOnCallback)
-			httpCode = m_PowerOnCallback.GetHttpCode();
-		NoteConnectivity(status, httpCode);
+		NoteConnectivity(status, HttpCodeOf(m_PowerOnCallback));
 
 		if (status != ELIFE_EApiStatusCode.SUCCESS)
 		{
 			Print("ELIFE_PhoneGadgetComponent | power-on failed", LogLevel.ERROR);
 			return;
 		}
+
+		m_bBackendPoweredOn = true;
+
+		//! Before the poll: an owner fetch always answers, a poll that finds nothing new stays silent.
+		RefetchFailedData();
 
 		//! First chance to poll — don't wait a full idle interval for the opening screen to have mail.
 		ReschedulePoll();
@@ -630,6 +647,19 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 		}
 
+		//! A phone left off answers every app route with 409; OnPhonePoweredOn() re-fetches once it's on.
+		if (!m_bBackendPoweredOn)
+		{
+			PowerOnPhone();
+			return;
+		}
+
+		RefetchFailedData();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RefetchFailedData()
+	{
 		foreach (string key, ELIFE_EPhoneDataStatus status : m_mDataStatus)
 		{
 			if (status == ELIFE_EPhoneDataStatus.ERROR)
@@ -661,21 +691,17 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 		}
 
-		//! displayName is player-typed free text, so it goes through ELIFE_Json.EscapeString().
-		string body = string.Format("{\"number\":\"%1\",\"displayName\":\"%2\"}",
-			ELIFE_Json.EscapeString(number), ELIFE_Json.EscapeString(displayName));
+		ELIFE_SavePhoneContactRequest request = new ELIFE_SavePhoneContactRequest();
+		request.number = number;
+		request.displayName = displayName;
 
-		m_SaveContactCallback = new ELIFE_SaveContactCallback();
-		m_SaveContactCallback.SetCallback(this, "OnContactSaved");
-		api.GetElifeApi().POST(m_SaveContactCallback, string.Format("phones/%1/apps/contacts/entries", m_sPhoneId), body);
+		m_SaveContactCallback = api.SavePhoneContact(request, m_sPhoneId, this, "OnContactSaved");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void OnContactSaved(ELIFE_EApiStatusCode status, JsonApiStruct data)
+	void OnContactSaved(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
 	{
-		int httpCode = 0;
-		if (m_SaveContactCallback)
-			httpCode = m_SaveContactCallback.GetHttpCode();
+		int httpCode = HttpCodeOf(m_SaveContactCallback);
 		NoteConnectivity(status, httpCode);
 
 		if (status != ELIFE_EApiStatusCode.SUCCESS)
@@ -725,21 +751,17 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 		}
 
-		//! body is player-typed free text, escaped the same way SaveContact()'s displayName is.
-		string requestBody = string.Format("{\"to\":[\"%1\"],\"body\":\"%2\"}",
-			ELIFE_Json.EscapeString(number), ELIFE_Json.EscapeString(body));
+		ELIFE_SendPhoneMessageRequest request = new ELIFE_SendPhoneMessageRequest();
+		request.to.Insert(number);
+		request.body = body;
 
-		m_SendMessageCallback = new ELIFE_SendMessageCallback();
-		m_SendMessageCallback.SetCallback(this, "OnMessageSent");
-		api.GetElifeApi().POST(m_SendMessageCallback, string.Format("phones/%1/apps/messages/send", m_sPhoneId), requestBody);
+		m_SendMessageCallback = api.SendPhoneMessage(request, m_sPhoneId, this, "OnMessageSent");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void OnMessageSent(ELIFE_EApiStatusCode status, JsonApiStruct data)
+	void OnMessageSent(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
 	{
-		int httpCode = 0;
-		if (m_SendMessageCallback)
-			httpCode = m_SendMessageCallback.GetHttpCode();
+		int httpCode = HttpCodeOf(m_SendMessageCallback);
 		NoteConnectivity(status, httpCode);
 
 		if (status != ELIFE_EApiStatusCode.SUCCESS)
@@ -749,7 +771,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 		}
 
-		ELIFE_SendMessageResponseDto response = ELIFE_SendMessageResponseDto.Cast(data);
+		ELIFE_SentMessage response = ELIFE_SentMessage.Cast(data);
 
 		string threadId = "";
 		ELIFE_EMessageSendResult result = ELIFE_EMessageSendResult.SENT;
@@ -814,19 +836,13 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (m_sPhoneId == "" || threadId == "" || !api)
 			return;
 
-		m_MarkThreadReadCallback = new ELIFE_MarkThreadReadCallback();
-		m_MarkThreadReadCallback.SetCallback(this, "OnThreadMarkedRead");
-
-		//! Empty object, not empty string - RestContext still needs something to send with a POST.
-		api.GetElifeApi().POST(m_MarkThreadReadCallback, string.Format("phones/%1/apps/messages/threads/%2/read", m_sPhoneId, threadId), "{}");
+		m_MarkThreadReadCallback = api.MarkPhoneThreadRead(m_sPhoneId, threadId, this, "OnThreadMarkedRead");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void OnThreadMarkedRead(ELIFE_EApiStatusCode status, JsonApiStruct data)
+	void OnThreadMarkedRead(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
 	{
-		int httpCode = 0;
-		if (m_MarkThreadReadCallback)
-			httpCode = m_MarkThreadReadCallback.GetHttpCode();
+		int httpCode = HttpCodeOf(m_MarkThreadReadCallback);
 		NoteConnectivity(status, httpCode);
 
 		if (status != ELIFE_EApiStatusCode.SUCCESS)
@@ -845,7 +861,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (httpCode == 400)
 			return ELIFE_EContactSaveResult.INVALID_NUMBER;
 
-		if (httpCode == 409)
+		//! The backend also answers 409 for "phone is powered off", which isn't the player's duplicate.
+		if (httpCode == 409 && m_bBackendPoweredOn)
 			return ELIFE_EContactSaveResult.DUPLICATE;
 
 		return ELIFE_EContactSaveResult.FAILED;
@@ -873,52 +890,51 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 		}
 
-		string route;
-		ELIFE_BaseRestCallback callback;
-
+		//! Contacts/messages routes take no characterId/pin - possession is proven once at power-on.
 		if (key == DATA_CONTACTS)
 		{
-			route = "contacts/entries";
-			callback = new ELIFE_ContactsFetchCallback();
+			//! Hand-built: the generated ListPhoneContacts() doesn't parse the bare-array response.
+			m_ContactsFetchCallback = new ELIFE_ContactsFetchCallback();
+			m_ContactsFetchCallback.SetCallback(this, "OnDataFetched", key);
+			m_mPendingFetches.Set(key, true);
+			api.GetElifeApi().GET(m_ContactsFetchCallback, string.Format("phones/%1/apps/contacts/entries", m_sPhoneId));
 		}
 		else if (key == DATA_MESSAGES)
 		{
 			//! Cursor-less returns every thread with bodies; with a cursor only what arrived since, merged in OnDataFetched().
-			if (full || m_sMessagesCursor == "")
-				route = "messages/updates";
-			else
-				route = string.Format("messages/updates?since=%1", EncodeCursor(m_sMessagesCursor));
+			string since;
+			if (!full && m_sMessagesCursor != "")
+				since = EncodeCursor(m_sMessagesCursor);
 
-			callback = new ELIFE_MessageUpdatesFetchCallback();
+			m_mPendingFetches.Set(key, true);
+			m_MessagesFetchCallback = api.PollPhoneMessages(m_sPhoneId, since, this, "OnMessagesFetched");
 		}
 		else
 		{
 			PushDataError(key);
-			return;
 		}
+	}
 
-		callback.SetCallback(this, "OnDataFetched", key);
-		m_mPendingFetches.Set(key, callback);
-
-		//! Contacts/messages routes take no characterId/pin - possession is proven once at power-on.
-		api.GetElifeApi().GET(callback, string.Format("phones/%1/apps/%2", m_sPhoneId, route));
+	//------------------------------------------------------------------------------------------------
+	//! The generated callback hands back the phoneId, not the data key, so messages route through here.
+	void OnMessagesFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
+	{
+		OnDataFetched(status, data, DATA_MESSAGES);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void OnDataFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string key)
 	{
-		ELIFE_BaseRestCallback callback;
-		m_mPendingFetches.Find(key, callback);
 		m_mPendingFetches.Remove(key);
 
 		bool wasPoll = key == DATA_MESSAGES && m_bPollInFlight;
 		if (key == DATA_MESSAGES)
 			m_bPollInFlight = false;
 
-		int httpCode = 0;
-		if (callback)
-			httpCode = callback.GetHttpCode();
-		NoteConnectivity(status, httpCode);
+		if (key == DATA_CONTACTS)
+			NoteConnectivity(status, HttpCodeOf(m_ContactsFetchCallback));
+		else
+			NoteConnectivity(status, HttpCodeOf(m_MessagesFetchCallback));
 
 		if (status != ELIFE_EApiStatusCode.SUCCESS || !data)
 		{
@@ -934,15 +950,15 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 		}
 
-		//! Re-packing would warn "Operation called twice", so use the raw text it was unpacked from.
+		//! Re-packing would warn "Operation called twice", so contacts use the raw text they were unpacked from.
 		ELIFE_PhoneDataEntry entry = new ELIFE_PhoneDataEntry();
-		ELIFE_PhoneJsonDto jsonDto = ELIFE_PhoneJsonDto.Cast(data);
-		if (jsonDto)
-			entry.m_sReal = jsonDto.GetRawJson();
+		ELIFE_ContactListDto contacts = ELIFE_ContactListDto.Cast(data);
+		if (contacts)
+			entry.m_sReal = contacts.GetRawJson();
 
 		bool changed = true;
 		if (key == DATA_MESSAGES)
-			entry.m_sReal = MergeMessages(ELIFE_MessageUpdatesDto.Cast(data), changed);
+			entry.m_sReal = MergeMessages(ELIFE_MessageUpdates.Cast(data), changed);
 
 		entry.m_sRedacted = RedactPayload(key, entry.m_sReal);
 		entry.m_iFetchTime = System.GetTickCount();
@@ -959,7 +975,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Merges an updates response into the cache, advances the cursor, returns the merged JSON.
-	protected string MergeMessages(ELIFE_MessageUpdatesDto response, out bool changed)
+	protected string MergeMessages(ELIFE_MessageUpdates response, out bool changed)
 	{
 		changed = true;
 
@@ -968,16 +984,20 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		m_sMessagesCursor = response.polledAt;
 
+		ELIFE_MessageUpdates current = new ELIFE_MessageUpdates();
+
 		ELIFE_PhoneDataEntry cached;
-		if (!m_mServerData.Find(DATA_MESSAGES, cached) || cached.m_sReal == "")
-			return response.GetRawJson();
+		bool hasCache = m_mServerData.Find(DATA_MESSAGES, cached) && cached.m_sReal != "";
+		if (hasCache)
+			current.ExpandFromRAW(cached.m_sReal);
 
-		ELIFE_MessageUpdatesDto current = new ELIFE_MessageUpdatesDto();
-		current.ExpandFromRAW(cached.m_sReal);
+		ELIFE_MessageUpdates merged = current.MergedWith(response, changed);
 
-		ELIFE_MessageUpdatesDto merged = current.MergedWith(response, changed);
+		//! A first fetch always counts as a change, even an empty one.
+		if (!hasCache)
+			changed = true;
 
-		//! Built fresh by MergedWith(), so this one may be Pack()ed - see ELIFE_PhoneJsonDto.
+		//! Built fresh by MergedWith(), so this one may be Pack()ed - an ExpandFromRAW'd struct can't be.
 		merged.Pack();
 		return merged.AsString();
 	}
@@ -1018,7 +1038,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		}
 		else if (key == DATA_MESSAGES)
 		{
-			ELIFE_MessageUpdatesDto updates = new ELIFE_MessageUpdatesDto();
+			ELIFE_MessageUpdates updates = new ELIFE_MessageUpdates();
 			updates.ExpandFromRAW(realJson);
 			redacted = updates.Redact(OwnerContactNames());
 		}
@@ -1042,7 +1062,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		list.ExpandFromRAW(entry.m_sReal);
 
 		map<string, string> names = new map<string, string>();
-		foreach (ELIFE_ContactDto contact : list.items)
+		foreach (ELIFE_ContactSummary contact : list.items)
 		{
 			if (contact && contact.number != "")
 				names.Set(contact.number, contact.displayName);
@@ -1157,11 +1177,11 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//------------------------------------------------------------------------------------------------
 	protected int TotalUnread(string json)
 	{
-		ELIFE_MessageUpdatesDto updates = new ELIFE_MessageUpdatesDto();
+		ELIFE_MessageUpdates updates = new ELIFE_MessageUpdates();
 		updates.ExpandFromRAW(json);
 
 		int total = 0;
-		foreach (ELIFE_ThreadDto threadDto : updates.threads)
+		foreach (ELIFE_MessageThreadUpdate threadDto : updates.threads)
 			total += threadDto.unreadCount;
 
 		return total;
@@ -1773,20 +1793,6 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 }
 
 //------------------------------------------------------------------------------------------------
-class ELIFE_ProvisionPhoneCallback : ELIFE_BaseRestCallback
-{
-	//------------------------------------------------------------------------------------------------
-	override ELIFE_EApiStatusCode ExtractData(string data, int dataSize, out JsonApiStruct resultData)
-	{
-		ELIFE_ProvisionPhoneResponseDto dto = new ELIFE_ProvisionPhoneResponseDto();
-		dto.ExpandFromRAW(data);
-		dto.StashRawJson(data);
-		resultData = dto;
-		return ELIFE_EApiStatusCode.SUCCESS;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
 class ELIFE_ContactsFetchCallback : ELIFE_BaseRestCallback
 {
 	//------------------------------------------------------------------------------------------------
@@ -1797,60 +1803,6 @@ class ELIFE_ContactsFetchCallback : ELIFE_BaseRestCallback
 		string wrapped = string.Format("{\"items\":%1}", data);
 		dto.ExpandFromRAW(wrapped);
 		dto.StashRawJson(wrapped);
-		resultData = dto;
-		return ELIFE_EApiStatusCode.SUCCESS;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-class ELIFE_SaveContactCallback : ELIFE_BaseRestCallback
-{
-	//------------------------------------------------------------------------------------------------
-	override ELIFE_EApiStatusCode ExtractData(string data, int dataSize, out JsonApiStruct resultData)
-	{
-		ELIFE_SaveContactResponseDto dto = new ELIFE_SaveContactResponseDto();
-		dto.ExpandFromRAW(data);
-		dto.StashRawJson(data);
-		resultData = dto;
-		return ELIFE_EApiStatusCode.SUCCESS;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-class ELIFE_SendMessageCallback : ELIFE_BaseRestCallback
-{
-	//------------------------------------------------------------------------------------------------
-	override ELIFE_EApiStatusCode ExtractData(string data, int dataSize, out JsonApiStruct resultData)
-	{
-		ELIFE_SendMessageResponseDto dto = new ELIFE_SendMessageResponseDto();
-		dto.ExpandFromRAW(data);
-		dto.StashRawJson(data);
-		resultData = dto;
-		return ELIFE_EApiStatusCode.SUCCESS;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! The read route answers 204 with no body - only the status code matters, which the base class already carries.
-class ELIFE_MarkThreadReadCallback : ELIFE_BaseRestCallback
-{
-	//------------------------------------------------------------------------------------------------
-	override ELIFE_EApiStatusCode ExtractData(string data, int dataSize, out JsonApiStruct resultData)
-	{
-		resultData = null;
-		return ELIFE_EApiStatusCode.SUCCESS;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-class ELIFE_MessageUpdatesFetchCallback : ELIFE_BaseRestCallback
-{
-	//------------------------------------------------------------------------------------------------
-	override ELIFE_EApiStatusCode ExtractData(string data, int dataSize, out JsonApiStruct resultData)
-	{
-		ELIFE_MessageUpdatesDto dto = new ELIFE_MessageUpdatesDto();
-		dto.ExpandFromRAW(data);
-		dto.StashRawJson(data);
 		resultData = dto;
 		return ELIFE_EApiStatusCode.SUCCESS;
 	}

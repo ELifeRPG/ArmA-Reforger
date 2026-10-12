@@ -1,27 +1,20 @@
 //------------------------------------------------------------------------------------------------
-//! Covers every thread shape the Bridge returns - "messages" stays empty when the response omits it.
-class ELIFE_ThreadDto : JsonApiStruct
+//! Phone logic on the generated struct; lives here so codegen doesn't overwrite it.
+//! displayName isn't from the Bridge: it's the bystander-copy title, resolved from the owner's contacts.
+modded class ELIFE_MessageThreadUpdate
 {
-	string threadId;
-	ref array<string> participants = {};
-	int unreadCount;
-	string lastMessageAt;
-	ref array<ref ELIFE_MessageDto> messages = {};
+	string displayName;
 
-	void ELIFE_ThreadDto()
+	void ELIFE_MessageThreadUpdate()
 	{
-		RegV("threadId");
-		RegV("participants");
-		RegV("unreadCount");
-		RegV("lastMessageAt");
-		RegV("messages");
+		RegV("displayName");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Delivery is at-least-once, so a poll can re-deliver a message this thread already holds.
 	bool HasMessage(string id)
 	{
-		foreach (ELIFE_MessageDto message : messages)
+		foreach (ELIFE_PhoneMessage message : messages)
 		{
 			if (message && message.messageId == id)
 				return true;
@@ -39,7 +32,7 @@ class ELIFE_ThreadDto : JsonApiStruct
 		int count = messages.Count();
 		for (int i = 1; i < count; i++)
 		{
-			ELIFE_MessageDto current = messages.Get(i);
+			ELIFE_PhoneMessage current = messages.Get(i);
 			int j = i - 1;
 
 			while (j >= 0 && messages.Get(j).sentAt > current.sentAt)
@@ -51,25 +44,12 @@ class ELIFE_ThreadDto : JsonApiStruct
 			messages.Set(j + 1, current);
 		}
 	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! The Bridge's thread plus a title a bystander can be shown; displayName is filled in locally from
-//! the owner's contacts, since a redacted participant number no longer keys into that list.
-class ELIFE_ThreadDisplayDto : ELIFE_ThreadDto
-{
-	string displayName;
-
-	void ELIFE_ThreadDisplayDto()
-	{
-		RegV("displayName");
-	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Deep copy - see ELIFE_MessageDto.Copy() for why the merge can't share references.
-	ELIFE_ThreadDisplayDto Copy()
+	//! Deep copy - see ELIFE_PhoneMessage.Copy() for why the merge can't share references.
+	ELIFE_MessageThreadUpdate Copy()
 	{
-		ELIFE_ThreadDisplayDto copy = new ELIFE_ThreadDisplayDto();
+		ELIFE_MessageThreadUpdate copy = new ELIFE_MessageThreadUpdate();
 		copy.threadId = threadId;
 		copy.unreadCount = unreadCount;
 		copy.lastMessageAt = lastMessageAt;
@@ -78,7 +58,7 @@ class ELIFE_ThreadDisplayDto : ELIFE_ThreadDto
 		foreach (string participant : participants)
 			copy.participants.Insert(participant);
 
-		foreach (ELIFE_MessageDto message : messages)
+		foreach (ELIFE_PhoneMessage message : messages)
 			copy.messages.Insert(message.Copy());
 
 		return copy;
@@ -86,9 +66,9 @@ class ELIFE_ThreadDisplayDto : ELIFE_ThreadDto
 
 	//------------------------------------------------------------------------------------------------
 	//! contactNames is number -> saved name from the owner's real contacts; a miss falls back to the fixed "unknown number" placeholder.
-	ELIFE_ThreadDisplayDto Redact(map<string, string> contactNames)
+	ELIFE_MessageThreadUpdate Redact(map<string, string> contactNames)
 	{
-		ELIFE_ThreadDisplayDto redacted = new ELIFE_ThreadDisplayDto();
+		ELIFE_MessageThreadUpdate redacted = new ELIFE_MessageThreadUpdate();
 		redacted.threadId = threadId;
 		redacted.unreadCount = unreadCount;
 		redacted.lastMessageAt = lastMessageAt;
@@ -97,7 +77,7 @@ class ELIFE_ThreadDisplayDto : ELIFE_ThreadDto
 		foreach (string participant : participants)
 			redacted.participants.Insert(ELIFE_DataRedactor.RedactPhoneNumber());
 
-		foreach (ELIFE_MessageDto message : messages)
+		foreach (ELIFE_PhoneMessage message : messages)
 			redacted.messages.Insert(message.Redact(contactNames));
 
 		return redacted;

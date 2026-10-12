@@ -16,7 +16,7 @@ class ELIFE_PhoneContactBook
 		if (number == "")
 			return "";
 
-		ELIFE_ContactDto contact = FindByNumber(phone, number);
+		ELIFE_ContactSummary contact = FindByNumber(phone, number);
 		if (contact && contact.displayName != "")
 			return contact.displayName;
 
@@ -27,7 +27,7 @@ class ELIFE_PhoneContactBook
 	//! Bystander-safe lookup by contactId (stays real on the redacted stream, unlike the number). Empty when this machine has no such contact.
 	static string NameForId(ELIFE_PhoneGadgetComponent phone, string contactId)
 	{
-		ELIFE_ContactDto contact = FindById(phone, contactId);
+		ELIFE_ContactSummary contact = FindById(phone, contactId);
 		if (!contact)
 			return "";
 
@@ -53,11 +53,10 @@ class ELIFE_PhoneContactBook
 
 	//------------------------------------------------------------------------------------------------
 	//! Title of a conversation - a bystander payload carries a server-resolved displayName; the owner has none and falls through to NameFor per participant.
-	static string TitleFor(ELIFE_PhoneGadgetComponent phone, notnull ELIFE_ThreadDto threadDto)
+	static string TitleFor(ELIFE_PhoneGadgetComponent phone, notnull ELIFE_MessageThreadUpdate threadDto)
 	{
-		ELIFE_ThreadDisplayDto display = ELIFE_ThreadDisplayDto.Cast(threadDto);
-		if (display && display.displayName != "")
-			return display.displayName;
+		if (threadDto.displayName != "")
+			return threadDto.displayName;
 
 		string result = "";
 
@@ -73,7 +72,7 @@ class ELIFE_PhoneContactBook
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static ELIFE_ContactDto FindById(ELIFE_PhoneGadgetComponent phone, string contactId)
+	static ELIFE_ContactSummary FindById(ELIFE_PhoneGadgetComponent phone, string contactId)
 	{
 		if (contactId == "")
 			return null;
@@ -82,7 +81,7 @@ class ELIFE_PhoneContactBook
 		if (!list)
 			return null;
 
-		foreach (ELIFE_ContactDto contact : list.items)
+		foreach (ELIFE_ContactSummary contact : list.items)
 		{
 			if (contact && contact.contactId == contactId)
 				return contact;
@@ -92,7 +91,7 @@ class ELIFE_PhoneContactBook
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static ELIFE_ContactDto FindByNumber(ELIFE_PhoneGadgetComponent phone, string number)
+	static ELIFE_ContactSummary FindByNumber(ELIFE_PhoneGadgetComponent phone, string number)
 	{
 		if (number == "")
 			return null;
@@ -101,7 +100,7 @@ class ELIFE_PhoneContactBook
 		if (!list)
 			return null;
 
-		foreach (ELIFE_ContactDto contact : list.items)
+		foreach (ELIFE_ContactSummary contact : list.items)
 		{
 			if (contact && contact.number == number)
 				return contact;
@@ -120,7 +119,7 @@ class ELIFE_PhoneContactBook
 
 	//------------------------------------------------------------------------------------------------
 	//! The name shown for a contact row - the saved display name, or the bare number for one without.
-	static string DisplayName(notnull ELIFE_ContactDto contact)
+	static string DisplayName(notnull ELIFE_ContactSummary contact)
 	{
 		if (contact.displayName != "")
 			return contact.displayName;
@@ -131,7 +130,7 @@ class ELIFE_PhoneContactBook
 	//------------------------------------------------------------------------------------------------
 	//! contactId is the stable key; falls back to the number for a contact without one (FindById
 	//! accepts either).
-	static string KeyFor(notnull ELIFE_ContactDto contact)
+	static string KeyFor(notnull ELIFE_ContactSummary contact)
 	{
 		if (contact.contactId != "")
 			return contact.contactId;
@@ -142,12 +141,12 @@ class ELIFE_PhoneContactBook
 	//------------------------------------------------------------------------------------------------
 	//! Selection sort by last name - an address book is small enough that O(n^2) doesn't matter.
 	//! Shared by Contacts' A-Z index and Messages' Add picker so both group and order identically.
-	static array<ref ELIFE_ContactDto> SortedByLastName(ELIFE_ContactListDto list)
+	static array<ref ELIFE_ContactSummary> SortedByLastName(ELIFE_ContactListDto list)
 	{
-		array<ref ELIFE_ContactDto> items = {};
+		array<ref ELIFE_ContactSummary> items = {};
 		if (list)
 		{
-			foreach (ELIFE_ContactDto contact : list.items)
+			foreach (ELIFE_ContactSummary contact : list.items)
 			{
 				if (contact)
 					items.Insert(contact);
@@ -158,7 +157,7 @@ class ELIFE_PhoneContactBook
 		for (int i = 0; i < items.Count(); i++)
 			taken.Insert(false);
 
-		array<ref ELIFE_ContactDto> sorted = {};
+		array<ref ELIFE_ContactSummary> sorted = {};
 
 		for (int pass = 0; pass < items.Count(); pass++)
 		{
@@ -191,7 +190,7 @@ class ELIFE_PhoneContactBook
 	//------------------------------------------------------------------------------------------------
 	//! Last whitespace-separated word of the display name - "Jane Doe" sorts/groups by "Doe". A
 	//! one-word name (or a bare number) has no real last name, so the whole thing stands in for it.
-	static string LastName(notnull ELIFE_ContactDto contact)
+	static string LastName(notnull ELIFE_ContactSummary contact)
 	{
 		string name = DisplayName(contact);
 
@@ -205,7 +204,7 @@ class ELIFE_PhoneContactBook
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static string GroupLetter(notnull ELIFE_ContactDto contact)
+	static string GroupLetter(notnull ELIFE_ContactSummary contact)
 	{
 		string last = LastName(contact);
 		if (last.Length() == 0)

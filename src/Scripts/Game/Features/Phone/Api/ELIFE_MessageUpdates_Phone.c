@@ -1,32 +1,22 @@
 //------------------------------------------------------------------------------------------------
-//! Response of GET /apps/messages/updates. Without a "since" cursor every thread comes back whole;
-//! "polledAt" is the cursor for the next poll.
-class ELIFE_MessageUpdatesDto : ELIFE_PhoneJsonDto
+//! Phone logic on the generated struct; lives here so codegen doesn't overwrite it.
+modded class ELIFE_MessageUpdates
 {
-	string polledAt;
-	ref array<ref ELIFE_ThreadDisplayDto> threads = {};
-
-	void ELIFE_MessageUpdatesDto()
-	{
-		RegV("polledAt");
-		RegV("threads");
-	}
-
 	//------------------------------------------------------------------------------------------------
 	//! Folds a cursor poll's response (only threads with new activity, only messages since the cursor) into this cached payload; changed reports whether anything actually moved.
-	ELIFE_MessageUpdatesDto MergedWith(notnull ELIFE_MessageUpdatesDto delta, out bool changed)
+	ELIFE_MessageUpdates MergedWith(notnull ELIFE_MessageUpdates delta, out bool changed)
 	{
 		changed = false;
 
-		ELIFE_MessageUpdatesDto merged = new ELIFE_MessageUpdatesDto();
+		ELIFE_MessageUpdates merged = new ELIFE_MessageUpdates();
 		merged.polledAt = delta.polledAt;
 
-		foreach (ELIFE_ThreadDisplayDto cached : threads)
+		foreach (ELIFE_MessageThreadUpdate cached : threads)
 			merged.threads.Insert(cached.Copy());
 
-		foreach (ELIFE_ThreadDisplayDto incoming : delta.threads)
+		foreach (ELIFE_MessageThreadUpdate incoming : delta.threads)
 		{
-			ELIFE_ThreadDisplayDto target = merged.FindThread(incoming.threadId);
+			ELIFE_MessageThreadUpdate target = merged.FindThread(incoming.threadId);
 			if (!target)
 			{
 				merged.threads.Insert(incoming.Copy());
@@ -42,7 +32,7 @@ class ELIFE_MessageUpdatesDto : ELIFE_PhoneJsonDto
 			target.unreadCount = incoming.unreadCount;
 			target.lastMessageAt = incoming.lastMessageAt;
 
-			foreach (ELIFE_MessageDto message : incoming.messages)
+			foreach (ELIFE_PhoneMessage message : incoming.messages)
 			{
 				if (target.HasMessage(message.messageId))
 					continue;
@@ -59,9 +49,9 @@ class ELIFE_MessageUpdatesDto : ELIFE_PhoneJsonDto
 	}
 
 	//------------------------------------------------------------------------------------------------
-	ELIFE_ThreadDisplayDto FindThread(string id)
+	ELIFE_MessageThreadUpdate FindThread(string id)
 	{
-		foreach (ELIFE_ThreadDisplayDto threadDto : threads)
+		foreach (ELIFE_MessageThreadUpdate threadDto : threads)
 		{
 			if (threadDto && threadDto.threadId == id)
 				return threadDto;
@@ -79,7 +69,7 @@ class ELIFE_MessageUpdatesDto : ELIFE_PhoneJsonDto
 		int count = threads.Count();
 		for (int i = 1; i < count; i++)
 		{
-			ELIFE_ThreadDisplayDto current = threads.Get(i);
+			ELIFE_MessageThreadUpdate current = threads.Get(i);
 			int j = i - 1;
 
 			while (j >= 0 && threads.Get(j).lastMessageAt < current.lastMessageAt)
@@ -94,12 +84,12 @@ class ELIFE_MessageUpdatesDto : ELIFE_PhoneJsonDto
 
 	//------------------------------------------------------------------------------------------------
 	//! contactNames is the owner's number -> saved name map, used to stamp each thread's displayName.
-	ELIFE_MessageUpdatesDto Redact(map<string, string> contactNames)
+	ELIFE_MessageUpdates Redact(map<string, string> contactNames)
 	{
-		ELIFE_MessageUpdatesDto redacted = new ELIFE_MessageUpdatesDto();
+		ELIFE_MessageUpdates redacted = new ELIFE_MessageUpdates();
 		redacted.polledAt = polledAt;
 
-		foreach (ELIFE_ThreadDisplayDto threadDto : threads)
+		foreach (ELIFE_MessageThreadUpdate threadDto : threads)
 			redacted.threads.Insert(threadDto.Redact(contactNames));
 
 		return redacted;

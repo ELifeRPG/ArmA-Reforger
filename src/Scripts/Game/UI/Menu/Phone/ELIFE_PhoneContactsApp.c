@@ -455,7 +455,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 			return;
 		}
 
-		array<ref ELIFE_ContactDto> sorted = ELIFE_PhoneContactBook.SortedByLastName(m_List);
+		array<ref ELIFE_ContactSummary> sorted = ELIFE_PhoneContactBook.SortedByLastName(m_List);
 
 		string currentLetter = "";
 		Widget currentList = null;
@@ -463,7 +463,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 
 		for (int i = 0; i < sorted.Count(); i++)
 		{
-			ELIFE_ContactDto contact = sorted.Get(i);
+			ELIFE_ContactSummary contact = sorted.Get(i);
 			if (!contact)
 				continue;
 
@@ -544,7 +544,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	protected bool FillDetail()
 	{
-		ELIFE_ContactDto contact = FindContact(m_sOpenContactId);
+		ELIFE_ContactSummary contact = FindContact(m_sOpenContactId);
 		if (!contact)
 			return false;
 
@@ -565,7 +565,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		if (!IsOwner())
 			return;
 
-		ELIFE_ContactDto contact = FindContact(m_sOpenContactId);
+		ELIFE_ContactSummary contact = FindContact(m_sOpenContactId);
 		if (contact)
 			CopyToClipboard(contact.number);
 	}
@@ -692,12 +692,12 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected ELIFE_ContactDto FindContact(string contactId)
+	protected ELIFE_ContactSummary FindContact(string contactId)
 	{
 		if (contactId == "" || !m_List)
 			return null;
 
-		foreach (ELIFE_ContactDto contact : m_List.items)
+		foreach (ELIFE_ContactSummary contact : m_List.items)
 		{
 			if (!contact)
 				continue;
