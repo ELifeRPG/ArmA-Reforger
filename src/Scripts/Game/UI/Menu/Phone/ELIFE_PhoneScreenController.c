@@ -51,6 +51,10 @@ class ELIFE_PhoneScreenController
 		if (!m_Shell || !m_Phone)
 			return;
 
+		//! A hand-off to an uninstalled app goes nowhere; the server would refuse it anyway.
+		if (!m_Phone.IsAppAvailable(state))
+			return;
+
 		if (state == EPhoneScreenState.MAP)
 		{
 			ELIFE_PhoneMenu menu = ELIFE_PhoneMenu.GetOpen();

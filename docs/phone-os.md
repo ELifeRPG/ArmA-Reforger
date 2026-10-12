@@ -23,12 +23,15 @@ Do not start a parallel shell. Hook the existing one:
 1. Add an `EPhoneScreenState` and a pair of accents in `ELIFE_PhoneStyle`
    (`Accent*` / `AccentDeep*`, wired through `AccentFor` / `AccentDeepFor`). Same
    lightness as the others (L\* ≈ 72 / 52), only the hue rotates.
-2. Register the tile in `ELIFE_PhoneScreenShell.BuildApps()` (home-grid order,
-   rows of four). Sprite names from [`docs/icons_wrapperUI.md`](icons_wrapperUI.md)
-   or `ICON_SET_CHAT`. `FitIcon` the glyph — wrapper cells are not square.
-3. If it has an in-phone page: subclass `ELIFE_PhoneAppBase`, return it from
-   `CreateApp()`, list the state in `HasAppPage()`. Map does not — it hands off
-   to the fullscreen map, and the screen behind it stays home.
+2. Register it in `ELIFE_PhoneAppCatalog.GetEntries()` (home-grid order, rows of
+   four). Its `appKey` must exist in the backend's `AppCatalog`. `system` apps are
+   always on the grid and can't be removed (a keyed one is reinstalled on the Bridge
+   if missing); the rest appear only while installed, via the Store. Sprite names from
+   [`docs/icons_wrapperUI.md`](icons_wrapperUI.md) or `ICON_SET_CHAT`. `FitIcon` the
+   glyph — wrapper cells are not square.
+3. If it has an in-phone page: subclass `ELIFE_PhoneAppBase` and return it from
+   `CreateApp()`. Map does not (`hasPage` false) — it hands off to the fullscreen
+   map, and the screen behind it stays home.
 4. Implement `GetTitle`, `GetScreenState`, `CreateRoot`, `OnOpened` / `OnClosing`.
    Claim the trailing slot with `ShowNavAction` if the page has one named action;
    it is reset hidden on every bind.

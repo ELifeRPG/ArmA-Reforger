@@ -826,5 +826,101 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
+  CustomStringTableItem "{B7E20A58B088E5E9}" {
+   Id "ELIFE-Phone_App_Store"
+   Target_en_us "Store"
+   Target_de_de "Store"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{28FF87593F57DE28}" {
+   Id "ELIFE-Phone_Store_Installed"
+   Target_en_us "Installed"
+   Target_de_de "Installiert"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{9A8E453A70632817}" {
+   Id "ELIFE-Phone_Store_Available"
+   Target_en_us "Available"
+   Target_de_de "Verfügbar"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{3B7A5B2CCECB60A8}" {
+   Id "ELIFE-Phone_Store_BuiltIn"
+   Target_en_us "Built-in"
+   Target_de_de "Vorinstalliert"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{36225F4D31C3D1EC}" {
+   Id "ELIFE-Phone_Store_Get"
+   Target_en_us "Get"
+   Target_de_de "Laden"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{B526EAC694BE8240}" {
+   Id "ELIFE-Phone_Store_Remove"
+   Target_en_us "Remove"
+   Target_de_de "Entfernen"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{E15284315C7BC240}" {
+   Id "ELIFE-Phone_Store_RemoveConfirm"
+   Target_en_us "Tap again to remove"
+   Target_de_de "Zum Entfernen erneut tippen"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{1B8A95CCBC809AE9}" {
+   Id "ELIFE-Phone_Store_Installing"
+   Target_en_us "Installing…"
+   Target_de_de "Wird installiert…"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{E3A333708EB61266}" {
+   Id "ELIFE-Phone_Store_Removing"
+   Target_en_us "Removing…"
+   Target_de_de "Wird entfernt…"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{BDDD4CA5E7D7B3E4}" {
+   Id "ELIFE-Phone_Store_InstallError"
+   Target_en_us "Couldn't install. Try again."
+   Target_de_de "Installation fehlgeschlagen. Erneut versuchen."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{1CD83C1DBB40F95C}" {
+   Id "ELIFE-Phone_Store_RemoveError"
+   Target_en_us "Couldn't remove. Try again."
+   Target_de_de "Entfernen fehlgeschlagen. Erneut versuchen."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A8DA28D814DC6618}" {
+   Id "ELIFE-Phone_Store_LoadError"
+   Target_en_us "Couldn't load your apps."
+   Target_de_de "Apps konnten nicht geladen werden."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
  }
 }

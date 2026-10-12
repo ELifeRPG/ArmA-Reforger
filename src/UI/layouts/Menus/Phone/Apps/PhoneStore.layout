@@ -1,0 +1,56 @@
+OverlayWidgetClass {
+ Name "StoreRoot"
+ {
+  ScrollLayoutWidgetClass "{F0D858B5A503F227}" {
+   Name "StoreScroll"
+   Slot OverlayWidgetSlot "{160F5D07457A3683}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 0.8626 0.8964 0.964 0.4
+   {
+    VerticalLayoutWidgetClass "{2C427A56902D4279}" {
+     Name "StoreScrollBody"
+     Slot AlignableSlot "{23DE345F6AF0AC3C}" {
+      HorizontalAlign 3
+     }
+     "Fill Origin" Top
+     {
+      TextWidgetClass "{C540AA4BA2C921E3}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "LargeTitle"
+       Slot LayoutSlot "{3386F1464479F89C}" {
+        Padding 24 96 24 16
+       }
+       Color 0.8378 0.8626 0.9222 1
+       Text ""
+       "Font Size" 40
+       "Min Font Size" 40
+       "Horizontal Alignment" Left
+       FontProperties FontProperties "{D1EFF4E70110B2D0}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{93AD9A63046CB712}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "StoreError"
+       Slot LayoutSlot "{B139484BC03DD071}" {
+        Padding 24 0 24 16
+       }
+       "Is Visible" 0
+       Color 0.7756 0.2912 0.2622 1
+       Text ""
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Left
+      }
+      VerticalLayoutWidgetClass "{B35AD73D3B102854}" {
+       Name "StoreGroups"
+       Slot LayoutSlot "{D2FF2544591889BE}" {
+        Padding 24 0 24 60
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

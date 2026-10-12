@@ -1,32 +1,4 @@
 //------------------------------------------------------------------------------------------------
-//! One app on the home screen; the registry is ELIFE_PhoneScreenShell.BuildApps().
-class ELIFE_PhoneAppEntry
-{
-	EPhoneScreenState m_eState;
-	string m_sLabel;
-
-	ResourceName m_sIconSet;
-	string m_sIconImage;
-
-	//! Fallback character mark if the sprite can't be loaded.
-	string m_sGlyph;
-
-	//! Optical size trim, for marks carrying more or less ink than the rest.
-	float m_fIconScale;
-
-	//------------------------------------------------------------------------------------------------
-	void ELIFE_PhoneAppEntry(EPhoneScreenState state, string label, ResourceName iconSet, string iconImage, string glyph, float iconScale = 1.0)
-	{
-		m_eState = state;
-		m_sLabel = label;
-		m_sIconSet = iconSet;
-		m_sIconImage = iconImage;
-		m_sGlyph = glyph;
-		m_fIconScale = iconScale;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
 class ELIFE_PhoneTileClick : ScriptedWidgetEventHandler
 {
 	protected ELIFE_PhoneScreenShell m_Shell;
@@ -216,6 +188,9 @@ class ELIFE_PhoneScreenShell
 	protected ref ELIFE_PhoneAppBase m_App;
 	protected EPhoneScreenState m_eState = EPhoneScreenState.OFF;
 	protected ref array<ref ELIFE_PhoneTileClick> m_aTileClicks = {};
+
+	//! States on the grid as last built, so a push that changes nothing doesn't rebuild it.
+	protected string m_sGridApps;
 	protected ref array<ref ELIFE_PhoneTileClick> m_aCardClicks = {};
 	protected ref array<ref ELIFE_PhonePinKeyClick> m_aPinClicks = {};
 	protected ref array<Widget> m_aPinKeys = {};
@@ -236,32 +211,6 @@ class ELIFE_PhoneScreenShell
 	protected ref ScriptInvoker m_OnBack = new ScriptInvoker();
 
 	//------------------------------------------------------------------------------------------------
-	//! Home-grid order, rows of four.
-	static array<ref ELIFE_PhoneAppEntry> BuildApps()
-	{
-		array<ref ELIFE_PhoneAppEntry> apps = {};
-		apps.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.MESSAGES, "#ELIFE-Phone_App_Messages", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "comments", ""));
-		apps.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.CONTACTS, "#ELIFE-Phone_App_Contacts", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "player", ""));
-		apps.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.BANK, "#ELIFE-Phone_App_Bank", ResourceName.Empty, "", ELIFE_PhoneStyle.CURRENCY_SYMBOL));
-		apps.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.MAP, "#ELIFE-Phone_App_Map", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "compass", ""));
-		apps.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.SETTINGS, "#ELIFE-Phone_App_Settings", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "settings", ""));
-		return apps;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static ELIFE_PhoneAppEntry FindApp(EPhoneScreenState state)
-	{
-		array<ref ELIFE_PhoneAppEntry> apps = BuildApps();
-		foreach (ELIFE_PhoneAppEntry app : apps)
-		{
-			if (app.m_eState == state)
-				return app;
-		}
-
-		return null;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Null for states without an AppHost page.
 	static ELIFE_PhoneAppBase CreateApp(EPhoneScreenState state)
 	{
@@ -271,19 +220,10 @@ class ELIFE_PhoneScreenShell
 			case EPhoneScreenState.CONTACTS: return new ELIFE_PhoneContactsApp();
 			case EPhoneScreenState.BANK: return new ELIFE_PhoneBankingApp();
 			case EPhoneScreenState.SETTINGS: return new ELIFE_PhoneSettingsApp();
+			case EPhoneScreenState.STORE: return new ELIFE_PhoneStoreApp();
 		}
 
 		return null;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Map has no AppHost page - it opens the fullscreen map menu.
-	static bool HasAppPage(EPhoneScreenState state)
-	{
-		return state == EPhoneScreenState.MESSAGES
-			|| state == EPhoneScreenState.CONTACTS
-			|| state == EPhoneScreenState.BANK
-			|| state == EPhoneScreenState.SETTINGS;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -372,6 +312,9 @@ class ELIFE_PhoneScreenShell
 
 		//! Home's balance card.
 		phone.RequestData(ELIFE_PhoneGadgetComponent.DATA_BANK_ACCOUNTS);
+
+		//! The grid is drawn from the cached set now and rebuilt if this changes it.
+		phone.RequestData(ELIFE_PhoneGadgetComponent.DATA_APPS);
 
 		if (!m_bInteractive)
 			return;
@@ -503,6 +446,18 @@ class ELIFE_PhoneScreenShell
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Catalog order, installed apps only - built-in ones always are.
+	protected void CollectHomeApps(notnull array<ELIFE_PhoneAppEntry> outApps)
+	{
+		array<ref ELIFE_PhoneAppEntry> catalog = ELIFE_PhoneAppCatalog.GetEntries();
+		foreach (ELIFE_PhoneAppEntry app : catalog)
+		{
+			if (m_Phone && m_Phone.IsAppAvailable(app.m_eState))
+				outApps.Insert(app);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void BuildHomeGrid()
 	{
 		if (!m_wHomeGridRows)
@@ -512,9 +467,23 @@ class ELIFE_PhoneScreenShell
 		if (!workspace)
 			return;
 
-		m_aTileClicks.Clear();
+		array<ELIFE_PhoneAppEntry> apps = {};
+		CollectHomeApps(apps);
 
-		array<ref ELIFE_PhoneAppEntry> apps = BuildApps();
+		string gridApps = "";
+		foreach (ELIFE_PhoneAppEntry app : apps)
+		{
+			int state = app.m_eState;
+			gridApps += state.ToString() + ",";
+		}
+
+		if (gridApps == m_sGridApps && m_wHomeGridRows.GetChildren())
+			return;
+
+		m_sGridApps = gridApps;
+		m_aTileClicks.Clear();
+		ClearChildren(m_wHomeGridRows);
+
 		int count = apps.Count();
 		int rows = (count + GRID_COLUMNS - 1) / GRID_COLUMNS;
 
@@ -584,7 +553,7 @@ class ELIFE_PhoneScreenShell
 	//------------------------------------------------------------------------------------------------
 	//! Loads the app's sprite, or falls back to its character mark centred in the full box and sized by
 	//! cap height (a text widget centres its line box, so a sprite-sized box would clip it).
-	protected void PaintAppIcon(notnull WorkspaceWidget workspace, Widget iconHost, TextWidget mark, ELIFE_PhoneAppEntry app, float ink)
+	static void PaintAppIcon(notnull WorkspaceWidget workspace, Widget iconHost, TextWidget mark, ELIFE_PhoneAppEntry app, float ink)
 	{
 		if (!app)
 			return;
@@ -802,6 +771,17 @@ class ELIFE_PhoneScreenShell
 	//! Home and lock only; open apps subscribe themselves.
 	protected void OnDataChanged(string key)
 	{
+		if (key == ELIFE_PhoneGadgetComponent.DATA_APPS)
+		{
+			BuildHomeGrid();
+
+			//! The messages card goes with its app.
+			if (m_eState == EPhoneScreenState.HOME)
+				RefreshHomeScreen();
+
+			return;
+		}
+
 		if (key == ELIFE_PhoneGadgetComponent.DATA_BANK_ACCOUNTS)
 		{
 			if (m_eState == EPhoneScreenState.HOME)
@@ -1396,7 +1376,7 @@ class ELIFE_PhoneScreenShell
 	{
 		RefreshStatusBar();
 
-		bool appOpen = HasAppPage(state);
+		bool appOpen = ELIFE_PhoneAppCatalog.HasPage(state);
 		bool locked = state == EPhoneScreenState.LOCKED;
 		bool off = state == EPhoneScreenState.OFF;
 
@@ -1616,6 +1596,9 @@ class ELIFE_PhoneScreenShell
 	//------------------------------------------------------------------------------------------------
 	protected void BuildMessagesCard(notnull WorkspaceWidget workspace)
 	{
+		if (!m_Phone || !m_Phone.IsAppAvailable(EPhoneScreenState.MESSAGES))
+			return;
+
 		Widget card = CreateHomeCard(workspace, EPhoneScreenState.MESSAGES);
 		if (!card)
 			return;
@@ -1655,7 +1638,7 @@ class ELIFE_PhoneScreenShell
 		ELIFE_PhoneStyle.ApplyGlass(card, false, true);
 		ELIFE_PhoneStyle.ApplyGlass(card.FindAnyWidget("CardBadge"), false, false, false, true, ELIFE_PhoneStyle.AccentDeepFor(state));
 
-		PaintAppIcon(workspace, card.FindAnyWidget("CardIconSize"), TextWidget.Cast(card.FindAnyWidget("CardMark")), FindApp(state), ICON_INK_CARD);
+		PaintAppIcon(workspace, card.FindAnyWidget("CardIconSize"), TextWidget.Cast(card.FindAnyWidget("CardMark")), ELIFE_PhoneAppCatalog.Find(state), ICON_INK_CARD);
 
 		if (!m_bInteractive)
 			return card;

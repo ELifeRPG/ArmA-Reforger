@@ -8,7 +8,8 @@ enum EPhoneScreenState
 	MAP,
 	MESSAGES,
 	SETTINGS,
-	CONTACTS
+	CONTACTS,
+	STORE
 }
 
 //------------------------------------------------------------------------------------------------
@@ -182,12 +183,17 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected ref ELIFE_BaseRestCallback m_ChangePinCallback;
 	protected ref ELIFE_BaseRestCallback m_DeleteContactCallback;
 	protected ref ELIFE_BaseRestCallback m_BlockCallback;
+	protected ref ELIFE_BaseRestCallback m_AppInstallCallback;
 	protected int m_iOwnerPlayerId;
 
 	//! Server-only. What the in-flight PIN change / block toggle asked for; the generated handlers only hand back the phoneId.
 	protected string m_sPendingNewPin;
 	protected string m_sPendingBlockNumber;
 	protected bool m_bPendingBlock;
+	protected string m_sPendingAppKey;
+	protected bool m_bPendingInstall;
+	protected int m_iSystemInstallsPending;
+	protected bool m_bSystemInstallLanded;
 
 	//! The lock screen's keypad submits at exactly this many digits, so a PIN of any other length could never be entered.
 	static const int PIN_LENGTH = 4;
@@ -196,6 +202,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	static const string DATA_MESSAGES = "messages";
 	static const string DATA_BLOCKS = "blocks";
 	static const string DATA_BANK_ACCOUNTS = "bank-accounts";
+
+	//! Which Bridge apps are installed. Built-in apps aren't listed - see ELIFE_PhoneAppCatalog.
+	static const string DATA_APPS = "apps";
 
 	//! Followed by the bankAccountId - one statement per key.
 	static const string DATA_BANK_STATEMENT_PREFIX = "bank-statement:";
@@ -240,6 +249,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 	//! Fires with (number, blocked, bool succeeded) when a SetNumberBlocked() call resolves.
 	ref ScriptInvoker m_OnBlockResult = new ScriptInvoker();
+
+	//! Fires with (appKey, installed, bool succeeded) when a SetAppInstalled() call resolves.
+	ref ScriptInvoker m_OnAppInstallResult = new ScriptInvoker();
 
 	//! True after a Bridge request got no HTTP answer at all, until one does.
 	[RplProp(onRplName: "OnConnectivityUpdated")]
@@ -668,6 +680,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		//! Before the poll: an owner fetch always answers, a poll that finds nothing new stays silent.
 		RefetchFailedData();
+
+		//! The home grid and the poll both follow what's installed.
+		FetchData(DATA_APPS);
 
 		//! First chance to poll — don't wait a full idle interval for the opening screen to have mail.
 		ReschedulePoll();
@@ -1181,6 +1196,195 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	// Installed apps
+	//------------------------------------------------------------------------------------------------
+
+	//! Server-side cache on the authority, the pushed copy everywhere else.
+	protected string InstalledAppsJson()
+	{
+		ELIFE_PhoneDataEntry entry;
+		if (Replication.IsServer() && m_mServerData.Find(DATA_APPS, entry))
+			return entry.m_sReal;
+
+		return GetData(DATA_APPS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! False until the first installed-apps payload lands.
+	bool HasInstalledApps()
+	{
+		return InstalledAppsJson() != "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! False until the list lands, so a downloadable app never shows before it's confirmed.
+	bool IsAppInstalled(string appKey)
+	{
+		string json = InstalledAppsJson();
+		if (json == "")
+			return false;
+
+		ELIFE_PhoneAppListDto apps = new ELIFE_PhoneAppListDto();
+		apps.ExpandFromRAW(json);
+		return apps.Has(appKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! OS screens and system apps always are; downloadable apps only while installed.
+	bool IsAppAvailable(EPhoneScreenState state)
+	{
+		ELIFE_PhoneAppEntry app = ELIFE_PhoneAppCatalog.Find(state);
+		if (!app || app.IsSystem())
+			return true;
+
+		return IsAppInstalled(app.m_sAppKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-only. An app removed while open (here or from elsewhere) drops the screen to home.
+	protected void LeaveUninstalledApp()
+	{
+		if (!IsAppAvailable(m_eScreenState))
+			RpcAsk_SetScreenState(EPhoneScreenState.HOME);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner-only. Both routes are idempotent, so a tap that races a stale list still lands right.
+	void SetAppInstalled(string appKey, bool installed)
+	{
+		if (!IsLocalCharacterOwner() || appKey == "")
+			return;
+
+		Rpc(RpcAsk_SetAppInstalled, appKey, installed);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A platform command, so unlike app routes it carries the actor - same credentials as power-on.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_SetAppInstalled(string appKey, bool installed)
+	{
+		ELIFE_Api api = ELIFE_Api.GetInstance();
+		ELIFE_PhoneAppEntry app = ELIFE_PhoneAppCatalog.FindByKey(appKey);
+		if (m_sPhoneId == "" || !api || !app || app.IsSystem() || m_sPendingAppKey != "")
+		{
+			NotifyAppInstallResult(appKey, installed, false);
+			return;
+		}
+
+		//! The catalog's casing, which is the backend's.
+		m_sPendingAppKey = app.m_sAppKey;
+		m_bPendingInstall = installed;
+
+		string characterId = ELIFE_CharacterIdentity.GetCharacterId(m_iOwnerPlayerId);
+
+		if (installed)
+		{
+			ELIFE_PhoneActorRequest request = new ELIFE_PhoneActorRequest();
+			request.characterId = characterId;
+			request.pin = m_sServerPin;
+			m_AppInstallCallback = api.InstallPhoneApp(request, m_sPhoneId, m_sPendingAppKey, this, "OnAppInstallChanged");
+		}
+		else
+		{
+			m_AppInstallCallback = api.UninstallPhoneApp(m_sPhoneId, m_sPendingAppKey, characterId, m_sServerPin, this, "OnAppInstallChanged");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnAppInstallChanged(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
+	{
+		int httpCode = HttpCodeOf(m_AppInstallCallback);
+		NoteConnectivity(status, httpCode);
+
+		string appKey = m_sPendingAppKey;
+		bool installed = m_bPendingInstall;
+		m_sPendingAppKey = "";
+
+		if (status != ELIFE_EApiStatusCode.SUCCESS)
+		{
+			Print(string.Format("ELIFE_PhoneGadgetComponent | app %1 (install=%2) failed, HTTP=%3", appKey, installed, httpCode), LogLevel.ERROR);
+			NotifyAppInstallResult(appKey, installed, false);
+			return;
+		}
+
+		//! Applied to the cache directly - both routes answer 204, and the push is what moves home and the store.
+		ELIFE_PhoneDataEntry entry;
+		if (m_mServerData.Find(DATA_APPS, entry) && entry.m_sReal != "")
+		{
+			ELIFE_PhoneAppListDto cached = new ELIFE_PhoneAppListDto();
+			cached.ExpandFromRAW(entry.m_sReal);
+			StoreData(DATA_APPS, cached.With(appKey, installed).GetRawJson());
+			PushData(DATA_APPS);
+			LeaveUninstalledApp();
+		}
+		else
+		{
+			FetchData(DATA_APPS);
+		}
+
+		NotifyAppInstallResult(appKey, installed, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-only. System apps can't be removed here, but the Bridge still gates their routes on being
+	//! installed, so one missing from the list (an older phone, a staff edit) is put back silently.
+	protected void InstallMissingSystemApps()
+	{
+		ELIFE_Api api = ELIFE_Api.GetInstance();
+		if (!api || m_sPhoneId == "" || m_iSystemInstallsPending > 0 || !HasInstalledApps())
+			return;
+
+		ELIFE_PhoneActorRequest request = new ELIFE_PhoneActorRequest();
+		request.characterId = ELIFE_CharacterIdentity.GetCharacterId(m_iOwnerPlayerId);
+		request.pin = m_sServerPin;
+
+		array<ref ELIFE_PhoneAppEntry> catalog = ELIFE_PhoneAppCatalog.GetEntries();
+		foreach (ELIFE_PhoneAppEntry app : catalog)
+		{
+			if (!app.IsSystem() || app.m_sAppKey == "" || IsAppInstalled(app.m_sAppKey))
+				continue;
+
+			m_iSystemInstallsPending++;
+			api.InstallPhoneApp(request, m_sPhoneId, app.m_sAppKey, this, "OnSystemAppInstalled");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Refetches once the last one answers. A failure isn't retried until the next list fetch.
+	void OnSystemAppInstalled(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
+	{
+		m_iSystemInstallsPending--;
+
+		if (status == ELIFE_EApiStatusCode.SUCCESS)
+			m_bSystemInstallLanded = true;
+		else
+			Print("ELIFE_PhoneGadgetComponent | system app install failed", LogLevel.WARNING);
+
+		if (m_iSystemInstallsPending > 0 || !m_bSystemInstallLanded)
+			return;
+
+		m_bSystemInstallLanded = false;
+		FetchData(DATA_APPS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Self-applies locally for the owner too - RplRcver.Owner RPCs don't self-deliver on a listen server.
+	protected void NotifyAppInstallResult(string appKey, bool installed, bool succeeded)
+	{
+		Rpc(RpcDo_AppInstallResult, appKey, installed, succeeded);
+
+		if (SCR_PlayerController.GetLocalControlledEntity() && IsLocalCharacterOwner())
+			m_OnAppInstallResult.Invoke(appKey, installed, succeeded);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_AppInstallResult(string appKey, bool installed, bool succeeded)
+	{
+		m_OnAppInstallResult.Invoke(appKey, installed, succeeded);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Owns each key's route and response parsing. full forces a cursor-less messages fetch.
 	protected void FetchData(string key, bool full = false)
 	{
@@ -1216,6 +1420,11 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			m_mPendingFetches.Set(key, true);
 			m_mFetchCallbacks.Set(key, api.GetPhone(m_sPhoneId, this, "OnPhoneFetched"));
 		}
+		else if (key == DATA_APPS)
+		{
+			m_mPendingFetches.Set(key, true);
+			m_mFetchCallbacks.Set(key, api.ListPhoneApps(m_sPhoneId, this, "OnAppsFetched"));
+		}
 		else if (key == DATA_BANK_ACCOUNTS && m_sServerOwnerCharacterId != "")
 		{
 			//! The registered owner's accounts - like every other app here, it shows the phone's data, not the holder's.
@@ -1246,6 +1455,12 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	void OnContactsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
 	{
 		OnListFetched(status, DATA_CONTACTS, new ELIFE_ContactListDto());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnAppsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
+	{
+		OnListFetched(status, DATA_APPS, new ELIFE_PhoneAppListDto());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1382,6 +1597,12 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		//! A messages fetch that landed first used redacted numbers as titles - rebuild it now that names exist.
 		if (key == DATA_CONTACTS)
 			RefreshBystanderMessages();
+
+		if (key == DATA_APPS)
+		{
+			LeaveUninstalledApp();
+			InstallMissingSystemApps();
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1449,6 +1670,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	{
 		if (realJson == "")
 			return "";
+
+		//! The installed set is on the home grid anyway.
+		if (key == DATA_APPS)
+			return realJson;
 
 		JsonApiStruct redacted;
 
@@ -1717,6 +1942,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		if (state == EPhoneScreenState.LOCKED)
 			m_bPinLocked = true;
+
+		//! Covers every way in - tiles, resume, peek doors, in-app hand-offs.
+		if (!IsAppAvailable(state))
+			state = EPhoneScreenState.HOME;
 
 		if (m_eScreenState == state)
 			return;

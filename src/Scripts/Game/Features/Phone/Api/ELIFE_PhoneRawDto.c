@@ -16,9 +16,9 @@ class ELIFE_PhoneRawDto : JsonApiStruct
 	//------------------------------------------------------------------------------------------------
 	//! Bridge list routes return a bare JSON array, which JsonApiStruct can't parse - wrap it as "items".
 	//! head is spliced in before "items", for payloads that carry more than the list.
-	void ExpandFromArray(string array, string head = "")
+	void ExpandFromArray(string arrayJson, string head = "")
 	{
-		string wrapped = "{" + head + "\"items\":" + array + "}";
+		string wrapped = "{" + head + "\"items\":" + arrayJson + "}";
 		ExpandFromRAW(wrapped);
 		m_sRawJson = wrapped;
 	}

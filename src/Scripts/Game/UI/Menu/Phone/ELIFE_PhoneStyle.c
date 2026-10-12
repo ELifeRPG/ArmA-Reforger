@@ -127,12 +127,14 @@ class ELIFE_PhoneStyle
 	static Color AccentContacts() { return Srgb(0.310, 0.741, 0.769); }      //!< #4FBDC4
 	static Color AccentMap() { return Srgb(0.486, 0.698, 0.933); }           //!< #7CB2EE
 	static Color AccentSettings() { return Srgb(0.651, 0.694, 0.784); }      //!< #A6B1C8
+	static Color AccentStore() { return Srgb(0.749, 0.639, 0.941); }         //!< #BFA3F0
 
 	static Color AccentDeepBank() { return Srgb(0.706, 0.482, 0.071); }      //!< #B47B12
 	static Color AccentDeepMessages() { return Srgb(0.137, 0.576, 0.353); }  //!< #23935A
 	static Color AccentDeepContacts() { return Srgb(0.090, 0.565, 0.608); }  //!< #17909B
 	static Color AccentDeepMap() { return Srgb(0.231, 0.498, 0.831); }       //!< #3B7FD4
 	static Color AccentDeepSettings() { return Srgb(0.369, 0.412, 0.502); }  //!< #5E6980
+	static Color AccentDeepStore() { return Srgb(0.557, 0.404, 0.827); }     //!< #8E67D3
 
 	//! Money in and out.
 	static Color Positive() { return AccentMessages(); }
@@ -165,6 +167,7 @@ class ELIFE_PhoneStyle
 			case EPhoneScreenState.CONTACTS: return AccentContacts();
 			case EPhoneScreenState.MAP: return AccentMap();
 			case EPhoneScreenState.SETTINGS: return AccentSettings();
+			case EPhoneScreenState.STORE: return AccentStore();
 		}
 
 		//! OS screens get the neutral anchor, not an app hue.
@@ -182,6 +185,7 @@ class ELIFE_PhoneStyle
 			case EPhoneScreenState.CONTACTS: return AccentDeepContacts();
 			case EPhoneScreenState.MAP: return AccentDeepMap();
 			case EPhoneScreenState.SETTINGS: return AccentDeepSettings();
+			case EPhoneScreenState.STORE: return AccentDeepStore();
 		}
 
 		return AccentDeepSettings();
