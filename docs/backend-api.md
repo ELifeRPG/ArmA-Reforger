@@ -97,13 +97,13 @@ Use a `modded class` in the feature's own folder, never the generated file — e
 `Features/Phone/Api/ELIFE_MessageThreadUpdate_Phone.c` adds `Copy()`/`Redact()` and a
 `displayName` field to `ELIFE_MessageThreadUpdate`.
 
-### When you still need a hand-built call
+### Bare-array responses
 
 Generated `List*` methods for endpoints returning a **bare JSON array** don't parse the
-body (`JsonApiStruct` only parses objects). Subclass `ELIFE_BaseRestCallback`, wrap the
-array in an object yourself, and call `GetElifeApi()` directly — see
-`ELIFE_ContactsFetchCallback` and `ELIFE_ContactListDto`. Hold that callback in a `ref`
-field if you need its HTTP code.
+body (`JsonApiStruct` only parses objects) — the handler gets `null` data. Still call the
+generated method, keep the returned callback, and read the raw body with `GetData()` in
+the handler, wrapping the array in an object yourself — see
+`ELIFE_PhoneRawDto.ExpandFromArray()` and `ELIFE_PhoneGadgetComponent.OnListFetched()`.
 
 ### Engine quirks worth knowing
 

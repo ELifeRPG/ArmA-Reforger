@@ -55,6 +55,18 @@ class ELIFE_DataRedactor
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Redacts a money amount: same sign and digit count in cents, random digits.
+	static float RedactAmount(float real)
+	{
+		int cents = Math.Round(Math.AbsFloat(real) * 100);
+		float redacted = RedactDigits(cents.ToString()).ToInt() / 100.0;
+		if (real < 0)
+			return -redacted;
+
+		return redacted;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static string RedactWord(string word)
 	{
 		int len = word.Length();

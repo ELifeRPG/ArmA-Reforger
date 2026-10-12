@@ -546,7 +546,7 @@ OverlayWidgetClass {
       OverlayWidgetClass "{C74D4FFD3C6627F9}" {
        Name "SecurityCard"
        Slot LayoutSlot "{7DA1B4A6428CA2B7}" {
-        Padding 24 0 24 60
+        Padding 24 0 24 0
        }
        {
         BlurWidgetClass "{7AD55B671F26598B}" {
@@ -774,6 +774,85 @@ OverlayWidgetClass {
             }
            }
           }
+          SizeLayoutWidgetClass "{48CD38B7200A89A0}" {
+           Name "NewPinRowSize"
+           Slot LayoutSlot "{50848566E32D8DED}" {
+            SizeMode Fill
+           }
+           AllowHeightOverride 1
+           HeightOverride 60
+           {
+            OverlayWidgetClass "{AF8F2336D6194677}" {
+             Name "NewPinRow"
+             Slot AlignableSlot "{AD668E1461ACE89F}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             {
+              HorizontalLayoutWidgetClass "{C9FD6FF004802ED5}" {
+               Name "NewPinRowBody"
+               Slot OverlayWidgetSlot "{13E137421F3BEA49}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+                Padding 20 0 20 0
+               }
+               {
+                TextWidgetClass "{BFFB457588DE4FCF}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                 Name "NewPinLabel"
+                 Slot LayoutSlot "{932139E41836AD7A}" {
+                  VerticalAlign 1
+                 }
+                 Color 0.8378 0.8626 0.9222 1
+                 Text "#ELIFE-Phone_Settings_NewPin"
+                 "Font Size" 22
+                 "Min Font Size" 20
+                 "Horizontal Alignment" Left
+                }
+                EditBoxWidgetClass "{73B06DE779F57602}" {
+                 Name "NewPinField"
+                 Slot LayoutSlot "{A0FA7CB764424420}" {
+                  VerticalAlign 1
+                  SizeMode Fill
+                  Padding 16 0 0 0
+                 }
+                 Color 0.366 0.4024 0.5025 1
+                 components {
+                  SCR_EventHandlerComponent "{062131C463945F08}" {
+                  }
+                 }
+                 "Font Size" 22
+                 "Use placeholder text" 1
+                 "Placeholder text" "#ELIFE-Phone_Settings_NewPinHint"
+                 FontProperties FontProperties "{B41B83C2B21CC791}" {
+                  Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                 }
+                }
+               }
+              }
+              SizeLayoutWidgetClass "{4FCE0FB11D630FBB}" {
+               Name "NewPinFieldRuleSize"
+               Slot OverlayWidgetSlot "{EDEF89DD35956B46}" {
+                HorizontalAlign 3
+                VerticalAlign 2
+                Padding 20 0 0 0
+               }
+               AllowHeightOverride 1
+               HeightOverride 2
+               {
+                ImageWidgetClass "{284A2DE211F245E6}" {
+                 Name "NewPinFieldRule"
+                 Slot AlignableSlot "{4F9BF8CE9F1C6563}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 0.0383 0.0466 0.0723 0.9
+                }
+               }
+              }
+             }
+            }
+           }
+          }
           SizeLayoutWidgetClass "{236AD5382A33C252}" {
            Name "LockRowSize"
            Slot LayoutSlot "{BE6ACC2E18389D20}" {
@@ -864,6 +943,23 @@ OverlayWidgetClass {
          }
         }
        }
+      }
+      TextWidgetClass "{37C8B2B513042B8C}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "PinError"
+       Slot LayoutSlot "{45C7616F9EC7FA1C}" {
+        Padding 24 16 24 0
+       }
+       "Is Visible" 0
+       Color 0.7756 0.2912 0.2622 1
+       Text ""
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Left
+      }
+      SizeLayoutWidgetClass "{8F3B7AD09389F5BE}" {
+       Name "SettingsBottomSpacer"
+       AllowHeightOverride 1
+       HeightOverride 60
       }
      }
     }

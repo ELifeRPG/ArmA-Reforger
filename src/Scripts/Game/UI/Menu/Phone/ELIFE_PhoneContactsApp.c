@@ -183,6 +183,18 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	protected ref ELIFE_ContactAddClick m_AddClick;
 	protected ref ELIFE_ContactSaveClick m_SaveClick;
 	protected ref ELIFE_ContactMessageClick m_MessageClick;
+
+	//! Detail page actions card, owner-only.
+	protected Widget m_wActionsCard;
+	protected Widget m_wBlockButton;
+	protected Widget m_wDeleteButton;
+	protected TextWidget m_wDetailError;
+	protected ref ELIFE_BlockListDto m_Blocks = new ELIFE_BlockListDto();
+
+	//! First tap on Delete only arms it; the second one sends.
+	protected bool m_bDeleteArmed;
+	protected bool m_bDeleting;
+	protected bool m_bBlocking;
 	protected ref array<ref ELIFE_ContactRowClick> m_aRowClicks = {};
 	protected ref ELIFE_PhoneFieldFocus m_NumberFocus;
 	protected ref ELIFE_PhoneFieldFocus m_NameFocus;
@@ -356,15 +368,44 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		if (detailCopyButton)
 			detailCopyButton.m_OnClicked.Insert(OnDetailCopy);
 
+		BindDetailActions();
+
 		if (!m_Phone)
 			return;
 
 		m_Phone.m_OnDataChanged.Insert(OnDataChanged);
 		m_Phone.m_OnContactSaveResult.Insert(OnContactSaveResult);
+		m_Phone.m_OnContactDeleteResult.Insert(OnContactDeleteResult);
+		m_Phone.m_OnBlockResult.Insert(OnBlockResult);
 
 		//! Draw what we already have, then refresh - the fetch lands later via OnDataChanged.
+		ReadBlocks();
 		Fill();
 		m_Phone.RequestData(ELIFE_PhoneGadgetComponent.DATA_CONTACTS);
+		m_Phone.RequestData(ELIFE_PhoneGadgetComponent.DATA_BLOCKS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void BindDetailActions()
+	{
+		m_wActionsCard = m_wRoot.FindAnyWidget("ActionsCard");
+		m_wBlockButton = m_wRoot.FindAnyWidget("ButtonContactBlock");
+		m_wDeleteButton = m_wRoot.FindAnyWidget("ButtonContactDelete");
+		m_wDetailError = TextWidget.Cast(m_wRoot.FindAnyWidget("DetailError"));
+
+		ELIFE_PhoneStyle.ApplyGlass(m_wActionsCard, true);
+
+		//! Bystander copies can't act on the phone, and their blocklist copy is empty anyway.
+		if (m_wActionsCard)
+			m_wActionsCard.SetVisible(IsOwner());
+
+		SCR_ButtonTextComponent blockButton = SCR_ButtonTextComponent.GetButtonText("ButtonContactBlock", m_wRoot);
+		if (blockButton)
+			blockButton.m_OnClicked.Insert(OnBlockClicked);
+
+		SCR_ButtonTextComponent deleteButton = SCR_ButtonTextComponent.GetButtonText("ButtonContactDelete", m_wRoot);
+		if (deleteButton)
+			deleteButton.m_OnClicked.Insert(OnDeleteClicked);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -374,6 +415,8 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		{
 			m_Phone.m_OnDataChanged.Remove(OnDataChanged);
 			m_Phone.m_OnContactSaveResult.Remove(OnContactSaveResult);
+			m_Phone.m_OnContactDeleteResult.Remove(OnContactDeleteResult);
+			m_Phone.m_OnBlockResult.Remove(OnBlockResult);
 		}
 
 		GetGame().GetCallqueue().Remove(ShowSavingLabel);
@@ -412,6 +455,12 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		m_AddClick = null;
 		m_SaveClick = null;
 		m_MessageClick = null;
+		m_wActionsCard = null;
+		m_wBlockButton = null;
+		m_wDeleteButton = null;
+		m_wDetailError = null;
+		m_Blocks = new ELIFE_BlockListDto();
+		ResetDetailActions();
 		m_aRowClicks.Clear();
 		m_NumberFocus = null;
 		m_NameFocus = null;
@@ -428,6 +477,22 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	{
 		if (key == ELIFE_PhoneGadgetComponent.DATA_CONTACTS)
 			Fill();
+
+		if (key == ELIFE_PhoneGadgetComponent.DATA_BLOCKS)
+		{
+			ReadBlocks();
+			RefreshDetailActions();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ReadBlocks()
+	{
+		m_Blocks = new ELIFE_BlockListDto();
+
+		string json = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_BLOCKS);
+		if (json != "")
+			m_Blocks.ExpandFromRAW(json);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -513,6 +578,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 
 		m_sOpenContactId = contactId;
 		m_bFormOpen = false;
+		ResetDetailActions();
 
 		GetGame().GetCallqueue().Remove(ResetCopyIcon);
 		ShowCopyIcon(ICON_COPY);
@@ -556,7 +622,156 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 
 		PaintHeroAvatar(m_wDetailAvatarDisc, m_wDetailAvatarFallback, m_wDetailAvatarGlyph, name);
 		SyncDetailNavTitle();
+		RefreshDetailActions();
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Leaving or switching the detail page drops any half-finished action.
+	protected void ResetDetailActions()
+	{
+		m_bDeleteArmed = false;
+		m_bDeleting = false;
+		m_bBlocking = false;
+		ShowDetailError("");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RefreshDetailActions()
+	{
+		ELIFE_ContactSummary contact = FindContact(m_sOpenContactId);
+		if (!contact || !IsOwner())
+			return;
+
+		bool blocked = m_Blocks.IsBlocked(contact.number);
+
+		string blockText = "#ELIFE-Phone_Contacts_Block";
+		Color blockColor = ELIFE_PhoneStyle.Negative();
+		if (m_bBlocking)
+		{
+			blockText = "#ELIFE-Phone_Messages_BlockPending";
+			blockColor = ELIFE_PhoneStyle.TextTertiary();
+		}
+		else if (blocked)
+		{
+			blockText = "#ELIFE-Phone_Contacts_Unblock";
+			blockColor = m_Accent;
+		}
+
+		SetTextAndColor(m_wRoot, "ContactBlockLabel", blockText, blockColor);
+
+		string deleteText = "#ELIFE-Phone_Contacts_Delete";
+		Color deleteColor = ELIFE_PhoneStyle.Negative();
+		if (m_bDeleting)
+		{
+			deleteText = "#ELIFE-Phone_Contacts_Deleting";
+			deleteColor = ELIFE_PhoneStyle.TextTertiary();
+		}
+		else if (m_bDeleteArmed)
+		{
+			deleteText = "#ELIFE-Phone_Contacts_DeleteConfirm";
+		}
+
+		SetTextAndColor(m_wRoot, "ContactDeleteLabel", deleteText, deleteColor);
+
+		//! One request at a time from this card.
+		bool idle = !m_bBlocking && !m_bDeleting;
+		if (m_wBlockButton)
+			m_wBlockButton.SetEnabled(idle);
+
+		if (m_wDeleteButton)
+			m_wDeleteButton.SetEnabled(idle);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnBlockClicked()
+	{
+		if (m_bBlocking || m_bDeleting || !m_Phone || !IsOwner())
+			return;
+
+		ELIFE_ContactSummary contact = FindContact(m_sOpenContactId);
+		if (!contact || contact.number == "")
+			return;
+
+		m_bDeleteArmed = false;
+		m_bBlocking = true;
+		ShowDetailError("");
+		RefreshDetailActions();
+
+		m_Phone.SetNumberBlocked(contact.number, !m_Blocks.IsBlocked(contact.number));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The blocklist push can trail the result, so success is applied locally; the push confirms it.
+	protected void OnBlockResult(string number, bool blocked, bool succeeded)
+	{
+		if (!m_wRoot || !m_bBlocking)
+			return;
+
+		m_bBlocking = false;
+
+		if (succeeded)
+			m_Blocks = m_Blocks.With(number, blocked);
+		else
+			ShowDetailError("#ELIFE-Phone_Contacts_BlockError");
+
+		RefreshDetailActions();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! First tap arms, second tap sends - there's no undo for a delete.
+	protected void OnDeleteClicked()
+	{
+		if (m_bBlocking || m_bDeleting || !m_Phone || !IsOwner())
+			return;
+
+		ELIFE_ContactSummary contact = FindContact(m_sOpenContactId);
+		if (!contact || contact.contactId == "")
+			return;
+
+		ShowDetailError("");
+
+		if (!m_bDeleteArmed)
+		{
+			m_bDeleteArmed = true;
+			RefreshDetailActions();
+			return;
+		}
+
+		m_bDeleteArmed = false;
+		m_bDeleting = true;
+		RefreshDetailActions();
+
+		m_Phone.DeleteContact(contact.contactId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Success returns to the list, where the refetch drops the row.
+	protected void OnContactDeleteResult(bool deleted)
+	{
+		if (!m_wRoot || !m_bDeleting)
+			return;
+
+		m_bDeleting = false;
+
+		if (deleted)
+		{
+			ShowIndex();
+			return;
+		}
+
+		ShowDetailError("#ELIFE-Phone_Contacts_DeleteError");
+		RefreshDetailActions();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowDetailError(string text)
+	{
+		if (!m_wDetailError)
+			return;
+
+		m_wDetailError.SetVisible(text != "");
+		m_wDetailError.SetText(text);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -782,6 +997,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		m_sPrefillNumber = "";
 		m_sOpenContactId = "";
 		CancelSaving();
+		ResetDetailActions();
 
 		if (m_wFormPage)
 			m_wFormPage.SetVisible(false);

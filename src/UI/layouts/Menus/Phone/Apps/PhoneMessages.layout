@@ -187,15 +187,82 @@ OverlayWidgetClass {
           Padding 24 96 24 20
          }
          {
-          TextWidgetClass "{45B433150A974401}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-           Name "ThreadTitle"
-           Color 0.8378 0.8626 0.9222 1
-           Text ""
-           "Font Size" 40
-           "Min Font Size" 40
-           "Horizontal Alignment" Left
-           FontProperties FontProperties "{69AAEAEF9F9981BD}" {
-            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+          OverlayWidgetClass "{318E00936635DCFB}" {
+           Name "ThreadTitleOverlay"
+           Slot LayoutSlot "{F5875BE6D24DAF11}" {
+            HorizontalAlign 3
+           }
+           {
+            TextWidgetClass "{C2F0A800F8B0C48B}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "ThreadTitle"
+             Slot OverlayWidgetSlot "{9123C558CAE5B4D9}" {
+              HorizontalAlign 3
+              VerticalAlign 0
+             }
+             Color 0.8378 0.8626 0.9222 1
+             Text ""
+             "Font Size" 40
+             "Min Font Size" 40
+             "Horizontal Alignment" Left
+             FontProperties FontProperties "{0E81DDB9356E9322}" {
+              Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+             }
+            }
+            ButtonWidgetClass "{AC14F9519777AC3C}" {
+             Name "ButtonThreadTitle"
+             Slot OverlayWidgetSlot "{530C16F60F529D54}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 1 1 1 1
+             style blank
+            }
+           }
+          }
+          HorizontalLayoutWidgetClass "{49352ED9B5E1F2F2}" {
+           Name "ThreadBlockedNote"
+           Slot LayoutSlot "{211B90E02D28A6E1}" {
+            Padding 0 6 0 0
+           }
+           "Is Visible" 0
+           {
+            TextWidgetClass "{0B0EED0D4C226E15}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "ThreadBlockedText"
+             Slot LayoutSlot "{60C85C56207E02AA}" {
+              VerticalAlign 1
+             }
+             Color 0.7756 0.2912 0.2622 1
+             Text "#ELIFE-Phone_Messages_BlockedNote"
+             "Font Size" 18
+             "Min Font Size" 18
+             "Horizontal Alignment" Left
+            }
+            ButtonWidgetClass "{3E7C010F72BBB8E9}" {
+             Name "ButtonNoteUnblock"
+             Slot LayoutSlot "{52F3A7D33C046EB2}" {
+              VerticalAlign 1
+              Padding 10 0 0 0
+             }
+             Color 1 1 1 1
+             style blank
+             {
+              TextWidgetClass "{8B2071057398FC2F}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+               Name "NoteUnblockLabel"
+               Slot ButtonWidgetSlot "{A3FC557CE2F0E4B8}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0.8378 0.8626 0.9222 1
+               Text "#ELIFE-Phone_Messages_Unblock"
+               "Font Size" 18
+               "Min Font Size" 18
+               "Horizontal Alignment" Left
+               FontProperties FontProperties "{2FE9016EAC72CA56}" {
+                Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+               }
+              }
+             }
+            }
            }
           }
          }
@@ -357,6 +424,148 @@ OverlayWidgetClass {
               }
              }
             }
+            SizeLayoutWidgetClass "{02B7E8397D983ABC}" {
+             Name "ActionBlockSize"
+             Slot LayoutSlot "{7CB2CAD2E86E9EFF}" {
+              HorizontalAlign 0
+              Padding 16 0 0 0
+             }
+             AllowWidthOverride 1
+             WidthOverride 120
+             {
+              ButtonWidgetClass "{E5E8D300C87086C8}" {
+               Name "ButtonBlock"
+               Slot AlignableSlot "{D8F21D10F53506B0}" {
+                HorizontalAlign 3
+                VerticalAlign 0
+               }
+               Color 1 1 1 1
+               components {
+                SCR_ButtonTextComponent "{741E5F3B63340677}" {
+                 m_BackgroundDefault 0.91 0.929 0.973 0
+                 m_BackgroundHovered 0.91 0.929 0.973 0.1
+                 m_BackgroundSelected 0.91 0.929 0.973 0.16
+                 m_BackgroundSelectedHovered 0.91 0.929 0.973 0.16
+                 m_BackgroundClicked 0.91 0.929 0.973 0.16
+                 m_sText ""
+                }
+               }
+               style blank
+               {
+                VerticalLayoutWidgetClass "{2304AAC50197E62E}" {
+                 Name "ButtonSurface"
+                 Slot ButtonWidgetSlot "{C207C638B0F1E6C6}" {
+                  HorizontalAlign 3
+                  VerticalAlign 0
+                 }
+                 {
+                  SizeLayoutWidgetClass "{24DDF61D5DAC1BAD}" {
+                   Name "BlockDiscSize"
+                   Slot LayoutSlot "{8FDF28BD8D81822B}" {
+                    HorizontalAlign 1
+                   }
+                   AllowWidthOverride 1
+                   WidthOverride 80
+                   AllowHeightOverride 1
+                   HeightOverride 80
+                   {
+                    OverlayWidgetClass "{5D0F45D8F1E407C4}" {
+                     Name "BlockFrame"
+                     Slot AlignableSlot "{FD20AD9CAD17BEBC}" {
+                      HorizontalAlign 3
+                      VerticalAlign 3
+                     }
+                     {
+                      SmartPanelWidgetClass "{B81D44CAE45627FF}" {
+                       Name "BlockFallback"
+                       Slot OverlayWidgetSlot "{FCF2EE007C0153A6}" {
+                        HorizontalAlign 3
+                        VerticalAlign 3
+                       }
+                       "Is Visible" 0
+                       Color 1 1 1 1
+                       style rounded_12px
+                       "no focus" 1
+                      }
+                      ImageWidgetClass "{7B5D56C847058744}" {
+                       Name "BlockDisc"
+                       Slot OverlayWidgetSlot "{02A31C2C701E94F8}" {
+                        HorizontalAlign 1
+                        VerticalAlign 1
+                       }
+                       Color 1 1 1 1
+                       Size 80 80
+                      }
+                      ImageWidgetClass "{6A0FC077C926F71B}" {
+                       Name "Background"
+                       Slot OverlayWidgetSlot "{6C65995B5BA806D3}" {
+                        HorizontalAlign 1
+                        VerticalAlign 1
+                       }
+                       Color 0 0 0 0
+                       Size 80 80
+                      }
+                      SizeLayoutWidgetClass "{765A685B0AE5B35B}" {
+                       Name "BlockIconSize"
+                       Slot OverlayWidgetSlot "{14BFF175E89A2995}" {
+                        HorizontalAlign 1
+                        VerticalAlign 1
+                       }
+                       "Is Visible" 0
+                       AllowWidthOverride 1
+                       WidthOverride 32
+                       AllowHeightOverride 1
+                       HeightOverride 32
+                       {
+                        ImageWidgetClass "{C1F0E73BE95D335A}" {
+                         Name "BlockIcon"
+                         Slot AlignableSlot "{257229294A14E314}" {
+                          HorizontalAlign 1
+                          VerticalAlign 1
+                         }
+                         Color 0.925 0.937 0.965 1
+                         Size 32 32
+                        }
+                       }
+                      }
+                      TextWidgetClass "{CA00F92C76D410B9}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                       Name "BlockGlyph"
+                       Slot OverlayWidgetSlot "{7D559CDD79E49894}" {
+                        HorizontalAlign 1
+                        VerticalAlign 1
+                       }
+                       "Is Visible" 0
+                       Color 0.925 0.937 0.965 1
+                       Text "…"
+                       "Font Size" 32
+                       "Min Font Size" 32
+                       "Horizontal Alignment" Center
+                       FontProperties FontProperties "{B82804BF9EA96CD7}" {
+                        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                  TextWidgetClass "{82574847A6A75005}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                   Name "BlockLabel"
+                   Slot LayoutSlot "{B6E5243A07F61204}" {
+                    HorizontalAlign 1
+                    Padding 0 6 0 0
+                   }
+                   Color 0.366 0.4024 0.5025 1
+                   Text "#ELIFE-Phone_Messages_Block"
+                   "Font Size" 18
+                   "Min Font Size" 18
+                   "Horizontal Alignment" Center
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
            }
           }
          }
@@ -480,6 +689,19 @@ OverlayWidgetClass {
            "Font Size" 22
            "Use placeholder text" 1
            "Placeholder text" "#ELIFE-Phone_Messages_ComposePlaceholder"
+          }
+          TextWidgetClass "{8702E8487B2CE7CA}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "ComposeBlockedText"
+           Slot LayoutSlot "{786A0725534D4F38}" {
+            VerticalAlign 1
+            SizeMode Fill
+           }
+           "Is Visible" 0
+           Color 0.366 0.4024 0.5025 1
+           Text "#ELIFE-Phone_Messages_ComposeBlocked"
+           "Font Size" 22
+           "Min Font Size" 20
+           "Horizontal Alignment" Left
           }
           SizeLayoutWidgetClass "{71B1D201991EE71C}" {
            Name "SendSize"

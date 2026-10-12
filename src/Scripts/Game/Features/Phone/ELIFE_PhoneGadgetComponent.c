@@ -41,6 +41,15 @@ enum ELIFE_EMessageSendResult
 }
 
 //------------------------------------------------------------------------------------------------
+//! INVALID: not PIN_LENGTH digits - client-side, or the backend's 400.
+enum ELIFE_EPinChangeResult
+{
+	CHANGED,
+	INVALID,
+	FAILED
+}
+
+//------------------------------------------------------------------------------------------------
 enum ELIFE_EUnlockResult
 {
 	WRONG,
@@ -170,16 +179,36 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected ref ELIFE_SavedContactCallback m_SaveContactCallback;
 	protected ref ELIFE_SentMessageCallback m_SendMessageCallback;
 	protected ref ELIFE_BaseRestCallback m_MarkThreadReadCallback;
-	protected ref ELIFE_MessageUpdatesCallback m_MessagesFetchCallback;
+	protected ref ELIFE_BaseRestCallback m_ChangePinCallback;
+	protected ref ELIFE_BaseRestCallback m_DeleteContactCallback;
+	protected ref ELIFE_BaseRestCallback m_BlockCallback;
 	protected int m_iOwnerPlayerId;
+
+	//! Server-only. What the in-flight PIN change / block toggle asked for; the generated handlers only hand back the phoneId.
+	protected string m_sPendingNewPin;
+	protected string m_sPendingBlockNumber;
+	protected bool m_bPendingBlock;
+
+	//! The lock screen's keypad submits at exactly this many digits, so a PIN of any other length could never be entered.
+	static const int PIN_LENGTH = 4;
 
 	static const string DATA_CONTACTS = "contacts";
 	static const string DATA_MESSAGES = "messages";
+	static const string DATA_BLOCKS = "blocks";
+	static const string DATA_BANK_ACCOUNTS = "bank-accounts";
+
+	//! Followed by the bankAccountId - one statement per key.
+	static const string DATA_BANK_STATEMENT_PREFIX = "bank-statement:";
 
 	//! Server-only: the real payload per key plus its pre-built bystander copy.
 	protected ref map<string, ref ELIFE_PhoneDataEntry> m_mServerData = new map<string, ref ELIFE_PhoneDataEntry>();
 	protected ref map<string, bool> m_mPendingFetches = new map<string, bool>();
-	protected ref ELIFE_ContactsFetchCallback m_ContactsFetchCallback;
+
+	//! Server-only. The in-flight fetch per key, held for its HTTP code and, on list routes, its raw body.
+	protected ref map<string, ref RestCallback> m_mFetchCallbacks = new map<string, ref RestCallback>();
+
+	//! Server-only. bankAccountId -> packed account, waiting for its transactions to land.
+	protected ref map<string, string> m_mStatementAccounts = new map<string, string>();
 
 	//! What this machine got pushed - real payload for the owner, redacted copy for everyone else.
 	protected ref map<string, string> m_mData = new map<string, string>();
@@ -202,6 +231,15 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 	//! Fires with (ELIFE_EMessageSendResult, threadId) when a send resolves; threadId is empty on failure.
 	ref ScriptInvoker m_OnMessageSendResult = new ScriptInvoker();
+
+	//! Fires with ELIFE_EPinChangeResult when a ChangePin() call resolves. The new PIN itself arrives as an identity change.
+	ref ScriptInvoker m_OnPinChangeResult = new ScriptInvoker();
+
+	//! Fires with (bool deleted) when a DeleteContact() call resolves.
+	ref ScriptInvoker m_OnContactDeleteResult = new ScriptInvoker();
+
+	//! Fires with (number, blocked, bool succeeded) when a SetNumberBlocked() call resolves.
+	ref ScriptInvoker m_OnBlockResult = new ScriptInvoker();
 
 	//! True after a Bridge request got no HTTP answer at all, until one does.
 	[RplProp(onRplName: "OnConnectivityUpdated")]
@@ -431,6 +469,125 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	string GetPin()
 	{
 		return m_sPin;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True on the registered owner's machine only - everyone else holds the redacted stand-ins.
+	bool HasRealIdentity()
+	{
+		return m_bHasRealIdentity;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Digits only, exactly PIN_LENGTH of them. The backend allows longer, the lock screen doesn't.
+	static bool IsValidPin(string pin)
+	{
+		if (pin.Length() != PIN_LENGTH)
+			return false;
+
+		for (int i = 0; i < PIN_LENGTH; i++)
+		{
+			if ("0123456789".IndexOf(pin.Substring(i, 1)) == -1)
+				return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// PIN change
+	//------------------------------------------------------------------------------------------------
+
+	//! Owner-only. The server supplies the current PIN, so the player only types the new one.
+	void ChangePin(string newPin)
+	{
+		if (!IsLocalCharacterOwner())
+			return;
+
+		Rpc(RpcAsk_ChangePin, newPin);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_ChangePin(string newPin)
+	{
+		ELIFE_Api api = ELIFE_Api.GetInstance();
+		if (m_sPhoneId == "" || m_sServerPin == "" || !api || m_sPendingNewPin != "")
+		{
+			NotifyPinChangeResult(ELIFE_EPinChangeResult.FAILED);
+			return;
+		}
+
+		//! Holding an unlocked phone isn't owning it - only the registered owner may lock everyone else out.
+		if (ELIFE_CharacterIdentity.GetCharacterId(m_iOwnerPlayerId) != m_sServerOwnerCharacterId)
+		{
+			NotifyPinChangeResult(ELIFE_EPinChangeResult.FAILED);
+			return;
+		}
+
+		if (!IsValidPin(newPin))
+		{
+			NotifyPinChangeResult(ELIFE_EPinChangeResult.INVALID);
+			return;
+		}
+
+		ELIFE_ChangePhonePinRequest request = new ELIFE_ChangePhonePinRequest();
+		request.characterId = m_sServerOwnerCharacterId;
+		request.pin = m_sServerPin;
+		request.newPin = newPin;
+
+		m_sPendingNewPin = newPin;
+		m_ChangePinCallback = api.ChangePhonePin(request, m_sPhoneId, this, "OnPinChanged");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies the new PIN the same way provisioning does: server copy, redacted RplProp, owner push.
+	void OnPinChanged(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
+	{
+		int httpCode = HttpCodeOf(m_ChangePinCallback);
+		NoteConnectivity(status, httpCode);
+
+		string newPin = m_sPendingNewPin;
+		m_sPendingNewPin = "";
+
+		if (status != ELIFE_EApiStatusCode.SUCCESS)
+		{
+			Print(string.Format("ELIFE_PhoneGadgetComponent | PIN change failed, HTTP=%1", httpCode), LogLevel.ERROR);
+
+			if (httpCode == 400)
+				NotifyPinChangeResult(ELIFE_EPinChangeResult.INVALID);
+			else
+				NotifyPinChangeResult(ELIFE_EPinChangeResult.FAILED);
+
+			return;
+		}
+
+		m_sServerPin = newPin;
+		m_sRedactedPin = ELIFE_DataRedactor.RedactDigits(newPin);
+		Replication.BumpMe();
+
+		PushIdentityToOwner();
+		if (SCR_PlayerController.GetLocalControlledEntity())
+			ApplyRedactedIdentity();
+
+		NotifyPinChangeResult(ELIFE_EPinChangeResult.CHANGED);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Self-applies locally for the owner too - RplRcver.Owner RPCs don't self-deliver on a listen server.
+	protected void NotifyPinChangeResult(ELIFE_EPinChangeResult result)
+	{
+		Rpc(RpcDo_PinChangeResult, result);
+
+		if (SCR_PlayerController.GetLocalControlledEntity() && IsLocalCharacterOwner())
+			m_OnPinChangeResult.Invoke(result);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_PinChangeResult(ELIFE_EPinChangeResult result)
+	{
+		m_OnPinChangeResult.Invoke(result);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -876,6 +1033,154 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Owner-only.
+	void DeleteContact(string contactId)
+	{
+		if (!IsLocalCharacterOwner() || contactId == "")
+			return;
+
+		Rpc(RpcAsk_DeleteContact, contactId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_DeleteContact(string contactId)
+	{
+		ELIFE_Api api = ELIFE_Api.GetInstance();
+		if (m_sPhoneId == "" || contactId == "" || !api)
+		{
+			NotifyContactDeleteResult(false);
+			return;
+		}
+
+		m_DeleteContactCallback = api.DeletePhoneContact(m_sPhoneId, contactId, this, "OnContactDeleted");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnContactDeleted(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
+	{
+		int httpCode = HttpCodeOf(m_DeleteContactCallback);
+		NoteConnectivity(status, httpCode);
+
+		bool deleted = status == ELIFE_EApiStatusCode.SUCCESS;
+		if (!deleted)
+			Print(string.Format("ELIFE_PhoneGadgetComponent | contact delete failed, HTTP=%1", httpCode), LogLevel.ERROR);
+
+		//! A 404 means the list on screen is stale, so refresh on that failure too. Bypasses the TTL cache like a save.
+		if (deleted || httpCode == 404)
+			FetchData(DATA_CONTACTS);
+
+		NotifyContactDeleteResult(deleted);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Self-applies locally for the owner too - RplRcver.Owner RPCs don't self-deliver on a listen server.
+	protected void NotifyContactDeleteResult(bool deleted)
+	{
+		Rpc(RpcDo_ContactDeleteResult, deleted);
+
+		if (SCR_PlayerController.GetLocalControlledEntity() && IsLocalCharacterOwner())
+			m_OnContactDeleteResult.Invoke(deleted);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_ContactDeleteResult(bool deleted)
+	{
+		m_OnContactDeleteResult.Invoke(deleted);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Blocklist write path
+	//------------------------------------------------------------------------------------------------
+
+	//! Owner-only. Both routes are idempotent, so a toggle that races a stale cache still lands right.
+	void SetNumberBlocked(string number, bool blocked)
+	{
+		if (!IsLocalCharacterOwner() || number == "")
+			return;
+
+		Rpc(RpcAsk_SetNumberBlocked, number, blocked);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_SetNumberBlocked(string number, bool blocked)
+	{
+		ELIFE_Api api = ELIFE_Api.GetInstance();
+		if (m_sPhoneId == "" || number == "" || !api || m_sPendingBlockNumber != "")
+		{
+			NotifyBlockResult(number, blocked, false);
+			return;
+		}
+
+		m_sPendingBlockNumber = number;
+		m_bPendingBlock = blocked;
+
+		if (blocked)
+		{
+			ELIFE_BlockPhoneNumberRequest request = new ELIFE_BlockPhoneNumberRequest();
+			request.number = number;
+			m_BlockCallback = api.BlockPhoneNumber(request, m_sPhoneId, this, "OnBlockChanged");
+		}
+		else
+		{
+			m_BlockCallback = api.UnblockPhoneNumber(m_sPhoneId, number, this, "OnBlockChanged");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnBlockChanged(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
+	{
+		int httpCode = HttpCodeOf(m_BlockCallback);
+		NoteConnectivity(status, httpCode);
+
+		string number = m_sPendingBlockNumber;
+		bool blocked = m_bPendingBlock;
+		m_sPendingBlockNumber = "";
+
+		if (status != ELIFE_EApiStatusCode.SUCCESS)
+		{
+			Print(string.Format("ELIFE_PhoneGadgetComponent | block toggle failed, HTTP=%1", httpCode), LogLevel.ERROR);
+			NotifyBlockResult(number, blocked, false);
+			return;
+		}
+
+		//! Applied to the cache directly - the routes answer 204, and only GetPhone() can list the blocklist again.
+		ELIFE_PhoneDataEntry entry;
+		if (m_mServerData.Find(DATA_BLOCKS, entry) && entry.m_sReal != "")
+		{
+			ELIFE_BlockListDto cached = new ELIFE_BlockListDto();
+			cached.ExpandFromRAW(entry.m_sReal);
+			StoreData(DATA_BLOCKS, cached.With(number, blocked).GetRawJson());
+			PushData(DATA_BLOCKS);
+		}
+		else
+		{
+			FetchData(DATA_BLOCKS);
+		}
+
+		NotifyBlockResult(number, blocked, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Self-applies locally for the owner too - RplRcver.Owner RPCs don't self-deliver on a listen server.
+	protected void NotifyBlockResult(string number, bool blocked, bool succeeded)
+	{
+		Rpc(RpcDo_BlockResult, number, blocked, succeeded);
+
+		if (SCR_PlayerController.GetLocalControlledEntity() && IsLocalCharacterOwner())
+			m_OnBlockResult.Invoke(number, blocked, succeeded);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_BlockResult(string number, bool blocked, bool succeeded)
+	{
+		m_OnBlockResult.Invoke(number, blocked, succeeded);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Owns each key's route and response parsing. full forces a cursor-less messages fetch.
 	protected void FetchData(string key, bool full = false)
 	{
@@ -893,11 +1198,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		//! Contacts/messages routes take no characterId/pin - possession is proven once at power-on.
 		if (key == DATA_CONTACTS)
 		{
-			//! Hand-built: the generated ListPhoneContacts() doesn't parse the bare-array response.
-			m_ContactsFetchCallback = new ELIFE_ContactsFetchCallback();
-			m_ContactsFetchCallback.SetCallback(this, "OnDataFetched", key);
 			m_mPendingFetches.Set(key, true);
-			api.GetElifeApi().GET(m_ContactsFetchCallback, string.Format("phones/%1/apps/contacts/entries", m_sPhoneId));
+			m_mFetchCallbacks.Set(key, api.ListPhoneContacts(m_sPhoneId, this, "OnContactsFetched"));
 		}
 		else if (key == DATA_MESSAGES)
 		{
@@ -907,7 +1209,25 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 				since = EncodeCursor(m_sMessagesCursor);
 
 			m_mPendingFetches.Set(key, true);
-			m_MessagesFetchCallback = api.PollPhoneMessages(m_sPhoneId, since, this, "OnMessagesFetched");
+			m_mFetchCallbacks.Set(key, api.PollPhoneMessages(m_sPhoneId, since, this, "OnMessagesFetched"));
+		}
+		else if (key == DATA_BLOCKS)
+		{
+			m_mPendingFetches.Set(key, true);
+			m_mFetchCallbacks.Set(key, api.GetPhone(m_sPhoneId, this, "OnPhoneFetched"));
+		}
+		else if (key == DATA_BANK_ACCOUNTS && m_sServerOwnerCharacterId != "")
+		{
+			//! The registered owner's accounts - like every other app here, it shows the phone's data, not the holder's.
+			m_mPendingFetches.Set(key, true);
+			m_mFetchCallbacks.Set(key, api.ListCharacterBankAccounts(m_sServerOwnerCharacterId, this, "OnBankAccountsFetched"));
+		}
+		else if (key.StartsWith(DATA_BANK_STATEMENT_PREFIX) && m_sServerOwnerCharacterId != "")
+		{
+			//! Account first, then its transactions - see OnStatementAccountFetched().
+			string accountId = key.Substring(DATA_BANK_STATEMENT_PREFIX.Length(), key.Length() - DATA_BANK_STATEMENT_PREFIX.Length());
+			m_mPendingFetches.Set(key, true);
+			m_mFetchCallbacks.Set(key, api.GetBankAccount(accountId, this, "OnStatementAccountFetched"));
 		}
 		else
 		{
@@ -923,6 +1243,99 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	void OnContactsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
+	{
+		OnListFetched(status, DATA_CONTACTS, new ELIFE_ContactListDto());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnBankAccountsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string characterId)
+	{
+		OnListFetched(status, DATA_BANK_ACCOUNTS, new ELIFE_BankAccountListDto());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Generated list routes don't parse their bare-array body, so it's read off the callback and wrapped here.
+	protected void OnListFetched(ELIFE_EApiStatusCode status, string key, notnull ELIFE_PhoneRawDto list, string head = "")
+	{
+		RestCallback callback;
+		m_mFetchCallbacks.Find(key, callback);
+
+		if (status != ELIFE_EApiStatusCode.SUCCESS || !callback)
+		{
+			OnDataFetched(ELIFE_EApiStatusCode.ERROR, null, key);
+			return;
+		}
+
+		list.ExpandFromArray(callback.GetData(), head);
+		OnDataFetched(status, list, key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Only the blocklist is kept; the rest of the summary is platform state no app renders.
+	void OnPhoneFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
+	{
+		ELIFE_PhoneSummary phone = ELIFE_PhoneSummary.Cast(data);
+
+		ELIFE_BlockListDto blocks;
+		if (phone)
+		{
+			blocks = new ELIFE_BlockListDto();
+			foreach (string number : phone.blockedNumbers)
+				blocks.numbers.Insert(number);
+
+			blocks.StashPacked();
+		}
+
+		OnDataFetched(status, blocks, DATA_BLOCKS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Step one of a statement. The id came from a client, so it has to be one of the owner's accounts.
+	void OnStatementAccountFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string bankAccountId)
+	{
+		string key = DATA_BANK_STATEMENT_PREFIX + bankAccountId;
+
+		ELIFE_BankAccountSummary account = ELIFE_BankAccountSummary.Cast(data);
+		if (status != ELIFE_EApiStatusCode.SUCCESS || !account)
+		{
+			OnDataFetched(ELIFE_EApiStatusCode.ERROR, null, key);
+			return;
+		}
+
+		if (account.characterId != m_sServerOwnerCharacterId)
+		{
+			Print(string.Format("ELIFE_PhoneGadgetComponent | bank account %1 is not the owner's", bankAccountId), LogLevel.WARNING);
+			OnDataFetched(ELIFE_EApiStatusCode.ERROR, null, key);
+			return;
+		}
+
+		ELIFE_Api api = ELIFE_Api.GetInstance();
+		if (!api)
+		{
+			OnDataFetched(ELIFE_EApiStatusCode.ERROR, null, key);
+			return;
+		}
+
+		//! The account rides in front of the transactions array, so the pair lands as one payload.
+		ELIFE_BankAccountSummary copy = account.Copy();
+		copy.Pack();
+		m_mStatementAccounts.Set(bankAccountId, copy.AsString());
+
+		m_mFetchCallbacks.Set(key, api.ListBankAccountTransactions(bankAccountId, this, "OnStatementTransactionsFetched"));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnStatementTransactionsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string bankAccountId)
+	{
+		string accountJson;
+		m_mStatementAccounts.Find(bankAccountId, accountJson);
+		m_mStatementAccounts.Remove(bankAccountId);
+
+		OnListFetched(status, DATA_BANK_STATEMENT_PREFIX + bankAccountId, new ELIFE_BankStatementDto(), "\"account\":" + accountJson + ",");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void OnDataFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string key)
 	{
 		m_mPendingFetches.Remove(key);
@@ -931,10 +1344,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (key == DATA_MESSAGES)
 			m_bPollInFlight = false;
 
-		if (key == DATA_CONTACTS)
-			NoteConnectivity(status, HttpCodeOf(m_ContactsFetchCallback));
-		else
-			NoteConnectivity(status, HttpCodeOf(m_MessagesFetchCallback));
+		RestCallback callback;
+		m_mFetchCallbacks.Find(key, callback);
+		m_mFetchCallbacks.Remove(key);
+		NoteConnectivity(status, HttpCodeOf(callback));
 
 		if (status != ELIFE_EApiStatusCode.SUCCESS || !data)
 		{
@@ -950,19 +1363,17 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 		}
 
-		//! Re-packing would warn "Operation called twice", so contacts use the raw text they were unpacked from.
-		ELIFE_PhoneDataEntry entry = new ELIFE_PhoneDataEntry();
-		ELIFE_ContactListDto contacts = ELIFE_ContactListDto.Cast(data);
-		if (contacts)
-			entry.m_sReal = contacts.GetRawJson();
+		//! Re-packing would warn "Operation called twice", so payloads keep the raw text they were unpacked from.
+		string real;
+		ELIFE_PhoneRawDto raw = ELIFE_PhoneRawDto.Cast(data);
+		if (raw)
+			real = raw.GetRawJson();
 
 		bool changed = true;
 		if (key == DATA_MESSAGES)
-			entry.m_sReal = MergeMessages(ELIFE_MessageUpdates.Cast(data), changed);
+			real = MergeMessages(ELIFE_MessageUpdates.Cast(data), changed);
 
-		entry.m_sRedacted = RedactPayload(key, entry.m_sReal);
-		entry.m_iFetchTime = System.GetTickCount();
-		m_mServerData.Set(key, entry);
+		StoreData(key, real);
 
 		//! A quiet poll stays silent; an owner request always answers since its app is loading.
 		if (changed || !wasPoll)
@@ -971,6 +1382,17 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		//! A messages fetch that landed first used redacted numbers as titles - rebuild it now that names exist.
 		if (key == DATA_CONTACTS)
 			RefreshBystanderMessages();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-only. Caches the real payload with its bystander copy; PushData() sends both.
+	protected void StoreData(string key, string realJson)
+	{
+		ELIFE_PhoneDataEntry entry = new ELIFE_PhoneDataEntry();
+		entry.m_sReal = realJson;
+		entry.m_sRedacted = RedactPayload(key, realJson);
+		entry.m_iFetchTime = System.GetTickCount();
+		m_mServerData.Set(key, entry);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1041,6 +1463,23 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			ELIFE_MessageUpdates updates = new ELIFE_MessageUpdates();
 			updates.ExpandFromRAW(realJson);
 			redacted = updates.Redact(OwnerContactNames());
+		}
+		else if (key == DATA_BLOCKS)
+		{
+			//! Block controls are owner-only, so bystanders get an empty list rather than stand-in numbers.
+			redacted = new ELIFE_BlockListDto();
+		}
+		else if (key == DATA_BANK_ACCOUNTS)
+		{
+			ELIFE_BankAccountListDto accounts = new ELIFE_BankAccountListDto();
+			accounts.ExpandFromRAW(realJson);
+			redacted = accounts.Redact();
+		}
+		else if (key.StartsWith(DATA_BANK_STATEMENT_PREFIX))
+		{
+			ELIFE_BankStatementDto statement = new ELIFE_BankStatementDto();
+			statement.ExpandFromRAW(realJson);
+			redacted = statement.Redact();
 		}
 
 		if (!redacted)
@@ -1789,21 +2228,5 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		reader.ReadBool(m_bActivated);
 
 		return true;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-class ELIFE_ContactsFetchCallback : ELIFE_BaseRestCallback
-{
-	//------------------------------------------------------------------------------------------------
-	//! Bridge returns a bare JSON array - wrap it so the object-rooted JsonApiStruct parser can read it.
-	override ELIFE_EApiStatusCode ExtractData(string data, int dataSize, out JsonApiStruct resultData)
-	{
-		ELIFE_ContactListDto dto = new ELIFE_ContactListDto();
-		string wrapped = string.Format("{\"items\":%1}", data);
-		dto.ExpandFromRAW(wrapped);
-		dto.StashRawJson(wrapped);
-		resultData = dto;
-		return ELIFE_EApiStatusCode.SUCCESS;
 	}
 }

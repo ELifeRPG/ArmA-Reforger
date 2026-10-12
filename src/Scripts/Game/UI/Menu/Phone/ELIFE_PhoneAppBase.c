@@ -112,6 +112,13 @@ class ELIFE_PhoneAppBase
 	protected TextWidget m_wNavActionLabel;
 	protected ScriptedWidgetEventHandler m_NavActionHandler;
 
+	//! A request in flight from the nav pill - see BeginNavBusy().
+	protected bool m_bNavBusy;
+	protected int m_iNavBusyShownAt;
+	protected string m_sNavBusyLabel;
+	protected ref Color m_NavBusyColor;
+	protected string m_sNavBusyIcon;
+
 	protected ScrollLayoutWidget m_TrackedScroll;
 
 	//! Kept alive here; an unreferenced handler silently stops firing.
@@ -250,6 +257,85 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Disables the pill for an in-flight request; its busy label only shows after SPINNER_DELAY_MS.
+	protected void BeginNavBusy(string label, Color color, string iconSprite = "")
+	{
+		m_bNavBusy = true;
+		m_iNavBusyShownAt = 0;
+		m_sNavBusyLabel = label;
+		m_NavBusyColor = color;
+		m_sNavBusyIcon = iconSprite;
+		SetNavActionEnabled(false);
+
+		GetGame().GetCallqueue().Remove(ShowNavBusyLabel);
+		GetGame().GetCallqueue().Remove(FinishNavBusy);
+		GetGame().GetCallqueue().CallLater(ShowNavBusyLabel, ELIFE_PhoneStyle.SPINNER_DELAY_MS, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowNavBusyLabel()
+	{
+		if (!m_bNavBusy)
+			return;
+
+		m_iNavBusyShownAt = System.GetTickCount();
+		SetNavActionLabel(m_sNavBusyLabel, m_NavBusyColor, m_sNavBusyIcon);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Keeps the busy label up for SPINNER_MIN_VISIBLE_MS once it has appeared, then calls OnNavBusyEnded().
+	protected void EndNavBusy()
+	{
+		GetGame().GetCallqueue().Remove(ShowNavBusyLabel);
+
+		if (!m_bNavBusy)
+			return;
+
+		if (m_iNavBusyShownAt > 0)
+		{
+			int shownFor = System.GetTickCount() - m_iNavBusyShownAt;
+			if (shownFor < ELIFE_PhoneStyle.SPINNER_MIN_VISIBLE_MS)
+			{
+				GetGame().GetCallqueue().Remove(FinishNavBusy);
+				GetGame().GetCallqueue().CallLater(FinishNavBusy, ELIFE_PhoneStyle.SPINNER_MIN_VISIBLE_MS - shownFor, false);
+				return;
+			}
+		}
+
+		FinishNavBusy();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FinishNavBusy()
+	{
+		GetGame().GetCallqueue().Remove(FinishNavBusy);
+
+		m_bNavBusy = false;
+		m_iNavBusyShownAt = 0;
+		SetNavActionEnabled(true);
+
+		OnNavBusyEnded();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Backing out mid-request: the response is ignored when it lands.
+	protected void CancelNavBusy()
+	{
+		GetGame().GetCallqueue().Remove(ShowNavBusyLabel);
+		GetGame().GetCallqueue().Remove(FinishNavBusy);
+
+		m_bNavBusy = false;
+		m_iNavBusyShownAt = 0;
+		SetNavActionEnabled(true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where an app applies the result it held back while the busy label had its time on screen.
+	protected void OnNavBusyEnded()
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! initialSubState restores nav state, so OnOpened() shouldn't broadcast its own default.
 	void Open(notnull ELIFE_PhoneGadgetComponent phone, notnull Widget host, string initialSubState = "")
 	{
@@ -280,6 +366,7 @@ class ELIFE_PhoneAppBase
 	{
 		OnClosing();
 
+		CancelNavBusy();
 		GetGame().GetCallqueue().Remove(ResetCopyIcon);
 		m_wCopyIcon = null;
 
@@ -814,5 +901,7 @@ class ELIFE_PhoneAppBase
 		GetGame().GetCallqueue().Remove(TickCollapse);
 		GetGame().GetCallqueue().Remove(ShowSkeletons);
 		GetGame().GetCallqueue().Remove(HideStatus);
+		GetGame().GetCallqueue().Remove(ShowNavBusyLabel);
+		GetGame().GetCallqueue().Remove(FinishNavBusy);
 	}
 }

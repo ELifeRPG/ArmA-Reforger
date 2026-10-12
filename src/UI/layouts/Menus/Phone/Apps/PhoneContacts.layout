@@ -860,6 +860,274 @@ OverlayWidgetClass {
           }
          }
         }
+        OverlayWidgetClass "{569CE685A9A1852A}" {
+         Name "ActionsCard"
+         Slot LayoutSlot "{96A0620065C7EEE9}" {
+          Padding 24 24 24 0
+         }
+         {
+          BlurWidgetClass "{A8164B1920B65C85}" {
+           Name "GlassBlur"
+           Slot OverlayWidgetSlot "{7B3B960AF80AB852}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 1 1 1 1
+           Intensity 0.7
+          }
+          SmartPanelWidgetClass "{263CF7D4425F66CE}" {
+           Name "GlassScrim"
+           Slot OverlayWidgetSlot "{A1495C14A39CA4A1}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.004 0.0048 0.0075 0.55
+           style rounded_12px
+           "no focus" 1
+          }
+          SmartPanelWidgetClass "{59870743614CD10F}" {
+           Name "GlassTint"
+           Slot OverlayWidgetSlot "{26FAC35017986DA6}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.5837 0.6453 0.8073 0.14
+           style rounded_12px
+           "no focus" 1
+          }
+          SizeLayoutWidgetClass "{A424263BD1D7CD4A}" {
+           Name "GlassSpecularSize"
+           Slot OverlayWidgetSlot "{69FC38CA9039E0B4}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+            Padding 12 0 12 0
+           }
+           AllowHeightOverride 1
+           HeightOverride 2
+           {
+            ImageWidgetClass "{D5A741B994836C42}" {
+             Name "GlassSpecular"
+             Slot AlignableSlot "{418780C2639CA2DC}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0.8626 0.8964 0.964 0.18
+            }
+           }
+          }
+          SizeLayoutWidgetClass "{A19832523022B967}" {
+           Name "GlassHairlineSize"
+           Slot OverlayWidgetSlot "{1C6E1B0C4C7FE3E9}" {
+            HorizontalAlign 3
+            VerticalAlign 2
+            Padding 12 0 12 0
+           }
+           AllowHeightOverride 1
+           HeightOverride 2
+           {
+            ImageWidgetClass "{3C343D40A0778351}" {
+             Name "GlassHairline"
+             Slot AlignableSlot "{F230948C8BE13A50}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0.0015 0.0021 0.0033 0.26
+            }
+           }
+          }
+          VerticalLayoutWidgetClass "{126470972D859B44}" {
+           Name "ActionsCardRows"
+           Slot OverlayWidgetSlot "{4617BF2BD4EF240F}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           "Fill Origin" Top
+           {
+            SizeLayoutWidgetClass "{7E1128E46B147B49}" {
+             Name "ContactBlockRowSize"
+             Slot LayoutSlot "{7E226D0536BF16D8}" {
+              SizeMode Fill
+             }
+             AllowHeightOverride 1
+             HeightOverride 60
+             {
+              ButtonWidgetClass "{CBB5B95399D962AB}" {
+               Name "ButtonContactBlock"
+               Slot AlignableSlot "{AF25DE8D5A2F0D6D}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 1 1 1 1
+               style blank
+               components {
+                SCR_ButtonTextComponent "{7AE0EFDD3DB40F46}" {
+                 m_BackgroundDefault 0.910 0.929 0.973 0
+                 m_BackgroundHovered 0.910 0.929 0.973 0.06
+                 m_BackgroundSelected 0.910 0.929 0.973 0.12
+                 m_BackgroundSelectedHovered 0.910 0.929 0.973 0.12
+                 m_BackgroundClicked 0.910 0.929 0.973 0.12
+                 m_sText ""
+                }
+               }
+               {
+                OverlayWidgetClass "{487610357FB78C7C}" {
+                 Name "ButtonSurface"
+                 Slot ButtonWidgetSlot "{EA239EBD4C4ADE57}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 {
+                  SmartPanelWidgetClass "{6CD7647519CD0CE4}" {
+                   Name "Background"
+                   Slot OverlayWidgetSlot "{BCC1B18F899A61FF}" {
+                    HorizontalAlign 3
+                    VerticalAlign 3
+                   }
+                   Color 0 0 0 0
+                   style rounded_12px
+                   "no focus" 1
+                  }
+                  HorizontalLayoutWidgetClass "{0AF81048AC641978}" {
+                   Name "ContactBlockRowBody"
+                   Slot OverlayWidgetSlot "{8F2FB0A38B609037}" {
+                    HorizontalAlign 3
+                    VerticalAlign 3
+                    Padding 20 0 20 0
+                   }
+                   {
+                    TextWidgetClass "{148E3942A2961094}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                     Name "ContactBlockLabel"
+                     Slot LayoutSlot "{68B6FAE37F09569A}" {
+                      SizeMode Fill
+                      VerticalAlign 1
+                     }
+                     Color 0.3814 0.4395 0.5771 1
+                     Text "#ELIFE-Phone_Contacts_Block"
+                     "Font Size" 22
+                     "Min Font Size" 20
+                     "Horizontal Alignment" Left
+                    }
+                   }
+                  }
+                  SizeLayoutWidgetClass "{9658798CE90C0B4B}" {
+                   Name "ContactBlockRowHairlineSize"
+                   Slot OverlayWidgetSlot "{775525E63E45FDF6}" {
+                    HorizontalAlign 3
+                    VerticalAlign 2
+                    Padding 20 0 0 0
+                   }
+                   AllowHeightOverride 1
+                   HeightOverride 2
+                   {
+                    ImageWidgetClass "{E0CCFE8C0751AAD6}" {
+                     Name "RowHairline"
+                     Slot AlignableSlot "{F8C562B24C005F67}" {
+                      HorizontalAlign 3
+                      VerticalAlign 3
+                     }
+                     Color 0.0383 0.0466 0.0723 0.9
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+            SizeLayoutWidgetClass "{B1289F51522D6A5D}" {
+             Name "ContactDeleteRowSize"
+             Slot LayoutSlot "{ED90043129960ACB}" {
+              SizeMode Fill
+             }
+             AllowHeightOverride 1
+             HeightOverride 60
+             {
+              ButtonWidgetClass "{85CB6A2C6FC73E8D}" {
+               Name "ButtonContactDelete"
+               Slot AlignableSlot "{584A6467898EFA1E}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 1 1 1 1
+               style blank
+               components {
+                SCR_ButtonTextComponent "{1C7AE93F2BFE3965}" {
+                 m_BackgroundDefault 0.910 0.929 0.973 0
+                 m_BackgroundHovered 0.910 0.929 0.973 0.06
+                 m_BackgroundSelected 0.910 0.929 0.973 0.12
+                 m_BackgroundSelectedHovered 0.910 0.929 0.973 0.12
+                 m_BackgroundClicked 0.910 0.929 0.973 0.12
+                 m_sText ""
+                }
+               }
+               {
+                OverlayWidgetClass "{CB3C9D06B7D31862}" {
+                 Name "ButtonSurface"
+                 Slot ButtonWidgetSlot "{6E399D7DA0AD3099}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 {
+                  SmartPanelWidgetClass "{94F5E43D6671F81E}" {
+                   Name "Background"
+                   Slot OverlayWidgetSlot "{12E4ABD5513FC36A}" {
+                    HorizontalAlign 3
+                    VerticalAlign 3
+                   }
+                   Color 0 0 0 0
+                   style rounded_12px
+                   "no focus" 1
+                  }
+                  HorizontalLayoutWidgetClass "{6440DEE493500B7F}" {
+                   Name "ContactDeleteRowBody"
+                   Slot OverlayWidgetSlot "{726B5C6F159C35F4}" {
+                    HorizontalAlign 3
+                    VerticalAlign 3
+                    Padding 20 0 20 0
+                   }
+                   {
+                    TextWidgetClass "{7228F0CA3A2DE963}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                     Name "ContactDeleteLabel"
+                     Slot LayoutSlot "{F18597E4F1A84D22}" {
+                      SizeMode Fill
+                      VerticalAlign 1
+                     }
+                     Color 0.3814 0.4395 0.5771 1
+                     Text "#ELIFE-Phone_Contacts_Delete"
+                     "Font Size" 22
+                     "Min Font Size" 20
+                     "Horizontal Alignment" Left
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+        TextWidgetClass "{64405092B80D367B}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "DetailError"
+         Slot LayoutSlot "{2EF03E7F0B87AA19}" {
+          Padding 24 16 24 0
+         }
+         "Is Visible" 0
+         Color 0.7756 0.2912 0.2622 1
+         Text ""
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Left
+        }
+        SizeLayoutWidgetClass "{5C4F23781BA835F2}" {
+         Name "DetailBottomSpacer"
+         AllowHeightOverride 1
+         HeightOverride 60
+        }
        }
       }
      }

@@ -42,7 +42,9 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	protected TextWidget m_wStatementKind;
 	protected TextWidget m_wStatementBalance;
 
-	protected ref array<ref ELIFE_PhoneBankAccount> m_aAccounts;
+	//! Kept (not local) so FindAccount's returned DTO stays alive while the statement reads it.
+	protected ref ELIFE_BankAccountListDto m_Accounts = new ELIFE_BankAccountListDto();
+	protected ref ELIFE_BankStatementDto m_Statement;
 	protected ref array<ref ELIFE_PhoneBankRowClick> m_aRowClicks;
 	protected string m_sOpenAccountId;
 
@@ -86,34 +88,13 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Opens before the statement has loaded - the header fills from the index row, the postings land later.
 	void OpenStatement(string accountId)
 	{
-		ELIFE_PhoneBankAccount account = FindAccount(accountId);
-		if (!account)
+		if (accountId == "")
 			return;
 
 		m_sOpenAccountId = accountId;
-
-		if (m_wStatementName)
-		{
-			m_wStatementName.SetText(account.m_sName);
-			m_wStatementName.SetColor(ELIFE_PhoneStyle.TextPrimary());
-		}
-
-		if (m_wStatementKind)
-		{
-			m_wStatementKind.SetText(KindLabel(account));
-			m_wStatementKind.SetColor(ELIFE_PhoneStyle.TextSecondary());
-		}
-
-		//! The balance is the one number on this page that carries the app's accent.
-		if (m_wStatementBalance)
-		{
-			m_wStatementBalance.SetText(ELIFE_PhoneBankingService.FormatMoney(account.m_iBalanceCents));
-			m_wStatementBalance.SetColor(m_Accent);
-		}
-
-		FillPosted(account);
 
 		if (m_wIndexPage)
 			m_wIndexPage.SetVisible(false);
@@ -121,12 +102,73 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 		if (m_wStatementPage)
 			m_wStatementPage.SetVisible(true);
 
-		if (m_wNavTitle)
-			m_wNavTitle.SetText(account.m_sName);
+		FillStatement();
 
 		TrackScroll(m_wPostedScroll, m_wStatementName);
 
 		NotifySubStateChanged();
+
+		if (m_Phone)
+			m_Phone.RequestData(StatementKey(accountId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string StatementKey(string accountId)
+	{
+		return ELIFE_PhoneGadgetComponent.DATA_BANK_STATEMENT_PREFIX + accountId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FillStatement()
+	{
+		if (!m_Phone)
+			return;
+
+		ApplyDataStatus(StatementKey(m_sOpenAccountId));
+
+		m_Statement = new ELIFE_BankStatementDto();
+		string json = m_Phone.GetData(StatementKey(m_sOpenAccountId));
+		if (json != "")
+			m_Statement.ExpandFromRAW(json);
+
+		//! The statement's own copy is the fresher balance; the index row covers the wait for it.
+		ELIFE_BankAccountSummary account = m_Statement.account;
+		if (account.bankAccountId == "")
+			account = FindAccount(m_sOpenAccountId);
+
+		string name = "";
+		string kind = "";
+		string balance = "";
+		if (account)
+		{
+			name = account.number;
+			kind = KindLabel(account);
+			balance = ELIFE_PhoneBankingService.FormatMoney(ELIFE_PhoneBankingService.ToCents(account.balance));
+		}
+
+		if (m_wStatementName)
+		{
+			m_wStatementName.SetText(name);
+			m_wStatementName.SetColor(ELIFE_PhoneStyle.TextPrimary());
+		}
+
+		if (m_wStatementKind)
+		{
+			m_wStatementKind.SetText(kind);
+			m_wStatementKind.SetColor(ELIFE_PhoneStyle.TextSecondary());
+		}
+
+		//! The balance is the one number on this page that carries the app's accent.
+		if (m_wStatementBalance)
+		{
+			m_wStatementBalance.SetText(balance);
+			m_wStatementBalance.SetColor(m_Accent);
+		}
+
+		if (m_wNavTitle)
+			m_wNavTitle.SetText(name);
+
+		FillPosted();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -155,10 +197,17 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 		m_wStatementKind = TextWidget.Cast(m_wRoot.FindAnyWidget("StatementKind"));
 		m_wStatementBalance = TextWidget.Cast(m_wRoot.FindAnyWidget("StatementBalance"));
 
-		m_aAccounts = new array<ref ELIFE_PhoneBankAccount>();
 		m_aRowClicks = new array<ref ELIFE_PhoneBankRowClick>();
-		ELIFE_PhoneBankingService.GetAccounts(m_aAccounts);
+
+		if (!m_Phone)
+			return;
+
+		m_Phone.m_OnDataChanged.Insert(OnDataChanged);
+
+		//! Draw what we already have, then refresh - the fetch lands later via OnDataChanged.
+		ReadAccounts();
 		FillIndex();
+		m_Phone.RequestData(ELIFE_PhoneGadgetComponent.DATA_BANK_ACCOUNTS);
 
 		//! Actual visible page is set by Open()'s ApplySubState() call right after this, not here.
 	}
@@ -166,9 +215,42 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	protected override void OnClosing()
 	{
+		if (m_Phone)
+			m_Phone.m_OnDataChanged.Remove(OnDataChanged);
+
 		m_sOpenAccountId = "";
-		m_aAccounts = null;
+		m_Accounts = new ELIFE_BankAccountListDto();
+		m_Statement = null;
 		m_aRowClicks = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnDataChanged(string key)
+	{
+		if (key == ELIFE_PhoneGadgetComponent.DATA_BANK_ACCOUNTS)
+		{
+			ReadAccounts();
+			FillIndex();
+
+			//! The statement header falls back on the index row until its own payload lands.
+			if (m_sOpenAccountId != "")
+				FillStatement();
+
+			return;
+		}
+
+		if (m_sOpenAccountId != "" && key == StatementKey(m_sOpenAccountId))
+			FillStatement();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ReadAccounts()
+	{
+		m_Accounts = new ELIFE_BankAccountListDto();
+
+		string json = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_BANK_ACCOUNTS);
+		if (json != "")
+			m_Accounts.ExpandFromRAW(json);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -187,20 +269,24 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 
 		TrackScroll(m_wAccountScroll, m_wIndexTitle);
 
+		ApplyDataStatus(ELIFE_PhoneGadgetComponent.DATA_BANK_ACCOUNTS);
+
 		NotifySubStateChanged();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void FillIndex()
 	{
+		//! The overlay is shared, so only the page on screen gets to drive it.
+		if (m_sOpenAccountId == "")
+			ApplyDataStatus(ELIFE_PhoneGadgetComponent.DATA_BANK_ACCOUNTS);
+
 		if (m_aRowClicks)
 			m_aRowClicks.Clear();
 
 		ClearChildren(m_wAccountGroups);
 
-		int count = 0;
-		if (m_aAccounts)
-			count = m_aAccounts.Count();
+		int count = m_Accounts.items.Count();
 
 		if (m_wEmptyAccounts)
 			m_wEmptyAccounts.SetVisible(count == 0);
@@ -209,16 +295,15 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 			return;
 
 		//! Personal and company accounts get separate groups, same CreateListGroup() path as Contacts/Messages.
-		array<ref ELIFE_PhoneBankAccount> personal = {};
-		array<ref ELIFE_PhoneBankAccount> company = {};
+		array<ELIFE_BankAccountSummary> personal = {};
+		array<ELIFE_BankAccountSummary> company = {};
 
-		for (int i = 0; i < count; i++)
+		foreach (ELIFE_BankAccountSummary account : m_Accounts.items)
 		{
-			ELIFE_PhoneBankAccount account = m_aAccounts.Get(i);
 			if (!account)
 				continue;
 
-			if (account.m_eOwnerKind == ELIFE_EPhoneBankOwnerKind.COMPANY)
+			if (account.IsCompany())
 				company.Insert(account);
 			else
 				personal.Insert(account);
@@ -237,35 +322,30 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void FillAccountGroup(notnull array<ref ELIFE_PhoneBankAccount> accounts, string header, bool isFirst)
+	protected void FillAccountGroup(notnull array<ELIFE_BankAccountSummary> accounts, string header, bool isFirst)
 	{
 		Widget list = CreateListGroup(m_wAccountGroups, header, isFirst);
 		if (!list)
 			return;
 
-		int count = accounts.Count();
-		for (int i = 0; i < count; i++)
+		foreach (ELIFE_BankAccountSummary account : accounts)
 		{
-			ELIFE_PhoneBankAccount account = accounts.Get(i);
-			if (!account)
-				continue;
-
 			Widget row = CreateListRow(LAYOUT_ACCOUNT_ROW, list, false);
 			if (!row)
 				continue;
 
 			ELIFE_PhoneStyle.ApplyGlass(row, true);
 
-			//! Kind lives on the group header (Personal/Company) now, so it's not repeated per row.
-			SetTextAndColor(row, "AccountName", account.m_sName, ELIFE_PhoneStyle.TextPrimary());
-			SetTextAndColor(row, "AccountBalance", ELIFE_PhoneBankingService.FormatMoney(account.m_iBalanceCents), m_Accent);
+			//! Kind lives on the group header (Personal/Company), so the account number is the row's name.
+			SetTextAndColor(row, "AccountName", account.number, ELIFE_PhoneStyle.TextPrimary());
+			SetTextAndColor(row, "AccountBalance", ELIFE_PhoneBankingService.FormatMoney(ELIFE_PhoneBankingService.ToCents(account.balance)), m_Accent);
 
 			Widget buttonWidget = row.FindAnyWidget("AccountButton");
 			if (!buttonWidget)
 				buttonWidget = row;
 
 			ELIFE_PhoneBankRowClick click = new ELIFE_PhoneBankRowClick();
-			click.Bind(this, account.m_sId);
+			click.Bind(this, account.bankAccountId);
 			buttonWidget.AddHandler(click);
 			if (m_aRowClicks)
 				m_aRowClicks.Insert(click);
@@ -273,13 +353,12 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void FillPosted(notnull ELIFE_PhoneBankAccount account)
+	protected void FillPosted()
 	{
 		ClearChildren(m_wPostedList);
 
-		int count = 0;
-		if (account.m_aTransactions)
-			count = account.m_aTransactions.Count();
+		array<ELIFE_BankAccountTransaction> transactions = NewestFirst(m_Statement.items);
+		int count = transactions.Count();
 
 		if (m_wEmptyPosted)
 			m_wEmptyPosted.SetVisible(count == 0);
@@ -292,38 +371,90 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 
 		for (int i = 0; i < count; i++)
 		{
-			ELIFE_PhoneBankTransaction tx = account.m_aTransactions.Get(i);
-			if (!tx)
-				continue;
+			ELIFE_BankAccountTransaction tx = transactions.Get(i);
 
 			Widget row = CreateListRow(LAYOUT_TX_ROW, m_wPostedList, i == count - 1);
 			if (!row)
 				continue;
 
-			SetTextAndColor(row, "Memo", tx.m_sMemo, ELIFE_PhoneStyle.TextPrimary());
-			SetTextAndColor(row, "PostedAt", tx.m_sPostedAt, ELIFE_PhoneStyle.TextSecondary());
+			SetTextAndColor(row, "Memo", Memo(tx), ELIFE_PhoneStyle.TextPrimary());
+			SetTextAndColor(row, "PostedAt", FormatDayTime(tx.occurredAt), ELIFE_PhoneStyle.TextSecondary());
+
+			int cents = ELIFE_PhoneBankingService.ToCents(tx.amount);
+			if (tx.IsOutgoing())
+				cents = -cents;
 
 			//! Direction is shown by the figure's colour only, no edge stripe down the row.
 			Color amountColor = ELIFE_PhoneStyle.Positive();
-			if (tx.m_iAmountCents < 0)
+			if (cents < 0)
 				amountColor = ELIFE_PhoneStyle.Negative();
 
-			SetTextAndColor(row, "Amount", ELIFE_PhoneBankingService.FormatSignedMoney(tx.m_iAmountCents), amountColor);
+			SetTextAndColor(row, "Amount", ELIFE_PhoneBankingService.FormatSignedMoney(cents), amountColor);
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected ELIFE_PhoneBankAccount FindAccount(string accountId)
+	//! occurredAt is ISO-8601, so string order is chronological. Insertion sort - statements are short.
+	protected array<ELIFE_BankAccountTransaction> NewestFirst(notnull array<ref ELIFE_BankAccountTransaction> source)
 	{
-		if (!m_aAccounts || accountId == "")
+		array<ELIFE_BankAccountTransaction> sorted = {};
+
+		foreach (ELIFE_BankAccountTransaction tx : source)
+		{
+			if (!tx)
+				continue;
+
+			int slot = sorted.Count();
+			while (slot > 0 && sorted.Get(slot - 1).occurredAt < tx.occurredAt)
+				slot--;
+
+			sorted.InsertAt(tx, slot);
+		}
+
+		return sorted;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The kind, plus the fee when the bank took one - it's on top of the amount shown.
+	protected string Memo(notnull ELIFE_BankAccountTransaction tx)
+	{
+		string memo = WidgetManager.Translate(KindText(tx.kind));
+
+		int feeCents = ELIFE_PhoneBankingService.ToCents(tx.fee);
+		if (feeCents > 0)
+			memo += " · " + WidgetManager.Translate("#ELIFE-Phone_Bank_Fee", ELIFE_PhoneBankingService.FormatMoney(feeCents));
+
+		return memo;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An unknown kind shows as sent rather than blank.
+	protected string KindText(string kind)
+	{
+		if (kind == ELIFE_BankAccountTransaction.KIND_DEPOSITED)
+			return "#ELIFE-Phone_Bank_Kind_Deposited";
+
+		if (kind == ELIFE_BankAccountTransaction.KIND_WITHDRAWN)
+			return "#ELIFE-Phone_Bank_Kind_Withdrawn";
+
+		if (kind == ELIFE_BankAccountTransaction.KIND_TRANSFERRED_OUT)
+			return "#ELIFE-Phone_Bank_Kind_TransferredOut";
+
+		if (kind == ELIFE_BankAccountTransaction.KIND_TRANSFERRED_IN)
+			return "#ELIFE-Phone_Bank_Kind_TransferredIn";
+
+		return kind;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected ELIFE_BankAccountSummary FindAccount(string accountId)
+	{
+		if (accountId == "")
 			return null;
 
-		int i;
-		int count = m_aAccounts.Count();
-		for (i = 0; i < count; i++)
+		foreach (ELIFE_BankAccountSummary account : m_Accounts.items)
 		{
-			ELIFE_PhoneBankAccount account = m_aAccounts.Get(i);
-			if (account && account.m_sId == accountId)
+			if (account && account.bankAccountId == accountId)
 				return account;
 		}
 
@@ -331,18 +462,10 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected string KindLabel(notnull ELIFE_PhoneBankAccount account)
+	protected string KindLabel(notnull ELIFE_BankAccountSummary account)
 	{
-		if (account.m_eOwnerKind == ELIFE_EPhoneBankOwnerKind.COMPANY)
-		{
-			string company = WidgetManager.Translate("#ELIFE-Phone_Bank_Company");
-
-			//! Skip the owner suffix when it just repeats the account name already shown as the title.
-			if (account.m_sOwnerName != "" && account.m_sOwnerName != account.m_sName)
-				return company + " · " + account.m_sOwnerName;
-
-			return company;
-		}
+		if (account.IsCompany())
+			return WidgetManager.Translate("#ELIFE-Phone_Bank_Company");
 
 		return WidgetManager.Translate("#ELIFE-Phone_Bank_Personal");
 	}

@@ -642,5 +642,189 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
+  CustomStringTableItem "{330871A29A417E8D}" {
+   Id "ELIFE-Phone_Settings_NewPin"
+   Target_en_us "New PIN"
+   Target_de_de "Neue PIN"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{AD94B0F466B60625}" {
+   Id "ELIFE-Phone_Settings_NewPinHint"
+   Target_en_us "4 digits"
+   Target_de_de "4 Ziffern"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{03747AF58F294D75}" {
+   Id "ELIFE-Phone_Settings_PinInvalid"
+   Target_en_us "Enter 4 digits."
+   Target_de_de "4 Ziffern eingeben."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{0F859A5D77F308C6}" {
+   Id "ELIFE-Phone_Settings_PinError"
+   Target_en_us "Couldn't change the PIN. Try again."
+   Target_de_de "PIN konnte nicht geändert werden. Erneut versuchen."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{1F8A5C82E805F7B6}" {
+   Id "ELIFE-Phone_Contacts_Delete"
+   Target_en_us "Delete contact"
+   Target_de_de "Kontakt löschen"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{7EADA580B1D6836C}" {
+   Id "ELIFE-Phone_Contacts_DeleteConfirm"
+   Target_en_us "Tap again to delete"
+   Target_de_de "Zum Löschen erneut tippen"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{E09959063CE1C37D}" {
+   Id "ELIFE-Phone_Contacts_Deleting"
+   Target_en_us "Deleting…"
+   Target_de_de "Wird gelöscht…"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{4C4A3AA67B76DF25}" {
+   Id "ELIFE-Phone_Contacts_DeleteError"
+   Target_en_us "Couldn't delete. Try again."
+   Target_de_de "Löschen fehlgeschlagen. Erneut versuchen."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{999C2F115CD25B06}" {
+   Id "ELIFE-Phone_Messages_Block"
+   Target_en_us "Block"
+   Target_de_de "Blockieren"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{1A49A6075E777D18}" {
+   Id "ELIFE-Phone_Messages_Unblock"
+   Target_en_us "Unblock"
+   Target_de_de "Freigeben"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A9B59BF2C485E820}" {
+   Id "ELIFE-Phone_Messages_BlockPending"
+   Target_en_us "Updating…"
+   Target_de_de "Wird aktualisiert…"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{F1FFEA5EE2D55C28}" {
+   Id "ELIFE-Phone_Messages_BlockError"
+   Target_en_us "Try again"
+   Target_de_de "Erneut versuchen"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{AFE714B8AB21B4C6}" {
+   Id "ELIFE-Phone_Messages_Blocked"
+   Target_en_us "Blocked"
+   Target_de_de "Blockiert"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{8A2B8DCA99429012}" {
+   Id "ELIFE-Phone_Bank_Kind_Deposited"
+   Target_en_us "Deposit"
+   Target_de_de "Einzahlung"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{4AD9D4EC070B88D8}" {
+   Id "ELIFE-Phone_Bank_Kind_Withdrawn"
+   Target_en_us "Withdrawal"
+   Target_de_de "Auszahlung"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{27B66E26C741B6C2}" {
+   Id "ELIFE-Phone_Bank_Kind_TransferredOut"
+   Target_en_us "Transfer out"
+   Target_de_de "Überweisung ausgehend"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{9AC587DACA0C7884}" {
+   Id "ELIFE-Phone_Bank_Kind_TransferredIn"
+   Target_en_us "Transfer in"
+   Target_de_de "Überweisung eingehend"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{2369A67712F6AAFD}" {
+   Id "ELIFE-Phone_Bank_Fee"
+   Target_en_us "Fee %1"
+   Target_de_de "Gebühr %1"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{519D594D06593FFB}" {
+   Id "ELIFE-Phone_Contacts_Block"
+   Target_en_us "Block number"
+   Target_de_de "Nummer blockieren"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{6A9C6F77036786FC}" {
+   Id "ELIFE-Phone_Contacts_Unblock"
+   Target_en_us "Unblock number"
+   Target_de_de "Blockierung aufheben"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{C01FB6D5E38FAE98}" {
+   Id "ELIFE-Phone_Contacts_BlockError"
+   Target_en_us "Couldn't update the block. Try again."
+   Target_de_de "Blockierung konnte nicht geändert werden. Erneut versuchen."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{893E894DC02F3425}" {
+   Id "ELIFE-Phone_Messages_BlockedNote"
+   Target_en_us "You've blocked this number."
+   Target_de_de "Du hast diese Nummer blockiert."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{BE09FD6AB9F87721}" {
+   Id "ELIFE-Phone_Messages_ComposeBlocked"
+   Target_en_us "Unblock to send messages."
+   Target_de_de "Zum Senden Blockierung aufheben."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
  }
 }

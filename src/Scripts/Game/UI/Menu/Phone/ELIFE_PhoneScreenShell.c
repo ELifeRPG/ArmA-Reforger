@@ -128,7 +128,7 @@ class ELIFE_PhoneScreenShell
 	protected const float ICON_MARK_CAP = 1.38;
 
 	protected const int GRID_COLUMNS = 4;
-	protected const int PIN_LENGTH = 4;
+	protected const int PIN_LENGTH = ELIFE_PhoneGadgetComponent.PIN_LENGTH;
 	protected const int PIN_ERROR_HOLD_MS = 900;
 	protected const float PIN_KEY_DISABLED_OPACITY = 0.4;
 
@@ -369,6 +369,9 @@ class ELIFE_PhoneScreenShell
 
 		//! Home and lock resolve thread names through the contact book, so fetch contacts here too.
 		phone.RequestData(ELIFE_PhoneGadgetComponent.DATA_CONTACTS);
+
+		//! Home's balance card.
+		phone.RequestData(ELIFE_PhoneGadgetComponent.DATA_BANK_ACCOUNTS);
 
 		if (!m_bInteractive)
 			return;
@@ -799,6 +802,14 @@ class ELIFE_PhoneScreenShell
 	//! Home and lock only; open apps subscribe themselves.
 	protected void OnDataChanged(string key)
 	{
+		if (key == ELIFE_PhoneGadgetComponent.DATA_BANK_ACCOUNTS)
+		{
+			if (m_eState == EPhoneScreenState.HOME)
+				RefreshHomeScreen();
+
+			return;
+		}
+
 		if (key != ELIFE_PhoneGadgetComponent.DATA_MESSAGES && key != ELIFE_PhoneGadgetComponent.DATA_CONTACTS)
 			return;
 
@@ -1577,21 +1588,28 @@ class ELIFE_PhoneScreenShell
 	//------------------------------------------------------------------------------------------------
 	protected void BuildBalanceCard(notnull WorkspaceWidget workspace)
 	{
-		array<ref ELIFE_PhoneBankAccount> accounts = {};
-		ELIFE_PhoneBankingService.GetAccounts(accounts);
-		if (accounts.IsEmpty())
+		if (!m_Phone)
 			return;
 
-		ELIFE_PhoneBankAccount account = accounts.Get(0);
+		string json = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_BANK_ACCOUNTS);
+		if (json == "")
+			return;
+
+		ELIFE_BankAccountListDto accounts = new ELIFE_BankAccountListDto();
+		accounts.ExpandFromRAW(json);
+		if (accounts.items.IsEmpty())
+			return;
+
+		ELIFE_BankAccountSummary account = accounts.items.Get(0);
 
 		Widget card = CreateHomeCard(workspace, EPhoneScreenState.BANK);
 		if (!card)
 			return;
 
-		SetText(card, "CardLabel", account.m_sName);
+		SetText(card, "CardLabel", account.number);
 		ELIFE_PhoneStyle.SetColorOf(card, "CardLabel", ELIFE_PhoneStyle.TextPrimary());
 
-		SetText(card, "CardValue", ELIFE_PhoneBankingService.FormatMoney(account.m_iBalanceCents));
+		SetText(card, "CardValue", ELIFE_PhoneBankingService.FormatMoney(ELIFE_PhoneBankingService.ToCents(account.balance)));
 		ELIFE_PhoneStyle.SetTypeOf(card, "CardValue", ELIFE_PhoneStyle.TEXT_TITLE, true, ELIFE_PhoneStyle.AccentBank());
 	}
 
