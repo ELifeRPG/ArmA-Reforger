@@ -85,148 +85,198 @@ SizeLayoutWidgetClass {
      Slot OverlayWidgetSlot "{F426198792969458}" {
       HorizontalAlign 3
       VerticalAlign 3
-      Padding 16 0 8 0
+      Padding 0 0 8 0
      }
      {
-      SizeLayoutWidgetClass "{55277B5C64FE4B84}" {
-       Name "StoreBadgeSize"
-       Slot LayoutSlot "{5EF7D4ED15504979}" {
-        VerticalAlign 1
-        Padding 0 0 20 0
+      ButtonWidgetClass "{5B40D65FCE5CE2F5}" {
+       Name "StoreRowButton"
+       Slot LayoutSlot "{D32FAEDBE379165D}" {
+        SizeMode Fill
+        VerticalAlign 3
        }
-       AllowWidthOverride 1
-       WidthOverride 56
-       AllowHeightOverride 1
-       HeightOverride 56
+       Color 1 1 1 1
+       style blank
+       components {
+        SCR_ButtonTextComponent "{A55DDB686B09BD6A}" {
+         m_BackgroundDefault 0.910 0.929 0.973 0
+         m_BackgroundHovered 0.910 0.929 0.973 0.06
+         m_BackgroundSelected 0.910 0.929 0.973 0.12
+         m_BackgroundSelectedHovered 0.910 0.929 0.973 0.12
+         m_BackgroundClicked 0.910 0.929 0.973 0.12
+         m_sText ""
+        }
+       }
        {
-        OverlayWidgetClass "{EFF617D4C17110A2}" {
-         Name "StoreBadge"
-         Slot AlignableSlot "{D3F40D212FADC5B4}" {
+        OverlayWidgetClass "{EA2B01049C5540AA}" {
+         Name "ButtonSurface"
+         Slot ButtonWidgetSlot "{C8C9B871885C7D44}" {
           HorizontalAlign 3
           VerticalAlign 3
          }
          {
-          BlurWidgetClass "{28411119758101EA}" {
-           Name "GlassBlur"
-           Slot OverlayWidgetSlot "{59CBDCE0FA61AD77}" {
+          SmartPanelWidgetClass "{29EB5449BF7C9AE0}" {
+           Name "Background"
+           Slot OverlayWidgetSlot "{5F59517679AF76C9}" {
             HorizontalAlign 3
             VerticalAlign 3
            }
-           Color 1 1 1 1
-           Intensity 0.7
-          }
-          SmartPanelWidgetClass "{3C8136361C292F7F}" {
-           Name "GlassScrim"
-           Slot OverlayWidgetSlot "{0C70F0816D9956CF}" {
-            HorizontalAlign 3
-            VerticalAlign 3
-           }
-           Color 0.004 0.0048 0.0075 0.55
+           Color 0 0 0 0
            style rounded_12px
            "no focus" 1
           }
-          SmartPanelWidgetClass "{FB1E2727DC7775A2}" {
-           Name "GlassTint"
-           Slot OverlayWidgetSlot "{1AD52876B06B39A6}" {
+          HorizontalLayoutWidgetClass "{0F77BCAD0244CD6E}" {
+           Name "StoreRowInfo"
+           Slot OverlayWidgetSlot "{637FFC33AAA4E4D3}" {
             HorizontalAlign 3
             VerticalAlign 3
+            Padding 16 0 0 0
            }
-           Color 0.5837 0.6453 0.8073 0.14
-           style rounded_12px
-           "no focus" 1
-          }
-          SizeLayoutWidgetClass "{D6CF3908A49357D9}" {
-           Name "GlassSpecularSize"
-           Slot OverlayWidgetSlot "{457222C256D3C6AA}" {
-            HorizontalAlign 3
-            VerticalAlign 0
-            Padding 4 2 4 0
-           }
-           AllowHeightOverride 1
-           HeightOverride 2
            {
-            ImageWidgetClass "{73D2471624E2A1F0}" {
-             Name "GlassSpecular"
-             Slot AlignableSlot "{088BDF31AE1ADEF2}" {
-              HorizontalAlign 3
-              VerticalAlign 3
+            SizeLayoutWidgetClass "{55277B5C64FE4B84}" {
+             Name "StoreBadgeSize"
+             Slot LayoutSlot "{5EF7D4ED15504979}" {
+              VerticalAlign 1
+              Padding 0 0 20 0
              }
-             Color 0.8626 0.8964 0.964 0.18
+             AllowWidthOverride 1
+             WidthOverride 56
+             AllowHeightOverride 1
+             HeightOverride 56
+             {
+              OverlayWidgetClass "{EFF617D4C17110A2}" {
+               Name "StoreBadge"
+               Slot AlignableSlot "{D3F40D212FADC5B4}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               {
+                BlurWidgetClass "{28411119758101EA}" {
+                 Name "GlassBlur"
+                 Slot OverlayWidgetSlot "{59CBDCE0FA61AD77}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 1 1 1 1
+                 Intensity 0.7
+                }
+                SmartPanelWidgetClass "{3C8136361C292F7F}" {
+                 Name "GlassScrim"
+                 Slot OverlayWidgetSlot "{0C70F0816D9956CF}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 0.004 0.0048 0.0075 0.55
+                 style rounded_12px
+                 "no focus" 1
+                }
+                SmartPanelWidgetClass "{FB1E2727DC7775A2}" {
+                 Name "GlassTint"
+                 Slot OverlayWidgetSlot "{1AD52876B06B39A6}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 0.5837 0.6453 0.8073 0.14
+                 style rounded_12px
+                 "no focus" 1
+                }
+                SizeLayoutWidgetClass "{D6CF3908A49357D9}" {
+                 Name "GlassSpecularSize"
+                 Slot OverlayWidgetSlot "{457222C256D3C6AA}" {
+                  HorizontalAlign 3
+                  VerticalAlign 0
+                  Padding 4 2 4 0
+                 }
+                 AllowHeightOverride 1
+                 HeightOverride 2
+                 {
+                  ImageWidgetClass "{73D2471624E2A1F0}" {
+                   Name "GlassSpecular"
+                   Slot AlignableSlot "{088BDF31AE1ADEF2}" {
+                    HorizontalAlign 3
+                    VerticalAlign 3
+                   }
+                   Color 0.8626 0.8964 0.964 0.18
+                  }
+                 }
+                }
+                SizeLayoutWidgetClass "{1E752E6714DB0FD1}" {
+                 Name "GlassHairlineSize"
+                 Slot OverlayWidgetSlot "{61E9A34F8A204279}" {
+                  HorizontalAlign 3
+                  VerticalAlign 2
+                  Padding 4 0 4 0
+                 }
+                 AllowHeightOverride 1
+                 HeightOverride 2
+                 {
+                  ImageWidgetClass "{7B007B144864F426}" {
+                   Name "GlassHairline"
+                   Slot AlignableSlot "{5521A1F4F3044A06}" {
+                    HorizontalAlign 3
+                    VerticalAlign 3
+                   }
+                   Color 0.0015 0.0021 0.0033 0.26
+                  }
+                 }
+                }
+                TextWidgetClass "{4BB951AAC3E91AC4}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                 Name "StoreMark"
+                 Slot OverlayWidgetSlot "{B9AF19C8CF2FD80A}" {
+                  HorizontalAlign 1
+                  VerticalAlign 1
+                 }
+                 "Is Visible" 0
+                 Color 0.8378 0.8626 0.9222 1
+                 Text ""
+                 "Font Size" 40
+                 "Min Font Size" 40
+                 "Horizontal Alignment" Center
+                 FontProperties FontProperties "{582315A31AC2B00E}" {
+                  Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                 }
+                }
+                SizeLayoutWidgetClass "{A152A88648C11E4B}" {
+                 Name "StoreIconSize"
+                 Slot OverlayWidgetSlot "{C55DC088C17CF81D}" {
+                  HorizontalAlign 1
+                  VerticalAlign 1
+                 }
+                 AllowWidthOverride 1
+                 WidthOverride 44
+                 AllowHeightOverride 1
+                 HeightOverride 44
+                }
+                SmartPanelWidgetClass "{FB125E7B604E9AAC}" {
+                 Name "GlassGlow"
+                 Slot OverlayWidgetSlot "{F7E368711AE948E2}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 0.5837 0.6453 0.8073 0
+                 style rounded_12px
+                 "no focus" 1
+                }
+               }
+              }
+             }
+            }
+            TextWidgetClass "{D526073F52A69B67}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "StoreName"
+             Slot LayoutSlot "{C0FF3F626D0DF383}" {
+              SizeMode Fill
+              VerticalAlign 1
+             }
+             Color 0.8378 0.8626 0.9222 1
+             Text ""
+             "Font Size" 22
+             "Min Font Size" 20
+             "Horizontal Alignment" Left
             }
            }
-          }
-          SizeLayoutWidgetClass "{1E752E6714DB0FD1}" {
-           Name "GlassHairlineSize"
-           Slot OverlayWidgetSlot "{61E9A34F8A204279}" {
-            HorizontalAlign 3
-            VerticalAlign 2
-            Padding 4 0 4 0
-           }
-           AllowHeightOverride 1
-           HeightOverride 2
-           {
-            ImageWidgetClass "{7B007B144864F426}" {
-             Name "GlassHairline"
-             Slot AlignableSlot "{5521A1F4F3044A06}" {
-              HorizontalAlign 3
-              VerticalAlign 3
-             }
-             Color 0.0015 0.0021 0.0033 0.26
-            }
-           }
-          }
-          TextWidgetClass "{4BB951AAC3E91AC4}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-           Name "StoreMark"
-           Slot OverlayWidgetSlot "{B9AF19C8CF2FD80A}" {
-            HorizontalAlign 1
-            VerticalAlign 1
-           }
-           "Is Visible" 0
-           Color 0.8378 0.8626 0.9222 1
-           Text ""
-           "Font Size" 40
-           "Min Font Size" 40
-           "Horizontal Alignment" Center
-           FontProperties FontProperties "{582315A31AC2B00E}" {
-            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-           }
-          }
-          SizeLayoutWidgetClass "{A152A88648C11E4B}" {
-           Name "StoreIconSize"
-           Slot OverlayWidgetSlot "{C55DC088C17CF81D}" {
-            HorizontalAlign 1
-            VerticalAlign 1
-           }
-           AllowWidthOverride 1
-           WidthOverride 44
-           AllowHeightOverride 1
-           HeightOverride 44
-          }
-          SmartPanelWidgetClass "{FB125E7B604E9AAC}" {
-           Name "GlassGlow"
-           Slot OverlayWidgetSlot "{F7E368711AE948E2}" {
-            HorizontalAlign 3
-            VerticalAlign 3
-           }
-           Color 0.5837 0.6453 0.8073 0
-           style rounded_12px
-           "no focus" 1
           }
          }
         }
        }
-      }
-      TextWidgetClass "{D526073F52A69B67}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-       Name "StoreName"
-       Slot LayoutSlot "{C0FF3F626D0DF383}" {
-        SizeMode Fill
-        VerticalAlign 1
-       }
-       Color 0.8378 0.8626 0.9222 1
-       Text ""
-       "Font Size" 22
-       "Min Font Size" 20
-       "Horizontal Alignment" Left
       }
       SizeLayoutWidgetClass "{F2969CF194E32702}" {
        Name "StoreActionSize"

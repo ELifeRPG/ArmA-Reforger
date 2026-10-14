@@ -4,11 +4,11 @@ class ELIFE_PhoneAppEntry
 {
 	EPhoneScreenState m_eState;
 
-	//! The Bridge's appKey. Empty for apps the Bridge doesn't track.
+	//! The Bridge's appKey. Empty for an app the Bridge doesn't track.
 	string m_sAppKey;
 
-	//! Always present and never uninstallable. A system app with an appKey is still installed on the Bridge,
-	//! since its routes need that - see ELIFE_PhoneGadgetComponent.InstallMissingSystemApps().
+	//! Always present and never uninstallable. Still installed on the Bridge: older phones lack the newer
+	//! ones - see ELIFE_PhoneGadgetComponent.InstallMissingSystemApps().
 	bool m_bSystem;
 
 	string m_sLabel;
@@ -25,6 +25,14 @@ class ELIFE_PhoneAppEntry
 	//! Optical size trim, for marks carrying more or less ink than the rest.
 	float m_fIconScale;
 
+	//! Store detail page copy - see Describe().
+	string m_sTagline;
+	string m_sDescription;
+	string m_sCategory;
+
+	//! In-world brand, shown as-is rather than localized.
+	string m_sDeveloper;
+
 	//------------------------------------------------------------------------------------------------
 	void ELIFE_PhoneAppEntry(EPhoneScreenState state, string appKey, bool system, string label, ResourceName iconSet, string iconImage, string glyph, bool hasPage = true, float iconScale = 1.0)
 	{
@@ -40,6 +48,15 @@ class ELIFE_PhoneAppEntry
 	}
 
 	//------------------------------------------------------------------------------------------------
+	void Describe(string tagline, string description, string category, string developer)
+	{
+		m_sTagline = tagline;
+		m_sDescription = description;
+		m_sCategory = category;
+		m_sDeveloper = developer;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool IsSystem()
 	{
 		return m_bSystem;
@@ -51,6 +68,12 @@ class ELIFE_PhoneAppEntry
 //! installed on a phone; it has no list of what exists.
 class ELIFE_PhoneAppCatalog
 {
+	protected static const string CATEGORY_COMMUNICATION = "#ELIFE-Phone_Store_Category_Communication";
+	protected static const string CATEGORY_UTILITIES = "#ELIFE-Phone_Store_Category_Utilities";
+
+	//! Whoever ships the phone OS.
+	protected static const string DEVELOPER_SYSTEM = "Everon Mobile";
+
 	protected static ref array<ref ELIFE_PhoneAppEntry> s_aEntries;
 
 	//------------------------------------------------------------------------------------------------
@@ -60,13 +83,33 @@ class ELIFE_PhoneAppCatalog
 			return s_aEntries;
 
 		s_aEntries = {};
-		//! Keys must match the backend's AppKey enum (Phone.Domain/Apps/AppKey.cs).
-		s_aEntries.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.MESSAGES, "Messages", true, "#ELIFE-Phone_App_Messages", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "comments", ""));
-		s_aEntries.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.CONTACTS, "Contacts", true, "#ELIFE-Phone_App_Contacts", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "player", ""));
-		s_aEntries.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.BANK, "Bank", false, "#ELIFE-Phone_App_Bank", ResourceName.Empty, "", ELIFE_PhoneStyle.CURRENCY_SYMBOL));
-		s_aEntries.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.MAP, "Map", false, "#ELIFE-Phone_App_Map", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "compass", "", false));
-		s_aEntries.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.SETTINGS, "", true, "#ELIFE-Phone_App_Settings", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "settings", ""));
-		s_aEntries.Insert(new ELIFE_PhoneAppEntry(EPhoneScreenState.STORE, "", true, "#ELIFE-Phone_App_Store", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "download", ""));
+		ELIFE_PhoneAppEntry app;
+
+		//! Keys must match the backend's AppKey enum (Phone.Domain/Apps/AppKey.cs); system flags its AppCatalog.
+		app = new ELIFE_PhoneAppEntry(EPhoneScreenState.MESSAGES, "Messages", true, "#ELIFE-Phone_App_Messages", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "comments", "");
+		app.Describe("#ELIFE-Phone_App_Messages_Tagline", "#ELIFE-Phone_App_Messages_Description", CATEGORY_COMMUNICATION, DEVELOPER_SYSTEM);
+		s_aEntries.Insert(app);
+
+		app = new ELIFE_PhoneAppEntry(EPhoneScreenState.CONTACTS, "Contacts", true, "#ELIFE-Phone_App_Contacts", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "player", "");
+		app.Describe("#ELIFE-Phone_App_Contacts_Tagline", "#ELIFE-Phone_App_Contacts_Description", CATEGORY_COMMUNICATION, DEVELOPER_SYSTEM);
+		s_aEntries.Insert(app);
+
+		app = new ELIFE_PhoneAppEntry(EPhoneScreenState.BANK, "Bank", false, "#ELIFE-Phone_App_Bank", ResourceName.Empty, "", ELIFE_PhoneStyle.CURRENCY_SYMBOL);
+		app.Describe("#ELIFE-Phone_App_Bank_Tagline", "#ELIFE-Phone_App_Bank_Description", "#ELIFE-Phone_Store_Category_Finance", "Bank of Everon");
+		s_aEntries.Insert(app);
+
+		app = new ELIFE_PhoneAppEntry(EPhoneScreenState.MAP, "Map", false, "#ELIFE-Phone_App_Map", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "compass", "", false);
+		app.Describe("#ELIFE-Phone_App_Map_Tagline", "#ELIFE-Phone_App_Map_Description", "#ELIFE-Phone_Store_Category_Navigation", "Everon Maps");
+		s_aEntries.Insert(app);
+
+		app = new ELIFE_PhoneAppEntry(EPhoneScreenState.SETTINGS, "Settings", true, "#ELIFE-Phone_App_Settings", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "settings", "");
+		app.Describe("#ELIFE-Phone_App_Settings_Tagline", "#ELIFE-Phone_App_Settings_Description", CATEGORY_UTILITIES, DEVELOPER_SYSTEM);
+		s_aEntries.Insert(app);
+
+		app = new ELIFE_PhoneAppEntry(EPhoneScreenState.STORE, "Store", true, "#ELIFE-Phone_App_Store", ELIFE_PhoneStyle.ICON_SET_WRAPPER, "download", "");
+		app.Describe("#ELIFE-Phone_App_Store_Tagline", "#ELIFE-Phone_App_Store_Description", CATEGORY_UTILITIES, DEVELOPER_SYSTEM);
+		s_aEntries.Insert(app);
+
 		return s_aEntries;
 	}
 

@@ -922,5 +922,189 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
+  CustomStringTableItem "{F885840739F45C4D}" {
+   Id "ELIFE-Phone_Store_Open"
+   Target_en_us "Open"
+   Target_de_de "Öffnen"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{69E6E85283E37B45}" {
+   Id "ELIFE-Phone_Store_NotInstalled"
+   Target_en_us "Not installed"
+   Target_de_de "Nicht installiert"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{79148B655BC1573C}" {
+   Id "ELIFE-Phone_Store_About"
+   Target_en_us "About"
+   Target_de_de "Über diese App"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{0335C15A53FC3FB0}" {
+   Id "ELIFE-Phone_Store_Information"
+   Target_en_us "Information"
+   Target_de_de "Informationen"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{67A60FD8A83B62BB}" {
+   Id "ELIFE-Phone_Store_Developer"
+   Target_en_us "Developer"
+   Target_de_de "Entwickler"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{DCDEA9E7BBE69E21}" {
+   Id "ELIFE-Phone_Store_Category"
+   Target_en_us "Category"
+   Target_de_de "Kategorie"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{65AC7B28730266D0}" {
+   Id "ELIFE-Phone_Store_Status"
+   Target_en_us "Status"
+   Target_de_de "Status"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{5600FCFC20385A57}" {
+   Id "ELIFE-Phone_Store_Category_Communication"
+   Target_en_us "Communication"
+   Target_de_de "Kommunikation"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{B49229914A4BEE0A}" {
+   Id "ELIFE-Phone_Store_Category_Finance"
+   Target_en_us "Finance"
+   Target_de_de "Finanzen"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{56352FD1D93ECFB6}" {
+   Id "ELIFE-Phone_Store_Category_Navigation"
+   Target_en_us "Navigation"
+   Target_de_de "Navigation"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{15EED637F69DD588}" {
+   Id "ELIFE-Phone_Store_Category_Utilities"
+   Target_en_us "Utilities"
+   Target_de_de "Werkzeuge"
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{253B62F708D1C5F4}" {
+   Id "ELIFE-Phone_App_Messages_Tagline"
+   Target_en_us "Text anyone on the island."
+   Target_de_de "Schreib jedem auf der Insel."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{7C0D3A63DDA6B135}" {
+   Id "ELIFE-Phone_App_Messages_Description"
+   Target_en_us "Send and receive text messages with anyone who has a phone. Conversations are grouped per person, and unknown numbers can be saved straight to your contacts."
+   Target_de_de "Sende und empfange Nachrichten mit allen, die ein Telefon haben. Unterhaltungen werden pro Person gruppiert, und unbekannte Nummern lassen sich direkt in deinen Kontakten speichern."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{98FF80648F407912}" {
+   Id "ELIFE-Phone_App_Contacts_Tagline"
+   Target_en_us "Everyone you know, in one place."
+   Target_de_de "Alle, die du kennst, an einem Ort."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{4B814D5A14DD8FFC}" {
+   Id "ELIFE-Phone_App_Contacts_Description"
+   Target_en_us "Save the people you deal with under a name instead of a number. Block numbers you'd rather not hear from, and start a conversation right from a contact."
+   Target_de_de "Speichere die Leute, mit denen du zu tun hast, unter einem Namen statt einer Nummer. Blockiere Nummern, von denen du nichts hören willst, und starte eine Unterhaltung direkt aus einem Kontakt."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{BFD67CF0DC880EDF}" {
+   Id "ELIFE-Phone_App_Bank_Tagline"
+   Target_en_us "Your accounts, always at hand."
+   Target_de_de "Deine Konten, immer griffbereit."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{80296C4070246D72}" {
+   Id "ELIFE-Phone_App_Bank_Description"
+   Target_en_us "Keep an eye on your personal and company accounts and look through recent transactions, wherever you are."
+   Target_de_de "Behalte deine privaten und Firmenkonten im Blick und sieh dir die letzten Buchungen an, egal wo du bist."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{F3D1130DBB7FFBCB}" {
+   Id "ELIFE-Phone_App_Map_Tagline"
+   Target_en_us "Find your way around Everon."
+   Target_de_de "Finde dich auf Everon zurecht."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{635EF4904EE536A6}" {
+   Id "ELIFE-Phone_App_Map_Description"
+   Target_en_us "Opens a full-screen map of the island, so you always know where you are and where you're headed."
+   Target_de_de "Öffnet eine Vollbildkarte der Insel, damit du immer weißt, wo du bist und wohin es geht."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{C299F8C2CDAD061D}" {
+   Id "ELIFE-Phone_App_Settings_Tagline"
+   Target_en_us "Make the phone your own."
+   Target_de_de "Mach das Telefon zu deinem."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{FDE053792AF8C84E}" {
+   Id "ELIFE-Phone_App_Settings_Description"
+   Target_en_us "Lock your phone with a PIN, change it, and look up your number and device details."
+   Target_de_de "Sperre dein Telefon mit einer PIN, ändere sie und sieh deine Nummer und Gerätedaten nach."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{E7E10ED499DF0F2C}" {
+   Id "ELIFE-Phone_App_Store_Tagline"
+   Target_en_us "Get more out of your phone."
+   Target_de_de "Hol mehr aus deinem Telefon heraus."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{48421C9D2ACA2E6C}" {
+   Id "ELIFE-Phone_App_Store_Description"
+   Target_en_us "Browse every app available for your phone. Install the ones you need and remove the ones you don't."
+   Target_de_de "Stöbere durch alle Apps für dein Telefon. Installiere, was du brauchst, und entferne, was du nicht brauchst."
+   Modified 1791763200
+   Author "Robin"
+   LastChanged "Robin"
+  }
  }
 }
