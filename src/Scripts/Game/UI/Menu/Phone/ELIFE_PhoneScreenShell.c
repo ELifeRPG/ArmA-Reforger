@@ -413,6 +413,10 @@ class ELIFE_PhoneScreenShell
 	//! Cross-app jump requested from inside an app, held for a frame - see RequestAppPage().
 	protected EPhoneScreenState m_ePendingApp;
 	protected string m_sPendingSubState;
+
+	//! Settings' Adjust home screen: go home, then enter edit - see RequestHomeEdit().
+	protected bool m_bPendingHomeEdit;
+
 	protected ref ScriptInvoker m_OnHomePill = new ScriptInvoker();
 	protected ref ScriptInvoker m_OnBack = new ScriptInvoker();
 
@@ -612,6 +616,7 @@ class ELIFE_PhoneScreenShell
 		GetGame().GetCallqueue().Remove(OnUnlockTimeout);
 		GetGame().GetCallqueue().Remove(TickPinBlock);
 		GetGame().GetCallqueue().Remove(FlushPendingApp);
+		GetGame().GetCallqueue().Remove(FlushPendingHomeEdit);
 		GetGame().GetCallqueue().Remove(BuildHomeGrid);
 		GetGame().GetCallqueue().Remove(RefreshLiveWidgets);
 		DestroyWidgetSheet();
@@ -620,6 +625,7 @@ class ELIFE_PhoneScreenShell
 		m_bGridStale = false;
 		ClearHomeDrag();
 		m_bEditingHome = false;
+		m_bPendingHomeEdit = false;
 
 		if (m_wHomeScreen && m_HomeBackdrop)
 			m_wHomeScreen.RemoveHandler(m_HomeBackdrop);
@@ -979,6 +985,32 @@ class ELIFE_PhoneScreenShell
 		m_bEditingHome = true;
 		ShowStatusBar(false);
 		RefreshEditBar();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Leaves the open app and enters home edit. Deferred: the caller is a click in the app this closes.
+	void RequestHomeEdit()
+	{
+		if (!m_bInteractive)
+			return;
+
+		m_bPendingHomeEdit = true;
+		GetGame().GetCallqueue().Remove(FlushPendingHomeEdit);
+		GetGame().GetCallqueue().CallLater(FlushPendingHomeEdit, 0, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FlushPendingHomeEdit()
+	{
+		if (!m_bPendingHomeEdit)
+			return;
+
+		m_bPendingHomeEdit = false;
+
+		if (m_eState != EPhoneScreenState.HOME)
+			m_OnAppRequested.Invoke(EPhoneScreenState.HOME, "");
+
+		EnterHomeEdit();
 	}
 
 	//------------------------------------------------------------------------------------------------

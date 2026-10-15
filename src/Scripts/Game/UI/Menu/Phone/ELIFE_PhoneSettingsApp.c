@@ -91,6 +91,7 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 		TrackScroll(m_wSettingsScroll, TextWidget.Cast(m_wRoot.FindAnyWidget("LargeTitle")));
 
 		ELIFE_PhoneStyle.ApplyGlass(m_wRoot.FindAnyWidget("DeviceCard"), true);
+		ELIFE_PhoneStyle.ApplyGlass(m_wRoot.FindAnyWidget("HomeCard"), true);
 		ELIFE_PhoneStyle.ApplyGlass(m_wRoot.FindAnyWidget("NotificationsCard"), true);
 		ELIFE_PhoneStyle.ApplyGlass(m_wRoot.FindAnyWidget("SecurityCard"), true);
 
@@ -139,6 +140,10 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 		SCR_ButtonTextComponent pinRevealButton = SCR_ButtonTextComponent.GetButtonText("ButtonPinReveal", m_wRoot);
 		if (pinRevealButton)
 			pinRevealButton.m_OnClicked.Insert(OnPinRevealToggle);
+
+		SCR_ButtonTextComponent adjustHomeButton = SCR_ButtonTextComponent.GetButtonText("ButtonAdjustHome", m_wRoot);
+		if (adjustHomeButton)
+			adjustHomeButton.m_OnClicked.Insert(OnAdjustHome);
 
 		//! Lock is this app's primary action, so it is the one row that carries the accent.
 		if (m_wLockLabel)
@@ -400,6 +405,14 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 			return;
 
 		PaintToggle(m_wDndTrack, m_wDndKnob, m_Phone.IsDoNotDisturb());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Same edit mode as a long-press on the home screen, for anyone who doesn't find the hold.
+	protected void OnAdjustHome()
+	{
+		if (m_Shell)
+			m_Shell.RequestHomeEdit();
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -321,6 +321,190 @@ OverlayWidgetClass {
         }
        }
       }
+      TextWidgetClass "{184E286DA63EB0D7}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "SectionHome"
+       Slot LayoutSlot "{38D99A65A4A95342}" {
+        Padding 28 32 28 8
+       }
+       Color 0.1715 0.1942 0.2664 1
+       Text "#ELIFE-Phone_Settings_Section_Home"
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Left
+      }
+      OverlayWidgetClass "{2C45F96ABF9F6A77}" {
+       Name "HomeCard"
+       Slot LayoutSlot "{7B4A54AD700645CD}" {
+        Padding 24 0 24 0
+       }
+       {
+        BlurWidgetClass "{5BC4D4A190AA2772}" {
+         Name "GlassBlur"
+         Slot OverlayWidgetSlot "{10D510FFCB492B1B}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 1 1 1 1
+         Intensity 0.7
+        }
+        SmartPanelWidgetClass "{73194379A63C7EE1}" {
+         Name "GlassScrim"
+         Slot OverlayWidgetSlot "{9ABAC0BD9C049846}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.004 0.0048 0.0075 0.55
+         style rounded_12px
+         "no focus" 1
+        }
+        SmartPanelWidgetClass "{9103D0E90369C216}" {
+         Name "GlassTint"
+         Slot OverlayWidgetSlot "{4DABAC8E225D4A41}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.5837 0.6453 0.8073 0.14
+         style rounded_12px
+         "no focus" 1
+        }
+        SizeLayoutWidgetClass "{54DD9C4C858665CA}" {
+         Name "GlassSpecularSize"
+         Slot OverlayWidgetSlot "{36C38CFA6798D06A}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 12 0 12 0
+         }
+         AllowHeightOverride 1
+         HeightOverride 2
+         {
+          ImageWidgetClass "{2AF1E2D9B74EC660}" {
+           Name "GlassSpecular"
+           Slot AlignableSlot "{4BA7206C883CAB6E}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.8626 0.8964 0.964 0.18
+          }
+         }
+        }
+        SizeLayoutWidgetClass "{2930EEC43D4CD25E}" {
+         Name "GlassHairlineSize"
+         Slot OverlayWidgetSlot "{432F4B9764113507}" {
+          HorizontalAlign 3
+          VerticalAlign 2
+          Padding 12 0 12 0
+         }
+         AllowHeightOverride 1
+         HeightOverride 2
+         {
+          ImageWidgetClass "{6D952DD3D8332080}" {
+           Name "GlassHairline"
+           Slot AlignableSlot "{DF156E87C0C81D38}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.0015 0.0021 0.0033 0.26
+          }
+         }
+        }
+        VerticalLayoutWidgetClass "{A76DE81E0710EA02}" {
+         Name "HomeCardRows"
+         Slot OverlayWidgetSlot "{BC4B03E5E8877B1A}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+         }
+         {
+          SizeLayoutWidgetClass "{47E8436A93298A32}" {
+           Name "AdjustHomeRowSize"
+           Slot LayoutSlot "{598DF06335DC82C3}" {
+            SizeMode Fill
+           }
+           AllowHeightOverride 1
+           HeightOverride 60
+           {
+            ButtonWidgetClass "{845E3CF1FA98BD2B}" {
+             Name "ButtonAdjustHome"
+             Slot AlignableSlot "{E242800F5A329EAF}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 1 1 1 1
+             style blank
+             components {
+              SCR_ButtonTextComponent "{C1F8A2B3D4E5F607}" {
+               m_BackgroundDefault 0.910 0.929 0.973 0
+               m_BackgroundHovered 0.910 0.929 0.973 0.06
+               m_BackgroundSelected 0.910 0.929 0.973 0.12
+               m_BackgroundSelectedHovered 0.910 0.929 0.973 0.12
+               m_BackgroundClicked 0.910 0.929 0.973 0.12
+               m_sText ""
+              }
+             }
+             {
+              OverlayWidgetClass "{D2E9B3C4F5A60718}" {
+               Name "ButtonSurface"
+               Slot ButtonWidgetSlot "{E3FAD4C5A6B71829}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               {
+                SmartPanelWidgetClass "{F40BE5D6B7C8293A}" {
+                 Name "Background"
+                 Slot OverlayWidgetSlot "{051CF6E7C8D93A4B}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 0 0 0 0
+                 style rounded_12px
+                 "no focus" 1
+                }
+                HorizontalLayoutWidgetClass "{162D07F8D9EA4B5C}" {
+                 Name "AdjustHomeRowBody"
+                 Slot OverlayWidgetSlot "{273E18A9EAFB5C6D}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                  Padding 20 0 20 0
+                 }
+                 {
+                  TextWidgetClass "{384F29BAFB0C6D7E}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                   Name "AdjustHomeLabel"
+                   Slot LayoutSlot "{495A3ACB0C1D7E8F}" {
+                    SizeMode Fill
+                    VerticalAlign 1
+                   }
+                   Color 0.8378 0.8626 0.9222 1
+                   Text "#ELIFE-Phone_Settings_AdjustHome"
+                   "Font Size" 22
+                   "Min Font Size" 20
+                   "Horizontal Alignment" Left
+                  }
+                  TextWidgetClass "{5A6B4BDC1D2E8F90}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                   Name "AdjustHomeChevron"
+                   Slot LayoutSlot "{6B7C5CED2E3F90A1}" {
+                    VerticalAlign 1
+                    Padding 16 0 0 0
+                   }
+                   Color 0.1715 0.1942 0.2664 1
+                   Text "›"
+                   "Font Size" 30
+                   "Min Font Size" 30
+                   "Horizontal Alignment" 2
+                   FontProperties FontProperties "{7C8D6DFE3F40A1B2}" {
+                    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
       TextWidgetClass "{5E10A4C7B2D93F01}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
        Name "SectionNotifications"
        Slot LayoutSlot "{5E10A4C7B2D93F02}" {

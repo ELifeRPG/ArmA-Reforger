@@ -1138,6 +1138,22 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
+  CustomStringTableItem "{8A9B0C1D2E3F4A5B}" {
+   Id "ELIFE-Phone_Settings_Section_Home"
+   Target_en_us "Home screen"
+   Target_de_de "Startbildschirm"
+   Modified 1792100000
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{9B0C1D2E3F4A5B6C}" {
+   Id "ELIFE-Phone_Settings_AdjustHome"
+   Target_en_us "Adjust home screen"
+   Target_de_de "Startbildschirm anpassen"
+   Modified 1792100000
+   Author "Robin"
+   LastChanged "Robin"
+  }
   CustomStringTableItem "{191F236C60FC756A}" {
    Id "ELIFE-Phone_Home_Wallpaper"
    Target_en_us "Wallpaper"
