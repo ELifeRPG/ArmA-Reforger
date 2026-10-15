@@ -46,6 +46,11 @@ enfusion-codegen generate http://127.0.0.1:5200/openapi/v1.json \
   --output src/Scripts/Game/Core --prefix ELIFE_
 ```
 
+Messages polling has no client cursor: `GET .../apps/messages/updates` returns only
+unretrieved messages, and `POST .../apps/messages/updates/ack` advances the server
+watermark per thread (`highestSequence` → `throughSequence`). The phone gadget merges
+then acks; skipping the ack makes every poll redeliver the same batch.
+
 - `Api/ELIFE_Api_<Tag>.c` — one method per endpoint on `ELIFE_Api`.
 - `Api/Structs/` — request/response structs (`JsonApiStruct`) and enums.
 - `Api/Callbacks/` — one callback per response type, parsing the body into its struct.

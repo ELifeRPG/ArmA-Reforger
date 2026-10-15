@@ -5,6 +5,8 @@ class ELIFE_MessageThreadUpdate : JsonApiStruct
 	ref array<string> participants = {};
 	int unreadCount;
 	string lastMessageAt;
+	int retrievedThrough;
+	int highestSequence;
 	ref array<ref ELIFE_PhoneMessage> messages = {};
 
 	void ELIFE_MessageThreadUpdate()
@@ -13,6 +15,8 @@ class ELIFE_MessageThreadUpdate : JsonApiStruct
 		RegV("participants");
 		RegV("unreadCount");
 		RegV("lastMessageAt");
+		RegV("retrievedThrough");
+		RegV("highestSequence");
 		RegV("messages");
 	}
 }

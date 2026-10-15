@@ -227,8 +227,7 @@ class ELIFE_PhoneScreenShell
 	protected const float SWATCH_CHECK_SIZE = 22;
 	protected const int SWATCHES_PER_ROW = 5;
 
-	//! Box for a status bar glyph. sound-off carries wide transparent padding - its mark is about half
-	//! the box - so this lands its ink level with the battery.
+	//! sound-off's transparent padding is ~half the cell; 30 lands the mark with the battery.
 	protected const float STATUS_ICON_BOX = 30;
 
 	protected const string ICON_DND = "sound-off";

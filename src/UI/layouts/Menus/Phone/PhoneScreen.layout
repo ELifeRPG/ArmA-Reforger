@@ -1003,7 +1003,7 @@ OverlayWidgetClass {
          Name "StatusDndSize"
          Slot LayoutSlot "{28965962427179A8}" {
           VerticalAlign 1
-          Padding 0 0 12 0
+          Padding 0 0 14 0
          }
          "Is Visible" 0
          AllowWidthOverride 1
@@ -1022,117 +1022,125 @@ OverlayWidgetClass {
           }
          }
         }
-        SizeLayoutWidgetClass "{3F64200048168010}" {
-         Name "Signal0Size"
-         Slot LayoutSlot "{6022A9A9DB66BF51}" {
-          VerticalAlign 2
-          Padding 0 0 2 0
-         }
-         AllowWidthOverride 1
-         WidthOverride 4
-         AllowHeightOverride 1
-         HeightOverride 6
-         {
-          ImageWidgetClass "{1F2E811D812CCA5F}" {
-           Name "Signal0"
-           Slot AlignableSlot "{099C70527B12DE2B}" {
-            HorizontalAlign 3
-            VerticalAlign 3
-           }
-           Color 0.8378 0.8626 0.9222 1
-          }
-         }
-        }
-        SizeLayoutWidgetClass "{0D0840F922ACD686}" {
-         Name "Signal1Size"
-         Slot LayoutSlot "{EED98305EA5F6D20}" {
-          VerticalAlign 2
-          Padding 0 0 2 0
-         }
-         AllowWidthOverride 1
-         WidthOverride 4
-         AllowHeightOverride 1
-         HeightOverride 10
-         {
-          ImageWidgetClass "{7B67D45DA897CBE0}" {
-           Name "Signal1"
-           Slot AlignableSlot "{82D0934FA0D1780C}" {
-            HorizontalAlign 3
-            VerticalAlign 3
-           }
-           Color 0.8378 0.8626 0.9222 1
-          }
-         }
-        }
-        SizeLayoutWidgetClass "{2BF4F05019EDC6F4}" {
-         Name "Signal2Size"
-         Slot LayoutSlot "{83D60832DB56D297}" {
-          VerticalAlign 2
-          Padding 0 0 14 0
-         }
-         AllowWidthOverride 1
-         WidthOverride 4
-         AllowHeightOverride 1
-         HeightOverride 14
-         {
-          ImageWidgetClass "{6437404379059216}" {
-           Name "Signal2"
-           Slot AlignableSlot "{8A4785D431DA426B}" {
-            HorizontalAlign 3
-            VerticalAlign 3
-           }
-           Color 0.1715 0.1942 0.2664 1
-          }
-         }
-        }
-        SizeLayoutWidgetClass "{FA6C6376DE6E50E9}" {
-         Name "BatteryShellSize"
-         Slot LayoutSlot "{11F2E820B6B3E2C2}" {
+        HorizontalLayoutWidgetClass "{B7E41C90A2F38D01}" {
+         Name "StatusSignalBattery"
+         Slot LayoutSlot "{B7E41C90A2F38D02}" {
           VerticalAlign 1
          }
-         AllowWidthOverride 1
-         WidthOverride 28
-         AllowHeightOverride 1
-         HeightOverride 16
          {
-          OverlayWidgetClass "{43BF911956409FA9}" {
-           Name "BatteryShell"
-           Slot AlignableSlot "{C82FDEBDB6840985}" {
-            HorizontalAlign 3
-            VerticalAlign 3
+          SizeLayoutWidgetClass "{3F64200048168010}" {
+           Name "Signal0Size"
+           Slot LayoutSlot "{6022A9A9DB66BF51}" {
+            VerticalAlign 2
+            Padding 0 0 2 0
            }
+           AllowWidthOverride 1
+           WidthOverride 4
+           AllowHeightOverride 1
+           HeightOverride 6
            {
-            SmartPanelWidgetClass "{FBC287114A77E29A}" {
-             Name "BatteryCase"
-             Slot OverlayWidgetSlot "{C8F5E020E7004463}" {
+            ImageWidgetClass "{1F2E811D812CCA5F}" {
+             Name "Signal0"
+             Slot AlignableSlot "{099C70527B12DE2B}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0.8378 0.8626 0.9222 1
+            }
+           }
+          }
+          SizeLayoutWidgetClass "{0D0840F922ACD686}" {
+           Name "Signal1Size"
+           Slot LayoutSlot "{EED98305EA5F6D20}" {
+            VerticalAlign 2
+            Padding 0 0 2 0
+           }
+           AllowWidthOverride 1
+           WidthOverride 4
+           AllowHeightOverride 1
+           HeightOverride 10
+           {
+            ImageWidgetClass "{7B67D45DA897CBE0}" {
+             Name "Signal1"
+             Slot AlignableSlot "{82D0934FA0D1780C}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0.8378 0.8626 0.9222 1
+            }
+           }
+          }
+          SizeLayoutWidgetClass "{2BF4F05019EDC6F4}" {
+           Name "Signal2Size"
+           Slot LayoutSlot "{83D60832DB56D297}" {
+            VerticalAlign 2
+            Padding 0 0 14 0
+           }
+           AllowWidthOverride 1
+           WidthOverride 4
+           AllowHeightOverride 1
+           HeightOverride 14
+           {
+            ImageWidgetClass "{6437404379059216}" {
+             Name "Signal2"
+             Slot AlignableSlot "{8A4785D431DA426B}" {
               HorizontalAlign 3
               VerticalAlign 3
              }
              Color 0.1715 0.1942 0.2664 1
-             style rounded_4px
-             "no focus" 1
             }
-            SizeLayoutWidgetClass "{B635ED978CA9D6B6}" {
-             Name "BatteryLevelSize"
-             Slot OverlayWidgetSlot "{F6BCDE0E7D4E7AF2}" {
-              HorizontalAlign 0
-              VerticalAlign 1
-              Padding 4 0 0 0
+           }
+          }
+          SizeLayoutWidgetClass "{FA6C6376DE6E50E9}" {
+           Name "BatteryShellSize"
+           Slot LayoutSlot "{11F2E820B6B3E2C2}" {
+            VerticalAlign 1
+           }
+           AllowWidthOverride 1
+           WidthOverride 28
+           AllowHeightOverride 1
+           HeightOverride 16
+           {
+            OverlayWidgetClass "{43BF911956409FA9}" {
+             Name "BatteryShell"
+             Slot AlignableSlot "{C82FDEBDB6840985}" {
+              HorizontalAlign 3
+              VerticalAlign 3
              }
-             AllowWidthOverride 1
-             WidthOverride 16
-             AllowHeightOverride 1
-             HeightOverride 8
              {
-              SmartPanelWidgetClass "{7CB8AB0C290ED96F}" {
-               Name "BatteryLevel"
-               Slot AlignableSlot "{7D0D124F9C42AF73}" {
+              SmartPanelWidgetClass "{FBC287114A77E29A}" {
+               Name "BatteryCase"
+               Slot OverlayWidgetSlot "{C8F5E020E7004463}" {
                 HorizontalAlign 3
                 VerticalAlign 3
                }
-               Color 0.8378 0.8626 0.9222 1
+               Color 0.1715 0.1942 0.2664 1
                style rounded_4px
                "no focus" 1
+              }
+              SizeLayoutWidgetClass "{B635ED978CA9D6B6}" {
+               Name "BatteryLevelSize"
+               Slot OverlayWidgetSlot "{F6BCDE0E7D4E7AF2}" {
+                HorizontalAlign 0
+                VerticalAlign 1
+                Padding 4 0 0 0
+               }
+               AllowWidthOverride 1
+               WidthOverride 16
+               AllowHeightOverride 1
+               HeightOverride 8
+               {
+                SmartPanelWidgetClass "{7CB8AB0C290ED96F}" {
+                 Name "BatteryLevel"
+                 Slot AlignableSlot "{7D0D124F9C42AF73}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 0.8378 0.8626 0.9222 1
+                 style rounded_4px
+                 "no focus" 1
+                }
+               }
               }
              }
             }

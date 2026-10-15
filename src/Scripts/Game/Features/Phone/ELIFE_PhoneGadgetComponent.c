@@ -180,6 +180,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected ref ELIFE_SavedContactCallback m_SaveContactCallback;
 	protected ref ELIFE_SentMessageCallback m_SendMessageCallback;
 	protected ref ELIFE_BaseRestCallback m_MarkThreadReadCallback;
+	protected ref ELIFE_AckedPhoneMessagesCallback m_AckMessagesCallback;
 	protected ref ELIFE_BaseRestCallback m_ChangePinCallback;
 	protected ref ELIFE_BaseRestCallback m_DeleteContactCallback;
 	protected ref ELIFE_BaseRestCallback m_BlockCallback;
@@ -192,6 +193,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected bool m_bPendingBlock;
 	protected string m_sPendingAppKey;
 	protected bool m_bPendingInstall;
+	//! Generated mark-read callback only echoes phoneId — serialize so we know which thread to clear.
+	protected string m_sPendingReadThreadId;
+	protected ref array<string> m_aMarkReadQueue = {};
 	protected int m_iSystemInstallsPending;
 	protected bool m_bSystemInstallLanded;
 
@@ -295,10 +299,11 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//! threadId -> unread count at dismissal; a higher count notifies again. Local only, never replicated.
 	protected ref map<string, int> m_mDismissedNotifications = new map<string, int>();
 
+	//! Threads the owner just marked read — hold unread at 0 across stale polls until fresh messageIds arrive.
+	protected ref map<string, bool> m_mLocallyClearedUnread = new map<string, bool>();
+
 	protected const int DATA_CACHE_TTL_MS = 15000;
 
-	//! Server-only. polledAt of the last updates response; empty fetches every thread whole.
-	protected string m_sMessagesCursor;
 
 	//! Server-only. The in-flight fetch is the background poll, whose failure mustn't error the owner's app.
 	protected bool m_bPollInFlight;
@@ -1198,11 +1203,39 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_MarkThreadRead(string threadId)
 	{
+		if (m_sPhoneId == "" || threadId == "")
+			return;
+
+		if (m_sPendingReadThreadId != "")
+		{
+			m_aMarkReadQueue.Insert(threadId);
+			return;
+		}
+
+		BeginMarkThreadRead(threadId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void BeginMarkThreadRead(string threadId)
+	{
 		ELIFE_Api api = ELIFE_Api.GetInstance();
 		if (m_sPhoneId == "" || threadId == "" || !api)
 			return;
 
+		m_sPendingReadThreadId = threadId;
 		m_MarkThreadReadCallback = api.MarkPhoneThreadRead(m_sPhoneId, threadId, this, "OnThreadMarkedRead");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Starts the next queued mark-read, skipping entries that can't begin so the queue never wedges.
+	protected void DrainMarkReadQueue()
+	{
+		while (m_aMarkReadQueue.Count() > 0 && m_sPendingReadThreadId == "")
+		{
+			string nextId = m_aMarkReadQueue.Get(0);
+			m_aMarkReadQueue.RemoveOrdered(0);
+			BeginMarkThreadRead(nextId);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1211,14 +1244,20 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		int httpCode = HttpCodeOf(m_MarkThreadReadCallback);
 		NoteConnectivity(status, httpCode);
 
+		string threadId = m_sPendingReadThreadId;
+		m_sPendingReadThreadId = "";
+
 		if (status != ELIFE_EApiStatusCode.SUCCESS)
 		{
 			Print(string.Format("ELIFE_PhoneGadgetComponent | mark thread read failed, HTTP=%1", httpCode), LogLevel.WARNING);
-			return;
+		}
+		else
+		{
+			//! Updates only reports unretrieved messages — a read alone never comes back on a poll.
+			ClearCachedThreadUnread(threadId);
 		}
 
-		//! Unread counts come from the payload, so re-fetch fully - a cursor poll wouldn't report this thread again.
-		FetchData(DATA_MESSAGES, true);
+		DrainMarkReadQueue();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1579,8 +1618,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Owns each key's route and response parsing. full forces a cursor-less messages fetch.
-	protected void FetchData(string key, bool full = false)
+	//! Owns each key's route and response parsing.
+	protected void FetchData(string key)
 	{
 		//! A second fetch would just overwrite the pending callback and waste a round trip.
 		if (m_mPendingFetches.Contains(key))
@@ -1601,13 +1640,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		}
 		else if (key == DATA_MESSAGES)
 		{
-			//! Cursor-less returns every thread with bodies; with a cursor only what arrived since, merged in OnDataFetched().
-			string since;
-			if (!full && m_sMessagesCursor != "")
-				since = EncodeCursor(m_sMessagesCursor);
-
+			//! Server-tracked watermark per thread; only an ack advances it — see AckMessageUpdates().
 			m_mPendingFetches.Set(key, true);
-			m_mFetchCallbacks.Set(key, api.PollPhoneMessages(m_sPhoneId, since, this, "OnMessagesFetched"));
+			m_mFetchCallbacks.Set(key, api.PollPhoneMessages(m_sPhoneId, this, "OnMessagesFetched"));
 		}
 		else if (key == DATA_BLOCKS)
 		{
@@ -1779,10 +1814,18 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			real = raw.GetRawJson();
 
 		bool changed = true;
+		ELIFE_MessageUpdates messageDelta;
 		if (key == DATA_MESSAGES)
-			real = MergeMessages(ELIFE_MessageUpdates.Cast(data), changed);
+		{
+			messageDelta = ELIFE_MessageUpdates.Cast(data);
+			real = MergeMessages(messageDelta, changed);
+		}
 
 		StoreData(key, real);
+
+		//! Ack after the batch is in the cache — a failed ack just redelivers next poll.
+		if (messageDelta)
+			AckMessageUpdates(messageDelta);
 
 		//! A quiet poll stays silent; an owner request always answers since its app is loading.
 		if (changed || !wasPoll)
@@ -1811,15 +1854,13 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Merges an updates response into the cache, advances the cursor, returns the merged JSON.
+	//! Merges an updates response into the cache and returns the merged JSON.
 	protected string MergeMessages(ELIFE_MessageUpdates response, out bool changed)
 	{
 		changed = true;
 
 		if (!response)
 			return "";
-
-		m_sMessagesCursor = response.polledAt;
 
 		ELIFE_MessageUpdates current = new ELIFE_MessageUpdates();
 
@@ -1829,6 +1870,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			current.ExpandFromRAW(cached.m_sReal);
 
 		ELIFE_MessageUpdates merged = current.MergedWith(response, changed);
+		ApplyLocalUnreadClears(current, response, merged, changed);
 
 		//! A first fetch always counts as a change, even an empty one.
 		if (!hasCache)
@@ -1840,22 +1882,129 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Encode "+" in the cursor offset, or it decodes as a space.
-	protected string EncodeCursor(string cursor)
+	//! Keeps mark-read zeros sticky until a poll brings messageIds the cache did not already hold.
+	protected void ApplyLocalUnreadClears(notnull ELIFE_MessageUpdates preMerge, notnull ELIFE_MessageUpdates delta, notnull ELIFE_MessageUpdates merged, out bool changed)
 	{
-		string encoded = "";
+		if (m_mLocallyClearedUnread.Count() == 0)
+			return;
 
-		int length = cursor.Length();
-		for (int i = 0; i < length; i++)
+		array<string> stickyIds = {};
+		foreach (string threadId, bool _cleared : m_mLocallyClearedUnread)
+			stickyIds.Insert(threadId);
+
+		foreach (string threadId : stickyIds)
 		{
-			string character = cursor.Substring(i, 1);
-			if (character == "+")
-				encoded += "%2B";
-			else
-				encoded += character;
+			ELIFE_MessageThreadUpdate target = merged.FindThread(threadId);
+			if (!target)
+				continue;
+
+			ELIFE_MessageThreadUpdate incoming = delta.FindThread(threadId);
+			ELIFE_MessageThreadUpdate before = preMerge.FindThread(threadId);
+
+			bool freshMail = false;
+			if (incoming)
+			{
+				foreach (ELIFE_PhoneMessage message : incoming.messages)
+				{
+					if (!message)
+						continue;
+
+					if (!before || !before.HasMessage(message.messageId))
+					{
+						freshMail = true;
+						break;
+					}
+				}
+			}
+
+			if (freshMail)
+			{
+				m_mLocallyClearedUnread.Remove(threadId);
+				continue;
+			}
+
+			if (target.unreadCount != 0)
+			{
+				target.unreadCount = 0;
+				changed = true;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Advances the server watermark to each thread's highestSequence. Fire-and-forget — redelivery is safe.
+	protected void AckMessageUpdates(notnull ELIFE_MessageUpdates delta)
+	{
+		if (m_sPhoneId == "" || delta.threads.Count() == 0)
+			return;
+
+		ELIFE_Api api = ELIFE_Api.GetInstance();
+		if (!api)
+			return;
+
+		ELIFE_AckPhoneMessagesRequest request = new ELIFE_AckPhoneMessagesRequest();
+		foreach (ELIFE_MessageThreadUpdate threadDto : delta.threads)
+		{
+			if (!threadDto || threadDto.threadId == "")
+				continue;
+
+			ELIFE_AckPhoneMessagesThread ack = new ELIFE_AckPhoneMessagesThread();
+			ack.threadId = threadDto.threadId;
+			ack.throughSequence = threadDto.highestSequence;
+			request.threads.Insert(ack);
 		}
 
-		return encoded;
+		if (request.threads.Count() == 0)
+			return;
+
+		m_AckMessagesCallback = api.AckPhoneMessages(request, m_sPhoneId, this, "OnMessagesAcked");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnMessagesAcked(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
+	{
+		int httpCode = HttpCodeOf(m_AckMessagesCallback);
+		NoteConnectivity(status, httpCode);
+
+		if (status != ELIFE_EApiStatusCode.SUCCESS)
+			Print(string.Format("ELIFE_PhoneGadgetComponent | messages ack failed, HTTP=%1", httpCode), LogLevel.WARNING);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mark-read never rides a poll — zero the cached unread and push so the UI and bystanders update.
+	protected void ClearCachedThreadUnread(string threadId)
+	{
+		if (threadId == "")
+			return;
+
+		//! Sticky even when the cache is already zero — a stale in-flight poll can still revive it.
+		m_mLocallyClearedUnread.Set(threadId, true);
+
+		ELIFE_PhoneDataEntry entry;
+		if (!m_mServerData.Find(DATA_MESSAGES, entry) || entry.m_sReal == "")
+			return;
+
+		ELIFE_MessageUpdates updates = new ELIFE_MessageUpdates();
+		updates.ExpandFromRAW(entry.m_sReal);
+
+		ELIFE_MessageThreadUpdate threadDto = updates.FindThread(threadId);
+		if (!threadDto || threadDto.unreadCount == 0)
+			return;
+
+		//! ExpandFromRAW'd structs can't be Pack()ed — rebuild into a fresh tree.
+		ELIFE_MessageUpdates rebuilt = new ELIFE_MessageUpdates();
+		foreach (ELIFE_MessageThreadUpdate existing : updates.threads)
+		{
+			ELIFE_MessageThreadUpdate copy = existing.Copy();
+			if (copy.threadId == threadId)
+				copy.unreadCount = 0;
+
+			rebuilt.threads.Insert(copy);
+		}
+
+		rebuilt.Pack();
+		StoreData(DATA_MESSAGES, rebuilt.AsString());
+		PushData(DATA_MESSAGES);
 	}
 
 	//------------------------------------------------------------------------------------------------

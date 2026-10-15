@@ -53,6 +53,8 @@ modded class ELIFE_MessageThreadUpdate
 		copy.threadId = threadId;
 		copy.unreadCount = unreadCount;
 		copy.lastMessageAt = lastMessageAt;
+		copy.retrievedThrough = retrievedThrough;
+		copy.highestSequence = highestSequence;
 		copy.displayName = displayName;
 
 		foreach (string participant : participants)
@@ -72,6 +74,8 @@ modded class ELIFE_MessageThreadUpdate
 		redacted.threadId = threadId;
 		redacted.unreadCount = unreadCount;
 		redacted.lastMessageAt = lastMessageAt;
+		redacted.retrievedThrough = retrievedThrough;
+		redacted.highestSequence = highestSequence;
 		redacted.displayName = ResolveDisplayName(contactNames);
 
 		foreach (string participant : participants)

@@ -3,10 +3,12 @@ class ELIFE_PhoneApp : JsonApiStruct
 {
 	string key;
 	string displayName;
+	bool isSystemApp;
 
 	void ELIFE_PhoneApp()
 	{
 		RegV("key");
 		RegV("displayName");
+		RegV("isSystemApp");
 	}
 }

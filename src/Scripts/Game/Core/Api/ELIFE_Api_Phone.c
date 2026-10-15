@@ -52,6 +52,14 @@ modded class ELIFE_Api
 		return cbx;
 	}
 
+	ELIFE_BaseRestCallback ListStoreApps(string phoneId, Managed instance = null, string functionName = "")
+	{
+		ELIFE_BaseRestCallback cbx = new ELIFE_BaseRestCallback;
+		cbx.SetCallback(instance, functionName, phoneId);
+		GetElifeApi().GET(cbx, string.Format("phones/%1/app-store/apps", phoneId));
+		return cbx;
+	}
+
 	ELIFE_BaseRestCallback InstallPhoneApp(ELIFE_PhoneActorRequest body, string phoneId, string appKey, Managed instance = null, string functionName = "")
 	{
 		ELIFE_BaseRestCallback cbx = new ELIFE_BaseRestCallback;
@@ -119,17 +127,20 @@ modded class ELIFE_Api
 		return cbx;
 	}
 
-	ELIFE_MessageUpdatesCallback PollPhoneMessages(string phoneId, string since, Managed instance = null, string functionName = "")
+	ELIFE_MessageUpdatesCallback PollPhoneMessages(string phoneId, Managed instance = null, string functionName = "")
 	{
 		ELIFE_MessageUpdatesCallback cbx = new ELIFE_MessageUpdatesCallback;
 		cbx.SetCallback(instance, functionName, phoneId);
-		string requestRoute = string.Format("phones/%1/apps/messages/updates", phoneId);
-		string requestQuery = "";
-		if (since != "")
-			requestQuery += string.Format("&since=%1", since);
-		if (requestQuery != "")
-			requestRoute += "?" + requestQuery.Substring(1, requestQuery.Length() - 1);
-		GetElifeApi().GET(cbx, requestRoute);
+		GetElifeApi().GET(cbx, string.Format("phones/%1/apps/messages/updates", phoneId));
+		return cbx;
+	}
+
+	ELIFE_AckedPhoneMessagesCallback AckPhoneMessages(ELIFE_AckPhoneMessagesRequest body, string phoneId, Managed instance = null, string functionName = "")
+	{
+		ELIFE_AckedPhoneMessagesCallback cbx = new ELIFE_AckedPhoneMessagesCallback;
+		cbx.SetCallback(instance, functionName, phoneId);
+		body.Pack();
+		GetElifeApi().POST(cbx, string.Format("phones/%1/apps/messages/updates/ack", phoneId), body.AsString());
 		return cbx;
 	}
 
