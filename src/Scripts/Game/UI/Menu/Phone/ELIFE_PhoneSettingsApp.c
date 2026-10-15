@@ -41,6 +41,8 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 	protected TextWidget m_wLockLabel;
 	protected Widget m_wPeekTrack;
 	protected Widget m_wPeekKnob;
+	protected Widget m_wDndTrack;
+	protected Widget m_wDndKnob;
 
 	//! The New PIN row - registered owner only, everyone else holds a stand-in PIN.
 	protected Widget m_wNewPinRow;
@@ -105,6 +107,22 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 			peekButton.m_OnClicked.Insert(OnPeekToggle);
 
 		RefreshPeekToggle();
+
+		//! Do Not Disturb belongs to the phone, so bystanders see it follow.
+		m_wDndTrack = m_wRoot.FindAnyWidget("DndToggleTrack");
+		m_wDndKnob = m_wRoot.FindAnyWidget("DndToggleKnob");
+		ImageWidget dndKnob = ImageWidget.Cast(m_wDndKnob);
+		if (dndKnob)
+			dndKnob.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
+
+		SCR_ButtonTextComponent dndButton = SCR_ButtonTextComponent.GetButtonText("ButtonDnd", m_wRoot);
+		if (dndButton)
+			dndButton.m_OnClicked.Insert(OnDndToggle);
+
+		RefreshPersonalization();
+
+		if (m_Phone)
+			m_Phone.m_OnPersonalizationChanged.Insert(RefreshPersonalization);
 
 		//! Bystander copies only hold stand-in values, so reveal and copy are owner-only.
 		bool owner = IsOwner();
@@ -345,22 +363,43 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	protected void RefreshPeekToggle()
 	{
-		bool on = ELIFE_PhonePrefs.IsPeekEnabled();
+		PaintToggle(m_wPeekTrack, m_wPeekKnob, ELIFE_PhonePrefs.IsPeekEnabled());
+	}
 
-		Color track = ELIFE_PhoneStyle.Hairline();
+	//------------------------------------------------------------------------------------------------
+	protected void PaintToggle(Widget track, Widget knob, bool on)
+	{
+		Color trackColor = ELIFE_PhoneStyle.Hairline();
 		if (on)
-			track = m_Accent;
+			trackColor = m_Accent;
 
-		if (m_wPeekTrack)
-			m_wPeekTrack.SetColor(track);
+		if (track)
+			track.SetColor(trackColor);
 
-		if (!m_wPeekKnob)
+		if (!knob)
 			return;
 
 		if (on)
-			AlignableSlot.SetHorizontalAlign(m_wPeekKnob, LayoutHorizontalAlign.Right);
+			AlignableSlot.SetHorizontalAlign(knob, LayoutHorizontalAlign.Right);
 		else
-			AlignableSlot.SetHorizontalAlign(m_wPeekKnob, LayoutHorizontalAlign.Left);
+			AlignableSlot.SetHorizontalAlign(knob, LayoutHorizontalAlign.Left);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Waits for the phone to confirm rather than flipping ahead, so it never shows a state the phone isn't in.
+	protected void OnDndToggle()
+	{
+		if (m_Phone)
+			m_Phone.SetDoNotDisturb(!m_Phone.IsDoNotDisturb());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RefreshPersonalization()
+	{
+		if (!m_Phone)
+			return;
+
+		PaintToggle(m_wDndTrack, m_wDndKnob, m_Phone.IsDoNotDisturb());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -378,6 +417,7 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 		{
 			m_Phone.m_OnIdentityChanged.Remove(FillIdentity);
 			m_Phone.m_OnPinChangeResult.Remove(OnPinChangeResult);
+			m_Phone.m_OnPersonalizationChanged.Remove(RefreshPersonalization);
 		}
 
 		m_wSettingsScroll = null;
@@ -391,6 +431,8 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 		m_wLockLabel = null;
 		m_wPeekTrack = null;
 		m_wPeekKnob = null;
+		m_wDndTrack = null;
+		m_wDndKnob = null;
 		m_wNewPinRow = null;
 		m_wNewPinField = null;
 		m_wPinError = null;

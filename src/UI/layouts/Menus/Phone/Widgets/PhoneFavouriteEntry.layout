@@ -1,0 +1,120 @@
+OverlayWidgetClass {
+ Name "FavouriteEntry"
+ {
+  ButtonWidgetClass "{64FAF3E5C7042BFF}" {
+   Name "FavouriteButton"
+   Slot OverlayWidgetSlot "{645FF9E171292CB9}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 1 1 1 1
+   style blank
+   components {
+    SCR_ButtonTextComponent "{54A10C43F87D190A}" {
+     m_BackgroundDefault 0.8626 0.8964 0.964 0
+     m_BackgroundHovered 0.8626 0.8964 0.964 0.08
+     m_BackgroundSelected 0.8626 0.8964 0.964 0.14
+     m_BackgroundSelectedHovered 0.8626 0.8964 0.964 0.14
+     m_BackgroundClicked 0.8626 0.8964 0.964 0.14
+     m_sText ""
+    }
+   }
+   {
+    OverlayWidgetClass "{55BB010FF2115D5C}" {
+     Name "ButtonSurface"
+     Slot ButtonWidgetSlot "{82A5E8CD0D4EAEE2}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      SmartPanelWidgetClass "{6CB054E9EFF9A750}" {
+       Name "Background"
+       Slot OverlayWidgetSlot "{6D8D18996180ACBC}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0 0 0 0
+       style rounded_12px
+       "no focus" 1
+      }
+      VerticalLayoutWidgetClass "{2064135CBF9D6509}" {
+       Name "FavouriteBody"
+       Slot OverlayWidgetSlot "{49BA2CF1A5A0E925}" {
+        HorizontalAlign 3
+        VerticalAlign 1
+        Padding 4 8 4 8
+       }
+       {
+        SizeLayoutWidgetClass "{6E9BF003E73DB055}" {
+         Name "FavouriteAvatarSize"
+         Slot LayoutSlot "{11DF89D3D2D99E80}" {
+          HorizontalAlign 1
+         }
+         AllowWidthOverride 1
+         WidthOverride 56
+         AllowHeightOverride 1
+         HeightOverride 56
+         {
+          OverlayWidgetClass "{9FB2BA20AD943C67}" {
+           Name "FavouriteAvatar"
+           Slot AlignableSlot "{F2CD30CA2A3F6FBA}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           {
+            SmartPanelWidgetClass "{64E59CB95B14276E}" {
+             Name "FavouriteAvatarFallback"
+             Slot OverlayWidgetSlot "{EE0AB68B0EBEC268}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             "Is Visible" 0
+             Color 1 1 1 1
+             style rounded_12px
+             "no focus" 1
+            }
+            ImageWidgetClass "{25BB6D64F6292357}" {
+             Name "FavouriteAvatarDisc"
+             Slot OverlayWidgetSlot "{8E052401BCBA38F8}" {
+              HorizontalAlign 1
+              VerticalAlign 1
+             }
+             Color 1 1 1 1
+             Size 56 56
+            }
+            TextWidgetClass "{C23738703512569B}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "FavouriteAvatarGlyph"
+             Slot OverlayWidgetSlot "{CF2448890B897130}" {
+              HorizontalAlign 1
+              VerticalAlign 1
+             }
+             Color 0.8378 0.8626 0.9222 1
+             Text ""
+             "Font Size" 22
+             "Min Font Size" 22
+             "Horizontal Alignment" Center
+            }
+           }
+          }
+         }
+        }
+        TextWidgetClass "{0ED8C9DD68A29B2D}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "FavouriteName"
+         Slot LayoutSlot "{03526CD398A3FBF6}" {
+          HorizontalAlign 1
+          Padding 0 6 0 0
+         }
+         Color 0.8378 0.8626 0.9222 1
+         Text ""
+         "Font Size" 16
+         "Min Font Size" 16
+         "Horizontal Alignment" Center
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

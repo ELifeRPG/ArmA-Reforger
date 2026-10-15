@@ -414,6 +414,120 @@ OverlayWidgetClass {
           VerticalAlign 0
          }
          {
+          SizeLayoutWidgetClass "{F9C333AE8D573B0D}" {
+           Name "DndRowSize"
+           Slot LayoutSlot "{5C9A33B6C02BE7B7}" {
+            SizeMode Fill
+           }
+           AllowHeightOverride 1
+           HeightOverride 60
+           {
+            ButtonWidgetClass "{63DFC8E09B0DFECF}" {
+             Name "ButtonDnd"
+             Slot AlignableSlot "{BA3A2DD1CB7EB157}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 1 1 1 1
+             style blank
+             components {
+              SCR_ButtonTextComponent "{244C4BFFBA23A570}" {
+               m_BackgroundDefault 0.910 0.929 0.973 0
+               m_BackgroundHovered 0.910 0.929 0.973 0.06
+               m_BackgroundSelected 0.910 0.929 0.973 0.12
+               m_BackgroundSelectedHovered 0.910 0.929 0.973 0.12
+               m_BackgroundClicked 0.910 0.929 0.973 0.12
+               m_sText ""
+              }
+             }
+             {
+              OverlayWidgetClass "{219D6D60FB4E6F9D}" {
+               Name "ButtonSurface"
+               Slot ButtonWidgetSlot "{0FC4FF13D76E94EF}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               {
+                SmartPanelWidgetClass "{CF26957B6E3DEB4F}" {
+                 Name "Background"
+                 Slot OverlayWidgetSlot "{212F926B88A215D0}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 0 0 0 0
+                 style rounded_12px
+                 "no focus" 1
+                }
+                HorizontalLayoutWidgetClass "{9E3FC79572E68D34}" {
+                 Name "DndRowBody"
+                 Slot OverlayWidgetSlot "{52C146AFABBCA679}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                  Padding 20 0 20 0
+                 }
+                 {
+                  TextWidgetClass "{CE841A8FC9FACD9F}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                   Name "DndLabel"
+                   Slot LayoutSlot "{4A79FE4CC2D9C633}" {
+                    SizeMode Fill
+                    VerticalAlign 1
+                   }
+                   Color 0.8378 0.8626 0.9222 1
+                   Text "#ELIFE-Phone_Settings_DoNotDisturb"
+                   "Font Size" 22
+                   "Min Font Size" 20
+                   "Horizontal Alignment" Left
+                  }
+                  SizeLayoutWidgetClass "{0CA4F3704007BEE1}" {
+                   Name "DndToggleSize"
+                   Slot LayoutSlot "{6EB6C6D7C23A148C}" {
+                    VerticalAlign 1
+                    Padding 16 0 0 0
+                   }
+                   AllowWidthOverride 1
+                   WidthOverride 44
+                   AllowHeightOverride 1
+                   HeightOverride 24
+                   {
+                    OverlayWidgetClass "{39945BE9A0137AF3}" {
+                     Name "DndToggle"
+                     Slot AlignableSlot "{0307225F0B38F837}" {
+                      HorizontalAlign 3
+                      VerticalAlign 3
+                     }
+                     {
+                      SmartPanelWidgetClass "{5A9E44D08A6586D3}" {
+                       Name "DndToggleTrack"
+                       Slot OverlayWidgetSlot "{43C2CD4E5477A1B3}" {
+                        HorizontalAlign 3
+                        VerticalAlign 3
+                       }
+                       Color 0.0383 0.0466 0.0723 1
+                       style rounded_12px
+                       "no focus" 1
+                      }
+                      ImageWidgetClass "{EC426A1A61A6DCDD}" {
+                       Name "DndToggleKnob"
+                       Slot OverlayWidgetSlot "{C990A2217E1CC4CB}" {
+                        HorizontalAlign 2
+                        VerticalAlign 1
+                        Padding 2 0 2 0
+                       }
+                       Color 0.8378 0.8626 0.9222 1
+                       Size 20 20
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
           SizeLayoutWidgetClass "{5E10A4C7B2D93F15}" {
            Name "PeekRowSize"
            Slot LayoutSlot "{5E10A4C7B2D93F16}" {

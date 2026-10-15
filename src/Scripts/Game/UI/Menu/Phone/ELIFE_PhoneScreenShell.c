@@ -1,24 +1,153 @@
 //------------------------------------------------------------------------------------------------
-class ELIFE_PhoneTileClick : ScriptedWidgetEventHandler
+//! Opens an app from a home tile or card, and lets it be held and dragged around the home grid.
+class ELIFE_PhoneTileClick : ELIFE_PhoneHoldHandler
 {
 	protected ELIFE_PhoneScreenShell m_Shell;
 	protected EPhoneScreenState m_eState;
 
+	//! The ELIFE_PhoneHomeItem id it moves.
+	protected string m_sItemId;
+
+	//! False for widgets that only show something, like the clock.
+	protected bool m_bOpensApp;
+
+	//! A page inside the app, e.g. a favourite's conversation.
+	protected string m_sSubState;
+
 	//------------------------------------------------------------------------------------------------
-	void Bind(ELIFE_PhoneScreenShell shell, EPhoneScreenState state)
+	void Bind(ELIFE_PhoneScreenShell shell, EPhoneScreenState state, string itemId, bool opensApp = true, string subState = "")
 	{
 		m_Shell = shell;
 		m_eState = state;
+		m_sItemId = itemId;
+		m_bOpensApp = opensApp;
+		m_sSubState = subState;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! In edit mode a press picks the item straight up.
+	override bool IsHoldImmediate()
+	{
+		return m_Shell && m_Shell.IsEditingHome();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnHoldStart(Widget w, float canvasX, float canvasY)
+	{
+		return m_Shell && m_Shell.BeginHomeDrag(m_sItemId, canvasX, canvasY);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnHoldMove(Widget w, float canvasX, float canvasY)
+	{
+		if (m_Shell)
+			m_Shell.UpdateHomeDrag(canvasX, canvasY);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnHoldEnd(Widget w, float canvasX, float canvasY)
+	{
+		if (m_Shell)
+			m_Shell.EndHomeDrag(canvasX, canvasY);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnHoldCancel(Widget w)
+	{
+		if (m_Shell)
+			m_Shell.CancelHomeDrag();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (!m_Shell || !m_bOpensApp)
+			return false;
+
+		if (m_sSubState != "")
+			m_Shell.RequestAppPage(m_eState, m_sSubState);
+		else
+			m_Shell.RequestApp(m_eState);
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+enum EPhoneHomeEditAction
+{
+	OPEN_SHEET,
+	OPEN_WALLPAPER,
+	CLOSE_SHEET,
+	ADD,
+	PICK_WALLPAPER,
+	DONE
+}
+
+//------------------------------------------------------------------------------------------------
+//! The home screen itself: a hold on empty space opens edit mode with nothing picked up.
+class ELIFE_PhoneHomeBackdrop : ELIFE_PhoneHoldHandler
+{
+	protected ELIFE_PhoneScreenShell m_Shell;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneScreenShell shell)
+	{
+		m_Shell = shell;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Declines the hold, so nothing is dragged; the release that follows clicks nothing.
+	override bool OnHoldStart(Widget w, float canvasX, float canvasY)
+	{
+		if (m_Shell)
+			m_Shell.OnBackdropHold();
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! A home edit-mode control: Add widget, Wallpaper, Done, an entry in a picker sheet, or its backdrop.
+class ELIFE_PhoneHomeEditClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneScreenShell m_Shell;
+	protected EPhoneHomeEditAction m_eAction;
+	protected string m_sItemId;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneScreenShell shell, EPhoneHomeEditAction action, string itemId = "")
+	{
+		m_Shell = shell;
+		m_eAction = action;
+		m_sItemId = itemId;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override bool OnClick(Widget w, int x, int y, int button)
 	{
 		if (m_Shell)
-			m_Shell.RequestApp(m_eState);
+			m_Shell.OnHomeEditAction(m_eAction, m_sItemId);
 
 		return false;
 	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! A home item eased out of the way of a drag, drawn as a copy in the drag layer while the original
+//! stays hidden. Positions are drag-layer px.
+class ELIFE_PhoneHomeShift
+{
+	ELIFE_PhoneHomeItem m_Item;
+	Widget m_wCopy;
+	float m_fFromX;
+	float m_fFromY;
+	float m_fToX;
+	float m_fToY;
+	int m_iStartMs;
+
+	//! Heading back to its own cell, after which it goes away.
+	bool m_bReturning;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -86,12 +215,45 @@ class ELIFE_PhoneScreenShell
 	protected const ResourceName LAYOUT_PEEK_CARD = "{5A3C91E7D2B84F20}UI/layouts/Menus/Phone/Widgets/PhonePeekCard.layout";
 	protected const ResourceName LAYOUT_NOTIFICATION = "{7C13D4A9E3B25F84}UI/layouts/Menus/Phone/Widgets/PhoneNotificationCard.layout";
 	protected const ResourceName LAYOUT_HOME_CARD = "{7C26D4A9E3B25F8B}UI/layouts/Menus/Phone/Widgets/PhoneHomeCard.layout";
+	protected const ResourceName LAYOUT_HOME_CELL = "{7C29D4A9E3B25F8E}UI/layouts/Menus/Phone/Widgets/PhoneHomeCell.layout";
+	protected const ResourceName LAYOUT_CHIP = "{7C2AD4A9E3B25F8F}UI/layouts/Menus/Phone/Widgets/PhoneChipButton.layout";
+	protected const ResourceName LAYOUT_WIDGET_SHEET = "{7C2BD4A9E3B25F90}UI/layouts/Menus/Phone/Widgets/PhoneWidgetSheet.layout";
+	protected const ResourceName LAYOUT_CLOCK_WIDGET = "{7C2CD4A9E3B25F91}UI/layouts/Menus/Phone/Widgets/PhoneClockWidget.layout";
+	protected const ResourceName LAYOUT_WIDGET_SMALL = "{7C2DD4A9E3B25F92}UI/layouts/Menus/Phone/Widgets/PhoneHomeWidgetSmall.layout";
+	protected const ResourceName LAYOUT_FAVOURITES_WIDGET = "{7C2ED4A9E3B25F93}UI/layouts/Menus/Phone/Widgets/PhoneFavouritesWidget.layout";
+	protected const ResourceName LAYOUT_FAVOURITE_ENTRY = "{7C2FD4A9E3B25F94}UI/layouts/Menus/Phone/Widgets/PhoneFavouriteEntry.layout";
+	protected const ResourceName LAYOUT_INFO_WIDGET = "{7C31D4A9E3B25F96}UI/layouts/Menus/Phone/Widgets/PhoneInfoWidget.layout";
+	protected const ResourceName LAYOUT_SWATCH = "{7C30D4A9E3B25F95}UI/layouts/Menus/Phone/Widgets/PhoneWallpaperSwatch.layout";
+	protected const float SWATCH_CHECK_SIZE = 22;
+	protected const int SWATCHES_PER_ROW = 5;
+
+	//! Box for a status bar glyph. sound-off carries wide transparent padding - its mark is about half
+	//! the box - so this lands its ink level with the battery.
+	protected const float STATUS_ICON_BOX = 30;
+
+	protected const string ICON_DND = "sound-off";
+	protected const string ICON_LOCATION = "marker";
+	protected const string ICON_CHECK = "check";
+	protected const float INFO_ICON_SIZE = 44;
+
+	//! How many favourites fit the widget's row.
+	protected const int FAVOURITES_SHOWN = 4;
+
+	//! Weather and location move on their own, so they are re-read while home is up.
+	protected const int LIVE_WIDGET_REFRESH_MS = 3000;
+
+	//! Canvas px a press in edit mode may move and still count as a tap, which resizes a widget.
+	protected const float EDIT_TAP_SLOP_PX = 12;
 
 	protected const ResourceName LAYOUT_APP_ICON = "{7C27D4A9E3B25F8C}UI/layouts/Menus/Phone/Widgets/PhoneAppIcon.layout";
 
 	//! Visible ink an app icon should show, on a tile and on a home-card badge.
-	protected const float ICON_INK_TILE = 52;
+	protected const float ICON_INK_TILE = 46;
 	protected const float ICON_INK_CARD = 36;
+	protected const float ICON_INK_WIDGET = 26;
+
+	//! Space around a widget inside its cells; about what a tile leaves around itself.
+	protected const float WIDGET_GUTTER = ELIFE_PhoneStyle.SPACE_1;
 
 	//! Icon sprites have transparent padding, so the box is enlarged until the ink matches.
 	protected const float ICON_SPRITE_PADDING = 1.34;
@@ -99,7 +261,6 @@ class ELIFE_PhoneScreenShell
 	//! Cap height is ~0.72 of font size, so marks are set larger than the ink they should show.
 	protected const float ICON_MARK_CAP = 1.38;
 
-	protected const int GRID_COLUMNS = 4;
 	protected const int PIN_LENGTH = ELIFE_PhoneGadgetComponent.PIN_LENGTH;
 	protected const int PIN_ERROR_HOLD_MS = 900;
 	protected const float PIN_KEY_DISABLED_OPACITY = 0.4;
@@ -169,9 +330,23 @@ class ELIFE_PhoneScreenShell
 	protected Widget m_wWallpaper;
 	protected Widget m_wAppWashSize;
 	protected ImageWidget m_wAppWash;
-	protected Widget m_wHomeGridRows;
-	protected Widget m_wHomeCards;
-	protected TextWidget m_wHomeDate;
+	protected Widget m_wHomeGrid;
+	protected Widget m_wHomeDragLayer;
+	protected Widget m_wStatusBarSize;
+	protected Widget m_wStatusDndSize;
+	protected ref array<ref ELIFE_PhoneTileClick> m_aFavouriteClicks = {};
+	protected ref ELIFE_PhoneHomeBackdrop m_HomeBackdrop;
+
+	//! Wallpaper id -> its swatch's check mark, while the wallpaper sheet is open.
+	protected ref map<string, Widget> m_mSwatchChecks = new map<string, Widget>();
+
+	//! An edit-mode press that hasn't moved yet: let go, it is a tap.
+	protected bool m_bEditTap;
+	protected float m_fPressX;
+	protected float m_fPressY;
+	protected Widget m_wHomeEditBar;
+	protected Widget m_wHomeRemoveZone;
+	protected Widget m_wHomeRemoveWash;
 	protected Widget m_wLockNotifications;
 	protected Widget m_wPinRows;
 	protected TextWidget m_wLockDate;
@@ -187,11 +362,42 @@ class ELIFE_PhoneScreenShell
 	protected bool m_bInteractive;
 	protected ref ELIFE_PhoneAppBase m_App;
 	protected EPhoneScreenState m_eState = EPhoneScreenState.OFF;
-	protected ref array<ref ELIFE_PhoneTileClick> m_aTileClicks = {};
+	protected ref array<ref ELIFE_PhoneTileClick> m_aHomeClicks = {};
 
-	//! States on the grid as last built, so a push that changes nothing doesn't rebuild it.
-	protected string m_sGridApps;
-	protected ref array<ref ELIFE_PhoneTileClick> m_aCardClicks = {};
+	//! The home grid as last built, so a push that changes nothing doesn't rebuild it.
+	protected ref ELIFE_PhoneHomeLayout m_HomeLayout;
+	protected string m_sHomeSignature;
+	protected ref map<string, Widget> m_mHomeCells = new map<string, Widget>();
+
+	//! Edit mode: a press drags at once, and the header becomes the edit bar - or, while something
+	//! removable is held, the remove target.
+	protected bool m_bEditingHome;
+	protected ref array<ref ELIFE_PhoneHomeEditClick> m_aEditClicks = {};
+	protected Widget m_wWidgetSheet;
+	protected ref array<ref ELIFE_PhoneHomeEditClick> m_aSheetClicks = {};
+	protected bool m_bOverRemoveZone;
+
+	//! An app dropped on the remove target, until the Bridge answers.
+	protected string m_sPendingRemoveId;
+
+	//! A held item being dragged: a copy follows the cursor in the drag layer while the original stays
+	//! hidden in its cell, a faint second copy marks where it would land, and what it would swap with
+	//! eases aside. Positions are drag-layer px; the grid rect is taken at pickup.
+	protected ELIFE_PhoneHomeItem m_DragItem;
+	protected Widget m_wDragGhost;
+	protected Widget m_wDropHint;
+	protected ref array<ref ELIFE_PhoneHomeShift> m_aShifts = {};
+	protected float m_fLayerX;
+	protected float m_fLayerY;
+	protected float m_fGridX;
+	protected float m_fGridY;
+	protected float m_fGridWidth;
+	protected float m_fGridHeight;
+	protected float m_fDragOffsetX;
+	protected float m_fDragOffsetY;
+
+	//! The grid can't rebuild mid-drag, since that drops the held item's handler.
+	protected bool m_bGridStale;
 	protected ref array<ref ELIFE_PhonePinKeyClick> m_aPinClicks = {};
 	protected ref array<Widget> m_aPinKeys = {};
 	protected ref array<Widget> m_aPinDots = {};
@@ -265,9 +471,22 @@ class ELIFE_PhoneScreenShell
 		m_wWallpaper = screenRoot.FindAnyWidget("Wallpaper");
 		m_wAppWashSize = screenRoot.FindAnyWidget("AppWashSize");
 		m_wAppWash = ImageWidget.Cast(screenRoot.FindAnyWidget("AppWash"));
-		m_wHomeGridRows = screenRoot.FindAnyWidget("HomeGridRows");
-		m_wHomeCards = screenRoot.FindAnyWidget("HomeCards");
-		m_wHomeDate = TextWidget.Cast(screenRoot.FindAnyWidget("HomeDate"));
+		m_wHomeGrid = screenRoot.FindAnyWidget("HomeGrid");
+		m_wHomeDragLayer = screenRoot.FindAnyWidget("HomeDragLayer");
+		m_wStatusBarSize = screenRoot.FindAnyWidget("StatusBarSize");
+		m_wStatusDndSize = screenRoot.FindAnyWidget("StatusDndSize");
+
+		ImageWidget dndIcon = ImageWidget.Cast(screenRoot.FindAnyWidget("StatusDnd"));
+		if (dndIcon && dndIcon.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_DND))
+		{
+			dndIcon.SetColor(ELIFE_PhoneStyle.TextPrimary());
+			ELIFE_PhoneStyle.FitIcon(dndIcon, STATUS_ICON_BOX);
+		}
+		m_wHomeEditBar = screenRoot.FindAnyWidget("HomeEditBar");
+		m_wHomeRemoveZone = screenRoot.FindAnyWidget("HomeRemoveZoneSize");
+		m_wHomeRemoveWash = screenRoot.FindAnyWidget("HomeRemoveWash");
+		ELIFE_PhoneStyle.ApplyGlass(screenRoot.FindAnyWidget("HomeRemoveZone"), true);
+		ELIFE_PhoneStyle.SetColorOf(screenRoot, "HomeRemoveLabel", ELIFE_PhoneStyle.Negative());
 		m_wLockNotifications = screenRoot.FindAnyWidget("LockNotifications");
 		m_wNotificationBanner = screenRoot.FindAnyWidget("NotificationBanner");
 		m_wNotificationHub = screenRoot.FindAnyWidget("NotificationHub");
@@ -302,6 +521,25 @@ class ELIFE_PhoneScreenShell
 
 		phone.m_OnHubOpenChanged.Insert(OnHubOpenChanged);
 		ApplyHubGlass();
+
+		phone.m_OnHomeLayoutChanged.Insert(OnHomeLayoutChanged);
+		if (m_bInteractive)
+			phone.m_OnAppInstallResult.Insert(OnAppInstallResult);
+
+		phone.m_OnPersonalizationChanged.Insert(OnPersonalizationChanged);
+
+		if (m_bInteractive && m_wHomeScreen)
+		{
+			//! Containers ignore the cursor by default, which would let a press on empty space hit nothing.
+			m_wHomeScreen.ClearFlags(WidgetFlags.IGNORE_CURSOR);
+
+			m_HomeBackdrop = new ELIFE_PhoneHomeBackdrop();
+			m_HomeBackdrop.Bind(this);
+			m_wHomeScreen.AddHandler(m_HomeBackdrop);
+		}
+		ApplyWallpaper();
+
+		GetGame().GetCallqueue().CallLater(RefreshLiveWidgets, LIVE_WIDGET_REFRESH_MS, true);
 		RefreshNotifications();
 
 		//! Seed from the cache now so the wake poll can still count as an arrival.
@@ -353,6 +591,9 @@ class ELIFE_PhoneScreenShell
 			m_Phone.m_OnDataChanged.Remove(OnDataChanged);
 			m_Phone.m_OnHubOpenChanged.Remove(OnHubOpenChanged);
 			m_Phone.m_OnUnlockRejected.Remove(OnUnlockRejected);
+			m_Phone.m_OnHomeLayoutChanged.Remove(OnHomeLayoutChanged);
+			m_Phone.m_OnAppInstallResult.Remove(OnAppInstallResult);
+			m_Phone.m_OnPersonalizationChanged.Remove(OnPersonalizationChanged);
 		}
 
 		m_aHubClicks.Clear();
@@ -371,9 +612,23 @@ class ELIFE_PhoneScreenShell
 		GetGame().GetCallqueue().Remove(OnUnlockTimeout);
 		GetGame().GetCallqueue().Remove(TickPinBlock);
 		GetGame().GetCallqueue().Remove(FlushPendingApp);
+		GetGame().GetCallqueue().Remove(BuildHomeGrid);
+		GetGame().GetCallqueue().Remove(RefreshLiveWidgets);
+		DestroyWidgetSheet();
 
-		m_aTileClicks.Clear();
-		m_aCardClicks.Clear();
+		//! Not stale: nothing is left to rebuild.
+		m_bGridStale = false;
+		ClearHomeDrag();
+		m_bEditingHome = false;
+
+		if (m_wHomeScreen && m_HomeBackdrop)
+			m_wHomeScreen.RemoveHandler(m_HomeBackdrop);
+
+		m_HomeBackdrop = null;
+		m_aHomeClicks.Clear();
+		m_aEditClicks.Clear();
+		m_aFavouriteClicks.Clear();
+		m_mHomeCells.Clear();
 		m_aPinClicks.Clear();
 		m_aPinKeys.Clear();
 		m_aPinDots.Clear();
@@ -446,86 +701,197 @@ class ELIFE_PhoneScreenShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Catalog order, installed apps only - built-in ones always are.
-	protected void CollectHomeApps(notnull array<ELIFE_PhoneAppEntry> outApps)
+	//! Widgets first, in default reading order - clock and weather side by side, balance, messages,
+	//! favourites; location waits in the sheet - then installed apps in catalog order, built-in ones
+	//! always. A widget backed by an app exists only while that app is installed.
+	protected void CollectHomeItems(notnull ELIFE_PhoneHomeLayout layout)
 	{
+		if (!m_Phone)
+			return;
+
+		array<int> half = {ELIFE_PhoneHomeLayout.HALF};
+		array<int> full = {ELIFE_PhoneHomeLayout.FULL};
+		array<int> fullOrHalf = {ELIFE_PhoneHomeLayout.FULL, ELIFE_PhoneHomeLayout.HALF};
+
+		layout.AddWidget(ELIFE_PhoneHomeLayout.CLOCK_ID, EPhoneScreenState.HOME, false, half);
+		layout.AddWidget(ELIFE_PhoneHomeLayout.WEATHER_ID, EPhoneScreenState.HOME, false, half);
+
+		if (m_Phone.IsAppAvailable(EPhoneScreenState.BANK))
+			layout.AddWidget(CardId(EPhoneScreenState.BANK), EPhoneScreenState.BANK, true, fullOrHalf);
+
+		if (m_Phone.IsAppAvailable(EPhoneScreenState.MESSAGES))
+			layout.AddWidget(CardId(EPhoneScreenState.MESSAGES), EPhoneScreenState.MESSAGES, true, fullOrHalf);
+
+		layout.AddWidget(ELIFE_PhoneHomeLayout.FAVOURITES_ID, EPhoneScreenState.CONTACTS, true, full);
+		if (m_Phone.IsAppAvailable(EPhoneScreenState.MAP))
+			layout.AddWidget(ELIFE_PhoneHomeLayout.LOCATION_ID, EPhoneScreenState.MAP, true, half, true);
+
 		array<ref ELIFE_PhoneAppEntry> catalog = ELIFE_PhoneAppCatalog.GetEntries();
 		foreach (ELIFE_PhoneAppEntry app : catalog)
 		{
-			if (m_Phone && m_Phone.IsAppAvailable(app.m_eState))
-				outApps.Insert(app);
+			if (m_Phone.IsAppAvailable(app.m_eState))
+				layout.AddTile(app);
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected string CardId(EPhoneScreenState state)
+	{
+		ELIFE_PhoneAppEntry app = ELIFE_PhoneAppCatalog.Find(state);
+		if (!app)
+			return "";
+
+		return ELIFE_PhoneHomeLayout.CARD_PREFIX + app.m_sAppKey;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Lays out tiles and cards on the grid, each in a cell anchored to its fraction of the grid.
 	protected void BuildHomeGrid()
 	{
-		if (!m_wHomeGridRows)
+		if (!m_wHomeGrid)
 			return;
+
+		if (m_DragItem)
+		{
+			m_bGridStale = true;
+			return;
+		}
 
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		if (!workspace)
 			return;
 
-		array<ELIFE_PhoneAppEntry> apps = {};
-		CollectHomeApps(apps);
+		//! What a finished drop left floating, kept until now so nothing blinks out for a frame.
+		ClearFloating();
 
-		string gridApps = "";
-		foreach (ELIFE_PhoneAppEntry app : apps)
-		{
-			int state = app.m_eState;
-			gridApps += state.ToString() + ",";
-		}
+		ELIFE_PhoneHomeLayout layout = new ELIFE_PhoneHomeLayout();
+		CollectHomeItems(layout);
+		layout.Place(GetSavedHomeLayout());
 
-		if (gridApps == m_sGridApps && m_wHomeGridRows.GetChildren())
+		string signature = layout.Serialize();
+		if (signature == m_sHomeSignature && m_wHomeGrid.GetChildren())
 			return;
 
-		m_sGridApps = gridApps;
-		m_aTileClicks.Clear();
-		ClearChildren(m_wHomeGridRows);
+		m_sHomeSignature = signature;
+		m_HomeLayout = layout;
+		m_aHomeClicks.Clear();
+		m_mHomeCells.Clear();
+		ClearChildren(m_wHomeGrid);
 
-		int count = apps.Count();
-		int rows = (count + GRID_COLUMNS - 1) / GRID_COLUMNS;
+		float columns = ELIFE_PhoneHomeLayout.COLUMNS;
+		float rows = ELIFE_PhoneHomeLayout.ROWS;
 
-		for (int rowIndex = 0; rowIndex < rows; rowIndex++)
+		foreach (ELIFE_PhoneHomeItem item : layout.GetItems())
 		{
-			Widget row = workspace.CreateWidgets(LAYOUT_GRID_ROW, m_wHomeGridRows);
-			if (!row)
+			//! No room left on the grid.
+			if (!item.IsPlaced())
 				continue;
 
-			AlignableSlot.SetHorizontalAlign(row, LayoutHorizontalAlign.Stretch);
+			Widget cell = workspace.CreateWidgets(LAYOUT_HOME_CELL, m_wHomeGrid);
+			if (!cell)
+				continue;
 
-			if (rowIndex > 0)
-				LayoutSlot.SetPadding(row, 0, ELIFE_PhoneStyle.SPACE_4, 0, 0);
+			FrameSlot.SetAnchorMin(cell, item.m_iColumn / columns, item.m_iRow / rows);
+			FrameSlot.SetAnchorMax(cell, (item.m_iColumn + item.m_iWidth) / columns, (item.m_iRow + item.m_iHeight) / rows);
+			FrameSlot.SetOffsets(cell, 0, 0, 0, 0);
 
-			for (int column = 0; column < GRID_COLUMNS; column++)
-			{
-				int appIndex = rowIndex * GRID_COLUMNS + column;
-
-				//! Keeps column rhythm on a part-filled last row.
-				if (appIndex >= count)
-				{
-					Widget spacer = workspace.CreateWidgets(LAYOUT_GRID_ROW, row);
-					if (spacer)
-						LayoutSlot.SetSizeMode(spacer, LayoutSizeMode.Fill);
-
-					continue;
-				}
-
-				CreateTile(workspace, row, apps.Get(appIndex));
-			}
+			CreateItemContent(workspace, cell, item, m_bInteractive);
+			m_mHomeCells.Insert(item.m_sId, cell);
+			RestCell(item.m_sId, cell);
 		}
+
+		FillHomeCards();
+		RefreshEditBar();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void CreateTile(notnull WorkspaceWidget workspace, notnull Widget row, notnull ELIFE_PhoneAppEntry app)
+	//! A tile or card, centred in cell. Cards are created empty - see FillHomeCards.
+	//! fillCell: a widget takes its cells' full height, inset by the gutter; off the grid (the sheet)
+	//! it keeps its own height instead.
+	protected Widget CreateItemContent(notnull WorkspaceWidget workspace, notnull Widget cell, notnull ELIFE_PhoneHomeItem item, bool clickable, bool fillCell = true)
 	{
-		Widget tile = workspace.CreateWidgets(LAYOUT_TILE, row);
-		if (!tile)
-			return;
+		bool clock = item.m_sId == ELIFE_PhoneHomeLayout.CLOCK_ID;
+		bool favourites = item.m_sId == ELIFE_PhoneHomeLayout.FAVOURITES_ID;
 
-		LayoutSlot.SetSizeMode(tile, LayoutSizeMode.Fill);
+		//! Weather and location sit straight on the wallpaper like the clock, an icon beside the reading.
+		bool info = item.m_sId == ELIFE_PhoneHomeLayout.WEATHER_ID || item.m_sId == ELIFE_PhoneHomeLayout.LOCATION_ID;
 
+		ELIFE_PhoneAppEntry app = ELIFE_PhoneAppCatalog.Find(item.m_eState);
+		if (!app && !clock && !info)
+			return null;
+
+		ResourceName layout = LAYOUT_TILE;
+		if (clock)
+			layout = LAYOUT_CLOCK_WIDGET;
+		else if (info)
+			layout = LAYOUT_INFO_WIDGET;
+		else if (favourites)
+			layout = LAYOUT_FAVOURITES_WIDGET;
+		else if (item.m_bCard && item.m_iWidth < ELIFE_PhoneHomeLayout.FULL)
+			layout = LAYOUT_WIDGET_SMALL;
+		else if (item.m_bCard)
+			layout = LAYOUT_HOME_CARD;
+
+		Widget content = workspace.CreateWidgets(layout, cell);
+		if (!content)
+			return null;
+
+		AlignableSlot.SetHorizontalAlign(content, LayoutHorizontalAlign.Stretch);
+		AlignableSlot.SetVerticalAlign(content, LayoutVerticalAlign.Center);
+
+		if (item.m_bCard && fillCell)
+		{
+			AlignableSlot.SetVerticalAlign(content, LayoutVerticalAlign.Stretch);
+			AlignableSlot.SetPadding(content, WIDGET_GUTTER, WIDGET_GUTTER, WIDGET_GUTTER, WIDGET_GUTTER);
+
+			SizeLayoutWidget size = SizeLayoutWidget.Cast(content);
+			if (size)
+				size.EnableHeightOverride(false);
+		}
+
+		if (clock)
+			FillClock(content);
+		else if (info)
+			FillCard(content, item);
+		else if (favourites)
+			ELIFE_PhoneStyle.ApplyGlass(content, false, true);
+		else if (item.m_bCard)
+			PaintCard(workspace, content, app, item.m_iWidth < ELIFE_PhoneHomeLayout.FULL);
+		else
+			PaintTile(workspace, content, app);
+
+		if (!clickable)
+			return content;
+
+		Widget button = content.FindAnyWidget(ItemButtonName(item));
+		if (!button)
+			return content;
+
+		ELIFE_PhoneTileClick click = new ELIFE_PhoneTileClick();
+		click.Bind(this, item.m_eState, item.m_sId, item.m_bOpensApp);
+		button.AddHandler(click);
+		m_aHomeClicks.Insert(click);
+		return content;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string ItemButtonName(notnull ELIFE_PhoneHomeItem item)
+	{
+		if (item.m_sId == ELIFE_PhoneHomeLayout.CLOCK_ID)
+			return "ClockButton";
+
+		if (item.m_sId == ELIFE_PhoneHomeLayout.WEATHER_ID || item.m_sId == ELIFE_PhoneHomeLayout.LOCATION_ID)
+			return "InfoButton";
+
+		if (item.m_bCard)
+			return "CardButton";
+
+		return "TileButton";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PaintTile(notnull WorkspaceWidget workspace, notnull Widget tile, notnull ELIFE_PhoneAppEntry app)
+	{
 		ELIFE_PhoneStyle.ApplyGlass(tile, false, false, false, true, ELIFE_PhoneStyle.AccentDeepFor(app.m_eState));
 
 		PaintAppIcon(workspace, tile.FindAnyWidget("TileIconSize"), TextWidget.Cast(tile.FindAnyWidget("TileMark")), app, ICON_INK_TILE);
@@ -536,18 +902,939 @@ class ELIFE_PhoneScreenShell
 			label.SetText(app.m_sLabel);
 			label.SetColor(ELIFE_PhoneStyle.TextPrimary());
 		}
+	}
 
-		if (!m_bInteractive)
+	//------------------------------------------------------------------------------------------------
+	protected void PaintCard(notnull WorkspaceWidget workspace, notnull Widget card, notnull ELIFE_PhoneAppEntry app, bool small = false)
+	{
+		ELIFE_PhoneStyle.ApplyGlass(card, false, true);
+		ELIFE_PhoneStyle.ApplyGlass(card.FindAnyWidget("CardBadge"), false, false, false, true, ELIFE_PhoneStyle.AccentDeepFor(app.m_eState));
+
+		float ink = ICON_INK_CARD;
+		if (small)
+			ink = ICON_INK_WIDGET;
+
+		PaintAppIcon(workspace, card.FindAnyWidget("CardIconSize"), TextWidget.Cast(card.FindAnyWidget("CardMark")), app, ink);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The layout belongs to the phone, so its holder and bystanders all read the same one.
+	protected string GetSavedHomeLayout()
+	{
+		if (m_Phone)
+			return m_Phone.GetHomeLayout();
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SaveHomeLayout()
+	{
+		if (m_HomeLayout && m_Phone)
+			m_Phone.SetHomeLayout(m_HomeLayout.Serialize(GetSavedHomeLayout()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Deferred: on the authority the save echoes back synchronously, from inside a home handler.
+	protected void OnHomeLayoutChanged()
+	{
+		GetGame().GetCallqueue().Remove(BuildHomeGrid);
+		GetGame().GetCallqueue().CallLater(BuildHomeGrid, 0, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Deferred: callers are often handlers on the very widgets a rebuild deletes.
+	protected void QueueHomeRebuild()
+	{
+		m_sHomeSignature = "";
+		GetGame().GetCallqueue().Remove(BuildHomeGrid);
+		GetGame().GetCallqueue().CallLater(BuildHomeGrid, 0, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An app on its way out stays dimmed until the apps push removes it.
+	protected void RestCell(string itemId, notnull Widget cell)
+	{
+		if (ELIFE_PhoneAppCatalog.SameKey(itemId, m_sPendingRemoveId))
+			cell.SetOpacity(ELIFE_PhoneStyle.PENDING_OPACITY);
+		else
+			cell.SetOpacity(1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Home edit mode
+	//------------------------------------------------------------------------------------------------
+
+	bool IsEditingHome()
+	{
+		return m_bEditingHome;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void EnterHomeEdit()
+	{
+		if (m_bEditingHome || !m_bInteractive)
 			return;
 
-		Widget button = tile.FindAnyWidget("TileButton");
+		m_bEditingHome = true;
+		ShowStatusBar(false);
+		RefreshEditBar();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnBackdropHold()
+	{
+		if (m_eState == EPhoneScreenState.HOME && !m_DragItem)
+			EnterHomeEdit();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ExitHomeEdit()
+	{
+		if (!m_bEditingHome)
+			return;
+
+		m_bEditingHome = false;
+		ClearHomeDrag();
+		CloseWidgetSheet();
+		ShowStatusBar(true);
+
+		//! The bar is cleared with the rebuild, as this may run inside one of its own handlers.
+		if (m_wHomeEditBar)
+			m_wHomeEditBar.SetVisible(false);
+
+		QueueHomeRebuild();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The status bar makes way for the edit bar and the remove target, which use its band.
+	protected void ShowStatusBar(bool show)
+	{
+		if (m_wStatusBarSize)
+			m_wStatusBarSize.SetVisible(show);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Add widget while a removed card has room for it, Wallpaper, then Done on the trailing edge.
+	protected void RefreshEditBar()
+	{
+		if (!m_wHomeEditBar)
+			return;
+
+		m_aEditClicks.Clear();
+		ClearChildren(m_wHomeEditBar);
+		m_wHomeEditBar.SetVisible(m_bEditingHome && !m_DragItem);
+
+		if (!m_bEditingHome)
+			return;
+
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace)
+			return;
+
+		if (HasAddableWidget())
+			CreateEditChip(workspace, m_wHomeEditBar, "#ELIFE-Phone_Home_AddWidget", EPhoneHomeEditAction.OPEN_SHEET, "", m_aEditClicks);
+
+		Widget wallpaper = CreateEditChip(workspace, m_wHomeEditBar, "#ELIFE-Phone_Home_Wallpaper", EPhoneHomeEditAction.OPEN_WALLPAPER, "", m_aEditClicks);
+		if (wallpaper && m_wHomeEditBar.GetChildren() != wallpaper)
+			LayoutSlot.SetPadding(wallpaper, ELIFE_PhoneStyle.SPACE_1, 0, 0, 0);
+
+		Widget spacer = workspace.CreateWidgets(LAYOUT_GRID_ROW, m_wHomeEditBar);
+		if (spacer)
+			LayoutSlot.SetSizeMode(spacer, LayoutSizeMode.Fill);
+
+		CreateEditChip(workspace, m_wHomeEditBar, "#ELIFE-Phone_Home_Done", EPhoneHomeEditAction.DONE, "", m_aEditClicks);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool HasAddableWidget()
+	{
+		if (!m_HomeLayout)
+			return false;
+
+		foreach (ELIFE_PhoneHomeItem item : m_HomeLayout.GetItems())
+		{
+			if (item.m_bRemoved && m_HomeLayout.HasRoomFor(item))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected Widget CreateEditChip(notnull WorkspaceWidget workspace, notnull Widget parent, string label, EPhoneHomeEditAction action, string itemId, notnull array<ref ELIFE_PhoneHomeEditClick> clicks)
+	{
+		Widget chip = workspace.CreateWidgets(LAYOUT_CHIP, parent);
+		if (!chip)
+			return null;
+
+		AlignableSlot.SetVerticalAlign(chip, LayoutVerticalAlign.Center);
+		ELIFE_PhoneStyle.ApplyGlass(chip.FindAnyWidget("Chip"), false, true);
+		SetText(chip, "ChipLabel", label);
+		BindEditClick(chip.FindAnyWidget("ChipButton"), action, itemId, clicks);
+		return chip;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void BindEditClick(Widget button, EPhoneHomeEditAction action, string itemId, notnull array<ref ELIFE_PhoneHomeEditClick> clicks)
+	{
 		if (!button)
 			return;
 
-		ELIFE_PhoneTileClick click = new ELIFE_PhoneTileClick();
-		click.Bind(this, app.m_eState);
+		ELIFE_PhoneHomeEditClick click = new ELIFE_PhoneHomeEditClick();
+		click.Bind(this, action, itemId);
 		button.AddHandler(click);
-		m_aTileClicks.Insert(click);
+		clicks.Insert(click);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnHomeEditAction(EPhoneHomeEditAction action, string itemId)
+	{
+		if (!m_bEditingHome || !m_HomeLayout)
+			return;
+
+		switch (action)
+		{
+			case EPhoneHomeEditAction.DONE:
+				ExitHomeEdit();
+				break;
+
+			case EPhoneHomeEditAction.OPEN_SHEET:
+				OpenWidgetSheet();
+				break;
+
+			case EPhoneHomeEditAction.CLOSE_SHEET:
+				CloseWidgetSheet();
+				break;
+
+			case EPhoneHomeEditAction.ADD:
+				AddHomeCard(itemId);
+				break;
+
+			case EPhoneHomeEditAction.OPEN_WALLPAPER:
+				OpenWallpaperSheet();
+				break;
+
+			case EPhoneHomeEditAction.PICK_WALLPAPER:
+				if (m_Phone)
+					m_Phone.SetWallpaper(itemId);
+				break;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A picker sheet over the home screen; its backdrop closes it. Null if one is already open.
+	protected Widget CreateSheet(notnull WorkspaceWidget workspace, string title)
+	{
+		if (m_wWidgetSheet || !m_wHomeScreen)
+			return null;
+
+		Widget sheet = workspace.CreateWidgets(LAYOUT_WIDGET_SHEET, m_wHomeScreen);
+		if (!sheet)
+			return null;
+
+		AlignableSlot.SetHorizontalAlign(sheet, LayoutHorizontalAlign.Stretch);
+		AlignableSlot.SetVerticalAlign(sheet, LayoutVerticalAlign.Stretch);
+		ELIFE_PhoneStyle.ApplyGlass(sheet.FindAnyWidget("SheetPanel"), true);
+		SetText(sheet, "SheetTitle", title);
+		BindEditClick(sheet.FindAnyWidget("SheetDismiss"), EPhoneHomeEditAction.CLOSE_SHEET, "", m_aSheetClicks);
+
+		m_wWidgetSheet = sheet;
+		return sheet;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every removed widget there is room for, shown live as it would sit on the grid; a tap adds it.
+	protected void OpenWidgetSheet()
+	{
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace || !m_HomeLayout)
+			return;
+
+		Widget sheet = CreateSheet(workspace, "#ELIFE-Phone_Home_Widgets");
+		if (!sheet)
+			return;
+
+		Widget list = sheet.FindAnyWidget("SheetList");
+		foreach (ELIFE_PhoneHomeItem item : m_HomeLayout.GetItems())
+		{
+			if (!list || !item.m_bRemoved || !m_HomeLayout.HasRoomFor(item))
+				continue;
+
+			//! A row of the grid's four columns, so each widget shows at its own width.
+			Widget row = workspace.CreateWidgets(LAYOUT_GRID_ROW, list);
+			if (!row)
+				continue;
+
+			AlignableSlot.SetHorizontalAlign(row, LayoutHorizontalAlign.Stretch);
+			if (list.GetChildren() != row)
+				LayoutSlot.SetPadding(row, 0, ELIFE_PhoneStyle.SPACE_2, 0, 0);
+
+			Widget preview = CreateItemContent(workspace, row, item, false, false);
+			if (!preview)
+				continue;
+
+			LayoutSlot.SetSizeMode(preview, LayoutSizeMode.Fill);
+			LayoutSlot.SetFillWeight(preview, item.m_iWidth);
+
+			if (item.m_iWidth < ELIFE_PhoneHomeLayout.FULL)
+			{
+				Widget rest = workspace.CreateWidgets(LAYOUT_GRID_ROW, row);
+				if (rest)
+				{
+					LayoutSlot.SetSizeMode(rest, LayoutSizeMode.Fill);
+					LayoutSlot.SetFillWeight(rest, ELIFE_PhoneHomeLayout.FULL - item.m_iWidth);
+				}
+			}
+
+			FillCard(preview, item);
+			BindEditClick(preview.FindAnyWidget(ItemButtonName(item)), EPhoneHomeEditAction.ADD, item.m_sId, m_aSheetClicks);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A swatch per wallpaper, painted like the screen it sets. Stays open so several can be tried.
+	protected void OpenWallpaperSheet()
+	{
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace)
+			return;
+
+		Widget sheet = CreateSheet(workspace, "#ELIFE-Phone_Home_Wallpaper");
+		if (!sheet)
+			return;
+
+		//! A short scrolling window and no scrim, so the screen above shows each pick as it is tried on.
+		SetVisibleOf(sheet, "SheetScrim", false);
+
+		Widget list = sheet.FindAnyWidget("SheetScrollList");
+		Widget scrollSize = sheet.FindAnyWidget("SheetScrollSize");
+		if (!list || !scrollSize)
+			return;
+
+		scrollSize.SetVisible(true);
+		SetVisibleOf(sheet, "SheetList", false);
+
+		Widget row;
+		foreach (int i, ELIFE_PhoneWallpaper wallpaper : ELIFE_PhoneWallpapers.GetEntries())
+		{
+			if (i % SWATCHES_PER_ROW == 0)
+			{
+				row = workspace.CreateWidgets(LAYOUT_GRID_ROW, list);
+				if (!row)
+					return;
+
+				AlignableSlot.SetHorizontalAlign(row, LayoutHorizontalAlign.Center);
+				if (i > 0)
+					LayoutSlot.SetPadding(row, 0, ELIFE_PhoneStyle.SPACE_2, 0, 0);
+			}
+
+			Widget swatch = workspace.CreateWidgets(LAYOUT_SWATCH, row);
+			if (!swatch)
+				continue;
+
+			if (row.GetChildren() != swatch)
+				LayoutSlot.SetPadding(swatch, ELIFE_PhoneStyle.SPACE_2, 0, 0, 0);
+
+			PaintWallpaper(swatch, "Swatch", wallpaper, wallpaper.m_sSwatchPhoto);
+
+			ImageWidget check = ImageWidget.Cast(swatch.FindAnyWidget("SwatchCheck"));
+			if (check && check.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_CHECK))
+				ELIFE_PhoneStyle.FitIcon(check, SWATCH_CHECK_SIZE);
+
+			m_mSwatchChecks.Insert(wallpaper.m_sId, swatch.FindAnyWidget("SwatchCheckSize"));
+			BindEditClick(swatch.FindAnyWidget("SwatchButton"), EPhoneHomeEditAction.PICK_WALLPAPER, wallpaper.m_sId, m_aSheetClicks);
+		}
+
+		RefreshSwatchChecks();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RefreshSwatchChecks()
+	{
+		if (!m_Phone)
+			return;
+
+		ELIFE_PhoneWallpaper current = ELIFE_PhoneWallpapers.Resolve(m_Phone.GetWallpaper());
+		foreach (string wallpaperId, Widget check : m_mSwatchChecks)
+		{
+			if (check)
+				check.SetVisible(current && current.m_sId == wallpaperId);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hidden now, deleted next frame: this runs inside the sheet's own handlers.
+	protected void CloseWidgetSheet()
+	{
+		if (!m_wWidgetSheet)
+			return;
+
+		m_wWidgetSheet.SetVisible(false);
+		GetGame().GetCallqueue().Remove(DestroyWidgetSheet);
+		GetGame().GetCallqueue().CallLater(DestroyWidgetSheet, 0, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void DestroyWidgetSheet()
+	{
+		if (m_wWidgetSheet)
+			m_wWidgetSheet.RemoveFromHierarchy();
+
+		m_wWidgetSheet = null;
+		m_aSheetClicks.Clear();
+		m_mSwatchChecks.Clear();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void AddHomeCard(string itemId)
+	{
+		CloseWidgetSheet();
+
+		ELIFE_PhoneHomeItem item = m_HomeLayout.Find(itemId);
+		if (!item || !m_HomeLayout.Restore(item))
+			return;
+
+		SaveHomeLayout();
+		QueueHomeRebuild();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Cards can always come off; apps only if they can be uninstalled.
+	protected bool IsRemovable(notnull ELIFE_PhoneHomeItem item)
+	{
+		if (item.m_bCard)
+			return true;
+
+		ELIFE_PhoneAppEntry app = ELIFE_PhoneAppCatalog.Find(item.m_eState);
+		return app && !app.IsSystem();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A card leaves the grid at once; an app is uninstalled and leaves with the next apps push.
+	protected void RemoveHomeItem(notnull ELIFE_PhoneHomeItem item)
+	{
+		if (item.m_bCard)
+		{
+			m_HomeLayout.Remove(item);
+			SaveHomeLayout();
+			QueueHomeRebuild();
+			return;
+		}
+
+		ELIFE_PhoneAppEntry app = ELIFE_PhoneAppCatalog.Find(item.m_eState);
+		if (!app || !m_Phone || m_sPendingRemoveId != "")
+			return;
+
+		m_sPendingRemoveId = item.m_sId;
+		m_Phone.SetAppInstalled(app.m_sAppKey, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnAppInstallResult(string appKey, bool installed, bool succeeded)
+	{
+		if (!ELIFE_PhoneAppCatalog.SameKey(appKey, m_sPendingRemoveId))
+			return;
+
+		string itemId = m_sPendingRemoveId;
+		m_sPendingRemoveId = "";
+
+		Widget cell;
+		if (m_mHomeCells.Find(itemId, cell))
+			RestCell(itemId, cell);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Home drag
+	//------------------------------------------------------------------------------------------------
+
+	//! Lifts the held item into the drag layer, entering edit mode on the way. False leaves the press a
+	//! plain tap.
+	bool BeginHomeDrag(string itemId, float canvasX, float canvasY)
+	{
+		if (m_DragItem || !m_HomeLayout || !m_wHomeGrid || !m_wHomeDragLayer || m_eState != EPhoneScreenState.HOME)
+			return false;
+
+		ELIFE_PhoneHomeItem item = m_HomeLayout.Find(itemId);
+		Widget source;
+		if (!item || !item.IsPlaced() || !m_mHomeCells.Find(item.m_sId, source))
+			return false;
+
+		//! Already on its way out.
+		if (ELIFE_PhoneAppCatalog.SameKey(item.m_sId, m_sPendingRemoveId))
+			return false;
+
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace)
+			return false;
+
+		//! Screen rects are DPI-scaled px; canvas px and frame slot positions are not.
+		float x, y, width, height;
+		m_wHomeDragLayer.GetScreenPos(x, y);
+		m_fLayerX = workspace.DPIUnscale(x);
+		m_fLayerY = workspace.DPIUnscale(y);
+
+		m_wHomeGrid.GetScreenPos(x, y);
+		m_wHomeGrid.GetScreenSize(width, height);
+		m_fGridX = workspace.DPIUnscale(x) - m_fLayerX;
+		m_fGridY = workspace.DPIUnscale(y) - m_fLayerY;
+		m_fGridWidth = workspace.DPIUnscale(width);
+		m_fGridHeight = workspace.DPIUnscale(height);
+		if (m_fGridWidth <= 0 || m_fGridHeight <= 0)
+			return false;
+
+		//! Only a press made in edit mode can be a tap; the hold that enters it never is.
+		m_bEditTap = m_bEditingHome;
+		m_fPressX = canvasX;
+		m_fPressY = canvasY;
+
+		EnterHomeEdit();
+		CloseWidgetSheet();
+
+		m_DragItem = item;
+
+		m_wDropHint = CreateFloatingItem(workspace, item);
+		if (m_wDropHint)
+		{
+			m_wDropHint.SetOpacity(ELIFE_PhoneStyle.DROP_HINT_OPACITY);
+			m_wDropHint.SetVisible(false);
+		}
+
+		m_wDragGhost = CreateFloatingItem(workspace, item);
+		if (!m_wDragGhost)
+		{
+			ClearHomeDrag();
+			return false;
+		}
+
+		//! Above the hint and the items easing aside, which are created after it.
+		m_wDragGhost.SetZOrder(ELIFE_PhoneStyle.ZORDER_LIFTED);
+		ShowPressed(m_wDragGhost);
+
+		float left, top;
+		CellPos(item.m_iColumn, item.m_iRow, left, top);
+		m_fDragOffsetX = left - (canvasX - m_fLayerX);
+		m_fDragOffsetY = top - (canvasY - m_fLayerY);
+		FrameSlot.SetPos(m_wDragGhost, left, top);
+
+		//! Opacity rather than visibility, so its cell keeps the gap.
+		source.SetOpacity(0);
+
+		//! The edit bar makes way for the remove target while something removable is held.
+		if (m_wHomeEditBar)
+			m_wHomeEditBar.SetVisible(false);
+
+		ShowRemoveZone(IsRemovable(item));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowRemoveZone(bool show)
+	{
+		m_bOverRemoveZone = false;
+		PaintRemoveZone();
+
+		if (m_wHomeRemoveZone)
+			m_wHomeRemoveZone.SetVisible(show);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PaintRemoveZone()
+	{
+		float alpha = 0;
+		if (m_bOverRemoveZone)
+			alpha = ELIFE_PhoneStyle.REMOVE_ZONE_WASH_ALPHA;
+
+		if (m_wHomeRemoveWash)
+			m_wHomeRemoveWash.SetColor(ELIFE_PhoneStyle.WithAlpha(ELIFE_PhoneStyle.Negative(), alpha));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cursor, not the copy, decides: the copy is wider than the target when it is a card.
+	protected bool IsOverRemoveZone(float canvasX, float canvasY)
+	{
+		if (!m_wHomeRemoveZone || !m_wHomeRemoveZone.IsVisible())
+			return false;
+
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace)
+			return false;
+
+		float x, y, width, height;
+		m_wHomeRemoveZone.GetScreenPos(x, y);
+		m_wHomeRemoveZone.GetScreenSize(width, height);
+
+		float pointX = workspace.DPIScale(canvasX);
+		float pointY = workspace.DPIScale(canvasY);
+		return pointX >= x && pointX <= x + width && pointY >= y && pointY <= y + height;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A copy of item in the drag layer, sized to its cells.
+	protected Widget CreateFloatingItem(notnull WorkspaceWidget workspace, notnull ELIFE_PhoneHomeItem item)
+	{
+		Widget cell = workspace.CreateWidgets(LAYOUT_HOME_CELL, m_wHomeDragLayer);
+		if (!cell)
+			return null;
+
+		FrameSlot.SetAnchor(cell, 0, 0);
+		FrameSlot.SetAlignment(cell, 0, 0);
+		FrameSlot.SetSize(cell, item.m_iWidth * CellWidth(), item.m_iHeight * CellHeight());
+
+		Widget content = CreateItemContent(workspace, cell, item, false);
+		if (!content)
+		{
+			cell.RemoveFromHierarchy();
+			return null;
+		}
+
+		FillCard(content, item);
+
+		//! Never clicked, and a hover wash on it would only flicker under the cursor.
+		Widget button = content.FindAnyWidget(ItemButtonName(item));
+		if (button)
+			button.SetFlags(WidgetFlags.IGNORE_CURSOR);
+
+		return cell;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pressed glass: the button's own pressed wash, held on while the item is lifted.
+	protected void ShowPressed(notnull Widget floating)
+	{
+		Widget background = floating.FindAnyWidget("Background");
+		if (background)
+			background.SetColor(ELIFE_PhoneStyle.PressedWash());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void UpdateHomeDrag(float canvasX, float canvasY)
+	{
+		if (!m_DragItem || !m_wDragGhost)
+			return;
+
+		if (m_bEditTap && (Math.AbsFloat(canvasX - m_fPressX) > EDIT_TAP_SLOP_PX || Math.AbsFloat(canvasY - m_fPressY) > EDIT_TAP_SLOP_PX))
+			m_bEditTap = false;
+
+		float left = canvasX - m_fLayerX + m_fDragOffsetX;
+		float top = canvasY - m_fLayerY + m_fDragOffsetY;
+		FrameSlot.SetPos(m_wDragGhost, left, top);
+
+		bool overRemove = IsOverRemoveZone(canvasX, canvasY);
+		if (overRemove != m_bOverRemoveZone)
+		{
+			m_bOverRemoveZone = overRemove;
+			PaintRemoveZone();
+		}
+
+		int column, row;
+		array<ELIFE_PhoneHomeItem> displaced = {};
+		bool valid = !overRemove && FindDropCell(left, top, column, row, displaced);
+
+		if (m_wDropHint)
+		{
+			m_wDropHint.SetVisible(valid);
+			if (valid)
+			{
+				float hintLeft, hintTop;
+				CellPos(column, row, hintLeft, hintTop);
+				FrameSlot.SetPos(m_wDropHint, hintLeft, hintTop);
+			}
+		}
+
+		UpdateShifts(displaced, column, row);
+		AdvanceShifts();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops the item on the cell it is over, swapping whatever is there into the cells it left, or
+	//! removes it when dropped on the remove target. Anywhere else it goes back where it was.
+	void EndHomeDrag(float canvasX, float canvasY)
+	{
+		if (!m_DragItem)
+			return;
+
+		//! A tap on a widget that comes in more than one size switches it to the next.
+		if (m_bEditTap)
+		{
+			ELIFE_PhoneHomeItem tapped = m_DragItem;
+			ClearHomeDrag();
+
+			if (m_HomeLayout.Resize(tapped))
+			{
+				SaveHomeLayout();
+				QueueHomeRebuild();
+			}
+
+			return;
+		}
+
+		if (IsOverRemoveZone(canvasX, canvasY))
+		{
+			ELIFE_PhoneHomeItem removed = m_DragItem;
+			ClearHomeDrag();
+
+			//! Hidden until the rebuild takes it off, or dimmed while its uninstall is out.
+			Widget cell;
+			if (m_mHomeCells.Find(removed.m_sId, cell))
+				cell.SetOpacity(0);
+
+			RemoveHomeItem(removed);
+
+			if (m_mHomeCells.Find(removed.m_sId, cell) && !removed.m_bCard)
+				RestCell(removed.m_sId, cell);
+
+			return;
+		}
+
+		int column, row;
+		array<ELIFE_PhoneHomeItem> displaced = {};
+		bool valid = FindDropCell(canvasX - m_fLayerX + m_fDragOffsetX, canvasY - m_fLayerY + m_fDragOffsetY, column, row, displaced);
+		if (!valid || !m_HomeLayout.Move(m_DragItem, column, row))
+		{
+			ClearHomeDrag();
+			return;
+		}
+
+		SaveHomeLayout();
+
+		//! Everything rests where it lands until the rebuild, which is deferred as this runs inside the
+		//! held item's own handler, which the rebuild deletes.
+		float left, top;
+		CellPos(column, row, left, top);
+		FrameSlot.SetPos(m_wDragGhost, left, top);
+
+		if (m_wDropHint)
+			m_wDropHint.SetVisible(false);
+
+		foreach (ELIFE_PhoneHomeShift shift : m_aShifts)
+		{
+			if (shift.m_wCopy)
+				FrameSlot.SetPos(shift.m_wCopy, shift.m_fToX, shift.m_fToY);
+		}
+
+		m_DragItem = null;
+		m_bGridStale = false;
+		ShowRemoveZone(false);
+		QueueHomeRebuild();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void CancelHomeDrag()
+	{
+		ClearHomeDrag();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cell under the dragged copy's top-left, if its centre is over the grid and it can move there.
+	protected bool FindDropCell(float left, float top, out int column, out int row, notnull array<ELIFE_PhoneHomeItem> displaced)
+	{
+		float cellWidth = CellWidth();
+		float cellHeight = CellHeight();
+
+		float centreX = left + m_DragItem.m_iWidth * cellWidth * 0.5;
+		float centreY = top + m_DragItem.m_iHeight * cellHeight * 0.5;
+		if (centreX < m_fGridX || centreX > m_fGridX + m_fGridWidth || centreY < m_fGridY || centreY > m_fGridY + m_fGridHeight)
+			return false;
+
+		column = (int)Math.Round((left - m_fGridX) / cellWidth);
+		row = (int)Math.Round((top - m_fGridY) / cellHeight);
+		m_HomeLayout.ClampToGrid(m_DragItem, column, row);
+		return m_HomeLayout.GetSwap(m_DragItem, column, row, displaced);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Eases what the drop would swap into the cells the dragged item left, and sends back what no
+	//! longer would.
+	protected void UpdateShifts(notnull array<ELIFE_PhoneHomeItem> displaced, int column, int row)
+	{
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace)
+			return;
+
+		int now = System.GetTickCount();
+
+		foreach (ELIFE_PhoneHomeShift shift : m_aShifts)
+		{
+			if (shift.m_bReturning || displaced.Find(shift.m_Item) != -1)
+				continue;
+
+			float homeX, homeY;
+			CellPos(shift.m_Item.m_iColumn, shift.m_Item.m_iRow, homeX, homeY);
+			RetargetShift(shift, homeX, homeY, now);
+			shift.m_bReturning = true;
+		}
+
+		foreach (ELIFE_PhoneHomeItem other : displaced)
+		{
+			float toX, toY;
+			CellPos(other.m_iColumn + m_DragItem.m_iColumn - column, other.m_iRow + m_DragItem.m_iRow - row, toX, toY);
+
+			ELIFE_PhoneHomeShift existing = FindShift(other);
+			if (!existing)
+				existing = StartShift(workspace, other);
+
+			if (!existing)
+				continue;
+
+			if (existing.m_bReturning || existing.m_fToX != toX || existing.m_fToY != toY)
+			{
+				RetargetShift(existing, toX, toY, now);
+				existing.m_bReturning = false;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected ELIFE_PhoneHomeShift FindShift(ELIFE_PhoneHomeItem item)
+	{
+		foreach (ELIFE_PhoneHomeShift shift : m_aShifts)
+		{
+			if (shift.m_Item == item)
+				return shift;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected ELIFE_PhoneHomeShift StartShift(notnull WorkspaceWidget workspace, notnull ELIFE_PhoneHomeItem item)
+	{
+		Widget source;
+		if (!m_mHomeCells.Find(item.m_sId, source))
+			return null;
+
+		Widget copy = CreateFloatingItem(workspace, item);
+		if (!copy)
+			return null;
+
+		ELIFE_PhoneHomeShift shift = new ELIFE_PhoneHomeShift();
+		shift.m_Item = item;
+		shift.m_wCopy = copy;
+		CellPos(item.m_iColumn, item.m_iRow, shift.m_fFromX, shift.m_fFromY);
+		shift.m_fToX = shift.m_fFromX;
+		shift.m_fToY = shift.m_fFromY;
+		shift.m_iStartMs = System.GetTickCount();
+		FrameSlot.SetPos(copy, shift.m_fFromX, shift.m_fFromY);
+
+		source.SetOpacity(0);
+		m_aShifts.Insert(shift);
+		return shift;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Restarts the ease from wherever the copy is now, so a change of mind never jumps.
+	protected void RetargetShift(notnull ELIFE_PhoneHomeShift shift, float toX, float toY, int now)
+	{
+		float x, y;
+		ShiftPos(shift, now, x, y);
+		shift.m_fFromX = x;
+		shift.m_fFromY = y;
+		shift.m_fToX = toX;
+		shift.m_fToY = toY;
+		shift.m_iStartMs = now;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShiftPos(notnull ELIFE_PhoneHomeShift shift, int now, out float x, out float y)
+	{
+		float eased = ELIFE_PhoneStyle.EaseOut((now - shift.m_iStartMs) / (float)ELIFE_PhoneStyle.DURATION_STATE_MS);
+		x = shift.m_fFromX + (shift.m_fToX - shift.m_fFromX) * eased;
+		y = shift.m_fFromY + (shift.m_fToY - shift.m_fFromY) * eased;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Moves the copies along; one back home is swapped for its original.
+	protected void AdvanceShifts()
+	{
+		int now = System.GetTickCount();
+
+		for (int i = m_aShifts.Count() - 1; i >= 0; i--)
+		{
+			ELIFE_PhoneHomeShift shift = m_aShifts[i];
+			float x, y;
+			ShiftPos(shift, now, x, y);
+
+			if (shift.m_wCopy)
+				FrameSlot.SetPos(shift.m_wCopy, x, y);
+
+			if (!shift.m_bReturning || now - shift.m_iStartMs < ELIFE_PhoneStyle.DURATION_STATE_MS)
+				continue;
+
+			Widget source;
+			if (m_mHomeCells.Find(shift.m_Item.m_sId, source))
+				RestCell(shift.m_Item.m_sId, source);
+
+			if (shift.m_wCopy)
+				shift.m_wCopy.RemoveFromHierarchy();
+
+			m_aShifts.Remove(i);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected float CellWidth()
+	{
+		return m_fGridWidth / ELIFE_PhoneHomeLayout.COLUMNS;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected float CellHeight()
+	{
+		return m_fGridHeight / ELIFE_PhoneHomeLayout.ROWS;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drag-layer px of a cell's top-left.
+	protected void CellPos(int column, int row, out float left, out float top)
+	{
+		left = m_fGridX + column * CellWidth();
+		top = m_fGridY + row * CellHeight();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ends a drag that didn't land: everything snaps back to its own cell.
+	protected void ClearHomeDrag()
+	{
+		ClearFloating();
+		m_DragItem = null;
+		ShowRemoveZone(false);
+
+		if (m_wHomeEditBar)
+			m_wHomeEditBar.SetVisible(m_bEditingHome);
+
+		if (!m_bGridStale)
+			return;
+
+		m_bGridStale = false;
+		QueueHomeRebuild();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops every drag-layer copy and shows every cell again.
+	protected void ClearFloating()
+	{
+		if (m_wDragGhost)
+			m_wDragGhost.RemoveFromHierarchy();
+
+		if (m_wDropHint)
+			m_wDropHint.RemoveFromHierarchy();
+
+		foreach (ELIFE_PhoneHomeShift shift : m_aShifts)
+		{
+			if (shift.m_wCopy)
+				shift.m_wCopy.RemoveFromHierarchy();
+		}
+
+		m_aShifts.Clear();
+		m_wDragGhost = null;
+		m_wDropHint = null;
+
+		foreach (string itemId, Widget cell : m_mHomeCells)
+		{
+			if (cell)
+				RestCell(itemId, cell);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -729,6 +2016,19 @@ class ELIFE_PhoneScreenShell
 	//------------------------------------------------------------------------------------------------
 	protected void OnHomePillClicked()
 	{
+		//! Home closes the widget picker, then leaves edit mode, as it would on any phone.
+		if (m_wWidgetSheet)
+		{
+			CloseWidgetSheet();
+			return;
+		}
+
+		if (m_bEditingHome)
+		{
+			ExitHomeEdit();
+			return;
+		}
+
 		//! Home closes the hub first, leaving the page under it open.
 		if (m_Phone && m_Phone.IsHubOpen())
 		{
@@ -759,6 +2059,63 @@ class ELIFE_PhoneScreenShell
 	{
 		if (m_wStatusNumber && m_Phone)
 			m_wStatusNumber.SetText(m_Phone.GetNumber());
+
+		if (m_wStatusDndSize)
+			m_wStatusDndSize.SetVisible(m_Phone && m_Phone.IsDoNotDisturb());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnPersonalizationChanged()
+	{
+		ApplyWallpaper();
+		RefreshSwatchChecks();
+		RefreshStatusBar();
+		FillHomeCards();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ApplyWallpaper()
+	{
+		if (!m_wRoot || !m_Phone)
+			return;
+
+		ELIFE_PhoneWallpaper wallpaper = ELIFE_PhoneWallpapers.Resolve(m_Phone.GetWallpaper());
+		if (wallpaper)
+			PaintWallpaper(m_wRoot, "Wallpaper", wallpaper, wallpaper.m_sPhoto);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Paints prefix + Base, Glow, PhotoGroup and Photo, so a swatch looks like the screen it sets.
+	protected void PaintWallpaper(notnull Widget root, string prefix, notnull ELIFE_PhoneWallpaper wallpaper, ResourceName photoTexture)
+	{
+		ELIFE_PhoneStyle.SetColorOf(root, prefix + "Base", wallpaper.m_Base);
+
+		bool photo = false;
+		ImageWidget image = ImageWidget.Cast(root.FindAnyWidget(prefix + "Photo"));
+		if (image && photoTexture != ResourceName.Empty && image.LoadImageTexture(0, photoTexture))
+		{
+			//! Scale to fill crops by the image's own size, so it must carry the texture's aspect.
+			int width, height;
+			image.GetImageSize(0, width, height);
+			if (width > 0 && height > 0)
+				image.SetSize(width, height);
+
+			photo = true;
+		}
+
+		Widget photoGroup = root.FindAnyWidget(prefix + "PhotoGroup");
+		if (photoGroup)
+			photoGroup.SetVisible(photo);
+
+		ImageWidget glow = ImageWidget.Cast(root.FindAnyWidget(prefix + "Glow"));
+		if (!glow)
+			return;
+
+		glow.SetVisible(!photo);
+		glow.SetColor(wallpaper.m_Glow);
+
+		if (ELIFE_PhoneStyle.GRADIENT_FLIPPED)
+			glow.SetRotation(180);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -919,7 +2276,7 @@ class ELIFE_PhoneScreenShell
 	//! The open hub already lists it.
 	protected bool CanRaiseBanner()
 	{
-		return CanShowBanner() && m_Phone && !m_Phone.IsHubOpen();
+		return CanShowBanner() && m_Phone && !m_Phone.IsHubOpen() && !m_Phone.IsDoNotDisturb();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1376,6 +2733,9 @@ class ELIFE_PhoneScreenShell
 	{
 		RefreshStatusBar();
 
+		if (state != EPhoneScreenState.HOME)
+			ExitHomeEdit();
+
 		bool appOpen = ELIFE_PhoneAppCatalog.HasPage(state);
 		bool locked = state == EPhoneScreenState.LOCKED;
 		bool off = state == EPhoneScreenState.OFF;
@@ -1545,46 +2905,261 @@ class ELIFE_PhoneScreenShell
 	// Home screen
 	//------------------------------------------------------------------------------------------------
 
-	//! Balance card and newest unread thread above the grid.
+	//! Picks up widgets coming and going, and refreshes what they show.
 	protected void RefreshHomeScreen()
 	{
-		if (m_wHomeDate)
-			m_wHomeDate.SetText(FormatToday());
+		BuildHomeGrid();
+		FillHomeCards();
+	}
 
-		if (!m_wHomeCards)
+	//------------------------------------------------------------------------------------------------
+	protected void FillHomeCards(bool liveOnly = false)
+	{
+		if (!m_HomeLayout)
+			return;
+
+		foreach (ELIFE_PhoneHomeItem item : m_HomeLayout.GetItems())
+		{
+			if (liveOnly && item.m_sId != ELIFE_PhoneHomeLayout.WEATHER_ID && item.m_sId != ELIFE_PhoneHomeLayout.LOCATION_ID)
+				continue;
+
+			Widget cell;
+			if (item.m_bCard && m_mHomeCells.Find(item.m_sId, cell) && cell.GetChildren())
+				FillCard(cell.GetChildren(), item, m_bInteractive);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RefreshLiveWidgets()
+	{
+		if (m_eState == EPhoneScreenState.HOME)
+			FillHomeCards(true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A widget's live content. Tiles have none. Only the grid's own copy is clickable.
+	protected void FillCard(notnull Widget card, notnull ELIFE_PhoneHomeItem item, bool clickable = false)
+	{
+		if (!item.m_bCard)
+			return;
+
+		bool small = item.m_iWidth < ELIFE_PhoneHomeLayout.FULL;
+
+		if (item.m_sId == ELIFE_PhoneHomeLayout.CLOCK_ID)
+			FillClock(card);
+		else if (item.m_sId == ELIFE_PhoneHomeLayout.WEATHER_ID)
+			FillWeather(card);
+		else if (item.m_sId == ELIFE_PhoneHomeLayout.LOCATION_ID)
+			FillLocation(card);
+		else if (item.m_sId == ELIFE_PhoneHomeLayout.FAVOURITES_ID)
+			FillFavourites(card, clickable);
+		else if (item.m_eState == EPhoneScreenState.BANK)
+			FillBalanceCard(card);
+		else if (item.m_eState == EPhoneScreenState.MESSAGES)
+			FillMessagesCard(card, small);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The current weather in the game's own icon and name, over the time of day as the game names it.
+	protected void FillWeather(notnull Widget card)
+	{
+		string label = "#ELIFE-Phone_Home_Weather";
+		string value = "";
+		ResourceName icon = ResourceName.Empty;
+
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+		TimeAndWeatherManagerEntity weather;
+		if (world)
+			weather = world.GetTimeAndWeatherManager();
+
+		if (weather)
+		{
+			SCR_UIInfo dayTime;
+			weather.GetCurrentDayTimeUIInfo(dayTime);
+			if (dayTime && dayTime.GetName() != "")
+				label = dayTime.GetName();
+
+			WeatherState state = weather.GetCurrentWeatherState();
+			if (state)
+			{
+				value = state.GetLocalizedName();
+				icon = state.GetIconPath();
+			}
+		}
+
+		FillInfo(card, value, label, ELIFE_PhoneStyle.TextPrimary());
+
+		ImageWidget image = ImageWidget.Cast(card.FindAnyWidget("InfoIcon"));
+		if (!image)
+			return;
+
+		bool loaded = icon != ResourceName.Empty && image.LoadImageTexture(0, icon);
+		SetVisibleOf(card, "InfoIconSize", loaded);
+		if (loaded)
+		{
+			image.SetColor(ELIFE_PhoneStyle.TextPrimary());
+			ELIFE_PhoneStyle.FitIcon(image, INFO_ICON_SIZE);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FillInfo(notnull Widget card, string value, string label, Color valueColor)
+	{
+		SetText(card, "InfoValue", value);
+		ELIFE_PhoneStyle.SetColorOf(card, "InfoValue", valueColor);
+		SetText(card, "InfoLabel", label);
+		ELIFE_PhoneStyle.SetColorOf(card, "InfoLabel", ELIFE_PhoneStyle.TextSecondary());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetVisibleOf(notnull Widget parent, string widgetName, bool visible)
+	{
+		Widget widget = parent.FindAnyWidget(widgetName);
+		if (widget)
+			widget.SetVisible(visible);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The map grid the phone is in - the phone's, so a bystander reads the same square.
+	protected void FillLocation(notnull Widget card)
+	{
+		string grid = "";
+		if (m_Phone && m_Phone.GetOwner())
+			grid = SCR_MapEntity.GetGridLabel(m_Phone.GetOwner().GetOrigin());
+
+		FillInfo(card, grid, "#ELIFE-Phone_Home_Location", ELIFE_PhoneStyle.TextPrimary());
+
+		ImageWidget image = ImageWidget.Cast(card.FindAnyWidget("InfoIcon"));
+		if (!image)
+			return;
+
+		bool loaded = image.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_LOCATION);
+		SetVisibleOf(card, "InfoIconSize", loaded);
+		if (loaded)
+		{
+			image.SetColor(ELIFE_PhoneStyle.AccentMap());
+			ELIFE_PhoneStyle.FitIcon(image, INFO_ICON_SIZE);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Up to FAVOURITES_SHOWN starred contacts, each a door to its contact page. Ids the contact book
+	//! no longer knows (deleted contacts) are skipped.
+	protected void FillFavourites(notnull Widget card, bool clickable)
+	{
+		Widget list = card.FindAnyWidget("FavouriteList");
+		if (!list || !m_Phone)
 			return;
 
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		if (!workspace)
 			return;
 
-		m_aCardClicks.Clear();
-		ClearChildren(m_wHomeCards);
+		if (clickable)
+			m_aFavouriteClicks.Clear();
 
-		BuildBalanceCard(workspace);
-		BuildMessagesCard(workspace);
+		ClearChildren(list);
+
+		array<string> favourites = {};
+		m_Phone.GetFavourites(favourites);
+
+		int shown = 0;
+		foreach (string contactId : favourites)
+		{
+			if (shown >= FAVOURITES_SHOWN)
+				break;
+
+			ELIFE_ContactSummary contact = ELIFE_PhoneContactBook.FindById(m_Phone, contactId);
+			if (!contact)
+				continue;
+
+			Widget entry = workspace.CreateWidgets(LAYOUT_FAVOURITE_ENTRY, list);
+			if (!entry)
+				continue;
+
+			LayoutSlot.SetSizeMode(entry, LayoutSizeMode.Fill);
+			AlignableSlot.SetVerticalAlign(entry, LayoutVerticalAlign.Center);
+
+			string name = ELIFE_PhoneContactBook.DisplayName(contact);
+			ELIFE_PhoneAppBase.PaintAvatarInto(entry, "FavouriteAvatarDisc", "FavouriteAvatarFallback", "FavouriteAvatarGlyph", name, ELIFE_PhoneStyle.AccentDeepFor(EPhoneScreenState.CONTACTS));
+			SetText(entry, "FavouriteName", FirstWord(name));
+			ELIFE_PhoneStyle.SetColorOf(entry, "FavouriteName", ELIFE_PhoneStyle.TextPrimary());
+
+			Widget button = entry.FindAnyWidget("FavouriteButton");
+			if (button && clickable)
+			{
+				//! Opens the contact rather than a chat, so calling is a tap away too. Also carries the widget's drag.
+				ELIFE_PhoneTileClick click = new ELIFE_PhoneTileClick();
+				click.Bind(this, EPhoneScreenState.CONTACTS, ELIFE_PhoneHomeLayout.FAVOURITES_ID, true, ELIFE_PhoneContactsApp.SUBSTATE_DETAIL_PREFIX + contact.contactId);
+				button.AddHandler(click);
+				m_aFavouriteClicks.Insert(click);
+			}
+			else if (button)
+			{
+				button.SetFlags(WidgetFlags.IGNORE_CURSOR);
+			}
+
+			shown++;
+		}
+
+		//! Fewer than a full row keep their column width rather than stretching.
+		for (int i = shown; i > 0 && i < FAVOURITES_SHOWN; i++)
+		{
+			Widget spacer = workspace.CreateWidgets(LAYOUT_GRID_ROW, list);
+			if (spacer)
+				LayoutSlot.SetSizeMode(spacer, LayoutSizeMode.Fill);
+		}
+
+		Widget empty = card.FindAnyWidget("FavouriteEmpty");
+		if (empty)
+			empty.SetVisible(shown == 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void BuildBalanceCard(notnull WorkspaceWidget workspace)
+	protected string FirstWord(string name)
+	{
+		name.TrimInPlace();
+		int space = name.IndexOf(" ");
+		if (space <= 0)
+			return name;
+
+		return name.Substring(0, space);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The time keeps itself current (ELIFE_PhoneClockUIComponent); the date is set here.
+	protected void FillClock(notnull Widget clock)
+	{
+		SetText(clock, "HomeDate", FormatToday());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FillBalanceCard(notnull Widget card)
 	{
 		if (!m_Phone)
 			return;
 
+		//! Before the accounts arrive the card just names its app; with none it says so.
 		string json = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_BANK_ACCOUNTS);
-		if (json == "")
-			return;
-
 		ELIFE_BankAccountListDto accounts = new ELIFE_BankAccountListDto();
-		accounts.ExpandFromRAW(json);
+		if (json != "")
+			accounts.ExpandFromRAW(json);
+
 		if (accounts.items.IsEmpty())
+		{
+			SetText(card, "CardLabel", "#ELIFE-Phone_App_Bank");
+			ELIFE_PhoneStyle.SetColorOf(card, "CardLabel", ELIFE_PhoneStyle.TextPrimary());
+
+			string empty = "";
+			if (json != "")
+				empty = "#ELIFE-Phone_Home_NoAccount";
+
+			SetText(card, "CardValue", empty);
+			ELIFE_PhoneStyle.SetTypeOf(card, "CardValue", ELIFE_PhoneStyle.TEXT_BODY, false, ELIFE_PhoneStyle.TextPrimary());
 			return;
+		}
 
 		ELIFE_BankAccountSummary account = accounts.items.Get(0);
-
-		Widget card = CreateHomeCard(workspace, EPhoneScreenState.BANK);
-		if (!card)
-			return;
 
 		SetText(card, "CardLabel", account.number);
 		ELIFE_PhoneStyle.SetColorOf(card, "CardLabel", ELIFE_PhoneStyle.TextPrimary());
@@ -1594,14 +3169,25 @@ class ELIFE_PhoneScreenShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void BuildMessagesCard(notnull WorkspaceWidget workspace)
+	protected void FillMessagesCard(notnull Widget card, bool small = false)
 	{
-		if (!m_Phone || !m_Phone.IsAppAvailable(EPhoneScreenState.MESSAGES))
+		if (!m_Phone)
 			return;
 
-		Widget card = CreateHomeCard(workspace, EPhoneScreenState.MESSAGES);
-		if (!card)
+		//! Half a row has room for how many, not who.
+		if (small)
+		{
+			int unread = TotalUnread();
+			string value = "#ELIFE-Phone_Home_NoUnread";
+			if (unread > 0)
+				value = WidgetManager.Translate("#ELIFE-Phone_Home_Unread", unread.ToString());
+
+			SetText(card, "CardLabel", "#ELIFE-Phone_App_Messages");
+			ELIFE_PhoneStyle.SetColorOf(card, "CardLabel", ELIFE_PhoneStyle.TextPrimary());
+			SetText(card, "CardValue", value);
+			ELIFE_PhoneStyle.SetTypeOf(card, "CardValue", ELIFE_PhoneStyle.TEXT_BODY, unread > 0, ELIFE_PhoneStyle.TextPrimary());
 			return;
+		}
 
 		ELIFE_MessageThreadUpdate newest = NewestUnreadThread();
 		if (!newest)
@@ -1610,6 +3196,7 @@ class ELIFE_PhoneScreenShell
 			ELIFE_PhoneStyle.SetColorOf(card, "CardLabel", ELIFE_PhoneStyle.TextPrimary());
 			SetText(card, "CardValue", "#ELIFE-Phone_Home_NoUnread");
 			ELIFE_PhoneStyle.SetTypeOf(card, "CardValue", ELIFE_PhoneStyle.TEXT_BODY, false, ELIFE_PhoneStyle.TextPrimary());
+			SetText(card, "CardTrailing", "");
 			return;
 		}
 
@@ -1624,35 +3211,26 @@ class ELIFE_PhoneScreenShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected Widget CreateHomeCard(notnull WorkspaceWidget workspace, EPhoneScreenState state)
+	protected int TotalUnread()
 	{
-		Widget card = workspace.CreateWidgets(LAYOUT_HOME_CARD, m_wHomeCards);
-		if (!card)
-			return null;
+		if (!m_Phone)
+			return 0;
 
-		AlignableSlot.SetHorizontalAlign(card, LayoutHorizontalAlign.Stretch);
+		string json = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_MESSAGES);
+		if (json == "")
+			return 0;
 
-		if (m_wHomeCards.GetChildren() != card)
-			LayoutSlot.SetPadding(card, 0, ELIFE_PhoneStyle.SPACE_2, 0, 0);
+		ELIFE_MessageUpdates updates = new ELIFE_MessageUpdates();
+		updates.ExpandFromRAW(json);
 
-		ELIFE_PhoneStyle.ApplyGlass(card, false, true);
-		ELIFE_PhoneStyle.ApplyGlass(card.FindAnyWidget("CardBadge"), false, false, false, true, ELIFE_PhoneStyle.AccentDeepFor(state));
+		int total = 0;
+		foreach (ELIFE_MessageThreadUpdate threadDto : updates.threads)
+		{
+			if (threadDto && threadDto.unreadCount > 0)
+				total += threadDto.unreadCount;
+		}
 
-		PaintAppIcon(workspace, card.FindAnyWidget("CardIconSize"), TextWidget.Cast(card.FindAnyWidget("CardMark")), ELIFE_PhoneAppCatalog.Find(state), ICON_INK_CARD);
-
-		if (!m_bInteractive)
-			return card;
-
-		Widget button = card.FindAnyWidget("CardButton");
-		if (!button)
-			return card;
-
-		ELIFE_PhoneTileClick click = new ELIFE_PhoneTileClick();
-		click.Bind(this, state);
-		button.AddHandler(click);
-		m_aCardClicks.Insert(click);
-
-		return card;
+		return total;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2014,5 +3592,8 @@ class ELIFE_PhoneScreenShell
 		GetGame().GetCallqueue().Remove(OnUnlockTimeout);
 		GetGame().GetCallqueue().Remove(TickPinBlock);
 		GetGame().GetCallqueue().Remove(FlushPendingApp);
+		GetGame().GetCallqueue().Remove(BuildHomeGrid);
+		GetGame().GetCallqueue().Remove(DestroyWidgetSheet);
+		GetGame().GetCallqueue().Remove(RefreshLiveWidgets);
 	}
 }

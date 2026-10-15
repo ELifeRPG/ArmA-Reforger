@@ -265,6 +265,33 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 	ref ScriptInvoker m_OnHubOpenChanged = new ScriptInvoker();
 
+	//! This phone's home grid (see ELIFE_PhoneHomeLayout), replicated so everyone sees the same screen.
+	//! Server memory only for now: a restart resets it to the default layout.
+	[RplProp(onRplName: "OnHomeLayoutUpdated")]
+	protected string m_sHomeLayout;
+
+	//! Owner-only. A layout sent but not yet echoed back, shown meanwhile so an edit doesn't flick back.
+	protected string m_sPendingHomeLayout;
+
+	ref ScriptInvoker m_OnHomeLayoutChanged = new ScriptInvoker();
+
+	//! Generous for every app and card the catalog could hold.
+	protected const int HOME_LAYOUT_MAX_LENGTH = 1024;
+
+	//! Per-phone look and behaviour, replicated like the home layout. Server memory only for now.
+	[RplProp(onRplName: "OnPersonalizationUpdated")]
+	protected string m_sWallpaper;
+
+	[RplProp(onRplName: "OnPersonalizationUpdated")]
+	protected bool m_bDoNotDisturb;
+
+	//! Comma-separated contact ids, most recently starred last.
+	[RplProp(onRplName: "OnPersonalizationUpdated")]
+	protected string m_sFavourites;
+
+	//! Wallpaper, Do Not Disturb or favourites changed.
+	ref ScriptInvoker m_OnPersonalizationChanged = new ScriptInvoker();
+
 	//! threadId -> unread count at dismissal; a higher count notifies again. Local only, never replicated.
 	protected ref map<string, int> m_mDismissedNotifications = new map<string, int>();
 
@@ -425,6 +452,173 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected void OnHubOpenUpdated()
 	{
 		m_OnHubOpenChanged.Invoke(m_bHubOpen);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Home layout
+	//------------------------------------------------------------------------------------------------
+
+	string GetHomeLayout()
+	{
+		if (m_sPendingHomeLayout != "")
+			return m_sPendingHomeLayout;
+
+		return m_sHomeLayout;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner-only.
+	void SetHomeLayout(string layout)
+	{
+		//! The server drops oversized layouts, which would leave this pending forever.
+		if (!IsLocalCharacterOwner() || layout == GetHomeLayout() || layout.Length() > HOME_LAYOUT_MAX_LENGTH)
+			return;
+
+		m_sPendingHomeLayout = layout;
+		Rpc(RpcAsk_SetHomeLayout, layout);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Only bounded here: readers drop anything they can't place.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_SetHomeLayout(string layout)
+	{
+		if (layout == m_sHomeLayout || layout.Length() > HOME_LAYOUT_MAX_LENGTH)
+			return;
+
+		m_sHomeLayout = layout;
+
+		//! onRplName doesn't fire on the authority itself - see OnPhoneIdUpdated().
+		OnHomeLayoutUpdated();
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Personalization
+	//------------------------------------------------------------------------------------------------
+
+	string GetWallpaper()
+	{
+		return m_sWallpaper;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsDoNotDisturb()
+	{
+		return m_bDoNotDisturb;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void GetFavourites(notnull array<string> outContactIds)
+	{
+		outContactIds.Clear();
+		m_sFavourites.Split(",", outContactIds, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsFavourite(string contactId)
+	{
+		array<string> favourites = {};
+		GetFavourites(favourites);
+		return contactId != "" && favourites.Find(contactId) != -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner-only.
+	void SetWallpaper(string wallpaperId)
+	{
+		if (IsLocalCharacterOwner() && wallpaperId != m_sWallpaper)
+			Rpc(RpcAsk_SetWallpaper, wallpaperId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner-only.
+	void SetDoNotDisturb(bool enabled)
+	{
+		if (IsLocalCharacterOwner() && enabled != m_bDoNotDisturb)
+			Rpc(RpcAsk_SetDoNotDisturb, enabled);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner-only.
+	void SetFavourite(string contactId, bool favourite)
+	{
+		if (IsLocalCharacterOwner() && contactId != "" && favourite != IsFavourite(contactId))
+			Rpc(RpcAsk_SetFavourite, contactId, favourite);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_SetWallpaper(string wallpaperId)
+	{
+		if (!ELIFE_PhoneWallpapers.Find(wallpaperId) || wallpaperId == m_sWallpaper)
+			return;
+
+		m_sWallpaper = wallpaperId;
+		OnPersonalizationUpdated();
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_SetDoNotDisturb(bool enabled)
+	{
+		if (enabled == m_bDoNotDisturb)
+			return;
+
+		m_bDoNotDisturb = enabled;
+		OnPersonalizationUpdated();
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ids only, never numbers - the list replicates to bystanders.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_SetFavourite(string contactId, bool favourite)
+	{
+		if (contactId == "" || contactId.Contains(","))
+			return;
+
+		array<string> favourites = {};
+		GetFavourites(favourites);
+
+		int index = favourites.Find(contactId);
+		if (favourite == (index != -1))
+			return;
+
+		if (favourite)
+			favourites.Insert(contactId);
+		else
+			favourites.RemoveOrdered(index);
+
+		string joined = "";
+		foreach (string id : favourites)
+		{
+			if (joined != "")
+				joined += ",";
+
+			joined += id;
+		}
+
+		m_sFavourites = joined;
+		OnPersonalizationUpdated();
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnPersonalizationUpdated()
+	{
+		m_OnPersonalizationChanged.Invoke();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnHomeLayoutUpdated()
+	{
+		//! An older echo leaves a newer pending edit in place.
+		if (m_sHomeLayout == m_sPendingHomeLayout)
+			m_sPendingHomeLayout = "";
+
+		m_OnHomeLayoutChanged.Invoke();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1815,6 +2009,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		SetDataStatus(key, ELIFE_EPhoneDataStatus.READY);
 
 		if (!announce)
+			return;
+
+		//! Do Not Disturb keeps the arrival quiet: still counted and listed, just not announced.
+		if (m_bDoNotDisturb)
 			return;
 
 		if (m_SoundComponent)

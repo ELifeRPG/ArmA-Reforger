@@ -38,6 +38,40 @@ OverlayWidgetClass {
      Color 0.0232 0.0421 0.1246 1
      Texture "{099C73E0F66A5F28}UI/Textures/Common/gradientTexture_Dither_down_512.edds"
     }
+    OverlayWidgetClass "{6FDFA0130FAA58C4}" {
+     Name "WallpaperPhotoGroup"
+     Slot OverlayWidgetSlot "{BBA5F8C70B638A88}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     "Is Visible" 0
+     {
+      ScaleWidgetClass "{263D0DC84C6B11DE}" {
+       Name "WallpaperPhotoScale"
+       Slot OverlayWidgetSlot "{1B09007A0EBD3490}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       "Scale Mode" "Scale to fill"
+       {
+        ImageWidgetClass "{E5BEAD28CB3DABAD}" {
+         Name "WallpaperPhoto"
+         Slot AlignableSlot "{AC911506DDAE060A}" {
+         }
+         Size 1920 1080
+        }
+       }
+      }
+      ImageWidgetClass "{D94D5EBB1BF86ADF}" {
+       Name "WallpaperPhotoScrim"
+       Slot OverlayWidgetSlot "{980197A6C2136892}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0 0 0 0.3
+      }
+     }
+    }
    }
   }
   OverlayWidgetClass "{95CCE9DD97B21B69}" {
@@ -255,57 +289,146 @@ OverlayWidgetClass {
       VerticalAlign 3
      }
      {
-      VerticalLayoutWidgetClass "{FA7053B4399B98C2}" {
-       Name "HomeColumn"
-       Slot OverlayWidgetSlot "{FD42DF4310358B3A}" {
+      FrameWidgetClass "{9349EE4EE47BA5C5}" {
+       Name "HomeGrid"
+       Slot OverlayWidgetSlot "{06F4C3095A7C420F}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+        Padding 24 64 24 68
+       }
+       "Ignore Cursor" 1
+      }
+      HorizontalLayoutWidgetClass "{6BF1908240282DC4}" {
+       Name "HomeEditBar"
+       Slot OverlayWidgetSlot "{849C76427A614F19}" {
         HorizontalAlign 3
         VerticalAlign 0
-        Padding 24 64 24 0
+        Padding 24 16 24 0
        }
-       "Fill Origin" Top
+       "Is Visible" 0
+      }
+      SizeLayoutWidgetClass "{22119637AAD9D9D7}" {
+       Name "HomeRemoveZoneSize"
+       Slot OverlayWidgetSlot "{043B7CB5B367AA3D}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 24 12 24 0
+       }
+       "Is Visible" 0
+       "Ignore Cursor" 1
+       AllowHeightOverride 1
+       HeightOverride 44
        {
-        TextWidgetClass "{01C60D399EECA895}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-         Name "HomeClock"
-         Slot LayoutSlot "{825B6B96E636AFA7}" {
-          Padding 4 0 4 0
+        OverlayWidgetClass "{40A5F6449F508DB5}" {
+         Name "HomeRemoveZone"
+         Slot AlignableSlot "{8E521389E93E7A31}" {
+          HorizontalAlign 3
+          VerticalAlign 3
          }
-         Color 0.8378 0.8626 0.9222 1
-         components {
-          ELIFE_PhoneClockUIComponent "{DB464F7055ADADDC}" {
+         "Ignore Cursor" 1
+         {
+          BlurWidgetClass "{3A2A92EDB55BBAFD}" {
+           Name "GlassBlur"
+           Slot OverlayWidgetSlot "{8591D91EB8A12893}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 1 1 1 1
+           Intensity 0.35
+          }
+          SmartPanelWidgetClass "{DD0C5A6F18D13863}" {
+           Name "GlassScrim"
+           Slot OverlayWidgetSlot "{76750BC2D1FCAC50}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.4735 0.5647 0.7379 0.28
+           style rounded_12px
+           "no focus" 1
+          }
+          SmartPanelWidgetClass "{E547D71CA3FBD247}" {
+           Name "GlassTint"
+           Slot OverlayWidgetSlot "{B59AFA9EEB7FD4FE}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.5837 0.6453 0.8073 0.12
+           style rounded_12px
+           "no focus" 1
+          }
+          SizeLayoutWidgetClass "{2A12669E48943146}" {
+           Name "GlassSpecularSize"
+           Slot OverlayWidgetSlot "{D18DD415154716D0}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+            Padding 12 0 12 0
+           }
+           AllowHeightOverride 1
+           HeightOverride 2
+           {
+            ImageWidgetClass "{8E336DDA2694752C}" {
+             Name "GlassSpecular"
+             Slot AlignableSlot "{8B4633F6FC4296F7}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0.8626 0.8964 0.964 0.07
+            }
+           }
+          }
+          SizeLayoutWidgetClass "{D2A975547CAFDE63}" {
+           Name "GlassHairlineSize"
+           Slot OverlayWidgetSlot "{E6AAC67B5F2D964D}" {
+            HorizontalAlign 3
+            VerticalAlign 2
+            Padding 12 0 12 0
+           }
+           AllowHeightOverride 1
+           HeightOverride 2
+           {
+            ImageWidgetClass "{34000A24DF1BA5E9}" {
+             Name "GlassHairline"
+             Slot AlignableSlot "{624F70B83D07B61D}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0.0015 0.0021 0.0033 0.26
+            }
+           }
+          }
+          SmartPanelWidgetClass "{2619A1CC89B798F2}" {
+           Name "HomeRemoveWash"
+           Slot OverlayWidgetSlot "{9980058B07B9307D}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0 0 0 0
+           style rounded_12px
+           "no focus" 1
+          }
+          TextWidgetClass "{1718B8E7A1CD9E61}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "HomeRemoveLabel"
+           Slot OverlayWidgetSlot "{183AF1B9BDE02C3D}" {
+            HorizontalAlign 1
+            VerticalAlign 1
+           }
+           Color 0.8378 0.8626 0.9222 1
+           Text "#ELIFE-Phone_Store_Remove"
+           "Font Size" 22
+           "Min Font Size" 22
+           "Horizontal Alignment" Center
           }
          }
-         Text "12:00"
-         "Font Size" 68
-         "Min Font Size" 68
-         "Horizontal Alignment" Left
-         FontProperties FontProperties "{9891CF44F9C179A7}" {
-          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-         }
-        }
-        TextWidgetClass "{6FD5238D89B32F65}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-         Name "HomeDate"
-         Slot LayoutSlot "{5A51FB16FD4CD33C}" {
-          Padding 4 0 4 36
-         }
-         Color 0.366 0.4024 0.5025 1
-         Text ""
-         "Font Size" 20
-         "Min Font Size" 20
-         "Horizontal Alignment" Left
-        }
-        VerticalLayoutWidgetClass "{9349EE4EE47BA5C5}" {
-         Name "HomeCards"
         }
        }
       }
-      VerticalLayoutWidgetClass "{A370E6008C13DD9B}" {
-       Name "HomeGridRows"
-       Slot OverlayWidgetSlot "{81C224F6B42CD16C}" {
+      FrameWidgetClass "{65A7D398F1D6BF81}" {
+       Name "HomeDragLayer"
+       Slot OverlayWidgetSlot "{1B9BA4E215B3F3D4}" {
         HorizontalAlign 3
-        VerticalAlign 2
-        Padding 24 0 24 68
+        VerticalAlign 3
        }
-       "Fill Origin" Top
+       "Ignore Cursor" 1
       }
      }
     }
@@ -876,6 +999,29 @@ OverlayWidgetClass {
         Padding 0 0 20 0
        }
        {
+        SizeLayoutWidgetClass "{A6710F12B98F0C58}" {
+         Name "StatusDndSize"
+         Slot LayoutSlot "{28965962427179A8}" {
+          VerticalAlign 1
+          Padding 0 0 12 0
+         }
+         "Is Visible" 0
+         AllowWidthOverride 1
+         WidthOverride 30
+         AllowHeightOverride 1
+         HeightOverride 30
+         {
+          ImageWidgetClass "{DBF41F8086C43248}" {
+           Name "StatusDnd"
+           Slot AlignableSlot "{053EA6B79E248D67}" {
+            HorizontalAlign 1
+            VerticalAlign 1
+           }
+           Color 0.8378 0.8626 0.9222 1
+           Size 30 30
+          }
+         }
+        }
         SizeLayoutWidgetClass "{3F64200048168010}" {
          Name "Signal0Size"
          Slot LayoutSlot "{6022A9A9DB66BF51}" {

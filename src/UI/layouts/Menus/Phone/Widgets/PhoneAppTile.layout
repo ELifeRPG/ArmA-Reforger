@@ -7,9 +7,9 @@ VerticalLayoutWidgetClass {
     HorizontalAlign 1
    }
    AllowWidthOverride 1
-   WidthOverride 104
+   WidthOverride 92
    AllowHeightOverride 1
-   HeightOverride 104
+   HeightOverride 92
    {
     OverlayWidgetClass "{55148A7B4D484973}" {
      Name "Tile"
@@ -94,9 +94,9 @@ VerticalLayoutWidgetClass {
         VerticalAlign 1
        }
        AllowWidthOverride 1
-       WidthOverride 72
+       WidthOverride 64
        AllowHeightOverride 1
-       HeightOverride 72
+       HeightOverride 64
       }
       TextWidgetClass "{C111D788C1C082F6}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
        Name "TileMark"
@@ -107,8 +107,8 @@ VerticalLayoutWidgetClass {
        "Is Visible" 0
        Color 0.8378 0.8626 0.9222 1
        Text ""
-       "Font Size" 70
-       "Min Font Size" 70
+       "Font Size" 62
+       "Min Font Size" 62
        "Horizontal Alignment" Center
        FontProperties FontProperties "{A15C49577223E930}" {
         Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -163,7 +163,7 @@ VerticalLayoutWidgetClass {
    Name "TileLabel"
    Slot LayoutSlot "{203841652722EAFD}" {
     HorizontalAlign 1
-    Padding 0 12 0 0
+    Padding 0 8 0 0
    }
    Color 0.8378 0.8626 0.9222 1
    Text ""

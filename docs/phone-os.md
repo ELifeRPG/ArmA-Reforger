@@ -23,8 +23,8 @@ Do not start a parallel shell. Hook the existing one:
 1. Add an `EPhoneScreenState` and a pair of accents in `ELIFE_PhoneStyle`
    (`Accent*` / `AccentDeep*`, wired through `AccentFor` / `AccentDeepFor`). Same
    lightness as the others (L\* ≈ 72 / 52), only the hue rotates.
-2. Register it in `ELIFE_PhoneAppCatalog.GetEntries()` (home-grid order, rows of
-   four). Its `appKey` must exist in the backend's `AppCatalog`. `system` apps are
+2. Register it in `ELIFE_PhoneAppCatalog.GetEntries()` (catalog order: where it
+   lands on the home grid until the player moves it). Its `appKey` must exist in the backend's `AppCatalog`. `system` apps are
    always on the grid and can't be removed (a keyed one is reinstalled on the Bridge
    if missing); the rest appear only while installed, via the Store. Sprite names from
    [`docs/icons_wrapperUI.md`](icons_wrapperUI.md) or `ICON_SET_CHAT`. `FitIcon` the
@@ -151,7 +151,7 @@ A gradient is a **ground**, never decoration.
 
 | When | Do |
 |---|---|
-| Lock or home wallpaper | One dithered ramp from `UI/Textures/Common/`, OS anchor hue, direction from `GRADIENT_FLIPPED` only. |
+| Lock or home wallpaper | One dithered ramp from `UI/Textures/Common/`, one hue, direction from `GRADIENT_FLIPPED` only. Or a vanilla loading-screen photo, scaled to fill under a 30% black scrim. |
 | App pages, lists, cards, forms, value columns | Flat. No header wash. Identity is accent on type and controls. |
 
 ## Accent
@@ -309,14 +309,39 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
 
 ## Shell
 
-- **Home.** Clock and date at the top; a 4-column app grid at the bottom. Above the
-  grid: two cards from real data — what have I got, who wants me — each opens its
-  app. Nothing invented. Page dots only if a second page exists. Labels: one line,
-  ellipsis, never shrunk. Card type follows what the figure *is*, not one fixed
-  size for CardValue — a payload figure and a sentence preview earn different
+- **Home.** One fixed 4×7 grid (`ELIFE_PhoneHomeLayout`) under the status bar,
+  holding app tiles (one cell) and widgets one row high, half or full width: clock
+  and date, weather (the game's time of day and weather), balance, messages,
+  favourite contacts (starred in Contacts, no limit; tap one to open its contact page;
+  Contacts also lists them first, in the same order), and
+  location (the phone's map grid; opt-in from the Widgets sheet). Widgets show real
+  data and open their app where they have one; a widget backed by an app (balance:
+  Bank, location: Map) exists only while that app is installed, and shows an empty
+  state rather than vanishing when its data is (no bank account). Every widget fills
+  its cells, inset by one spacing step, content centred. Clock, weather and location
+  sit straight on the wallpaper, an icon beside the reading (weather uses the game's
+  own icon for the current state); the rest are glass cards. Nothing invented. By
+  default the clock and the cards sit at the top and the apps form a block at the
+  bottom. Holding any item enters edit mode and picks it up; holding empty space
+  enters it with nothing picked up; in edit mode a press drags at once. Placement is
+  free, gaps allowed, and a drop on occupied cells swaps what is there into the
+  cells it left, previewed as those items ease aside. Edit mode swaps the status bar
+  for an edit bar: Add widget (a sheet showing each removed widget live; tap to
+  add), Wallpaper (a short scrolling sheet of phone-shaped swatches with no
+  scrim, so a tap previews on the screen above), and Done. While a widget or a non-system app is held, the bar becomes a remove target; dropping on it removes the widget or
+  uninstalls the app. Tapping a widget that comes in two sizes (balance, messages)
+  switches it between full and half width. Done, the home pill, or leaving home ends
+  edit mode. No wiggle. The layout belongs to the phone
+  (`ELIFE_PhoneGadgetComponent`, `m_sHomeLayout`), so the holder and bystanders see
+  the same screen. So do the wallpaper (one-hue presets or vanilla
+  loading-screen photos, `ELIFE_PhoneWallpapers`), the favourites, and Do Not Disturb (Settings), which
+  keeps arrivals silent - no sound, peek or banner, still counted - and shows
+  `sound-off` in the status bar. Page dots only if a second page exists. Labels: one
+  line, ellipsis, never shrunk. Card type follows what the figure *is*, not one
+  fixed size for CardValue — a payload figure and a sentence preview earn different
   weight and size. Same layout, many jobs: size, weight, and colour are set per
-  caller in script (`ELIFE_PhoneStyle.SetTypeOf`), not baked into the widget.
-  Card labels stay `TextPrimary`, not `Ink` or `TextSecondary`.
+  caller in script (`ELIFE_PhoneStyle.SetTypeOf`), not baked into the widget. Card
+  labels stay `TextPrimary`, not `Ink` or `TextSecondary`.
 - **Lock.** Time and date on sharp wallpaper. At most one glass layer. Notifications
   are glass cards from the bottom, each carrying its sender's person mark. PIN pad is real,
   overlay altitude. The keyboard (digit row, numpad, Backspace) is polled per frame in

@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{7C2ED4A9E3B25F93}UI/layouts/Menus/Phone/Widgets/PhoneFavouritesWidget.layout"
+ Configurations {
+  LayoutResourceClass PC {
+  }
+  LayoutResourceClass XBOX_ONE : PC {
+  }
+  LayoutResourceClass XBOX_SERIES : PC {
+  }
+  LayoutResourceClass PS4 : PC {
+  }
+  LayoutResourceClass PS5 : PC {
+  }
+  LayoutResourceClass HEADLESS : PC {
+  }
+ }
+}

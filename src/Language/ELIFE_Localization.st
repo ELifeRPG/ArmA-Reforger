@@ -1106,5 +1106,101 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
+  CustomStringTableItem "{11931B6AFFC7D311}" {
+   Id "ELIFE-Phone_Home_Done"
+   Target_en_us "Done"
+   Target_de_de "Fertig"
+   Modified 1792016246
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{E34F3183BD59B859}" {
+   Id "ELIFE-Phone_Home_AddWidget"
+   Target_en_us "Add widget"
+   Target_de_de "Widget hinzufügen"
+   Modified 1792016246
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{5D77943A74E80770}" {
+   Id "ELIFE-Phone_Home_Widgets"
+   Target_en_us "Widgets"
+   Target_de_de "Widgets"
+   Modified 1792016976
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{B22076253A9BA3FE}" {
+   Id "ELIFE-Phone_Settings_DoNotDisturb"
+   Target_en_us "Do Not Disturb"
+   Target_de_de "Nicht stören"
+   Modified 1792073934
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{191F236C60FC756A}" {
+   Id "ELIFE-Phone_Home_Wallpaper"
+   Target_en_us "Wallpaper"
+   Target_de_de "Hintergrundbild"
+   Modified 1792073934
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{150ACBA62560CE5E}" {
+   Id "ELIFE-Phone_Home_FavouritesEmpty"
+   Target_en_us "Star contacts to see them here"
+   Target_de_de "Markiere Kontakte als Favoriten, um sie hier zu sehen"
+   Modified 1792073934
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{968028C2AB461E41}" {
+   Id "ELIFE-Phone_Contacts_Detail_Favourite"
+   Target_en_us "Favourite"
+   Target_de_de "Favorit"
+   Modified 1792073934
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{6B675807FC0C68EE}" {
+   Id "ELIFE-Phone_Home_Unread"
+   Target_en_us "%1 unread"
+   Target_de_de "%1 ungelesen"
+   Modified 1792073934
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{78CB407275452372}" {
+   Id "ELIFE-Phone_Home_Location"
+   Target_en_us "Location"
+   Target_de_de "Standort"
+   Modified 1792073934
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{2BC53DD3465F2565}" {
+   Id "ELIFE-Phone_Home_Weather"
+   Target_en_us "Weather"
+   Target_de_de "Wetter"
+   Modified 1792073934
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{DDF681D58321F2B8}" {
+   Id "ELIFE-Phone_Home_NoAccount"
+   Target_en_us "No account yet"
+   Target_de_de "Noch kein Konto"
+   Modified 1792074544
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{D376A351EE715414}" {
+   Id "ELIFE-Phone_Contacts_Favourites"
+   Target_en_us "Favourites"
+   Target_de_de "Favoriten"
+   Modified 1792074544
+   Author "Robin"
+   LastChanged "Robin"
+  }
  }
 }

@@ -1,0 +1,4 @@
+OverlayWidgetClass {
+ Name "HomeCell"
+ "Ignore Cursor" 1
+}

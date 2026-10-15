@@ -64,6 +64,27 @@ class ELIFE_ContactMessageClick : ScriptedWidgetEventHandler
 }
 
 //------------------------------------------------------------------------------------------------
+class ELIFE_ContactFavouriteClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneContactsApp m_App;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneContactsApp app)
+	{
+		m_App = app;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App)
+			m_App.ToggleFavourite();
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class ELIFE_ContactSaveClick : ScriptedWidgetEventHandler
 {
 	protected ELIFE_PhoneContactsApp m_App;
@@ -131,6 +152,8 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	protected const string ICON_ADD = "plus";
 	protected const string ICON_SAVE = "check";
 	protected const string ICON_MESSAGE = "comments";
+	protected const string ICON_FAVOURITE = "favourite";
+	protected const string ICON_FAVOURITE_OFF = "favouriteOff";
 
 	//! Sub-states: "" index, SUBSTATE_FORM add form, SUBSTATE_DETAIL_PREFIX + contactId detail page.
 	protected const string SUBSTATE_FORM = "new";
@@ -183,6 +206,18 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	protected ref ELIFE_ContactAddClick m_AddClick;
 	protected ref ELIFE_ContactSaveClick m_SaveClick;
 	protected ref ELIFE_ContactMessageClick m_MessageClick;
+
+	//! Starred contacts sit on the home screen's favourites widget.
+	protected Widget m_wFavouriteButton;
+	protected ImageWidget m_wFavouriteDisc;
+	protected Widget m_wFavouriteFallback;
+	protected ImageWidget m_wFavouriteHover;
+	protected ImageWidget m_wFavouriteIcon;
+	protected TextWidget m_wFavouriteLabel;
+	protected ref ELIFE_ContactFavouriteClick m_FavouriteClick;
+
+	//! The favourites the list was last drawn with; wallpaper or Do Not Disturb changes leave it alone.
+	protected string m_sListedFavourites;
 
 	//! Detail page actions card, owner-only.
 	protected Widget m_wActionsCard;
@@ -330,6 +365,16 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		if (messageFrame)
 			m_wMessageHover = ImageWidget.Cast(messageFrame.FindAnyWidget("Background"));
 
+		m_wFavouriteButton = m_wRoot.FindAnyWidget("ButtonFavourite");
+		m_wFavouriteDisc = ImageWidget.Cast(m_wRoot.FindAnyWidget("FavouriteDisc"));
+		m_wFavouriteFallback = m_wRoot.FindAnyWidget("FavouriteFallback");
+		m_wFavouriteIcon = ImageWidget.Cast(m_wRoot.FindAnyWidget("FavouriteIcon"));
+		m_wFavouriteLabel = TextWidget.Cast(m_wRoot.FindAnyWidget("FavouriteLabel"));
+
+		Widget favouriteFrame = m_wRoot.FindAnyWidget("FavouriteFrame");
+		if (favouriteFrame)
+			m_wFavouriteHover = ImageWidget.Cast(favouriteFrame.FindAnyWidget("Background"));
+
 		m_wFormScroll = ScrollLayoutWidget.Cast(m_wRoot.FindAnyWidget("FormScroll"));
 		m_wFormAvatarDisc = ImageWidget.Cast(m_wRoot.FindAnyWidget("FormAvatarDisc"));
 		m_wFormAvatarFallback = m_wRoot.FindAnyWidget("FormAvatarFallback");
@@ -377,6 +422,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		m_Phone.m_OnContactSaveResult.Insert(OnContactSaveResult);
 		m_Phone.m_OnContactDeleteResult.Insert(OnContactDeleteResult);
 		m_Phone.m_OnBlockResult.Insert(OnBlockResult);
+		m_Phone.m_OnPersonalizationChanged.Insert(OnPersonalizationChanged);
 
 		//! Draw what we already have, then refresh - the fetch lands later via OnDataChanged.
 		ReadBlocks();
@@ -417,6 +463,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 			m_Phone.m_OnContactSaveResult.Remove(OnContactSaveResult);
 			m_Phone.m_OnContactDeleteResult.Remove(OnContactDeleteResult);
 			m_Phone.m_OnBlockResult.Remove(OnBlockResult);
+			m_Phone.m_OnPersonalizationChanged.Remove(OnPersonalizationChanged);
 		}
 
 		GetGame().GetCallqueue().Remove(ShowSavingLabel);
@@ -455,6 +502,13 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		m_AddClick = null;
 		m_SaveClick = null;
 		m_MessageClick = null;
+		m_wFavouriteButton = null;
+		m_wFavouriteDisc = null;
+		m_wFavouriteFallback = null;
+		m_wFavouriteHover = null;
+		m_wFavouriteIcon = null;
+		m_wFavouriteLabel = null;
+		m_FavouriteClick = null;
 		m_wActionsCard = null;
 		m_wBlockButton = null;
 		m_wDeleteButton = null;
@@ -520,11 +574,34 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 			return;
 		}
 
+		bool isFirstGroup = true;
+
+		//! Starred contacts first, in the home widget's order; they stay under their letter too.
+		array<string> favourites = {};
+		m_Phone.GetFavourites(favourites);
+		m_sListedFavourites = JoinIds(favourites);
+
+		Widget favouriteList = null;
+		foreach (string favouriteId : favourites)
+		{
+			ELIFE_ContactSummary favourite = FindContact(favouriteId);
+			if (!favourite)
+				continue;
+
+			if (!favouriteList)
+			{
+				favouriteList = CreateListGroup(m_wContactGroups, "#ELIFE-Phone_Contacts_Favourites", isFirstGroup);
+				isFirstGroup = false;
+			}
+
+			if (favouriteList)
+				CreateContactRow(favouriteList, favourite);
+		}
+
 		array<ref ELIFE_ContactSummary> sorted = ELIFE_PhoneContactBook.SortedByLastName(m_List);
 
 		string currentLetter = "";
 		Widget currentList = null;
-		bool isFirstGroup = true;
 
 		for (int i = 0; i < sorted.Count(); i++)
 		{
@@ -540,34 +617,65 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 				isFirstGroup = false;
 			}
 
-			if (!currentList)
-				continue;
-
-			//! isLast is always false - these are glass cards, not the hairline-row style it applies to.
-			Widget row = CreateListRow(LAYOUT_CONTACT_ROW, currentList, false);
-			if (!row)
-				continue;
-
-			ELIFE_PhoneStyle.ApplyGlass(row, true);
-
-			string name = ELIFE_PhoneContactBook.DisplayName(contact);
-			SetTextAndColor(row, "ContactName", name, ELIFE_PhoneStyle.TextPrimary());
-			SetTextAndColor(row, "ContactNumber", contact.number, ELIFE_PhoneStyle.TextSecondary());
-			PaintAvatar(row, "ContactAvatarDisc", "ContactAvatarFallback", "ContactAvatarGlyph", name);
-
-			Widget button = row.FindAnyWidget("ContactButton");
-			if (!button)
-				button = row;
-
-			ELIFE_ContactRowClick click = new ELIFE_ContactRowClick();
-			click.Bind(this, ELIFE_PhoneContactBook.KeyFor(contact));
-			button.AddHandler(click);
-			m_aRowClicks.Insert(click);
+			if (currentList)
+				CreateContactRow(currentList, contact);
 		}
 
 		//! A refresh can rename or delete the contact an open detail page is showing, so re-read it.
 		if (m_sOpenContactId != "" && !FillDetail())
 			ShowIndex();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CreateContactRow(notnull Widget list, notnull ELIFE_ContactSummary contact)
+	{
+		//! isLast is always false - these are glass cards, not the hairline-row style it applies to.
+		Widget row = CreateListRow(LAYOUT_CONTACT_ROW, list, false);
+		if (!row)
+			return;
+
+		ELIFE_PhoneStyle.ApplyGlass(row, true);
+
+		string name = ELIFE_PhoneContactBook.DisplayName(contact);
+		SetTextAndColor(row, "ContactName", name, ELIFE_PhoneStyle.TextPrimary());
+		SetTextAndColor(row, "ContactNumber", contact.number, ELIFE_PhoneStyle.TextSecondary());
+		PaintAvatar(row, "ContactAvatarDisc", "ContactAvatarFallback", "ContactAvatarGlyph", name);
+
+		Widget button = row.FindAnyWidget("ContactButton");
+		if (!button)
+			button = row;
+
+		ELIFE_ContactRowClick click = new ELIFE_ContactRowClick();
+		click.Bind(this, ELIFE_PhoneContactBook.KeyFor(contact));
+		button.AddHandler(click);
+		m_aRowClicks.Insert(click);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string JoinIds(notnull array<string> ids)
+	{
+		string joined = "";
+		foreach (string id : ids)
+		{
+			joined += id + ",";
+		}
+
+		return joined;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Starring here or on another screen moves the contact in or out of the Favourites group.
+	protected void OnPersonalizationChanged()
+	{
+		RefreshFavouriteAction();
+
+		if (!m_Phone)
+			return;
+
+		array<string> favourites = {};
+		m_Phone.GetFavourites(favourites);
+		if (JoinIds(favourites) != m_sListedFavourites)
+			Fill();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -603,6 +711,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		//! The nav bar's trailing pill slot belongs to Save, so Message gets its own labelled button.
 		HideNavAction();
 		ShowMessageAction();
+		ShowFavouriteAction();
 
 		NotifySubStateChanged();
 	}
@@ -978,6 +1087,94 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		//! Caption is a child of the button, so it takes the destination app's accent along with the disc.
 		if (m_wMessageLabel)
 			m_wMessageLabel.SetColor(ELIFE_PhoneStyle.AccentFor(EPhoneScreenState.MESSAGES));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowFavouriteAction()
+	{
+		if (!m_FavouriteClick && m_wFavouriteButton)
+		{
+			m_FavouriteClick = new ELIFE_ContactFavouriteClick();
+			m_FavouriteClick.Bind(this);
+			m_wFavouriteButton.AddHandler(m_FavouriteClick);
+		}
+
+		if (m_wFavouriteHover)
+			m_wFavouriteHover.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
+
+		RefreshFavouriteAction();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Filled in Contacts' accent while starred; the phone's list is the truth, so it follows bystanders too.
+	protected void RefreshFavouriteAction()
+	{
+		if (!m_Phone)
+			return;
+
+		bool starred = m_Phone.IsFavourite(m_sOpenContactId);
+
+		Color fill = ELIFE_PhoneStyle.Hairline();
+		string icon = ICON_FAVOURITE_OFF;
+		Color labelColor = ELIFE_PhoneStyle.TextSecondary();
+		if (starred)
+		{
+			fill = ELIFE_PhoneStyle.AccentDeepFor(EPhoneScreenState.CONTACTS);
+			icon = ICON_FAVOURITE;
+			labelColor = ELIFE_PhoneStyle.AccentFor(EPhoneScreenState.CONTACTS);
+		}
+
+		bool round = false;
+		if (m_wFavouriteDisc)
+		{
+			round = m_wFavouriteDisc.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
+			m_wFavouriteDisc.SetVisible(round);
+			m_wFavouriteDisc.SetColor(fill);
+		}
+
+		if (m_wFavouriteFallback)
+		{
+			m_wFavouriteFallback.SetVisible(!round);
+			m_wFavouriteFallback.SetColor(fill);
+		}
+
+		bool iconLoaded = m_wFavouriteIcon && m_wFavouriteIcon.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, icon);
+		if (iconLoaded)
+		{
+			m_wFavouriteIcon.SetColor(ELIFE_PhoneStyle.TextPrimary());
+			ELIFE_PhoneStyle.FitIcon(m_wFavouriteIcon, 32);
+		}
+
+		//! The wrapper carries the visibility, as for Message.
+		SetVisibleOf("FavouriteIconSize", iconLoaded);
+		SetVisibleOf("FavouriteGlyph", !iconLoaded);
+
+		//! Only real ids can be starred.
+		ELIFE_ContactSummary contact = FindContact(m_sOpenContactId);
+		SetVisibleOf("ActionFavouriteSize", contact && contact.contactId != "");
+
+		if (m_wFavouriteLabel)
+			m_wFavouriteLabel.SetColor(labelColor);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void ToggleFavourite()
+	{
+		//! m_sOpenContactId falls back to the number for id-less contacts, and favourites replicate to bystanders.
+		ELIFE_ContactSummary contact = FindContact(m_sOpenContactId);
+		if (m_Phone && contact && contact.contactId != "")
+			m_Phone.SetFavourite(contact.contactId, !m_Phone.IsFavourite(contact.contactId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetVisibleOf(string widgetName, bool visible)
+	{
+		if (!m_wRoot)
+			return;
+
+		Widget widget = m_wRoot.FindAnyWidget(widgetName);
+		if (widget)
+			widget.SetVisible(visible);
 	}
 
 	//------------------------------------------------------------------------------------------------

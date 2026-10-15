@@ -23,6 +23,9 @@ class ELIFE_PhoneStyle
 	//! ScreenOff and OfflineScreen.
 	static const int ZORDER_ALERT = 60;
 
+	//! Inside the home drag layer: the held item over the copies easing aside.
+	static const int ZORDER_LIFTED = 1;
+
 	//------------------------------------------------------------------------------------------------
 	//! Flip if the wallpaper gradient texture runs bright-at-bottom.
 	static const bool GRADIENT_FLIPPED = false;
@@ -76,6 +79,15 @@ class ELIFE_PhoneStyle
 	static const int SPINNER_DELAY_MS = 150;
 	static const int SPINNER_MIN_VISIBLE_MS = 300;
 
+	//! The faint copy marking where a dragged home item would land.
+	static const float DROP_HINT_OPACITY = 0.35;
+
+	//! Something on its way out, e.g. an app being uninstalled.
+	static const float PENDING_OPACITY = 0.4;
+
+	//! The remove target's Negative wash while a held item is over it.
+	static const float REMOVE_ZONE_WASH_ALPHA = 0.22;
+
 	//------------------------------------------------------------------------------------------------
 	//! Color channels are linear, so tokens are authored in sRGB and converted by Srgb(). Layouts
 	//! can't call this and hardcode the converted values.
@@ -104,6 +116,8 @@ class ELIFE_PhoneStyle
 	static Color TextTertiary() { return Srgb(0.451, 0.478, 0.553); }        //!< #737A8D
 	static Color ScrollbarRest() { return ScrollbarTint(0.4); }
 	static Color ScrollbarTint(float alpha) { return new Color(0.8626, 0.8964, 0.964, alpha); }
+	//! A button's pressed wash, as the layouts' m_BackgroundClicked.
+	static Color PressedWash() { return new Color(0.8626, 0.8964, 0.964, 0.16); }
 
 	//! Scrim colour per glass look; accent glass uses the app's AccentDeep instead.
 	static Color GlassBaseDark() { return Srgb(0.022, 0.027, 0.051); }       //!< #04070D

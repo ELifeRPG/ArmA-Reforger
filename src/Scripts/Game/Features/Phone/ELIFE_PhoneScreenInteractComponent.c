@@ -37,6 +37,43 @@ class ELIFE_PhoneScreenClickHandler : ScriptedWidgetEventHandler
 }
 
 //------------------------------------------------------------------------------------------------
+//! A widget handler that opts into press-and-hold on the 3D screen. Its widget is then clicked on release
+//! instead of on press, and a press held still for long enough is offered as a hold.
+class ELIFE_PhoneHoldHandler : ScriptedWidgetEventHandler
+{
+	//------------------------------------------------------------------------------------------------
+	//! True offers the hold on press, with no wait - for a surface already in a drag mode.
+	bool IsHoldImmediate()
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True takes the press over: no click on release, and OnHoldMove then OnHoldEnd or OnHoldCancel follow.
+	bool OnHoldStart(Widget w, float canvasX, float canvasY)
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every frame while held, with the canvas point even past the screen edge.
+	void OnHoldMove(Widget w, float canvasX, float canvasY)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnHoldEnd(Widget w, float canvasX, float canvasY)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The phone was put away or the page changed mid-hold.
+	void OnHoldCancel(Widget w)
+	{
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! Client-local mouse interaction with the held phone's 3D screen, plus a local-only inspect pose.
 //! The mouse ray is mapped onto the screen plane and hit-tested against the painted widget tree.
 class ELIFE_PhoneScreenInteractComponent : ScriptComponent
@@ -99,6 +136,20 @@ class ELIFE_PhoneScreenInteractComponent : ScriptComponent
 	protected float m_fDragStartFraction;
 	//! Thumb travel in physical px, captured at grab so a re-layout mid-drag can't jump it.
 	protected float m_fDragTravel;
+
+	protected const float HOLD_SECONDS = 0.4;
+	//! Canvas px a press may wander, hand sway included, before it is neither a tap nor a hold.
+	protected const float PRESS_SLOP_PX = 12;
+
+	//! A press on a hold handler's widget, waiting to become a tap or a hold.
+	protected Widget m_wPressTarget;
+	protected Widget m_wPressOwner;
+	protected ELIFE_PhoneHoldHandler m_PressHandler;
+	protected float m_fPressX;
+	protected float m_fPressY;
+	protected float m_fPressSeconds;
+	protected bool m_bHoldOffered;
+	protected bool m_bHolding;
 
 	protected const float ALIGN_BLEND_SECONDS = 0.25;
 	//! Eye-to-screen-centre distance while inspecting. Fixed because following the swaying hand made the phone pulse in size.
@@ -201,6 +252,7 @@ class ELIFE_PhoneScreenInteractComponent : ScriptComponent
 		AttachClickHandlerIfNeeded(phoneMenu);
 
 		UpdateScrollbarDrag();
+		UpdatePress(timeSlice);
 
 		float canvasX, canvasY;
 		bool onScreen = ComputeCanvasPoint(canvasX, canvasY);
@@ -296,6 +348,148 @@ class ELIFE_PhoneScreenInteractComponent : ScriptComponent
 	void OnScreenRelease()
 	{
 		m_DragScroll = null;
+		EndPress();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Holds the press back if the widget's handler wants press-and-hold.
+	protected bool BeginPress(Widget target, float canvasX, float canvasY)
+	{
+		Widget owner = FindHandlerAncestor(target);
+		if (!owner || !owner.IsEnabled())
+			return false;
+
+		ELIFE_PhoneHoldHandler handler = FindHoldHandler(owner);
+		if (!handler)
+			return false;
+
+		m_wPressTarget = target;
+		m_wPressOwner = owner;
+		m_PressHandler = handler;
+		m_fPressX = canvasX;
+		m_fPressY = canvasY;
+		m_fPressSeconds = 0;
+		m_bHoldOffered = false;
+		m_bHolding = false;
+
+		if (handler.IsHoldImmediate())
+		{
+			m_bHoldOffered = true;
+			m_bHolding = handler.OnHoldStart(owner, canvasX, canvasY);
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected ELIFE_PhoneHoldHandler FindHoldHandler(notnull Widget w)
+	{
+		int handlerCount = w.GetNumHandlers();
+		for (int i = 0; i < handlerCount; i++)
+		{
+			ELIFE_PhoneHoldHandler handler = ELIFE_PhoneHoldHandler.Cast(w.GetHandler(i));
+			if (handler)
+				return handler;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Offers the hold once the press has stayed put long enough, then follows the cursor while held.
+	protected void UpdatePress(float timeSlice)
+	{
+		if (!m_wPressOwner)
+			return;
+
+		//! Its handler goes with the page, so a rebuild under the cursor ends the press.
+		if (!m_PressHandler)
+		{
+			CancelPress();
+			return;
+		}
+
+		float canvasX, canvasY;
+		bool hasPoint = ComputeCanvasPoint(canvasX, canvasY, false);
+
+		if (m_bHolding)
+		{
+			if (hasPoint)
+				m_PressHandler.OnHoldMove(m_wPressOwner, canvasX, canvasY);
+
+			return;
+		}
+
+		if (hasPoint && !IsWithinSlop(canvasX, canvasY))
+		{
+			CancelPress();
+			return;
+		}
+
+		m_fPressSeconds += timeSlice;
+		if (m_bHoldOffered || m_fPressSeconds < HOLD_SECONDS)
+			return;
+
+		//! A handler that declines keeps it a tap, however long it is held.
+		m_bHoldOffered = true;
+		m_bHolding = m_PressHandler.OnHoldStart(m_wPressOwner, m_fPressX, m_fPressY);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A release still on the spot is the tap, clicked where it was pressed.
+	protected void EndPress()
+	{
+		if (!m_wPressOwner)
+			return;
+
+		float canvasX, canvasY;
+		bool hasPoint = ComputeCanvasPoint(canvasX, canvasY, false);
+
+		if (m_bHolding)
+		{
+			if (!hasPoint)
+			{
+				CancelPress();
+				return;
+			}
+
+			if (m_PressHandler)
+				m_PressHandler.OnHoldEnd(m_wPressOwner, canvasX, canvasY);
+		}
+		else if (m_PressHandler && hasPoint && IsWithinSlop(canvasX, canvasY))
+		{
+			SimulateClick(m_wPressTarget, m_fPressX, m_fPressY);
+
+			//! The click may have changed the page under the cursor.
+			InvalidateHover();
+		}
+
+		ClearPress();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CancelPress()
+	{
+		if (m_bHolding && m_PressHandler && m_wPressOwner)
+			m_PressHandler.OnHoldCancel(m_wPressOwner);
+
+		ClearPress();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ClearPress()
+	{
+		m_wPressTarget = null;
+		m_wPressOwner = null;
+		m_PressHandler = null;
+		m_bHoldOffered = false;
+		m_bHolding = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool IsWithinSlop(float canvasX, float canvasY)
+	{
+		return Math.AbsFloat(canvasX - m_fPressX) <= PRESS_SLOP_PX && Math.AbsFloat(canvasY - m_fPressY) <= PRESS_SLOP_PX;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -701,6 +895,8 @@ class ELIFE_PhoneScreenInteractComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	protected void DetachClickHandler()
 	{
+		CancelPress();
+
 		if (!m_ClickHandler)
 			return;
 
@@ -715,9 +911,12 @@ class ELIFE_PhoneScreenInteractComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Forwards a left click to the widget under the cursor on the live screen.
+	//! Forwards a left click to the widget under the cursor on the live screen. Hold handlers get it on release.
 	void OnScreenClick()
 	{
+		//! A release the menu never saw.
+		CancelPress();
+
 		if (!IsAiming())
 			return;
 
@@ -737,6 +936,10 @@ class ELIFE_PhoneScreenInteractComponent : ScriptComponent
 			return;
 
 		QueueFocus(target, canvasHost);
+
+		if (BeginPress(target, canvasX, canvasY))
+			return;
+
 		SimulateClick(target, canvasX, canvasY);
 
 		//! The click may have changed the page under the cursor.
