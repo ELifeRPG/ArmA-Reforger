@@ -1,25 +1,4 @@
 //------------------------------------------------------------------------------------------------
-class ELIFE_PinSaveClick : ScriptedWidgetEventHandler
-{
-	protected ELIFE_PhoneSettingsApp m_App;
-
-	//------------------------------------------------------------------------------------------------
-	void Bind(ELIFE_PhoneSettingsApp app)
-	{
-		m_App = app;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool OnClick(Widget w, int x, int y, int button)
-	{
-		if (m_App)
-			m_App.SubmitPin();
-
-		return false;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
 //! Grouped dark-glass cards with labels left and backend values right-aligned in a fixed column.
 class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 {
@@ -28,7 +7,9 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 	protected const string ICON_PIN_HIDDEN = "private";
 	protected const float PIN_ICON_SIZE = 32;
 	protected const ResourceName LAYOUT = "{924472620BCF7E97}UI/layouts/Menus/Phone/Apps/PhoneSettings.layout";
-	protected const string ICON_SAVE = "check";
+	protected const string SUBSTATE_PIN = "pin";
+	protected const string SUBSTATE_PIN_CONFIRM = "pin-confirm";
+	protected const string SUBSTATE_PIN_OFF = "pin-off";
 
 	protected ScrollLayoutWidget m_wSettingsScroll;
 	protected TextWidget m_wNumberValue;
@@ -39,21 +20,22 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 	protected Widget m_wPinRevealButton;
 	protected bool m_bPinRevealed;
 	protected TextWidget m_wLockLabel;
+	protected Widget m_wLockRow;
+	protected Widget m_wChangePinRow;
+	protected TextWidget m_wChangePinLabel;
 	protected Widget m_wPeekTrack;
 	protected Widget m_wPeekKnob;
 	protected Widget m_wDndTrack;
 	protected Widget m_wDndKnob;
 
-	//! The New PIN row - registered owner only, everyone else holds a stand-in PIN.
-	protected Widget m_wNewPinRow;
-	protected EditBoxWidget m_wNewPinField;
-	protected TextWidget m_wPinError;
-	protected ref ELIFE_PhoneFieldFocus m_NewPinFocus;
-	protected ref ELIFE_PinSaveClick m_PinSaveClick;
-
-	//! The request's outcome, held until the "Saving…" label has had its minimum time on screen.
-	protected bool m_bHasPendingPinResult;
-	protected ELIFE_EPinChangeResult m_ePendingPinResult;
+	//! The full-page PIN screen, open while the sub-state is one of the SUBSTATE_PIN* values.
+	protected Widget m_wPinPage;
+	protected Widget m_wPinHost;
+	protected TextWidget m_wPinPageTitle;
+	protected TextWidget m_wPinPageBody;
+	protected ref ELIFE_PhonePinFlow m_PinFlow;
+	protected string m_sSubState;
+	protected bool m_bSubStateApplied;
 
 	//------------------------------------------------------------------------------------------------
 	override string GetTitle()
@@ -87,6 +69,16 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 		m_wPinRevealChip = m_wRoot.FindAnyWidget("PinRevealChipSize");
 		m_wPinRevealButton = m_wRoot.FindAnyWidget("ButtonPinReveal");
 		m_wLockLabel = TextWidget.Cast(m_wRoot.FindAnyWidget("LockLabel"));
+		m_wLockRow = m_wRoot.FindAnyWidget("LockRowSize");
+		m_wChangePinRow = m_wRoot.FindAnyWidget("ChangePinRowSize");
+		m_wChangePinLabel = TextWidget.Cast(m_wRoot.FindAnyWidget("ChangePinLabel"));
+		m_wPinPage = m_wRoot.FindAnyWidget("PinPage");
+		m_wPinHost = m_wRoot.FindAnyWidget("PinHost");
+		m_wPinPageTitle = TextWidget.Cast(m_wRoot.FindAnyWidget("PinPageTitle"));
+		m_wPinPageBody = TextWidget.Cast(m_wRoot.FindAnyWidget("PinPageBody"));
+
+		if (m_wPinPageBody)
+			m_wPinPageBody.SetTextWrapping(true);
 
 		TrackScroll(m_wSettingsScroll, TextWidget.Cast(m_wRoot.FindAnyWidget("LargeTitle")));
 
@@ -125,14 +117,7 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 		if (m_Phone)
 			m_Phone.m_OnPersonalizationChanged.Insert(RefreshPersonalization);
 
-		//! Bystander copies only hold stand-in values, so reveal and copy are owner-only.
-		bool owner = IsOwner();
-		if (m_wPinRevealChip)
-			m_wPinRevealChip.SetVisible(owner);
-
-		if (m_wPinRevealButton)
-			m_wPinRevealButton.SetVisible(owner);
-
+		//! Bystander copies only hold stand-in values, so reveal and copy are owner-only - see FillIdentity().
 		SCR_ButtonTextComponent numberCopyButton = BindCopyControl("NumberCopyIcon", "NumberCopyChipSize", "ButtonNumberCopy");
 		if (numberCopyButton)
 			numberCopyButton.m_OnClicked.Insert(OnNumberCopy);
@@ -153,7 +138,9 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 		if (lockButton)
 			lockButton.m_OnClicked.Insert(OnLock);
 
-		BindNewPin();
+		SCR_ButtonTextComponent changePinButton = SCR_ButtonTextComponent.GetButtonText("ButtonChangePin", m_wRoot);
+		if (changePinButton)
+			changePinButton.m_OnClicked.Insert(OnChangePin);
 
 		//! Device id is a 36-char UUID - wrap it rather than clip it mid-string in the value column.
 		if (m_wPhoneIdValue)
@@ -167,29 +154,6 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 		}
 
 		FillIdentity();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void BindNewPin()
-	{
-		m_wNewPinRow = m_wRoot.FindAnyWidget("NewPinRowSize");
-		m_wNewPinField = EditBoxWidget.Cast(m_wRoot.FindAnyWidget("NewPinField"));
-		m_wPinError = TextWidget.Cast(m_wRoot.FindAnyWidget("PinError"));
-
-		if (!m_wNewPinField)
-			return;
-
-		m_NewPinFocus = new ELIFE_PhoneFieldFocus();
-		m_NewPinFocus.Bind(m_wRoot.FindAnyWidget("NewPinFieldRule"), m_Accent);
-		m_wNewPinField.AddHandler(m_NewPinFocus);
-
-		//! OnChange is reserved on ScriptedWidgetEventHandler, so use the field's SCR_EventHandlerComponent.
-		SCR_EventHandlerComponent events = SCR_EventHandlerComponent.Cast(m_wNewPinField.FindHandler(SCR_EventHandlerComponent));
-		if (events)
-		{
-			events.GetOnChange().Insert(OnNewPinChanged);
-			events.GetOnChangeFinal().Insert(OnNewPinConfirmed);
-		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -211,17 +175,40 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 		if (m_wPhoneIdValue)
 			m_wPhoneIdValue.SetText(phoneId);
 
+		//! The owner may have chosen no PIN in setup: nothing to reveal, and nothing for Lock to ask for.
+		bool hasPin = pin != "";
+
 		if (m_wPinValue)
 		{
-			if (m_bPinRevealed && IsOwner())
+			if (!hasPin)
+				m_wPinValue.SetText("#ELIFE-Phone_Settings_PinNone");
+			else if (m_bPinRevealed && IsOwner())
 				m_wPinValue.SetText(pin);
 			else
 				m_wPinValue.SetText(PIN_MASK);
 		}
 
+		bool owner = IsOwner();
+		if (m_wPinRevealChip)
+			m_wPinRevealChip.SetVisible(owner && hasPin);
+
+		if (m_wPinRevealButton)
+			m_wPinRevealButton.SetVisible(owner && hasPin);
+
+		if (m_wLockRow)
+			m_wLockRow.SetVisible(hasPin);
+
 		//! Identity can land after open, so the row's visibility is decided here rather than once.
-		if (m_wNewPinRow)
-			m_wNewPinRow.SetVisible(IsOwner() && m_Phone && m_Phone.HasRealIdentity());
+		if (m_wChangePinRow)
+			m_wChangePinRow.SetVisible(owner && m_Phone && m_Phone.HasRealIdentity());
+
+		if (m_wChangePinLabel)
+		{
+			if (hasPin)
+				m_wChangePinLabel.SetText("#ELIFE-Phone_Settings_ChangePin");
+			else
+				m_wChangePinLabel.SetText("#ELIFE-Phone_Settings_SetPin");
+		}
 
 		if (m_wPinRevealIcon)
 		{
@@ -248,114 +235,6 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 	{
 		m_bPinRevealed = !m_bPinRevealed;
 		FillIdentity();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Save only appears once there's something to save - the pill is Settings' only commit.
-	protected void OnNewPinChanged(Widget w)
-	{
-		ShowPinError("");
-
-		if (m_bNavBusy)
-			return;
-
-		if (m_wNewPinField && m_wNewPinField.GetText() != "")
-			ShowPinSaveAction();
-		else
-			HideNavAction();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void OnNewPinConfirmed(Widget w)
-	{
-		SubmitPin();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void ShowPinSaveAction()
-	{
-		if (!m_PinSaveClick)
-		{
-			m_PinSaveClick = new ELIFE_PinSaveClick();
-			m_PinSaveClick.Bind(this);
-		}
-
-		ShowNavAction("#ELIFE-Phone_Contacts_Form_Save", m_Accent, m_PinSaveClick, ICON_SAVE);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Reachable two ways, Enter and the pill, so this is written to be safe to call twice.
-	void SubmitPin()
-	{
-		if (m_bNavBusy || !m_Phone || !m_wNewPinField || !IsOwner())
-			return;
-
-		string pin = m_wNewPinField.GetText();
-		pin.TrimInPlace();
-
-		if (pin == "")
-			return;
-
-		//! The server checks too; this just catches a typo without the round trip.
-		if (!ELIFE_PhoneGadgetComponent.IsValidPin(pin))
-		{
-			ShowPinError("#ELIFE-Phone_Settings_PinInvalid");
-			return;
-		}
-
-		ShowPinError("");
-		m_bHasPendingPinResult = false;
-		BeginNavBusy("#ELIFE-Phone_Contacts_Form_Saving", m_Accent, ICON_SAVE);
-
-		m_Phone.ChangePin(pin);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void OnPinChangeResult(ELIFE_EPinChangeResult result)
-	{
-		if (!m_wRoot || !m_bNavBusy)
-			return;
-
-		m_bHasPendingPinResult = true;
-		m_ePendingPinResult = result;
-
-		EndNavBusy();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Success clears the field - the PIN row above updating is confirmation enough.
-	protected override void OnNavBusyEnded()
-	{
-		if (!m_bHasPendingPinResult)
-			return;
-
-		m_bHasPendingPinResult = false;
-
-		if (m_ePendingPinResult == ELIFE_EPinChangeResult.CHANGED)
-		{
-			if (m_wNewPinField)
-				m_wNewPinField.SetText("");
-
-			HideNavAction();
-			return;
-		}
-
-		ShowPinSaveAction();
-
-		if (m_ePendingPinResult == ELIFE_EPinChangeResult.INVALID)
-			ShowPinError("#ELIFE-Phone_Settings_PinInvalid");
-		else
-			ShowPinError("#ELIFE-Phone_Settings_PinError");
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void ShowPinError(string text)
-	{
-		if (!m_wPinError)
-			return;
-
-		m_wPinError.SetVisible(text != "");
-		m_wPinError.SetText(text);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -424,6 +303,224 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	// PIN page
+	//------------------------------------------------------------------------------------------------
+
+	override string GetSubState()
+	{
+		return m_sSubState;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The owner's own steps echo back late, so only the first one (a reopen) and bystanders follow it.
+	override void ApplySubState(string subState)
+	{
+		if (m_bSubStateApplied && IsOwner())
+			return;
+
+		m_bSubStateApplied = true;
+
+		if (subState == SUBSTATE_PIN || subState == SUBSTATE_PIN_OFF)
+			ShowPinPage(StageFor(subState));
+		else if (subState == SUBSTATE_PIN_CONFIRM)
+			ShowPinPage(ELIFE_EPinFlowStage.CONFIRM);
+		else
+			ClosePinPage();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Cancel keeps the current PIN: nothing is sent until the flow has a second approval.
+	override bool OnBack()
+	{
+		if (!m_PinFlow)
+			return false;
+
+		if (m_PinFlow.Back())
+			return true;
+
+		ClosePinPage();
+		NotifySubStateChanged();
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool AcceptsPinKeys()
+	{
+		return IsOwner() && m_PinFlow && m_PinFlow.AcceptsKeys();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void PinKeyDigit(int digit)
+	{
+		if (AcceptsPinKeys())
+			m_PinFlow.PinPush(digit);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void PinKeyBackspace()
+	{
+		if (AcceptsPinKeys())
+			m_PinFlow.PinBackspace();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnChangePin()
+	{
+		if (!IsOwner() || m_PinFlow)
+			return;
+
+		ShowPinPage(ELIFE_EPinFlowStage.CHOOSE);
+		NotifySubStateChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The owner can't restore confirm - the chosen PIN isn't kept - so it starts over at choose.
+	protected void ShowPinPage(ELIFE_EPinFlowStage stage)
+	{
+		if (!m_wPinPage || !m_wPinHost)
+			return;
+
+		if (IsOwner() && stage == ELIFE_EPinFlowStage.CONFIRM && !m_PinFlow)
+			stage = ELIFE_EPinFlowStage.CHOOSE;
+
+		if (!m_PinFlow)
+		{
+			//! Turning the PIN off is only offered while there is one to turn off.
+			string noPinLabel = "";
+			if (m_Phone && m_Phone.GetPin() != "")
+				noPinLabel = "#ELIFE-Phone_Settings_TurnOffPin";
+
+			m_PinFlow = new ELIFE_PhonePinFlow();
+			if (!m_PinFlow.Create(m_wPinHost, IsOwner(), noPinLabel, "#ELIFE-Phone_Settings_TurnOffPin_Title", "#ELIFE-Phone_Pin_NoPin_Line", "#ELIFE-Phone_Settings_TurnOffPin", "#ELIFE-Phone_Settings_KeepPin"))
+			{
+				m_PinFlow = null;
+				return;
+			}
+
+			m_PinFlow.m_OnStageChanged.Insert(OnPinStageChanged);
+			m_PinFlow.m_OnSubmit.Insert(OnPinSubmit);
+		}
+
+		if (m_PinFlow.GetStage() != stage)
+			m_PinFlow.ShowStage(stage);
+
+		if (m_wSettingsScroll)
+			m_wSettingsScroll.SetVisible(false);
+
+		m_wPinPage.SetVisible(true);
+		SetBackLabel("#ELIFE-Phone_Nav_Cancel");
+		TrackScroll(null, null);
+
+		//! The flow may have refused the stage, e.g. turning off a PIN that is already gone.
+		ApplyPinStage(m_PinFlow.GetStage());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ClosePinPage()
+	{
+		DestroyPinFlow();
+		m_sSubState = "";
+
+		if (m_wPinPage)
+			m_wPinPage.SetVisible(false);
+
+		if (m_wSettingsScroll)
+			m_wSettingsScroll.SetVisible(true);
+
+		SetBackLabel("");
+		TrackScroll(m_wSettingsScroll, TextWidget.Cast(m_wRoot.FindAnyWidget("LargeTitle")));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void DestroyPinFlow()
+	{
+		if (!m_PinFlow)
+			return;
+
+		m_PinFlow.m_OnStageChanged.Remove(OnPinStageChanged);
+		m_PinFlow.m_OnSubmit.Remove(OnPinSubmit);
+		m_PinFlow.Destroy();
+		m_PinFlow = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected ELIFE_EPinFlowStage StageFor(string subState)
+	{
+		if (subState == SUBSTATE_PIN_CONFIRM)
+			return ELIFE_EPinFlowStage.CONFIRM;
+
+		if (subState == SUBSTATE_PIN_OFF)
+			return ELIFE_EPinFlowStage.NO_PIN;
+
+		return ELIFE_EPinFlowStage.CHOOSE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ApplyPinStage(ELIFE_EPinFlowStage stage)
+	{
+		bool hasPin = m_Phone && m_Phone.GetPin() != "";
+
+		string title = "#ELIFE-Phone_Settings_SetPin";
+		if (hasPin)
+			title = "#ELIFE-Phone_Settings_ChangePin";
+
+		string body = "#ELIFE-Phone_Settings_NewPin_Body";
+
+		if (stage == ELIFE_EPinFlowStage.CONFIRM)
+		{
+			title = "#ELIFE-Phone_Pin_Confirm_Title";
+			body = "#ELIFE-Phone_Pin_Confirm_Body";
+			m_sSubState = SUBSTATE_PIN_CONFIRM;
+		}
+		else if (stage == ELIFE_EPinFlowStage.NO_PIN)
+		{
+			//! The card under it carries the question.
+			body = "";
+			m_sSubState = SUBSTATE_PIN_OFF;
+		}
+		else
+		{
+			m_sSubState = SUBSTATE_PIN;
+		}
+
+		if (m_wPinPageTitle)
+			m_wPinPageTitle.SetText(title);
+
+		if (m_wPinPageBody)
+			m_wPinPageBody.SetText(body);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnPinStageChanged(ELIFE_EPinFlowStage stage)
+	{
+		ApplyPinStage(stage);
+		NotifySubStateChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnPinSubmit(string pin)
+	{
+		if (m_Phone)
+			m_Phone.ChangePin(pin);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On success the PIN row above already shows the change, so the page just closes.
+	protected void OnPinChangeResult(ELIFE_EPinChangeResult result)
+	{
+		if (!m_PinFlow || !m_PinFlow.IsSubmitting())
+			return;
+
+		m_PinFlow.OnResult(result);
+
+		if (result != ELIFE_EPinChangeResult.CHANGED)
+			return;
+
+		ClosePinPage();
+		NotifySubStateChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected override void OnClosing()
 	{
 		if (m_Phone)
@@ -432,6 +529,8 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 			m_Phone.m_OnPinChangeResult.Remove(OnPinChangeResult);
 			m_Phone.m_OnPersonalizationChanged.Remove(RefreshPersonalization);
 		}
+
+		DestroyPinFlow();
 
 		m_wSettingsScroll = null;
 		m_wNumberValue = null;
@@ -442,15 +541,16 @@ class ELIFE_PhoneSettingsApp : ELIFE_PhoneAppBase
 		m_wPinRevealButton = null;
 		m_bPinRevealed = false;
 		m_wLockLabel = null;
+		m_wLockRow = null;
+		m_wChangePinRow = null;
+		m_wChangePinLabel = null;
+		m_wPinPage = null;
+		m_wPinHost = null;
+		m_wPinPageTitle = null;
+		m_wPinPageBody = null;
 		m_wPeekTrack = null;
 		m_wPeekKnob = null;
 		m_wDndTrack = null;
 		m_wDndKnob = null;
-		m_wNewPinRow = null;
-		m_wNewPinField = null;
-		m_wPinError = null;
-		m_NewPinFocus = null;
-		m_PinSaveClick = null;
-		m_bHasPendingPinResult = false;
 	}
 }

@@ -601,6 +601,31 @@ class ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A page with a PIN pad takes the keyboard's digits too - see ELIFE_PhoneScreenShell.PinKeyDigit().
+	bool AcceptsPinKeys()
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void PinKeyDigit(int digit)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void PinKeyBackspace()
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Empty restores "Back". The shell resets it for every app it opens.
+	protected void SetBackLabel(string label)
+	{
+		if (m_Shell)
+			m_Shell.SetBackLabel(label);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void BindShell(ELIFE_PhoneScreenShell shell)
 	{
 		m_Shell = shell;

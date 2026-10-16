@@ -80,7 +80,7 @@ class ELIFE_PhoneScreenController
 		if (!m_Shell)
 			return;
 
-		if (m_Shell.GetState() != EPhoneScreenState.HOME)
+		if (m_Shell.GetState() != EPhoneScreenState.HOME && m_Shell.GetState() != EPhoneScreenState.SETUP)
 		{
 			GoHome();
 			return;
@@ -99,7 +99,8 @@ class ELIFE_PhoneScreenController
 		if (m_Shell.AppConsumedBack())
 			return;
 
-		if (m_Shell.GetOpenApp())
+		//! Setup's first page: there is no home behind it yet, so Back puts the phone away.
+		if (m_Shell.GetOpenApp() && m_Shell.GetState() != EPhoneScreenState.SETUP)
 		{
 			GoHome();
 			return;

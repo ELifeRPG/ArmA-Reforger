@@ -307,6 +307,7 @@ class ELIFE_PhoneScreenShell
 
 	//! BackBody's 16px padding on each side plus the chevron's 6px gap to the label.
 	protected const float BACK_CHIP_CHROME = 38;
+	protected const string BACK_LABEL = "#ELIFE-Phone_Nav_Back";
 
 	protected Widget m_wRoot;
 	protected Widget m_wLockScreen;
@@ -430,6 +431,7 @@ class ELIFE_PhoneScreenShell
 			case EPhoneScreenState.BANK: return new ELIFE_PhoneBankingApp();
 			case EPhoneScreenState.SETTINGS: return new ELIFE_PhoneSettingsApp();
 			case EPhoneScreenState.STORE: return new ELIFE_PhoneStoreApp();
+			case EPhoneScreenState.SETUP: return new ELIFE_PhoneSetupApp();
 		}
 
 		return null;
@@ -2047,6 +2049,14 @@ class ELIFE_PhoneScreenShell
 	//------------------------------------------------------------------------------------------------
 	protected void OnHomePillClicked()
 	{
+		//! During setup the pill only advances the tour.
+		ELIFE_PhoneSetupApp setup = ELIFE_PhoneSetupApp.Cast(m_App);
+		if (setup)
+		{
+			setup.OnChromeTapped(false);
+			return;
+		}
+
 		//! Home closes the widget picker, then leaves edit mode, as it would on any phone.
 		if (m_wWidgetSheet)
 		{
@@ -2297,10 +2307,11 @@ class ELIFE_PhoneScreenShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Awake screens only - lock has its own list. Bystander copies show banners too, just not clickable.
+	//! Awake screens only - lock has its own list, and setup has nowhere for a banner to lead.
+	//! Bystander copies show banners too, just not clickable.
 	protected bool CanShowBanner()
 	{
-		return m_eState != EPhoneScreenState.OFF && m_eState != EPhoneScreenState.LOCKED;
+		return m_eState != EPhoneScreenState.OFF && m_eState != EPhoneScreenState.LOCKED && m_eState != EPhoneScreenState.SETUP;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2563,6 +2574,13 @@ class ELIFE_PhoneScreenShell
 	//------------------------------------------------------------------------------------------------
 	protected void OnStatusBarClicked()
 	{
+		ELIFE_PhoneSetupApp setup = ELIFE_PhoneSetupApp.Cast(m_App);
+		if (setup)
+		{
+			setup.OnChromeTapped(true);
+			return;
+		}
+
 		//! No hub on a locked or dark screen - it would show message bodies.
 		if (!m_Phone || !CanShowBanner())
 			return;
@@ -2767,7 +2785,9 @@ class ELIFE_PhoneScreenShell
 		if (state != EPhoneScreenState.HOME)
 			ExitHomeEdit();
 
-		bool appOpen = ELIFE_PhoneAppCatalog.HasPage(state);
+		//! Setup is an AppHost page that isn't in the catalog, so it never lands on the home grid.
+		bool setup = state == EPhoneScreenState.SETUP;
+		bool appOpen = ELIFE_PhoneAppCatalog.HasPage(state) || setup;
 		bool locked = state == EPhoneScreenState.LOCKED;
 		bool off = state == EPhoneScreenState.OFF;
 
@@ -2783,7 +2803,7 @@ class ELIFE_PhoneScreenShell
 		if (m_wAppHost)
 			m_wAppHost.SetVisible(appOpen);
 
-		//! Wallpaper is for lock and home; app pages get the flat ground.
+		//! Wallpaper is for lock and home; app pages get the flat ground. Setup brings its own backdrop.
 		if (m_wWallpaper)
 			m_wWallpaper.SetVisible(!appOpen && !off);
 
@@ -2793,9 +2813,9 @@ class ELIFE_PhoneScreenShell
 		if (m_wNavBarSize)
 			m_wNavBarSize.SetVisible(appOpen);
 
-		//! Locked: no home pill, the PIN pad is the only way in.
+		//! Locked: no home pill, the PIN pad is the only way in. Setup has no home to go to yet.
 		if (m_wHomeIndicator)
-			m_wHomeIndicator.SetVisible(!locked && !off);
+			m_wHomeIndicator.SetVisible(!locked && !off && !setup);
 
 		if (locked)
 		{
@@ -2809,6 +2829,11 @@ class ELIFE_PhoneScreenShell
 			OpenApp(state, animateEntrance);
 		else
 			CloseApp();
+
+		//! The visibilities above just undid a tour in progress if setup was already open.
+		ELIFE_PhoneSetupApp setupApp = ELIFE_PhoneSetupApp.Cast(m_App);
+		if (setupApp)
+			setupApp.RefreshTour();
 
 		m_eState = state;
 		RefreshOfflineScreen();
@@ -2852,7 +2877,10 @@ class ELIFE_PhoneScreenShell
 			m_wBackChevron.SetColor(accent);
 
 		if (m_wBackLabel)
+		{
+			m_wBackLabel.SetText(BACK_LABEL);
 			m_wBackLabel.SetColor(accent);
+		}
 
 		SizeBackChip();
 
@@ -2868,6 +2896,20 @@ class ELIFE_PhoneScreenShell
 			m_AppEntrance.Play(m_wAppHost, 0, 1, ELIFE_PhoneStyle.DURATION_PRESENT_MS);
 		else
 			m_wAppHost.SetOpacity(1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For a page where leading means Cancel rather than Back. Empty restores Back.
+	void SetBackLabel(string label)
+	{
+		if (!m_wBackLabel)
+			return;
+
+		if (label == "")
+			label = BACK_LABEL;
+
+		m_wBackLabel.SetText(label);
+		SizeBackChip();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2915,6 +2957,56 @@ class ELIFE_PhoneScreenShell
 	{
 		if (m_App)
 			m_App.ApplySubState(subState);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Any later ShowState() resets these visibilities.
+	void ShowSetupTour(bool showHome, bool showHomePill)
+	{
+		if (!ELIFE_PhoneSetupApp.Cast(m_App))
+			return;
+
+		if (m_wHomeScreen)
+			m_wHomeScreen.SetVisible(showHome);
+
+		if (m_wWallpaper)
+			m_wWallpaper.SetVisible(showHome);
+
+		if (m_wHomeIndicator)
+			m_wHomeIndicator.SetVisible(showHomePill);
+
+		if (showHome)
+			RefreshHomeScreen();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first app tile on the home grid, in DPI-unscaled screen px. False until the grid is laid out.
+	bool GetHomeTileRect(out float x, out float y, out float width, out float height)
+	{
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace)
+			return false;
+
+		array<ref ELIFE_PhoneAppEntry> catalog = ELIFE_PhoneAppCatalog.GetEntries();
+		foreach (ELIFE_PhoneAppEntry app : catalog)
+		{
+			Widget cell;
+			if (!m_mHomeCells.Find(app.m_sAppKey, cell) || !cell)
+				continue;
+
+			cell.GetScreenPos(x, y);
+			cell.GetScreenSize(width, height);
+			if (width <= 0 || height <= 0)
+				return false;
+
+			x = workspace.DPIUnscale(x);
+			y = workspace.DPIUnscale(y);
+			width = workspace.DPIUnscale(width);
+			height = workspace.DPIUnscale(height);
+			return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3403,22 +3495,38 @@ class ELIFE_PhoneScreenShell
 	//------------------------------------------------------------------------------------------------
 	bool AcceptsPinKeys()
 	{
-		return m_bInteractive && m_eState == EPhoneScreenState.LOCKED;
+		if (!m_bInteractive)
+			return false;
+
+		if (m_eState == EPhoneScreenState.LOCKED)
+			return true;
+
+		return m_App && m_App.AcceptsPinKeys();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Keyboard entry, same path as the on-screen keys.
+	//! Keyboard entry, same path as the on-screen keys - the lock pad's or the open page's.
 	void PinKeyDigit(int digit)
 	{
-		if (AcceptsPinKeys())
+		if (!AcceptsPinKeys())
+			return;
+
+		if (m_eState == EPhoneScreenState.LOCKED)
 			PinPush(digit);
+		else
+			m_App.PinKeyDigit(digit);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void PinKeyBackspace()
 	{
-		if (AcceptsPinKeys())
+		if (!AcceptsPinKeys())
+			return;
+
+		if (m_eState == EPhoneScreenState.LOCKED)
 			PinBackspace();
+		else
+			m_App.PinKeyBackspace();
 	}
 
 	//------------------------------------------------------------------------------------------------

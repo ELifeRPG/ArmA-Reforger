@@ -1072,78 +1072,86 @@ OverlayWidgetClass {
             }
            }
           }
-          SizeLayoutWidgetClass "{48CD38B7200A89A0}" {
-           Name "NewPinRowSize"
-           Slot LayoutSlot "{50848566E32D8DED}" {
+          SizeLayoutWidgetClass "{FFBFA2B12EA513E6}" {
+           Name "ChangePinRowSize"
+           Slot LayoutSlot "{A36895D9A5D45E88}" {
             SizeMode Fill
            }
            AllowHeightOverride 1
            HeightOverride 60
            {
-            OverlayWidgetClass "{AF8F2336D6194677}" {
-             Name "NewPinRow"
-             Slot AlignableSlot "{AD668E1461ACE89F}" {
+            ButtonWidgetClass "{839CB5A0E0BEE9AA}" {
+             Name "ButtonChangePin"
+             Slot AlignableSlot "{9323954242D4B46F}" {
               HorizontalAlign 3
               VerticalAlign 3
              }
+             Color 1 1 1 1
+             style blank
+             components {
+              SCR_ButtonTextComponent "{37707A65548CDA3C}" {
+               m_BackgroundDefault 0.910 0.929 0.973 0
+               m_BackgroundHovered 0.910 0.929 0.973 0.06
+               m_BackgroundSelected 0.910 0.929 0.973 0.12
+               m_BackgroundSelectedHovered 0.910 0.929 0.973 0.12
+               m_BackgroundClicked 0.910 0.929 0.973 0.12
+               m_sText ""
+              }
+             }
              {
-              HorizontalLayoutWidgetClass "{C9FD6FF004802ED5}" {
-               Name "NewPinRowBody"
-               Slot OverlayWidgetSlot "{13E137421F3BEA49}" {
+              OverlayWidgetClass "{CC5E8098CAE386B9}" {
+               Name "ButtonSurface"
+               Slot ButtonWidgetSlot "{B47441381412FE6B}" {
                 HorizontalAlign 3
                 VerticalAlign 3
-                Padding 20 0 20 0
                }
                {
-                TextWidgetClass "{BFFB457588DE4FCF}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-                 Name "NewPinLabel"
-                 Slot LayoutSlot "{932139E41836AD7A}" {
-                  VerticalAlign 1
-                 }
-                 Color 0.8378 0.8626 0.9222 1
-                 Text "#ELIFE-Phone_Settings_NewPin"
-                 "Font Size" 22
-                 "Min Font Size" 20
-                 "Horizontal Alignment" Left
-                }
-                EditBoxWidgetClass "{73B06DE779F57602}" {
-                 Name "NewPinField"
-                 Slot LayoutSlot "{A0FA7CB764424420}" {
-                  VerticalAlign 1
-                  SizeMode Fill
-                  Padding 16 0 0 0
-                 }
-                 Color 0.366 0.4024 0.5025 1
-                 components {
-                  SCR_EventHandlerComponent "{062131C463945F08}" {
-                  }
-                 }
-                 "Font Size" 22
-                 "Use placeholder text" 1
-                 "Placeholder text" "#ELIFE-Phone_Settings_NewPinHint"
-                 FontProperties FontProperties "{B41B83C2B21CC791}" {
-                  Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-                 }
-                }
-               }
-              }
-              SizeLayoutWidgetClass "{4FCE0FB11D630FBB}" {
-               Name "NewPinFieldRuleSize"
-               Slot OverlayWidgetSlot "{EDEF89DD35956B46}" {
-                HorizontalAlign 3
-                VerticalAlign 2
-                Padding 20 0 0 0
-               }
-               AllowHeightOverride 1
-               HeightOverride 2
-               {
-                ImageWidgetClass "{284A2DE211F245E6}" {
-                 Name "NewPinFieldRule"
-                 Slot AlignableSlot "{4F9BF8CE9F1C6563}" {
+                SmartPanelWidgetClass "{CCFF67FF775E494C}" {
+                 Name "Background"
+                 Slot OverlayWidgetSlot "{5D1C29EF39CF5054}" {
                   HorizontalAlign 3
                   VerticalAlign 3
                  }
-                 Color 0.0383 0.0466 0.0723 0.9
+                 Color 0 0 0 0
+                 style rounded_12px
+                 "no focus" 1
+                }
+                HorizontalLayoutWidgetClass "{36F6FA96D44BC6F3}" {
+                 Name "ChangePinRowBody"
+                 Slot OverlayWidgetSlot "{9D9B6B6E92817BF1}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                  Padding 20 0 20 0
+                 }
+                 {
+                  TextWidgetClass "{B43D093E7AABBA05}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                   Name "ChangePinLabel"
+                   Slot LayoutSlot "{E91E391E745D99FC}" {
+                    SizeMode Fill
+                    VerticalAlign 1
+                   }
+                   Color 0.8378 0.8626 0.9222 1
+                   Text "#ELIFE-Phone_Settings_ChangePin"
+                   "Font Size" 22
+                   "Min Font Size" 20
+                   "Horizontal Alignment" Left
+                  }
+                  TextWidgetClass "{99FFC45DEAD95CD8}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+                   Name "ChangePinChevron"
+                   Slot LayoutSlot "{5D128F1479BC6B38}" {
+                    VerticalAlign 1
+                    Padding 16 0 0 0
+                   }
+                   Color 0.1715 0.1942 0.2664 1
+                   Text "›"
+                   "Font Size" 30
+                   "Min Font Size" 30
+                   "Horizontal Alignment" 2
+                   FontProperties FontProperties "{83A09936B4FC749B}" {
+                    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                   }
+                  }
+                 }
                 }
                }
               }
@@ -1242,22 +1250,65 @@ OverlayWidgetClass {
         }
        }
       }
-      TextWidgetClass "{37C8B2B513042B8C}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-       Name "PinError"
-       Slot LayoutSlot "{45C7616F9EC7FA1C}" {
-        Padding 24 16 24 0
-       }
-       "Is Visible" 0
-       Color 0.7756 0.2912 0.2622 1
-       Text ""
-       "Font Size" 18
-       "Min Font Size" 18
-       "Horizontal Alignment" Left
-      }
       SizeLayoutWidgetClass "{8F3B7AD09389F5BE}" {
        Name "SettingsBottomSpacer"
        AllowHeightOverride 1
        HeightOverride 60
+      }
+     }
+    }
+   }
+  }
+  OverlayWidgetClass "{3DE8BCEB2688FC4A}" {
+   Name "PinPage"
+   Slot OverlayWidgetSlot "{C0D9AE6976E3A5C6}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   "Is Visible" 0
+   {
+    VerticalLayoutWidgetClass "{6B421B6C23DCEB45}" {
+     Name "PinPageColumn"
+     Slot OverlayWidgetSlot "{0B95E231E25EA887}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 24 96 24 40
+     }
+     {
+      TextWidgetClass "{8F6D883E714BF286}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "PinPageTitle"
+       Slot LayoutSlot "{16C7DE8A30DE5B24}" {
+       }
+       Color 0.8378 0.8626 0.9222 1
+       Text ""
+       "Font Size" 40
+       "Min Font Size" 40
+       "Horizontal Alignment" Left
+       FontProperties FontProperties "{BBBD4272B0112549}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{D40F2BFE68ED3DD4}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "PinPageBody"
+       Slot LayoutSlot "{C074D93B48C4EC46}" {
+        Padding 0 12 0 0
+       }
+       Color 0.366 0.4024 0.5025 1
+       Text ""
+       "Font Size" 22
+       "Min Font Size" 22
+       "Horizontal Alignment" Left
+      }
+      VerticalLayoutWidgetClass "{230FD6F9C41E3AF0}" {
+       Name "PinPageSpacer"
+       Slot LayoutSlot "{ABE9BEF1D9FD2232}" {
+        SizeMode Fill
+       }
+      }
+      VerticalLayoutWidgetClass "{87A2483E3F276B1E}" {
+       Name "PinHost"
+       Slot LayoutSlot "{6DC2877A24C2AEDC}" {
+       }
       }
      }
     }

@@ -8,4 +8,15 @@ class ELIFE_CharacterIdentity
 	{
 		return "8a1e2d3c-4f5a-4b6c-9d7e-8f9a0b1c2d3e";
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-side. The player's profile name stands in for the character's name until characters exist.
+	static string GetCharacterName(int playerId)
+	{
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (!playerManager || playerId == 0)
+			return "";
+
+		return playerManager.GetPlayerName(playerId);
+	}
 }

@@ -9,7 +9,8 @@ enum EPhoneScreenState
 	MESSAGES,
 	SETTINGS,
 	CONTACTS,
-	STORE
+	STORE,
+	SETUP
 }
 
 //------------------------------------------------------------------------------------------------
@@ -42,7 +43,7 @@ enum ELIFE_EMessageSendResult
 }
 
 //------------------------------------------------------------------------------------------------
-//! INVALID: not PIN_LENGTH digits - client-side, or the backend's 400.
+//! INVALID: not PIN_LENGTH digits - client-side, or the backend's 400. Also answers CompleteSetup().
 enum ELIFE_EPinChangeResult
 {
 	CHANGED,
@@ -155,6 +156,14 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[RplProp(onRplName: "ApplyRedactedIdentity")]
 	protected string m_sRedactedPin;
 
+	//! Who the phone is registered to. Public, unlike the number: it's the owner's RP name.
+	[RplProp(onRplName: "OnIdentityUpdated")]
+	protected string m_sOwnerName;
+
+	//! Server memory only: a restart forgets it.
+	[RplProp()]
+	protected bool m_bSetupCompleted;
+
 	//! Server-only. The real identity, only ever sent to the registered owner.
 	protected string m_sServerNumber;
 	protected string m_sServerPin;
@@ -168,8 +177,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected const int UNLOCK_MAX_FAILURES = 5;
 	protected const float UNLOCK_COOLDOWN_MS = 30000;
 
-	//! Server-only. The PIN sent with the in-flight provisioning request, kept until OnPhoneProvisioned().
+	//! Server-only. The PIN and owner name of the in-flight provisioning request, kept until OnPhoneProvisioned().
 	protected string m_sPendingPin;
+	protected string m_sPendingOwnerName;
 
 	//! Server-only. Set once the backend confirms power-on; a phone that's off answers every app route with 409.
 	protected bool m_bBackendPoweredOn;
@@ -188,7 +198,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected int m_iOwnerPlayerId;
 
 	//! Server-only. What the in-flight PIN change / block toggle asked for; the generated handlers only hand back the phoneId.
+	protected bool m_bPinChangePending;
 	protected string m_sPendingNewPin;
+	//! The in-flight PIN change is setup's last step, so landing it finishes setup.
+	protected bool m_bPendingSetup;
 	protected string m_sPendingBlockNumber;
 	protected bool m_bPendingBlock;
 	protected string m_sPendingAppKey;
@@ -245,7 +258,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//! Fires with (ELIFE_EMessageSendResult, threadId) when a send resolves; threadId is empty on failure.
 	ref ScriptInvoker m_OnMessageSendResult = new ScriptInvoker();
 
-	//! Fires with ELIFE_EPinChangeResult when a ChangePin() call resolves. The new PIN itself arrives as an identity change.
+	//! Fires with ELIFE_EPinChangeResult when a ChangePin() or CompleteSetup() call resolves. The new PIN itself arrives as an identity change.
 	ref ScriptInvoker m_OnPinChangeResult = new ScriptInvoker();
 
 	//! Fires with (bool deleted) when a DeleteContact() call resolves.
@@ -386,6 +399,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (IsLocalCharacterOwner())
 			ELIFE_PhoneToggle.RememberActivePhone(this);
 
+		//! A phone without a PIN has no redacted PIN to replicate, so the id is what says the identity exists.
+		ApplyRedactedIdentity();
 		OnIdentityUpdated();
 	}
 
@@ -683,6 +698,19 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Who the phone is registered to, the same on every machine.
+	string GetOwnerName()
+	{
+		return m_sOwnerName;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsSetupCompleted()
+	{
+		return m_bSetupCompleted;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! True on the registered owner's machine only - everyone else holds the redacted stand-ins.
 	bool HasRealIdentity()
 	{
@@ -706,10 +734,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	// PIN change
+	// PIN change and first-launch setup
 	//------------------------------------------------------------------------------------------------
 
-	//! Owner-only. The server supplies the current PIN, so the player only types the new one.
+	//! Owner-only. The server supplies the current PIN, so the player only types the new one. Empty removes it.
 	void ChangePin(string newPin)
 	{
 		if (!IsLocalCharacterOwner())
@@ -722,8 +750,36 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_ChangePin(string newPin)
 	{
+		RequestPinChange(newPin, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner-only. Setup's last step: sets the chosen PIN, or none when empty, and leaves setup once the Bridge agrees.
+	void CompleteSetup(string pin)
+	{
+		if (!IsLocalCharacterOwner())
+			return;
+
+		Rpc(RpcAsk_CompleteSetup, pin);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_CompleteSetup(string pin)
+	{
+		if (m_bSetupCompleted)
+			return;
+
+		//! Always sent, even for "no PIN", since the call is what marks the phone set up on the Bridge.
+		RequestPinChange(pin, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-only. Answers through NotifyPinChangeResult() either way.
+	protected void RequestPinChange(string newPin, bool completesSetup)
+	{
 		ELIFE_Api api = ELIFE_Api.GetInstance();
-		if (m_sPhoneId == "" || m_sServerPin == "" || !api || m_sPendingNewPin != "")
+		if (m_sPhoneId == "" || !api || m_bPinChangePending)
 		{
 			NotifyPinChangeResult(ELIFE_EPinChangeResult.FAILED);
 			return;
@@ -736,18 +792,21 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 		}
 
-		if (!IsValidPin(newPin))
+		if (newPin != "" && !IsValidPin(newPin))
 		{
 			NotifyPinChangeResult(ELIFE_EPinChangeResult.INVALID);
 			return;
 		}
 
+		//! The owner needs no current PIN, so this also works on a phone that has none.
 		ELIFE_ChangePhonePinRequest request = new ELIFE_ChangePhonePinRequest();
 		request.characterId = m_sServerOwnerCharacterId;
 		request.pin = m_sServerPin;
 		request.newPin = newPin;
 
+		m_bPinChangePending = true;
 		m_sPendingNewPin = newPin;
+		m_bPendingSetup = completesSetup;
 		m_ChangePinCallback = api.ChangePhonePin(request, m_sPhoneId, this, "OnPinChanged");
 	}
 
@@ -759,7 +818,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		NoteConnectivity(status, httpCode);
 
 		string newPin = m_sPendingNewPin;
+		bool completesSetup = m_bPendingSetup;
+		m_bPinChangePending = false;
 		m_sPendingNewPin = "";
+		m_bPendingSetup = false;
 
 		if (status != ELIFE_EApiStatusCode.SUCCESS)
 		{
@@ -775,6 +837,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		m_sServerPin = newPin;
 		m_sRedactedPin = ELIFE_DataRedactor.RedactDigits(newPin);
+
+		if (completesSetup)
+			m_bSetupCompleted = true;
+
 		Replication.BumpMe();
 
 		PushIdentityToOwner();
@@ -782,6 +848,13 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			ApplyRedactedIdentity();
 
 		NotifyPinChangeResult(ELIFE_EPinChangeResult.CHANGED);
+
+		//! Clear the setup step so it doesn't leak into the next app opened.
+		if (completesSetup && m_eScreenState == EPhoneScreenState.SETUP)
+		{
+			RpcAsk_SetScreenSubState("");
+			RpcAsk_SetScreenState(EPhoneScreenState.HOME);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -802,8 +875,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Dev-only PIN generation. The server keeps it to verify unlocks; the owner sees it in Settings.
-	protected void ProvisionPhone(int playerId)
+	//! A new phone has no PIN: its owner picks one, or none, in setup.
+	protected void ProvisionPhone(int playerId, string pin = "")
 	{
 		ELIFE_Api api = ELIFE_Api.GetInstance();
 		if (!api)
@@ -811,9 +884,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		ELIFE_ProvisionPhoneRequest request = new ELIFE_ProvisionPhoneRequest();
 		request.characterId = ELIFE_CharacterIdentity.GetCharacterId(playerId);
-		request.pin = string.Format("%1", Math.RandomIntInclusive(1000, 9999));
+		request.pin = pin;
 
 		m_sServerOwnerCharacterId = request.characterId;
+		m_sPendingOwnerName = ELIFE_CharacterIdentity.GetCharacterName(playerId);
 		m_sPendingPin = request.pin;
 		m_bBackendPoweredOn = false;
 		m_ProvisionCallback = api.ProvisionPhone(request, this, "OnPhoneProvisioned");
@@ -822,11 +896,19 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//------------------------------------------------------------------------------------------------
 	void OnPhoneProvisioned(ELIFE_EApiStatusCode status, JsonApiStruct data)
 	{
-		NoteConnectivity(status, HttpCodeOf(m_ProvisionCallback));
+		int httpCode = HttpCodeOf(m_ProvisionCallback);
+		NoteConnectivity(status, httpCode);
 
 		ELIFE_ProvisionedPhone response = ELIFE_ProvisionedPhone.Cast(data);
 		if (status != ELIFE_EApiStatusCode.SUCCESS || !response)
 		{
+			//! A Bridge that still requires a PIN at provisioning gets a random one; setup replaces it.
+			if (httpCode == 400 && m_sPendingPin == "")
+			{
+				ProvisionPhone(m_iOwnerPlayerId, string.Format("%1", Math.RandomIntInclusive(1000, 9999)));
+				return;
+			}
+
 			Print("ELIFE_PhoneGadgetComponent | provisioning failed", LogLevel.ERROR);
 			return;
 		}
@@ -835,6 +917,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		m_sServerNumber = response.number;
 		m_sServerPin = m_sPendingPin;
 		m_sRedactedPin = ELIFE_DataRedactor.RedactDigits(m_sPendingPin);
+		m_sOwnerName = m_sPendingOwnerName;
 		Replication.BumpMe();
 
 		//! onRplName doesn't fire on the machine setting the value, so apply it here for a listen server.
@@ -2167,7 +2250,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (m_SoundComponent)
 			m_SoundComponent.SoundEvent(SOUND_EVENT_NOTIFICATION);
 
-		if (ELIFE_PhonePrefs.IsPeekEnabled())
+		//! A peek is a door into the phone, and a phone still in setup has nowhere to take it.
+		if (ELIFE_PhonePrefs.IsPeekEnabled() && m_bSetupCompleted)
 			ELIFE_PhonePeek.Show(this);
 	}
 
@@ -2216,7 +2300,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//! Number is the localised "unknown" placeholder, so it's built on each client rather than replicated.
 	protected void ApplyRedactedIdentity()
 	{
-		if (m_bHasRealIdentity || m_sRedactedPin == "")
+		if (m_bHasRealIdentity || m_sPhoneId == "")
 			return;
 
 		ApplyIdentity(ELIFE_DataRedactor.RedactPhoneNumber(), m_sRedactedPin);
@@ -2274,6 +2358,12 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_SetScreenState(EPhoneScreenState state)
 	{
+		//! Only setup's last step leaves setup, so every way in lands there until then.
+		if (!m_bSetupCompleted && state != EPhoneScreenState.OFF)
+			state = EPhoneScreenState.SETUP;
+		else if (m_bSetupCompleted && state == EPhoneScreenState.SETUP)
+			state = EPhoneScreenState.HOME;
+
 		//! Only RpcAsk_Unlock leaves the lock screen, so a locked phone also powers on locked.
 		if (m_bPinLocked && state != EPhoneScreenState.OFF)
 			state = EPhoneScreenState.LOCKED;
@@ -2506,7 +2596,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//! A hand-off that leaves the phone is not a resume target.
 	protected void RememberResume(EPhoneScreenState state)
 	{
-		if (state == EPhoneScreenState.OFF || state == EPhoneScreenState.LOCKED)
+		if (state == EPhoneScreenState.OFF || state == EPhoneScreenState.LOCKED || state == EPhoneScreenState.SETUP)
 			return;
 
 		if (state == EPhoneScreenState.MAP)

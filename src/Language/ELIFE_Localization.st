@@ -642,38 +642,6 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
-  CustomStringTableItem "{330871A29A417E8D}" {
-   Id "ELIFE-Phone_Settings_NewPin"
-   Target_en_us "New PIN"
-   Target_de_de "Neue PIN"
-   Modified 1791763200
-   Author "Robin"
-   LastChanged "Robin"
-  }
-  CustomStringTableItem "{AD94B0F466B60625}" {
-   Id "ELIFE-Phone_Settings_NewPinHint"
-   Target_en_us "4 digits"
-   Target_de_de "4 Ziffern"
-   Modified 1791763200
-   Author "Robin"
-   LastChanged "Robin"
-  }
-  CustomStringTableItem "{03747AF58F294D75}" {
-   Id "ELIFE-Phone_Settings_PinInvalid"
-   Target_en_us "Enter 4 digits."
-   Target_de_de "4 Ziffern eingeben."
-   Modified 1791763200
-   Author "Robin"
-   LastChanged "Robin"
-  }
-  CustomStringTableItem "{0F859A5D77F308C6}" {
-   Id "ELIFE-Phone_Settings_PinError"
-   Target_en_us "Couldn't change the PIN. Try again."
-   Target_de_de "PIN konnte nicht geändert werden. Erneut versuchen."
-   Modified 1791763200
-   Author "Robin"
-   LastChanged "Robin"
-  }
   CustomStringTableItem "{1F8A5C82E805F7B6}" {
    Id "ELIFE-Phone_Contacts_Delete"
    Target_en_us "Delete contact"
@@ -1215,6 +1183,310 @@ StringTable {
    Target_en_us "Favourites"
    Target_de_de "Favoriten"
    Modified 1792074544
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{10BDBAD5B616588E}" {
+   Id "ELIFE-Phone_Setup_Title"
+   Target_en_us "Setup"
+   Target_de_de "Einrichtung"
+   Modified 1792163457
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{92A997B7E5A2D849}" {
+   Id "ELIFE-Phone_Setup_Continue"
+   Target_en_us "Continue"
+   Target_de_de "Weiter"
+   Modified 1792163457
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{130C05ED28B0AEC6}" {
+   Id "ELIFE-Phone_Setup_Welcome_Title"
+   Target_en_us "Welcome to your new phone"
+   Target_de_de "Willkommen bei deinem neuen Handy"
+   Modified 1792163457
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{9C5A3F814EC81BCB}" {
+   Id "ELIFE-Phone_Setup_Welcome_Body"
+   Target_en_us "Just a few steps and it's ready to go."
+   Target_de_de "Nur ein paar Schritte, dann ist es startklar."
+   Modified 1792163457
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{32F5BE595C9FE5FC}" {
+   Id "ELIFE-Phone_Setup_Owner_Title"
+   Target_en_us "This phone is yours"
+   Target_de_de "Dieses Handy gehört dir"
+   Modified 1792163457
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{84D4443CBE10D8F9}" {
+   Id "ELIFE-Phone_Setup_Owner_Body"
+   Target_en_us "It's registered under your name. The number belongs to this phone, so keep it close."
+   Target_de_de "Es wird auf deinen Namen registriert. Die Nummer gehört zu diesem Handy, also pass gut darauf auf."
+   Modified 1792163457
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{D221164823348490}" {
+   Id "ELIFE-Phone_Setup_RegisteredTo"
+   Target_en_us "Registered to"
+   Target_de_de "Registriert auf"
+   Modified 1792163457
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{F80AA58482F0FAD8}" {
+   Id "ELIFE-Phone_Setup_Registering"
+   Target_en_us "Registering…"
+   Target_de_de "Wird registriert…"
+   Modified 1792163457
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{5DBEA7699A23567C}" {
+   Id "ELIFE-Phone_Setup_Pin_Title"
+   Target_en_us "Choose a PIN"
+   Target_de_de "Wähle eine PIN"
+   Modified 1792163457
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{C527734DC782CB74}" {
+   Id "ELIFE-Phone_Setup_Pin_Body"
+   Target_en_us "4 digits, typed on the keypad or your keyboard. You'll need it to unlock this phone."
+   Target_de_de "4 Ziffern, über das Ziffernfeld oder deine Tastatur. Du brauchst sie, um dieses Handy zu entsperren."
+   Modified 1792163457
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{6ED2181E678E0D8E}" {
+   Id "ELIFE-Phone_Settings_PinNone"
+   Target_en_us "Off"
+   Target_de_de "Aus"
+   Modified 1792163457
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{465B7DFDC0931437}" {
+   Id "ELIFE-Phone_Setup_GetStarted"
+   Target_en_us "Get started"
+   Target_de_de "Los geht's"
+   Modified 1792164471
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{8391E82D70A7C447}" {
+   Id "ELIFE-Phone_Setup_Next"
+   Target_en_us "Next"
+   Target_de_de "Weiter"
+   Modified 1792164471
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{7D1E71AB681C4DB2}" {
+   Id "ELIFE-Phone_Setup_GotIt"
+   Target_en_us "Got it"
+   Target_de_de "Verstanden"
+   Modified 1792164471
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{C60031EF70A08628}" {
+   Id "ELIFE-Phone_Setup_TourCount"
+   Target_en_us "%1 of %2"
+   Target_de_de "%1 von %2"
+   Modified 1792164471
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{4F602F9D3449BA0E}" {
+   Id "ELIFE-Phone_Setup_Tour0_Title"
+   Target_en_us "Make it yours"
+   Target_de_de "Mach es zu deinem"
+   Modified 1792164471
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{FE36D6C72FFCA35F}" {
+   Id "ELIFE-Phone_Setup_Tour0_Line"
+   Target_en_us "Hold any app or widget to move it. Hold an empty spot to add widgets or change the wallpaper."
+   Target_de_de "Halte eine App oder ein Widget gedrückt, um es zu verschieben. Halte eine freie Stelle, um Widgets hinzuzufügen oder das Hintergrundbild zu ändern."
+   Modified 1792164471
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{227148CA922EC1A6}" {
+   Id "ELIFE-Phone_Setup_Tour1_Title"
+   Target_en_us "Never miss a message"
+   Target_de_de "Keine Nachricht verpassen"
+   Modified 1792164471
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{25D9982939710287}" {
+   Id "ELIFE-Phone_Setup_Tour1_Line"
+   Target_en_us "New messages land up here. Tap the bar to see them all. Try it."
+   Target_de_de "Neue Nachrichten landen hier oben. Tippe auf die Leiste, um alle zu sehen. Probier's aus."
+   Modified 1792164471
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{1A690EA2EA23206F}" {
+   Id "ELIFE-Phone_Setup_Tour2_Title"
+   Target_en_us "Home in one tap"
+   Target_de_de "Mit einem Tipp zurück"
+   Modified 1792164471
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{3E21D537F22BFEAC}" {
+   Id "ELIFE-Phone_Setup_Tour2_Line"
+   Target_en_us "This bar takes you home from any app. From home, it puts the phone away. Try it."
+   Target_de_de "Diese Leiste bringt dich aus jeder App zum Startbildschirm. Von dort steckst du das Handy weg. Probier's aus."
+   Modified 1792164471
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{3B0A2C88258569F0}" {
+   Id "ELIFE-Phone_Nav_Cancel"
+   Target_en_us "Cancel"
+   Target_de_de "Abbrechen"
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{F2044D8B7CC847A4}" {
+   Id "ELIFE-Phone_Pin_Confirm_Title"
+   Target_en_us "Confirm your PIN"
+   Target_de_de "PIN bestätigen"
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{B0D4045C0100A4B7}" {
+   Id "ELIFE-Phone_Pin_Confirm_Body"
+   Target_en_us "Enter it once more."
+   Target_de_de "Gib sie noch einmal ein."
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{0D094708A3C2A73F}" {
+   Id "ELIFE-Phone_Pin_Mismatch"
+   Target_en_us "The PINs didn't match. Try again."
+   Target_de_de "Die PINs stimmen nicht überein. Versuch es noch einmal."
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{E69669DB8C0D93F8}" {
+   Id "ELIFE-Phone_Pin_Failed"
+   Target_en_us "That didn't work. Try again."
+   Target_de_de "Das hat nicht geklappt. Versuch es noch einmal."
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{1545B28F504DA1AE}" {
+   Id "ELIFE-Phone_Pin_Saving"
+   Target_en_us "Saving…"
+   Target_de_de "Wird gespeichert…"
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{077B6DC7A9C0AEB0}" {
+   Id "ELIFE-Phone_Pin_NoPin_Line"
+   Target_en_us "Anyone who picks up this phone can open it and read your messages."
+   Target_de_de "Jeder, der dieses Handy in die Hand nimmt, kann es öffnen und deine Nachrichten lesen."
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{CD7825B6681A70B3}" {
+   Id "ELIFE-Phone_Setup_NoPin"
+   Target_en_us "Continue without PIN"
+   Target_de_de "Ohne PIN fortfahren"
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{52FC3D2B75DABCEB}" {
+   Id "ELIFE-Phone_Setup_NoPin_Title"
+   Target_en_us "Continue without a PIN?"
+   Target_de_de "Ohne PIN fortfahren?"
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{29787AF2CFCD4A43}" {
+   Id "ELIFE-Phone_Setup_NoPin_Line"
+   Target_en_us "Anyone who picks up this phone can open it and read your messages. You can set a PIN later in Settings."
+   Target_de_de "Jeder, der dieses Handy in die Hand nimmt, kann es öffnen und deine Nachrichten lesen. Du kannst später in den Einstellungen eine PIN festlegen."
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{749FE933EDD49160}" {
+   Id "ELIFE-Phone_Setup_SetPin"
+   Target_en_us "Set a PIN"
+   Target_de_de "PIN festlegen"
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{2AD2E1B6C21220D2}" {
+   Id "ELIFE-Phone_Settings_ChangePin"
+   Target_en_us "Change PIN"
+   Target_de_de "PIN ändern"
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{1AF32E283CA1C026}" {
+   Id "ELIFE-Phone_Settings_SetPin"
+   Target_en_us "Set PIN"
+   Target_de_de "PIN festlegen"
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{2379F782C7F51B83}" {
+   Id "ELIFE-Phone_Settings_NewPin_Body"
+   Target_en_us "Enter a new 4-digit PIN."
+   Target_de_de "Gib eine neue 4-stellige PIN ein."
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{14276F5A5040CF9C}" {
+   Id "ELIFE-Phone_Settings_TurnOffPin"
+   Target_en_us "Turn off PIN"
+   Target_de_de "PIN deaktivieren"
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{E4C4C210DC2E3D16}" {
+   Id "ELIFE-Phone_Settings_TurnOffPin_Title"
+   Target_en_us "Turn off PIN?"
+   Target_de_de "PIN deaktivieren?"
+   Modified 1792181955
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{B45C6DBD2E96105C}" {
+   Id "ELIFE-Phone_Settings_KeepPin"
+   Target_en_us "Keep PIN"
+   Target_de_de "PIN behalten"
+   Modified 1792181955
    Author "Robin"
    LastChanged "Robin"
   }
