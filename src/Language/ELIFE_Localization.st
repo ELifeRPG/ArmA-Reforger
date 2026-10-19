@@ -2,6 +2,46 @@ StringTable {
  TargetPrefix "Target_"
  ItemClassName "CustomStringTableItem"
  Items {
+  CustomStringTableItem "{EE5BA054EB24BE4A}" {
+   Id "ELIFE-Emote_FollowMe"
+   Target_en_us "Follow me"
+   Target_de_de "Mir nach"
+   Modified 1792442610
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{85CAEBE45FA9759A}" {
+   Id "ELIFE-Emote_Point"
+   Target_en_us "Point"
+   Target_de_de "Zeigen"
+   Modified 1792442610
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{AD9305DA77382344}" {
+   Id "ELIFE-Emote_SitChair"
+   Target_en_us "Sit on chair"
+   Target_de_de "Auf Stuhl setzen"
+   Modified 1792442610
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{BB1CBE7770B84A5C}" {
+   Id "ELIFE-Emote_Stop"
+   Target_en_us "Stop"
+   Target_de_de "Stopp"
+   Modified 1792442610
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{CFC6C89B98571225}" {
+   Id "ELIFE-Emote_Wait"
+   Target_en_us "Wait"
+   Target_de_de "Warten"
+   Modified 1792442610
+   Author "Robin"
+   LastChanged "Robin"
+  }
   CustomStringTableItem "{59A49683D01674F6}" {
    Id "ELIFE-Faction_CitizenFaction_Name"
    Target_en_us "Citizens"

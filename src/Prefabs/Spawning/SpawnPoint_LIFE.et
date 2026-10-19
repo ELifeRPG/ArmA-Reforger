@@ -8,7 +8,6 @@ SCR_SpawnPoint {
    MainType Spawnpoint
   }
   RplComponent "{596559E5AD4DD828}" {
-   "Self Insert" 0
    Streamable Disabled
   }
  }
