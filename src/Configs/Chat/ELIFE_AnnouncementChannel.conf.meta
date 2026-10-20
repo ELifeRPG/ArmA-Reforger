@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5827F4331FD1D36B}Configs/Chat/ELIFE_AnnouncementChannel.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
