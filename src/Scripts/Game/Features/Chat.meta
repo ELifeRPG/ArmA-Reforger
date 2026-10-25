@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{8EDF22CF0AFDEC41}Scripts/Game/Features/Chat"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,6 +1,9 @@
 ELIFE_GameMode : "{0F307326459A1395}Prefabs/MP/Modes/GameMode_Base.et" {
  ID "597F1CE401B0CCF5"
  components {
+  SCR_CommandingManagerComponent "{60805FAC3F9F11D9}" {
+   m_sCommandsConfigPath "{E00271487BABACFC}Configs/Emotes/ELIFE_EmoteCommands.conf"
+  }
   SCR_GameOverScreenManagerComponent "{56DEC646298AD219}" {
    m_GameOverScreenConfig SCR_GameOverScreenConfig "{56DEC6462FFDD82D}" : "{651583FFFB7FC765}Configs/GameOverScreen/GameOverScreensConfig.conf" {
    }
