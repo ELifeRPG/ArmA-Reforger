@@ -240,6 +240,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected ref map<string, string> m_mData = new map<string, string>();
 	protected ref map<string, ELIFE_EPhoneDataStatus> m_mDataStatus = new map<string, ELIFE_EPhoneDataStatus>();
 
+	//! Owner-side only; bystanders get redacted filler text.
+	protected ref ELIFE_PhoneMessageFilter m_MessageFilter;
+
 	//! Fires with the data key whenever this machine's copy or its status changes - apps re-render off it.
 	ref ScriptInvoker m_OnDataChanged = new ScriptInvoker();
 
@@ -2232,7 +2235,36 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Message bodies are player-written, so the owner's copy goes through the profanity filter first.
 	protected void ApplyData(string key, string json)
+	{
+		if (key == DATA_MESSAGES && json != "" && IsLocalCharacterOwner())
+		{
+			if (!m_MessageFilter)
+			{
+				m_MessageFilter = new ELIFE_PhoneMessageFilter();
+				m_MessageFilter.m_Phone = this;
+			}
+
+			m_MessageFilter.Filter(json);
+			return;
+		}
+
+		SetLocalData(key, json);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnMessagesFiltered(string json)
+	{
+		// The phone may have changed hands while filtering; don't overwrite the newer redacted copy.
+		if (!IsLocalCharacterOwner())
+			return;
+
+		SetLocalData(DATA_MESSAGES, json);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetLocalData(string key, string json)
 	{
 		//! Decided before the swap - the comparison is against what this machine was already holding.
 		bool announce = key == DATA_MESSAGES && ShouldAnnounce(json);
