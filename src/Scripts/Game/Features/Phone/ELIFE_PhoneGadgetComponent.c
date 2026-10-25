@@ -286,7 +286,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	ref ScriptInvoker m_OnHubOpenChanged = new ScriptInvoker();
 
 	//! This phone's home grid (see ELIFE_PhoneHomeLayout), replicated so everyone sees the same screen.
-	//! Server memory only for now: a restart resets it to the default layout.
+	//! Stored on the Bridge with the wallpaper and Do Not Disturb - see SavePreferences().
 	[RplProp(onRplName: "OnHomeLayoutUpdated")]
 	protected string m_sHomeLayout;
 
@@ -298,19 +298,36 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//! Generous for every app and card the catalog could hold.
 	protected const int HOME_LAYOUT_MAX_LENGTH = 1024;
 
-	//! Per-phone look and behaviour, replicated like the home layout. Server memory only for now.
+	//! Per-phone look and behaviour, replicated and stored like the home layout.
 	[RplProp(onRplName: "OnPersonalizationUpdated")]
 	protected string m_sWallpaper;
 
 	[RplProp(onRplName: "OnPersonalizationUpdated")]
 	protected bool m_bDoNotDisturb;
 
-	//! Comma-separated contact ids, most recently starred last.
+	//! Comma-separated contact ids, most recently starred last. Server memory only: a restart forgets them.
 	[RplProp(onRplName: "OnPersonalizationUpdated")]
 	protected string m_sFavourites;
 
 	//! Wallpaper, Do Not Disturb or favourites changed.
 	ref ScriptInvoker m_OnPersonalizationChanged = new ScriptInvoker();
+
+	//! Server-only. A burst of edits is saved as one write, this long after the last of them.
+	protected const int PREFERENCES_SAVE_DELAY_MS = 2000;
+
+	//! Server-only. A save the Bridge never answered is retried after this.
+	protected const int PREFERENCES_RETRY_MS = 30000;
+
+	//! Server-only. The Bridge's copy has been read (or it had none) and may now be overwritten.
+	protected bool m_bPreferencesLoaded;
+	protected bool m_bPreferencesDirty;
+	protected ref ELIFE_PhonePreferencesCallback m_PreferencesLoadCallback;
+	protected ref ELIFE_PhonePreferencesCallback m_PreferencesSaveCallback;
+
+	//! Server-only. Edited before the Bridge's copy arrived, so that copy must not overwrite them.
+	protected bool m_bLayoutEditedEarly;
+	protected bool m_bWallpaperEditedEarly;
+	protected bool m_bDndEditedEarly;
 
 	//! threadId -> unread count at dismissal; a higher count notifies again. Local only, never replicated.
 	protected ref map<string, int> m_mDismissedNotifications = new map<string, int>();
@@ -374,6 +391,11 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	override void OnDelete(IEntity owner)
 	{
 		StopPoll();
+
+		//! Last chance for a pending save; no answer can reach this phone any more, so none is awaited.
+		GetGame().GetCallqueue().Remove(SavePreferences);
+		if (Replication.IsServer() && m_bPreferencesDirty && m_bPreferencesLoaded)
+			SendPreferences(null, "");
 
 		super.OnDelete(owner);
 	}
@@ -514,6 +536,11 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		//! onRplName doesn't fire on the authority itself - see OnPhoneIdUpdated().
 		OnHomeLayoutUpdated();
 		Replication.BumpMe();
+
+		if (!m_bPreferencesLoaded)
+			m_bLayoutEditedEarly = true;
+
+		MarkPreferencesChanged();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -580,6 +607,11 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		m_sWallpaper = wallpaperId;
 		OnPersonalizationUpdated();
 		Replication.BumpMe();
+
+		if (!m_bPreferencesLoaded)
+			m_bWallpaperEditedEarly = true;
+
+		MarkPreferencesChanged();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -592,6 +624,11 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		m_bDoNotDisturb = enabled;
 		OnPersonalizationUpdated();
 		Replication.BumpMe();
+
+		if (!m_bPreferencesLoaded)
+			m_bDndEditedEarly = true;
+
+		MarkPreferencesChanged();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -626,6 +663,176 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		m_sFavourites = joined;
 		OnPersonalizationUpdated();
 		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Preferences on the Bridge - home layout, wallpaper, Do Not Disturb
+	//------------------------------------------------------------------------------------------------
+
+	//! Server-only. Read once per phone per session, after the first power-on, so a phone the server
+	//! rebuilt comes back as it was left.
+	protected void LoadPreferences()
+	{
+		ELIFE_Api api = ELIFE_Api.GetInstance();
+		if (m_bPreferencesLoaded || m_PreferencesLoadCallback || m_sPhoneId == "" || !api)
+			return;
+
+		m_PreferencesLoadCallback = api.GetPhonePreferences(m_sPhoneId, this, "OnPreferencesLoaded");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnPreferencesLoaded(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
+	{
+		int httpCode = HttpCodeOf(m_PreferencesLoadCallback);
+		m_PreferencesLoadCallback = null;
+		NoteConnectivity(status, httpCode);
+
+		ELIFE_PhonePreferences preferences = ELIFE_PhonePreferences.Cast(data);
+		if (status == ELIFE_EApiStatusCode.SUCCESS && preferences)
+		{
+			ApplyPreferences(preferences);
+		}
+		else
+		{
+			Print(string.Format("ELIFE_PhoneGadgetComponent | preferences not loaded, HTTP=%1", httpCode), LogLevel.WARNING);
+
+			//! The stored copy may still exist, so edits wait and the next edit or Retry reads again.
+			if (httpCode == 0 || httpCode >= 500)
+				return;
+		}
+
+		//! Anything else means there is nothing to read, so saving may start.
+		m_bPreferencesLoaded = true;
+		m_bLayoutEditedEarly = false;
+		m_bWallpaperEditedEarly = false;
+		m_bDndEditedEarly = false;
+
+		if (m_bPreferencesDirty)
+			ScheduleSavePreferences(PREFERENCES_SAVE_DELAY_MS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Takes what the Bridge stored for every field not edited since; empty values are the defaults.
+	protected void ApplyPreferences(notnull ELIFE_PhonePreferences preferences)
+	{
+		bool layoutChanged = false;
+		bool personalizationChanged = false;
+
+		//! A newer format than this build reads would be misplaced, so the current layout stays.
+		if (preferences.layoutVersion > ELIFE_PhoneHomeLayout.FORMAT_VERSION)
+		{
+			Print(string.Format("ELIFE_PhoneGadgetComponent | stored home layout is format %1, this build reads %2", preferences.layoutVersion, ELIFE_PhoneHomeLayout.FORMAT_VERSION), LogLevel.WARNING);
+		}
+		else if (!m_bLayoutEditedEarly && preferences.homeLayout != m_sHomeLayout && preferences.homeLayout.Length() <= HOME_LAYOUT_MAX_LENGTH)
+		{
+			m_sHomeLayout = preferences.homeLayout;
+			layoutChanged = true;
+		}
+
+		//! An id this build doesn't know falls back to the default, like an unset one.
+		string wallpaper = preferences.wallpaper;
+		if (wallpaper != "" && !ELIFE_PhoneWallpapers.Find(wallpaper))
+			wallpaper = "";
+
+		if (!m_bWallpaperEditedEarly && wallpaper != m_sWallpaper)
+		{
+			m_sWallpaper = wallpaper;
+			personalizationChanged = true;
+		}
+
+		if (!m_bDndEditedEarly && preferences.doNotDisturb != m_bDoNotDisturb)
+		{
+			m_bDoNotDisturb = preferences.doNotDisturb;
+			personalizationChanged = true;
+		}
+
+		if (!layoutChanged && !personalizationChanged)
+			return;
+
+		//! onRplName doesn't fire on the authority itself - see OnPhoneIdUpdated().
+		if (layoutChanged)
+			OnHomeLayoutUpdated();
+
+		if (personalizationChanged)
+			OnPersonalizationUpdated();
+
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-only. Saving waits until the Bridge's copy has been read, so it can't overwrite it with defaults.
+	protected void MarkPreferencesChanged()
+	{
+		m_bPreferencesDirty = true;
+
+		if (m_bPreferencesLoaded)
+			ScheduleSavePreferences(PREFERENCES_SAVE_DELAY_MS);
+		else if (m_bBackendPoweredOn)
+			LoadPreferences();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ScheduleSavePreferences(int delayMs)
+	{
+		GetGame().GetCallqueue().Remove(SavePreferences);
+		GetGame().GetCallqueue().CallLater(SavePreferences, delayMs, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One write at a time; an edit made while it is in flight is saved once it answers.
+	protected void SavePreferences()
+	{
+		if (!m_bPreferencesDirty || !m_bPreferencesLoaded || m_PreferencesSaveCallback || m_sPhoneId == "")
+			return;
+
+		m_PreferencesSaveCallback = SendPreferences(this, "OnPreferencesSaved");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every field, every time: the generated request can't leave one out, and this server holds them all.
+	//! Sent as the registered owner, so whoever is holding the phone can rearrange it.
+	protected ELIFE_PhonePreferencesCallback SendPreferences(Managed instance, string functionName)
+	{
+		ELIFE_Api api = ELIFE_Api.GetInstance();
+		if (!api || m_sPhoneId == "")
+			return null;
+
+		ELIFE_UpdatePhonePreferencesRequest request = new ELIFE_UpdatePhonePreferencesRequest();
+		request.characterId = m_sServerOwnerCharacterId;
+		request.pin = m_sServerPin;
+		request.layoutVersion = ELIFE_PhoneHomeLayout.FORMAT_VERSION;
+		request.homeLayout = m_sHomeLayout;
+		request.wallpaper = m_sWallpaper;
+		request.doNotDisturb = m_bDoNotDisturb;
+
+		m_bPreferencesDirty = false;
+		return api.UpdatePhonePreferences(request, m_sPhoneId, instance, functionName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The answer is the stored copy of what was sent, so there is nothing to apply.
+	void OnPreferencesSaved(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
+	{
+		int httpCode = HttpCodeOf(m_PreferencesSaveCallback);
+		m_PreferencesSaveCallback = null;
+		NoteConnectivity(status, httpCode);
+
+		if (status != ELIFE_EApiStatusCode.SUCCESS)
+		{
+			Print(string.Format("ELIFE_PhoneGadgetComponent | preferences not saved, HTTP=%1", httpCode), LogLevel.WARNING);
+
+			//! Unreachable or failing comes back later; a rejection would only be rejected again.
+			if (httpCode == 0 || httpCode >= 500)
+			{
+				m_bPreferencesDirty = true;
+				ScheduleSavePreferences(PREFERENCES_RETRY_MS);
+			}
+
+			return;
+		}
+
+		if (m_bPreferencesDirty)
+			ScheduleSavePreferences(PREFERENCES_SAVE_DELAY_MS);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -963,6 +1170,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		m_bBackendPoweredOn = true;
 
+		LoadPreferences();
+
 		//! Before the poll: an owner fetch always answers, a poll that finds nothing new stays silent.
 		RefetchFailedData();
 
@@ -1111,6 +1320,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			return;
 		}
 
+		LoadPreferences();
 		RefetchFailedData();
 	}
 

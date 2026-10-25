@@ -44,6 +44,23 @@ modded class ELIFE_Api
 		return cbx;
 	}
 
+	ELIFE_PhonePreferencesCallback GetPhonePreferences(string phoneId, Managed instance = null, string functionName = "")
+	{
+		ELIFE_PhonePreferencesCallback cbx = new ELIFE_PhonePreferencesCallback;
+		cbx.SetCallback(instance, functionName, phoneId);
+		GetElifeApi().GET(cbx, string.Format("phones/%1/preferences", phoneId));
+		return cbx;
+	}
+
+	ELIFE_PhonePreferencesCallback UpdatePhonePreferences(ELIFE_UpdatePhonePreferencesRequest body, string phoneId, Managed instance = null, string functionName = "")
+	{
+		ELIFE_PhonePreferencesCallback cbx = new ELIFE_PhonePreferencesCallback;
+		cbx.SetCallback(instance, functionName, phoneId);
+		body.Pack();
+		GetElifeApi().POST(cbx, string.Format("phones/%1/preferences", phoneId), body.AsString());
+		return cbx;
+	}
+
 	ELIFE_BaseRestCallback ListPhoneApps(string phoneId, Managed instance = null, string functionName = "")
 	{
 		ELIFE_BaseRestCallback cbx = new ELIFE_BaseRestCallback;
@@ -119,6 +136,15 @@ modded class ELIFE_Api
 		return cbx;
 	}
 
+	ELIFE_BaseRestCallback RenamePhoneContact(ELIFE_RenamePhoneContactRequest body, string phoneId, string contactId, Managed instance = null, string functionName = "")
+	{
+		ELIFE_BaseRestCallback cbx = new ELIFE_BaseRestCallback;
+		cbx.SetCallback(instance, functionName, phoneId);
+		body.Pack();
+		GetElifeApi().POST(cbx, string.Format("phones/%1/apps/contacts/entries/%2", phoneId, contactId), body.AsString());
+		return cbx;
+	}
+
 	ELIFE_BaseRestCallback DeletePhoneContact(string phoneId, string contactId, Managed instance = null, string functionName = "")
 	{
 		ELIFE_BaseRestCallback cbx = new ELIFE_BaseRestCallback;
@@ -191,6 +217,29 @@ modded class ELIFE_Api
 		ELIFE_BaseRestCallback cbx = new ELIFE_BaseRestCallback;
 		cbx.SetCallback(instance, functionName, phoneId);
 		GetElifeApi().DELETE(cbx, string.Format("phones/%1/apps/messages/blocks/%2", phoneId, number), "");
+		return cbx;
+	}
+
+	ELIFE_BaseRestCallback ListPhoneNotifications(string phoneId, string appKey, Managed instance = null, string functionName = "")
+	{
+		ELIFE_BaseRestCallback cbx = new ELIFE_BaseRestCallback;
+		cbx.SetCallback(instance, functionName, phoneId);
+		string requestRoute = string.Format("phones/%1/notifications", phoneId);
+		string requestQuery = "";
+		if (appKey != "")
+			requestQuery += string.Format("&appKey=%1", appKey);
+		if (requestQuery != "")
+			requestRoute += "?" + requestQuery.Substring(1, requestQuery.Length() - 1);
+		GetElifeApi().GET(cbx, requestRoute);
+		return cbx;
+	}
+
+	ELIFE_BaseRestCallback AckPhoneNotifications(ELIFE_AckPhoneNotificationsRequest body, string phoneId, Managed instance = null, string functionName = "")
+	{
+		ELIFE_BaseRestCallback cbx = new ELIFE_BaseRestCallback;
+		cbx.SetCallback(instance, functionName, phoneId);
+		body.Pack();
+		GetElifeApi().POST(cbx, string.Format("phones/%1/notifications/ack", phoneId), body.AsString());
 		return cbx;
 	}
 }

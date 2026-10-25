@@ -8,6 +8,7 @@ class ELIFE_PhoneSummary : JsonApiStruct
 	bool isPoweredOn;
 	ref array<string> blockedNumbers = {};
 	ref array<string> installedApps = {};
+	ELIFE_PhonePreferences preferences;
 
 	void ELIFE_PhoneSummary()
 	{
@@ -18,5 +19,6 @@ class ELIFE_PhoneSummary : JsonApiStruct
 		RegV("isPoweredOn");
 		RegV("blockedNumbers");
 		RegV("installedApps");
+		RegV("preferences");
 	}
 }

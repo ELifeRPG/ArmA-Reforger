@@ -62,6 +62,9 @@ class ELIFE_PhoneHomeLayout
 	static const int COLUMNS = 4;
 	static const int ROWS = 7;
 
+	//! Stored with the layout on the Bridge. Bump it when the saved format changes, and read older ones.
+	static const int FORMAT_VERSION = 1;
+
 	static const int FULL = COLUMNS;
 	static const int HALF = COLUMNS / 2;
 
