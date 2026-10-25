@@ -174,6 +174,7 @@ class ELIFE_PhoneStoreApp : ELIFE_PhoneAppBase
 		//! Draw what we already have, then refresh - the fetch lands later via OnDataChanged.
 		Fill();
 		m_Phone.RequestData(ELIFE_PhoneGadgetComponent.DATA_APPS);
+		m_Phone.RequestData(ELIFE_PhoneGadgetComponent.DATA_STORE_APPS);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -245,14 +246,19 @@ class ELIFE_PhoneStoreApp : ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	protected void OnDataChanged(string key)
 	{
-		if (key == ELIFE_PhoneGadgetComponent.DATA_APPS)
+		if (key == ELIFE_PhoneGadgetComponent.DATA_APPS || key == ELIFE_PhoneGadgetComponent.DATA_STORE_APPS)
 			Fill();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void Fill()
 	{
-		ApplyDataStatus(ELIFE_PhoneGadgetComponent.DATA_APPS);
+		//! The installed list first, then the store's - Available needs both.
+		string loadingKey = ELIFE_PhoneGadgetComponent.DATA_APPS;
+		if (m_Phone && m_Phone.HasInstalledApps())
+			loadingKey = ELIFE_PhoneGadgetComponent.DATA_STORE_APPS;
+
+		ApplyDataStatus(loadingKey);
 
 		if (m_aActionClicks)
 			m_aActionClicks.Clear();
@@ -273,6 +279,11 @@ class ELIFE_PhoneStoreApp : ELIFE_PhoneAppBase
 		bool known = m_Phone.HasInstalledApps();
 
 		bool loadFailed = !known && m_Phone.GetDataStatus(ELIFE_PhoneGadgetComponent.DATA_APPS) == ELIFE_EPhoneDataStatus.ERROR;
+
+		string storeJson = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_STORE_APPS);
+		if (storeJson == "" && m_Phone.GetDataStatus(ELIFE_PhoneGadgetComponent.DATA_STORE_APPS) == ELIFE_EPhoneDataStatus.ERROR)
+			loadFailed = true;
+
 		if (loadFailed)
 			ShowError(ERROR_LOAD);
 		else if (m_sError == ERROR_LOAD)
@@ -291,7 +302,7 @@ class ELIFE_PhoneStoreApp : ELIFE_PhoneAppBase
 				continue;
 			else if (m_Phone.IsAppInstalled(app.m_sAppKey))
 				installed.Insert(app);
-			else
+			else if (m_Phone.IsAppOffered(app.m_sAppKey))
 				available.Insert(app);
 		}
 
@@ -420,6 +431,9 @@ class ELIFE_PhoneStoreApp : ELIFE_PhoneAppBase
 		ShowError("");
 
 		bool installed = m_Phone.IsAppInstalled(appKey);
+		if (!installed && !m_Phone.IsAppOffered(appKey))
+			return;
+
 		if (installed && !ELIFE_PhoneAppCatalog.SameKey(m_sArmedKey, appKey))
 		{
 			m_sArmedKey = appKey;
@@ -578,6 +592,10 @@ class ELIFE_PhoneStoreApp : ELIFE_PhoneAppBase
 
 		//! A removal in flight keeps showing Open until the push takes the app away.
 		if (pending && !m_bPendingInstall)
+			visible = false;
+
+		//! Get only for what the store offers; the phone removes an installed app it dropped on its own.
+		if (!installed && !pending && !m_Phone.IsAppOffered(app.m_sAppKey))
 			visible = false;
 
 		if (m_wDetailActionSize)

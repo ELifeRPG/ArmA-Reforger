@@ -216,6 +216,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected ref array<string> m_aMarkReadQueue = {};
 	protected int m_iSystemInstallsPending;
 	protected bool m_bSystemInstallLanded;
+	protected int m_iDroppedUninstallsPending;
+	protected bool m_bDroppedUninstallLanded;
 
 	//! The lock screen's keypad submits at exactly this many digits, so a PIN of any other length could never be entered.
 	static const int PIN_LENGTH = 4;
@@ -227,6 +229,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 	//! Which Bridge apps are installed. Built-in apps aren't listed - see ELIFE_PhoneAppCatalog.
 	static const string DATA_APPS = "apps";
+
+	//! What the backend's store offers to install. It decides which downloadable apps are visible at all.
+	static const string DATA_STORE_APPS = "store-apps";
 
 	//! Followed by the bankAccountId - one statement per key.
 	static const string DATA_BANK_STATEMENT_PREFIX = "bank-statement:";
@@ -1183,8 +1188,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		//! Before the poll: an owner fetch always answers, a poll that finds nothing new stays silent.
 		RefetchFailedData();
 
-		//! The home grid and the poll both follow what's installed.
+		//! The home grid and the poll both follow what's installed, and the store decides what may stay.
 		FetchData(DATA_APPS);
+		FetchData(DATA_STORE_APPS);
 
 		//! First chance to poll — don't wait a full idle interval for the opening screen to have mail.
 		ReschedulePoll();
@@ -1837,6 +1843,25 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! False until the store list lands, so an app is never offered before the backend says so.
+	bool IsAppOffered(string appKey)
+	{
+		string json;
+		ELIFE_PhoneDataEntry entry;
+		if (Replication.IsServer() && m_mServerData.Find(DATA_STORE_APPS, entry))
+			json = entry.m_sReal;
+		else
+			json = GetData(DATA_STORE_APPS);
+
+		if (json == "")
+			return false;
+
+		ELIFE_StoreAppListDto store = new ELIFE_StoreAppListDto();
+		store.ExpandFromRAW(json);
+		return store.Offers(appKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! OS screens and system apps always are; downloadable apps only while installed.
 	bool IsAppAvailable(EPhoneScreenState state)
 	{
@@ -1975,6 +2000,61 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server-only. The backend's store decides what may stay installed, so a downloadable app it no longer
+	//! offers is removed once both lists have landed.
+	protected void UninstallDroppedApps()
+	{
+		ELIFE_Api api = ELIFE_Api.GetInstance();
+		if (!api || m_sPhoneId == "" || m_iDroppedUninstallsPending > 0)
+			return;
+
+		ELIFE_PhoneDataEntry installedEntry;
+		ELIFE_PhoneDataEntry storeEntry;
+		if (!m_mServerData.Find(DATA_APPS, installedEntry) || installedEntry.m_sReal == "")
+			return;
+
+		if (!m_mServerData.Find(DATA_STORE_APPS, storeEntry) || storeEntry.m_sReal == "")
+			return;
+
+		ELIFE_PhoneAppListDto installed = new ELIFE_PhoneAppListDto();
+		installed.ExpandFromRAW(installedEntry.m_sReal);
+
+		ELIFE_StoreAppListDto store = new ELIFE_StoreAppListDto();
+		store.ExpandFromRAW(storeEntry.m_sReal);
+
+		foreach (ELIFE_PhoneApp app : installed.items)
+		{
+			if (!app || app.isSystemApp || store.Offers(app.key))
+				continue;
+
+			ELIFE_PhoneAppEntry known = ELIFE_PhoneAppCatalog.FindByKey(app.key);
+			if (known && known.IsSystem())
+				continue;
+
+			m_iDroppedUninstallsPending++;
+			api.UninstallPhoneApp(m_sPhoneId, app.key, m_sServerOwnerCharacterId, m_sServerPin, this, "OnDroppedAppUninstalled");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Refetches once the last one answers, so home and the Store drop the app. A failure waits for the next list.
+	void OnDroppedAppUninstalled(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
+	{
+		m_iDroppedUninstallsPending--;
+
+		if (status == ELIFE_EApiStatusCode.SUCCESS)
+			m_bDroppedUninstallLanded = true;
+		else
+			Print("ELIFE_PhoneGadgetComponent | removing an app the store dropped failed", LogLevel.WARNING);
+
+		if (m_iDroppedUninstallsPending > 0 || !m_bDroppedUninstallLanded)
+			return;
+
+		m_bDroppedUninstallLanded = false;
+		FetchData(DATA_APPS, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Self-applies locally for the owner too - RplRcver.Owner RPCs don't self-deliver on a listen server.
 	protected void NotifyAppInstallResult(string appKey, bool installed, bool succeeded)
 	{
@@ -2034,6 +2114,11 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			m_mPendingFetches.Set(key, true);
 			m_mFetchCallbacks.Set(key, api.ListPhoneApps(m_sPhoneId, this, "OnAppsFetched"));
 		}
+		else if (key == DATA_STORE_APPS)
+		{
+			m_mPendingFetches.Set(key, true);
+			m_mFetchCallbacks.Set(key, api.ListStoreApps(m_sPhoneId, this, "OnStoreAppsFetched"));
+		}
 		else if (key == DATA_BANK_ACCOUNTS && m_sServerOwnerCharacterId != "")
 		{
 			//! The registered owner's accounts - like every other app here, it shows the phone's data, not the holder's.
@@ -2070,6 +2155,12 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	void OnAppsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
 	{
 		OnListFetched(status, DATA_APPS, new ELIFE_PhoneAppListDto());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnStoreAppsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
+	{
+		OnListFetched(status, DATA_STORE_APPS, new ELIFE_StoreAppListDto());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2227,6 +2318,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 			LeaveUninstalledApp();
 			InstallMissingSystemApps();
 		}
+
+		if (key == DATA_APPS || key == DATA_STORE_APPS)
+			UninstallDroppedApps();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2401,8 +2495,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		if (realJson == "")
 			return "";
 
-		//! The installed set is on the home grid anyway.
-		if (key == DATA_APPS)
+		//! The installed set is on the home grid anyway, and the store offers the same to everyone.
+		if (key == DATA_APPS || key == DATA_STORE_APPS)
 			return realJson;
 
 		JsonApiStruct redacted;
