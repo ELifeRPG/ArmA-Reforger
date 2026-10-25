@@ -1562,5 +1562,37 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
+  CustomStringTableItem "{6D6AED7E9C42BE3D}" {
+   Id "ELIFE-Phone_Contacts_Edit"
+   Target_en_us "Edit"
+   Target_de_de "Bearbeiten"
+   Modified 1792962516
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{8C0AB00F29378A6E}" {
+   Id "ELIFE-Phone_Contacts_Edit_Title"
+   Target_en_us "Edit Contact"
+   Target_de_de "Kontakt bearbeiten"
+   Modified 1792962516
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{42B4E419CF333D78}" {
+   Id "ELIFE-Phone_Contacts_Form_InvalidName"
+   Target_en_us "That name can't be used."
+   Target_de_de "Dieser Name kann nicht verwendet werden."
+   Modified 1792962516
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{C237B0EBB73551DC}" {
+   Id "ELIFE-Phone_Contacts_Edit_Gone"
+   Target_en_us "This contact no longer exists."
+   Target_de_de "Diesen Kontakt gibt es nicht mehr."
+   Modified 1792962516
+   Author "Robin"
+   LastChanged "Robin"
+  }
  }
 }

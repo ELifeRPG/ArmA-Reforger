@@ -85,6 +85,27 @@ class ELIFE_ContactFavouriteClick : ScriptedWidgetEventHandler
 }
 
 //------------------------------------------------------------------------------------------------
+class ELIFE_ContactEditClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneContactsApp m_App;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneContactsApp app)
+	{
+		m_App = app;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App)
+			m_App.EditOpenContact();
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class ELIFE_ContactSaveClick : ScriptedWidgetEventHandler
 {
 	protected ELIFE_PhoneContactsApp m_App;
@@ -155,9 +176,14 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	protected const string ICON_FAVOURITE = "favourite";
 	protected const string ICON_FAVOURITE_OFF = "favouriteOff";
 
-	//! Sub-states: "" index, SUBSTATE_FORM add form, SUBSTATE_DETAIL_PREFIX + contactId detail page.
+	//! Sub-states: "" index, SUBSTATE_FORM add form, SUBSTATE_DETAIL_PREFIX + contactId detail page,
+	//! SUBSTATE_EDIT_PREFIX + contactId the same form renaming that contact.
 	protected const string SUBSTATE_FORM = "new";
 	static const string SUBSTATE_DETAIL_PREFIX = "c:";
+	protected const string SUBSTATE_EDIT_PREFIX = "edit:";
+
+	//! The number can't change on a rename, so its field is shown dimmed.
+	protected const float LOCKED_FIELD_OPACITY = 0.5;
 
 	//! Prefilled form for an unsaved number; built by Messages.
 	static const string SUBSTATE_FORM_NUMBER_PREFIX = "new:";
@@ -205,6 +231,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 
 	protected ref ELIFE_ContactAddClick m_AddClick;
 	protected ref ELIFE_ContactSaveClick m_SaveClick;
+	protected ref ELIFE_ContactEditClick m_EditClick;
 	protected ref ELIFE_ContactMessageClick m_MessageClick;
 
 	//! Starred contacts sit on the home screen's favourites widget.
@@ -235,6 +262,10 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	protected ref ELIFE_PhoneFieldFocus m_NameFocus;
 
 	protected bool m_bFormOpen;
+
+	//! Set while the form is renaming this contact rather than adding one.
+	protected string m_sEditContactId;
+	protected string m_sEditOriginalName;
 
 	//! Set when opened prefilled, so GetSubState() reopens the same form on other screens.
 	protected string m_sPrefillNumber;
@@ -270,7 +301,12 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	{
 		if (m_bFormOpen)
 		{
-			CloseForm();
+			//! Cancelling a rename keeps the old name and goes back to that contact, unless it's gone.
+			if (m_sEditContactId != "" && FindContact(m_sEditContactId))
+				OpenDetail(m_sEditContactId);
+			else
+				CloseForm();
+
 			return true;
 		}
 
@@ -289,6 +325,9 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	{
 		if (m_bFormOpen)
 		{
+			if (m_sEditContactId != "")
+				return SUBSTATE_EDIT_PREFIX + m_sEditContactId;
+
 			if (m_sPrefillNumber != "")
 				return SUBSTATE_FORM_NUMBER_PREFIX + m_sPrefillNumber;
 
@@ -319,6 +358,12 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		if (subState.StartsWith(SUBSTATE_DETAIL_PREFIX))
 		{
 			OpenDetail(subState.Substring(SUBSTATE_DETAIL_PREFIX.Length(), subState.Length() - SUBSTATE_DETAIL_PREFIX.Length()));
+			return;
+		}
+
+		if (subState.StartsWith(SUBSTATE_EDIT_PREFIX))
+		{
+			OpenEditForm(subState.Substring(SUBSTATE_EDIT_PREFIX.Length(), subState.Length() - SUBSTATE_EDIT_PREFIX.Length()));
 			return;
 		}
 
@@ -501,6 +546,7 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		m_wMessageLabel = null;
 		m_AddClick = null;
 		m_SaveClick = null;
+		m_EditClick = null;
 		m_MessageClick = null;
 		m_wFavouriteButton = null;
 		m_wFavouriteDisc = null;
@@ -522,6 +568,8 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		m_bFormOpen = false;
 		m_sPrefillNumber = "";
 		m_sOpenContactId = "";
+		m_sEditContactId = "";
+		m_sEditOriginalName = "";
 		m_bSaving = false;
 		m_bHasPendingResult = false;
 	}
@@ -686,6 +734,8 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 
 		m_sOpenContactId = contactId;
 		m_bFormOpen = false;
+		m_sEditContactId = "";
+		CancelSaving();
 		ResetDetailActions();
 
 		GetGame().GetCallqueue().Remove(ResetCopyIcon);
@@ -708,8 +758,9 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 
 		TrackScroll(m_wDetailScroll, m_wDetailTitle);
 
-		//! The nav bar's trailing pill slot belongs to Save, so Message gets its own labelled button.
+		//! The trailing pill is Edit, the page's one named action, so Message gets its own labelled button.
 		HideNavAction();
+		ShowEditAction();
 		ShowMessageAction();
 		ShowFavouriteAction();
 
@@ -1188,11 +1239,57 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected void ShowEditAction()
+	{
+		if (!m_EditClick)
+		{
+			m_EditClick = new ELIFE_ContactEditClick();
+			m_EditClick.Bind(this);
+		}
+
+		ShowNavAction("#ELIFE-Phone_Contacts_Edit", m_Accent, m_EditClick);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void EditOpenContact()
+	{
+		if (m_sOpenContactId != "")
+			OpenEditForm(m_sOpenContactId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The add form, prefilled, with the number locked: a rename only changes the name.
+	protected void OpenEditForm(string contactId)
+	{
+		ELIFE_ContactSummary contact = FindContact(contactId);
+		if (contact)
+			OpenForm(contact.number, contactId, ELIFE_PhoneContactBook.DisplayName(contact));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetNumberLocked(bool locked)
+	{
+		if (m_wNumberField)
+		{
+			m_wNumberField.SetEnabled(!locked);
+
+			float opacity = 1;
+			if (locked)
+				opacity = LOCKED_FIELD_OPACITY;
+
+			m_wNumberField.SetOpacity(opacity);
+		}
+
+		SetVisibleOf("NumberFieldRule", !locked);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void ShowIndex()
 	{
 		m_bFormOpen = false;
 		m_sPrefillNumber = "";
 		m_sOpenContactId = "";
+		m_sEditContactId = "";
 		CancelSaving();
 		ResetDetailActions();
 
@@ -1243,14 +1340,22 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 
 	//------------------------------------------------------------------------------------------------
 	//! prefillNumber is Messages' hand-off for a number it doesn't recognize - empty for the normal Add.
-	void OpenForm(string prefillNumber = "")
+	//! editContactId renames that contact instead; prefillName is its current name.
+	void OpenForm(string prefillNumber = "", string editContactId = "", string prefillName = "")
 	{
-		if (m_bFormOpen)
+		//! Also swallows the echo of this same form coming back from the server.
+		if (m_bFormOpen && m_sEditContactId == editContactId)
 			return;
 
 		m_bFormOpen = true;
 		m_sOpenContactId = "";
-		m_sPrefillNumber = prefillNumber;
+		m_sEditContactId = editContactId;
+		m_sEditOriginalName = prefillName;
+		SetNumberLocked(editContactId != "");
+
+		m_sPrefillNumber = "";
+		if (editContactId == "")
+			m_sPrefillNumber = prefillNumber;
 
 		if (m_wDetailPage)
 			m_wDetailPage.SetVisible(false);
@@ -1259,9 +1364,9 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 			m_wNumberField.SetText(prefillNumber);
 
 		if (m_wNameField)
-			m_wNameField.SetText("");
+			m_wNameField.SetText(prefillName);
 
-		PaintFormAvatar("");
+		PaintFormAvatar(prefillName);
 		FitNameField();
 		ShowFormError("");
 
@@ -1271,10 +1376,14 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		if (m_wFormPage)
 			m_wFormPage.SetVisible(true);
 
-		if (m_wNavTitle)
-			m_wNavTitle.SetText("#ELIFE-Phone_Contacts_Form_Title");
+		string formTitle = "#ELIFE-Phone_Contacts_Form_Title";
+		if (editContactId != "")
+			formTitle = "#ELIFE-Phone_Contacts_Edit_Title";
 
-		//! No large title; the name is the heading and the nav bar shows "New Contact" when collapsed.
+		if (m_wNavTitle)
+			m_wNavTitle.SetText(formTitle);
+
+		//! No large title; the name is the heading and the nav bar shows the form's title when collapsed.
 		TrackScroll(m_wFormScroll, null);
 
 		if (!m_SaveClick)
@@ -1314,6 +1423,12 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 			return;
 		}
 
+		if (m_sEditContactId != "")
+		{
+			SubmitRename(displayName);
+			return;
+		}
+
 		if (number.Length() > MAX_NUMBER_LENGTH)
 			number = number.Substring(0, MAX_NUMBER_LENGTH);
 
@@ -1331,6 +1446,25 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 		BeginSaving();
 
 		m_Phone.SaveContact(number, displayName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An unchanged name needs no request; back to the contact as if it had saved.
+	protected void SubmitRename(string displayName)
+	{
+		if (displayName.Length() > MAX_NAME_LENGTH)
+			displayName = displayName.Substring(0, MAX_NAME_LENGTH);
+
+		if (displayName == m_sEditOriginalName)
+		{
+			OpenDetail(m_sEditContactId);
+			return;
+		}
+
+		ShowFormError("");
+		BeginSaving();
+
+		m_Phone.RenameContact(m_sEditContactId, displayName);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1411,10 +1545,17 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 
 		m_bHasPendingResult = false;
 
-		if (m_ePendingResult == ELIFE_EContactSaveResult.SAVED)
-			CloseForm();
-		else
+		if (m_ePendingResult != ELIFE_EContactSaveResult.SAVED)
+		{
 			ShowFormError(FailureText(m_ePendingResult));
+			return;
+		}
+
+		//! A rename lands back on the contact, already showing the new name - the gadget pushed it first.
+		if (m_sEditContactId != "")
+			OpenDetail(m_sEditContactId);
+		else
+			CloseForm();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1438,6 +1579,12 @@ class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
 
 		if (result == ELIFE_EContactSaveResult.DUPLICATE)
 			return "#ELIFE-Phone_Contacts_Form_Duplicate";
+
+		if (result == ELIFE_EContactSaveResult.INVALID_NAME)
+			return "#ELIFE-Phone_Contacts_Form_InvalidName";
+
+		if (result == ELIFE_EContactSaveResult.NOT_FOUND)
+			return "#ELIFE-Phone_Contacts_Edit_Gone";
 
 		return "#ELIFE-Phone_Contacts_Form_SaveError";
 	}

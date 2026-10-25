@@ -23,13 +23,15 @@ enum ELIFE_EPhoneDataStatus
 }
 
 //------------------------------------------------------------------------------------------------
-//! Why a contact save didn't land, in the two cases the player can act on - see ClassifySaveFailure().
+//! Why a contact save or rename didn't land, in the cases the player can act on - see ClassifySaveFailure().
 enum ELIFE_EContactSaveResult
 {
 	SAVED,
 	INVALID_NUMBER,
 	DUPLICATE,
-	FAILED
+	FAILED,
+	INVALID_NAME,
+	NOT_FOUND
 }
 
 //------------------------------------------------------------------------------------------------
@@ -188,6 +190,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	protected ref ELIFE_ProvisionedPhoneCallback m_ProvisionCallback;
 	protected ref ELIFE_PhonePowerStateCallback m_PowerOnCallback;
 	protected ref ELIFE_SavedContactCallback m_SaveContactCallback;
+	protected ref ELIFE_BaseRestCallback m_RenameContactCallback;
+	protected string m_sPendingRenameContactId;
+	protected string m_sPendingRenameName;
 	protected ref ELIFE_SentMessageCallback m_SendMessageCallback;
 	protected ref ELIFE_BaseRestCallback m_MarkThreadReadCallback;
 	protected ref ELIFE_AckedPhoneMessagesCallback m_AckMessagesCallback;
@@ -229,6 +234,9 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//! Server-only: the real payload per key plus its pre-built bystander copy.
 	protected ref map<string, ref ELIFE_PhoneDataEntry> m_mServerData = new map<string, ref ELIFE_PhoneDataEntry>();
 	protected ref map<string, bool> m_mPendingFetches = new map<string, bool>();
+
+	//! Server-only. In-flight fetches started before a write they can't reflect - see FetchData()'s afterWrite.
+	protected ref map<string, bool> m_mStaleFetches = new map<string, bool>();
 
 	//! Server-only. The in-flight fetch per key, held for its HTTP code and, on list routes, its raw body.
 	protected ref map<string, ref RestCallback> m_mFetchCallbacks = new map<string, ref RestCallback>();
@@ -1379,7 +1387,77 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		}
 
 		//! Bypasses the TTL cache-hit path - a cache hit here would push the stale pre-save list back.
-		FetchData(DATA_CONTACTS);
+		FetchData(DATA_CONTACTS, true);
+
+		NotifyContactSaveResult(ELIFE_EContactSaveResult.SAVED);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner-only. Only the name changes - another number is another contact. Answers like SaveContact().
+	void RenameContact(string contactId, string displayName)
+	{
+		if (!IsLocalCharacterOwner())
+			return;
+
+		Rpc(RpcAsk_RenameContact, contactId, displayName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_RenameContact(string contactId, string displayName)
+	{
+		ELIFE_Api api = ELIFE_Api.GetInstance();
+		if (m_sPhoneId == "" || contactId == "" || !api)
+		{
+			NotifyContactSaveResult(ELIFE_EContactSaveResult.FAILED);
+			return;
+		}
+
+		ELIFE_RenamePhoneContactRequest request = new ELIFE_RenamePhoneContactRequest();
+		request.displayName = displayName;
+
+		m_sPendingRenameContactId = contactId;
+		m_sPendingRenameName = displayName;
+		m_RenameContactCallback = api.RenamePhoneContact(request, m_sPhoneId, contactId, this, "OnContactRenamed");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnContactRenamed(ELIFE_EApiStatusCode status, JsonApiStruct data, string phoneId)
+	{
+		int httpCode = HttpCodeOf(m_RenameContactCallback);
+		NoteConnectivity(status, httpCode);
+
+		if (status != ELIFE_EApiStatusCode.SUCCESS)
+		{
+			Print(string.Format("ELIFE_PhoneGadgetComponent | contact rename failed, HTTP=%1", httpCode), LogLevel.ERROR);
+
+			ELIFE_EContactSaveResult result = ELIFE_EContactSaveResult.FAILED;
+			if (httpCode == 400)
+				result = ELIFE_EContactSaveResult.INVALID_NAME;
+			else if (httpCode == 404)
+				result = ELIFE_EContactSaveResult.NOT_FOUND;
+
+			NotifyContactSaveResult(result);
+
+			//! Gone means the list is stale too.
+			if (httpCode == 404)
+				FetchData(DATA_CONTACTS, true);
+
+			return;
+		}
+
+		//! Applied to the cache and pushed before the result, so the page it returns to already has the new
+		//! name; the refetch after it only confirms.
+		ELIFE_PhoneDataEntry entry;
+		if (m_mServerData.Find(DATA_CONTACTS, entry) && entry.m_sReal != "")
+		{
+			ELIFE_ContactListDto cached = new ELIFE_ContactListDto();
+			cached.ExpandFromRAW(entry.m_sReal);
+			StoreData(DATA_CONTACTS, cached.WithName(m_sPendingRenameContactId, m_sPendingRenameName).GetRawJson());
+			PushData(DATA_CONTACTS);
+		}
+
+		FetchData(DATA_CONTACTS, true);
 
 		NotifyContactSaveResult(ELIFE_EContactSaveResult.SAVED);
 	}
@@ -1612,7 +1690,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 
 		//! A 404 means the list on screen is stale, so refresh on that failure too. Bypasses the TTL cache like a save.
 		if (deleted || httpCode == 404)
-			FetchData(DATA_CONTACTS);
+			FetchData(DATA_CONTACTS, true);
 
 		NotifyContactDeleteResult(deleted);
 	}
@@ -1914,12 +1992,18 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Owns each key's route and response parsing.
-	protected void FetchData(string key)
+	//! Owns each key's route and response parsing. afterWrite: the data just changed, so a fetch already in
+	//! flight is out of date - its answer is dropped and this one runs once it lands.
+	protected void FetchData(string key, bool afterWrite = false)
 	{
 		//! A second fetch would just overwrite the pending callback and waste a round trip.
 		if (m_mPendingFetches.Contains(key))
+		{
+			if (afterWrite)
+				m_mStaleFetches.Set(key, true);
+
 			return;
+		}
 
 		ELIFE_Api api = ELIFE_Api.GetInstance();
 		if (!api)
@@ -2079,6 +2163,13 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	void OnDataFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string key)
 	{
 		m_mPendingFetches.Remove(key);
+
+		if (m_mStaleFetches.Contains(key))
+		{
+			m_mStaleFetches.Remove(key);
+			FetchData(key);
+			return;
+		}
 
 		bool wasPoll = key == DATA_MESSAGES && m_bPollInFlight;
 		if (key == DATA_MESSAGES)
