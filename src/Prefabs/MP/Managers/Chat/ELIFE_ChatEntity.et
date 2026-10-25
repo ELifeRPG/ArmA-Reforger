@@ -1,0 +1,18 @@
+ScriptedChatEntity {
+ ID "8F90FF56A8B03ACE"
+ components {
+  RplComponent "{7E47E35A42A6875A}" {
+   Streamable Disabled
+  }
+ }
+ Channels {
+  LocalChatChannel "{FC595B8CD8A0490F}" {
+   "Channel name" "Local"
+   m_fMaxDistance 25
+  }
+  ELIFE_AnnouncementChatChannel "{E90135C1A7353E5A}" {
+   "Channel name" "Announcements"
+  }
+ }
+ "Default channel" "Local"
+}
