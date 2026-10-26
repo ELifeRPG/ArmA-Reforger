@@ -2810,7 +2810,26 @@ class ELIFE_PhoneScreenShell
 			return;
 
 		bool off = m_eState == EPhoneScreenState.OFF;
-		m_wOfflineScreen.SetVisible(!off && m_Phone.IsOffline());
+		bool offline = m_Phone.IsOffline();
+		bool suspended = !offline && m_Phone.IsSuspended();
+		m_wOfflineScreen.SetVisible(!off && (offline || suspended));
+
+		//! Same alert, other words: a suspended phone has nothing to retry.
+		if (suspended)
+		{
+			SetText(m_wOfflineScreen, "OfflineTitle", "#ELIFE-Phone_Suspended_Title");
+			SetText(m_wOfflineScreen, "OfflineHint", "#ELIFE-Phone_Suspended_Hint");
+		}
+		else
+		{
+			SetText(m_wOfflineScreen, "OfflineTitle", "#ELIFE-Phone_Status_Error");
+			SetText(m_wOfflineScreen, "OfflineHint", "#ELIFE-Phone_Status_ErrorHint");
+		}
+
+		Widget retry = m_wOfflineScreen.FindAnyWidget("OfflineRetrySize");
+		if (retry)
+			retry.SetVisible(!suspended);
+
 		HideAllButBanner();
 	}
 

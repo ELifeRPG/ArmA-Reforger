@@ -303,6 +303,10 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	[RplProp(onRplName: "OnConnectivityUpdated")]
 	protected bool m_bOffline;
 
+	//! Set by the notification poll: that route takes no PIN, so a 403 there only means the phone is suspended.
+	[RplProp(onRplName: "OnConnectivityUpdated")]
+	protected bool m_bSuspended;
+
 	ref ScriptInvoker m_OnConnectivityChanged = new ScriptInvoker();
 
 	//! Replicated so bystanders see the hub too.
@@ -464,6 +468,25 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	bool IsOffline()
 	{
 		return m_bOffline;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsSuspended()
+	{
+		return m_bSuspended;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetSuspended(bool suspended)
+	{
+		if (m_bSuspended == suspended)
+			return;
+
+		m_bSuspended = suspended;
+		Replication.BumpMe();
+
+		//! onRplName does not fire on the authority itself.
+		OnConnectivityUpdated();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2356,6 +2379,15 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		m_mFetchCallbacks.Find(key, callback);
 		m_mFetchCallbacks.Remove(key);
 		NoteConnectivity(status, HttpCodeOf(callback));
+
+		//! The poll keeps running while suspended, so it also notices when the phone is restored.
+		if (key == DATA_NOTIFICATIONS)
+		{
+			if (status == ELIFE_EApiStatusCode.SUCCESS)
+				SetSuspended(false);
+			else if (HttpCodeOf(callback) == 403)
+				SetSuspended(true);
+		}
 
 		if (status != ELIFE_EApiStatusCode.SUCCESS || !data)
 		{

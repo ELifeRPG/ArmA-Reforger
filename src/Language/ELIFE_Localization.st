@@ -1594,5 +1594,21 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
+  CustomStringTableItem "{FC91717A5A0FD737}" {
+   Id "ELIFE-Phone_Suspended_Title"
+   Target_en_us "Phone suspended"
+   Target_de_de "Handy gesperrt"
+   Modified 1793034546
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{49A8C7941490DFCF}" {
+   Id "ELIFE-Phone_Suspended_Hint"
+   Target_en_us "This phone has been suspended and can't be used until it's restored."
+   Target_de_de "Dieses Handy wurde gesperrt und kann erst wieder benutzt werden, wenn die Sperre aufgehoben ist."
+   Modified 1793034546
+   Author "Robin"
+   LastChanged "Robin"
+  }
  }
 }
