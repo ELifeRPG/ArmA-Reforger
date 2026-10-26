@@ -10,7 +10,6 @@ class ELIFE_GameModeClass : SCR_BaseGameModeClass
 */
 class ELIFE_GameMode : SCR_BaseGameMode
 {
-	protected ref ELIFE_BaseRestCallback m_BridgeConnectivityCallback;
 	protected int m_iBridgeCheckAttempts;
 
 	protected const int BRIDGE_CHECK_MAX_ATTEMPTS = 5;
@@ -40,9 +39,7 @@ class ELIFE_GameMode : SCR_BaseGameMode
 	{
 		m_iBridgeCheckAttempts++;
 
-		m_BridgeConnectivityCallback = new ELIFE_BaseRestCallback();
-		m_BridgeConnectivityCallback.SetCallback(this, "OnBridgeConnectivityResult");
-		ELIFE_Api.GetInstance().GetElifeApi().GET(m_BridgeConnectivityCallback, "health");
+		ELIFE_Api.GetInstance().Ping(this, "OnBridgeConnectivityResult");
 	}
 
 	//------------------------------------------------------------------------------------------------

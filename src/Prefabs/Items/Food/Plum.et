@@ -10,8 +10,8 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
   InventoryItemComponent "{5222EB4D0C73006B}" {
    Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
     ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
-     Name "Apple"
-     Description "This is an Apple from an Apple Tree"
+     Name "Plum"
+     Description "This is a Plum from a Plum Tree"
     }
     ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
      Weight 0.2
@@ -33,7 +33,6 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
     }
     CustomAttributes {
      ItemActionAnimAttributes "{597F3B87428D37AA}" {
-      ActionType Bandage
      }
     }
    }
@@ -42,7 +41,6 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
    Object "{1768DEF76C703B91}Assets/Items/Food/Plum/Plum_01.xob"
   }
   RigidBody "{597F3B87428D37AE}" {
-   Enabled 0
    LinearDamping 0.5
    AngularDamping 0.5
    AngularSleepingThreashold 1

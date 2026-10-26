@@ -1,0 +1,86 @@
+OverlayWidgetClass {
+ Name "ClockWidget"
+ {
+  VerticalLayoutWidgetClass "{688C0BE89BB73862}" {
+   Name "ClockBody"
+   Slot OverlayWidgetSlot "{CCBEC0D3D82A9B3A}" {
+    HorizontalAlign 3
+    VerticalAlign 1
+   }
+   "Fill Origin" Top
+   {
+    TextWidgetClass "{01C60D399EECA895}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+     Name "HomeClock"
+     Slot LayoutSlot "{825B6B96E636AFA7}" {
+      HorizontalAlign 1
+      Padding 4 0 4 0
+     }
+     Color 0.8378 0.8626 0.9222 1
+     components {
+      ELIFE_PhoneClockUIComponent "{DB464F7055ADADDC}" {
+      }
+     }
+     Text "12:00"
+     "Font Size" 68
+     "Min Font Size" 68
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{9891CF44F9C179A7}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{6FD5238D89B32F65}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+     Name "HomeDate"
+     Slot LayoutSlot "{5A51FB16FD4CD33C}" {
+      HorizontalAlign 1
+      Padding 4 0 4 0
+     }
+     Color 0.366 0.4024 0.5025 1
+     Text ""
+     "Font Size" 20
+     "Min Font Size" 20
+     "Horizontal Alignment" Center
+    }
+   }
+  }
+  ButtonWidgetClass "{824937F4326666F5}" {
+   Name "ClockButton"
+   Slot OverlayWidgetSlot "{1C1E2DA1CB1D7E97}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 1 1 1 1
+   style blank
+   components {
+    SCR_ButtonTextComponent "{13388ACE4BAEC9E2}" {
+     m_BackgroundDefault 0.8626 0.8964 0.964 0
+     m_BackgroundHovered 0.8626 0.8964 0.964 0.06
+     m_BackgroundSelected 0.8626 0.8964 0.964 0.16
+     m_BackgroundSelectedHovered 0.8626 0.8964 0.964 0.16
+     m_BackgroundClicked 0.8626 0.8964 0.964 0.16
+     m_sText ""
+    }
+   }
+   {
+    OverlayWidgetClass "{840347EBCD23934F}" {
+     Name "ButtonSurface"
+     Slot ButtonWidgetSlot "{2FCB281D11966391}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      SmartPanelWidgetClass "{6545D39C41E38DF5}" {
+       Name "Background"
+       Slot OverlayWidgetSlot "{84A308A07513F1CC}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0 0 0 0
+       style rounded_12px
+       "no focus" 1
+      }
+     }
+    }
+   }
+  }
+ }
+}

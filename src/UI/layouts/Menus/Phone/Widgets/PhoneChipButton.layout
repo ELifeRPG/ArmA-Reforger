@@ -1,0 +1,138 @@
+SizeLayoutWidgetClass {
+ Name "ChipSize"
+ AllowHeightOverride 1
+ HeightOverride 36
+ {
+  OverlayWidgetClass "{AE821B6CCA6F3152}" {
+   Name "Chip"
+   Slot AlignableSlot "{A5DE80CC6AFA8591}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    BlurWidgetClass "{1065EC88F3AAECE1}" {
+     Name "GlassBlur"
+     Slot OverlayWidgetSlot "{0B66304648D8CED0}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 1
+     Intensity 0.35
+    }
+    SmartPanelWidgetClass "{16B9DCD5CFE4A4E7}" {
+     Name "GlassScrim"
+     Slot OverlayWidgetSlot "{B1C6E921E4A3F9B7}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.4735 0.5647 0.7379 0.28
+     style rounded_12px
+     "no focus" 1
+    }
+    SmartPanelWidgetClass "{A51B2602161CBC36}" {
+     Name "GlassTint"
+     Slot OverlayWidgetSlot "{1CA1F50D61889170}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.5837 0.6453 0.8073 0.12
+     style rounded_12px
+     "no focus" 1
+    }
+    SizeLayoutWidgetClass "{6274B61EEED89CCE}" {
+     Name "GlassSpecularSize"
+     Slot OverlayWidgetSlot "{50216C334741B3B0}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+      Padding 12 0 12 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 2
+     {
+      ImageWidgetClass "{91681D0557871396}" {
+       Name "GlassSpecular"
+       Slot AlignableSlot "{B8720F074269372D}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.8626 0.8964 0.964 0.07
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{4D1824016ECEC50C}" {
+     Name "GlassHairlineSize"
+     Slot OverlayWidgetSlot "{D1A6F4F411956156}" {
+      HorizontalAlign 3
+      VerticalAlign 2
+      Padding 12 0 12 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 2
+     {
+      ImageWidgetClass "{6FAE1C14AACCFCB2}" {
+       Name "GlassHairline"
+       Slot AlignableSlot "{BB04A03250025B7D}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0015 0.0021 0.0033 0.26
+      }
+     }
+    }
+    TextWidgetClass "{571A8C63112D97B5}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+     Name "ChipLabel"
+     Slot OverlayWidgetSlot "{B1D5AB898D3961F1}" {
+      HorizontalAlign 1
+      VerticalAlign 1
+      Padding 16 0 16 0
+     }
+     Color 0.8378 0.8626 0.9222 1
+     Text ""
+     "Font Size" 18
+     "Min Font Size" 18
+     "Horizontal Alignment" Center
+    }
+    ButtonWidgetClass "{CBD6AC2117281813}" {
+     Name "ChipButton"
+     Slot OverlayWidgetSlot "{F754267A77D8703C}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 1
+     style blank
+     components {
+      SCR_ButtonTextComponent "{574B47C2C4296BB4}" {
+       m_BackgroundDefault 0.8626 0.8964 0.964 0
+       m_BackgroundHovered 0.8626 0.8964 0.964 0.08
+       m_BackgroundSelected 0.8626 0.8964 0.964 0.14
+       m_BackgroundSelectedHovered 0.8626 0.8964 0.964 0.14
+       m_BackgroundClicked 0.8626 0.8964 0.964 0.14
+       m_sText ""
+      }
+     }
+     {
+      OverlayWidgetClass "{3E96D7577617753F}" {
+       Name "ButtonSurface"
+       Slot ButtonWidgetSlot "{43532680E0B7F8D9}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        SmartPanelWidgetClass "{8161C256F194D7DC}" {
+         Name "Background"
+         Slot OverlayWidgetSlot "{FC2853ACF0268F01}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0 0 0 0
+         style rounded_12px
+         "no focus" 1
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

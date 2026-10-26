@@ -1,0 +1,103 @@
+OverlayWidgetClass {
+ Name "InfoWidget"
+ {
+  HorizontalLayoutWidgetClass "{57762D4C77E05FF1}" {
+   Name "InfoBody"
+   Slot OverlayWidgetSlot "{B7F4A4C2FCE9DA2D}" {
+    HorizontalAlign 1
+    VerticalAlign 1
+   }
+   {
+    SizeLayoutWidgetClass "{FBCC2B09CDE86D9A}" {
+     Name "InfoIconSize"
+     Slot LayoutSlot "{9955CEA29329BBD2}" {
+      VerticalAlign 1
+      Padding 0 0 14 0
+     }
+     AllowWidthOverride 1
+     WidthOverride 52
+     AllowHeightOverride 1
+     HeightOverride 52
+     {
+      ImageWidgetClass "{1A9DBD681D47BD52}" {
+       Name "InfoIcon"
+       Slot AlignableSlot "{D4599E8BCADDA7E2}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       Color 0.8378 0.8626 0.9222 1
+       Size 52 52
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{986A4ADCC96CBAF7}" {
+     Name "InfoCopy"
+     Slot LayoutSlot "{3A6DFC56250E4D89}" {
+      VerticalAlign 1
+     }
+     {
+      TextWidgetClass "{060B03F4D73396F4}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "InfoValue"
+       Color 0.8378 0.8626 0.9222 1
+       Text ""
+       "Font Size" 30
+       "Min Font Size" 30
+       "Horizontal Alignment" Left
+       FontProperties FontProperties "{B971358E2722138B}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{C5071D7E7D2EC930}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "InfoLabel"
+       Color 0.366 0.4024 0.5025 1
+       Text ""
+       "Font Size" 20
+       "Min Font Size" 20
+       "Horizontal Alignment" Left
+      }
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{27A974F6844D73ED}" {
+   Name "InfoButton"
+   Slot OverlayWidgetSlot "{F09C12B963D94C80}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 1 1 1 1
+   style blank
+   components {
+    SCR_ButtonTextComponent "{81773219500BE6F4}" {
+     m_BackgroundDefault 0.8626 0.8964 0.964 0
+     m_BackgroundHovered 0.8626 0.8964 0.964 0.06
+     m_BackgroundSelected 0.8626 0.8964 0.964 0.16
+     m_BackgroundSelectedHovered 0.8626 0.8964 0.964 0.16
+     m_BackgroundClicked 0.8626 0.8964 0.964 0.16
+     m_sText ""
+    }
+   }
+   {
+    OverlayWidgetClass "{7B238514F17AF3CB}" {
+     Name "ButtonSurface"
+     Slot ButtonWidgetSlot "{1069E41FE0734798}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      SmartPanelWidgetClass "{563E991EE785B81D}" {
+       Name "Background"
+       Slot OverlayWidgetSlot "{A172DA48DF5BFE46}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0 0 0 0
+       style rounded_12px
+       "no focus" 1
+      }
+     }
+    }
+   }
+  }
+ }
+}

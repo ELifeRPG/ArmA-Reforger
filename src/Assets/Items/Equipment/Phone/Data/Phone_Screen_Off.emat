@@ -1,0 +1,9 @@
+MatPBRBasic {
+ Diffuse 0.01 0.01 0.012 1
+ DiffuseIBL 0.01 0.01 0.012 1
+ Emissive 0 0 0 1
+ EmissiveLV 0
+ Specular 0.05 0.05 0.05 1
+ SpecularIBL 0.05 0.05 0.05 1
+ SpecularMul 0.1
+}

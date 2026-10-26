@@ -1,0 +1,88 @@
+SizeLayoutWidgetClass {
+ Name "PostedRowSize"
+ AllowHeightOverride 1
+ HeightOverride 68
+ {
+  OverlayWidgetClass "{AFA77B82F28FE4FD}" {
+   Name "PostedRow"
+   Slot AlignableSlot "{A573359E28EFC516}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    HorizontalLayoutWidgetClass "{79B699AEEE69A0BC}" {
+     Name "PostedBody"
+     Slot OverlayWidgetSlot "{6215EAE1A5A863DC}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 0 10 0 10
+     }
+     {
+      VerticalLayoutWidgetClass "{B148F7CAE7E3B9E5}" {
+       Name "PostedCopy"
+       Slot LayoutSlot "{3C2F2D48DA62F9A6}" {
+        SizeMode Fill
+        VerticalAlign 1
+       }
+       {
+        TextWidgetClass "{6F47C0BBB18F4743}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "Memo"
+         Color 0.8378 0.8626 0.9222 1
+         Text ""
+         "Font Size" 22
+         "Min Font Size" 20
+         "Horizontal Alignment" Left
+        }
+        TextWidgetClass "{90F78B3929D96AC3}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "PostedAt"
+         Color 0.366 0.4024 0.5025 1
+         Text ""
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Left
+         FontProperties FontProperties "{FF794D2697FDBA79}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+       }
+      }
+      TextWidgetClass "{982B1D4A5B77E71C}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "Amount"
+       Slot LayoutSlot "{401F3EB82D4FD184}" {
+        VerticalAlign 1
+        Padding 16 0 0 0
+       }
+       Color 0.8378 0.8626 0.9222 1
+       Text ""
+       "Font Size" 22
+       "Min Font Size" 20
+       "Horizontal Alignment" 2
+       FontProperties FontProperties "{7D4672F8462AE748}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{95B719A2A0E64877}" {
+     Name "RowHairlineSize"
+     Slot OverlayWidgetSlot "{6FB2A34C404807F7}" {
+      HorizontalAlign 3
+      VerticalAlign 2
+     }
+     AllowHeightOverride 1
+     HeightOverride 2
+     {
+      ImageWidgetClass "{7A013D0B164535E2}" {
+       Name "RowHairline"
+       Slot AlignableSlot "{C56DA12FD81DF2EF}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0383 0.0466 0.0723 0.9
+      }
+     }
+    }
+   }
+  }
+ }
+}

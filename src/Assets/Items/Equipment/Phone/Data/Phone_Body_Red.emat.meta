@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{5D9E19AB6D209F9F}Assets/Items/Equipment/Phone/Data/Phone_Body_Red.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

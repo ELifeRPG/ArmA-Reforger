@@ -1,0 +1,38 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ "Ignore Cursor" 1
+ {
+  OverlayWidgetClass "{5A3C91E7D2B84F10}" {
+   Name "PeekOverlay"
+   "Ignore Cursor" 1
+   Slot FrameWidgetSlot "{5A3C91E7D2B84F11}" {
+    Anchor 0 0 1 1
+    OffsetLeft 0
+    OffsetTop 0
+    OffsetRight 0
+    OffsetBottom 0
+   }
+   {
+    SizeLayoutWidgetClass "{5A3C91E7D2B84F12}" {
+     Name "PeekSize"
+     "Ignore Cursor" 1
+     Slot OverlayWidgetSlot "{5A3C91E7D2B84F13}" {
+      HorizontalAlign 1
+      VerticalAlign 0
+      Padding 0 24 0 0
+     }
+     AllowWidthOverride 1
+     WidthOverride 270
+     AllowHeightOverride 1
+     HeightOverride 148
+     {
+      OverlayWidgetClass "{5A3C91E7D2B84F14}" {
+       Name "PeekHost"
+       "Ignore Cursor" 1
+      }
+     }
+    }
+   }
+  }
+ }
+}

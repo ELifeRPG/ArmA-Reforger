@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{E7EB5828B81C1D25}Assets/Items/Equipment/Phone/Data/Phone_Body_Graphite.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

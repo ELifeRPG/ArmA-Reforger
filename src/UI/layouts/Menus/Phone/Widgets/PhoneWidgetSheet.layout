@@ -1,0 +1,189 @@
+OverlayWidgetClass {
+ Name "WidgetSheet"
+ {
+  SmartPanelWidgetClass "{F63CE4064ADE11B0}" {
+   Name "SheetScrim"
+   Slot OverlayWidgetSlot "{226598C49B9CF6B5}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 0.004 0.0048 0.0075 0.55
+   "no focus" 1
+  }
+  ButtonWidgetClass "{BF0985860238B00D}" {
+   Name "SheetDismiss"
+   Slot OverlayWidgetSlot "{E804675954565FC7}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 1 1 1 1
+   style blank
+   components {
+    SCR_ButtonTextComponent "{2661223FE6A9EAC5}" {
+     m_BackgroundDefault 0.8626 0.8964 0.964 0
+     m_BackgroundHovered 0.8626 0.8964 0.964 0
+     m_BackgroundSelected 0.8626 0.8964 0.964 0
+     m_BackgroundSelectedHovered 0.8626 0.8964 0.964 0
+     m_BackgroundClicked 0.8626 0.8964 0.964 0
+     m_sText ""
+    }
+   }
+   {
+    OverlayWidgetClass "{A72291ED5D5176DA}" {
+     Name "ButtonSurface"
+     Slot ButtonWidgetSlot "{2676A13895DB9609}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      SmartPanelWidgetClass "{E3FDB49599B4DECE}" {
+       Name "Background"
+       Slot OverlayWidgetSlot "{36B338C34B2D039C}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0 0 0 0
+       "no focus" 1
+      }
+     }
+    }
+   }
+  }
+  OverlayWidgetClass "{647541588E48060F}" {
+   Name "SheetPanel"
+   Slot OverlayWidgetSlot "{D15B1D6B663AF04F}" {
+    HorizontalAlign 3
+    VerticalAlign 2
+    Padding 12 0 12 92
+   }
+   {
+    BlurWidgetClass "{9227827F60248707}" {
+     Name "GlassBlur"
+     Slot OverlayWidgetSlot "{5DAA0C09172B36E0}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 1
+     Intensity 0.7
+    }
+    SmartPanelWidgetClass "{C5DD41B49A7C4901}" {
+     Name "GlassScrim"
+     Slot OverlayWidgetSlot "{12C2399AD34711CE}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.4735 0.5647 0.7379 0.28
+     style rounded_12px
+     "no focus" 1
+    }
+    SmartPanelWidgetClass "{BB6BFBAC1BA86531}" {
+     Name "GlassTint"
+     Slot OverlayWidgetSlot "{3A9DB29913B575EC}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.5837 0.6453 0.8073 0.12
+     style rounded_12px
+     "no focus" 1
+    }
+    SizeLayoutWidgetClass "{7422964466D278C1}" {
+     Name "GlassSpecularSize"
+     Slot OverlayWidgetSlot "{12F9B8537C65466C}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+      Padding 12 0 12 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 2
+     {
+      ImageWidgetClass "{B575BFC015C68B8F}" {
+       Name "GlassSpecular"
+       Slot AlignableSlot "{F4E8B107A22039AE}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.8626 0.8964 0.964 0.07
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{036767AB14C26958}" {
+     Name "GlassHairlineSize"
+     Slot OverlayWidgetSlot "{651EC39182DE2657}" {
+      HorizontalAlign 3
+      VerticalAlign 2
+      Padding 12 0 12 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 2
+     {
+      ImageWidgetClass "{08DB724339FC53F9}" {
+       Name "GlassHairline"
+       Slot AlignableSlot "{A9AB82CD64CAE6A6}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0015 0.0021 0.0033 0.26
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{3A0D104C4C2CA73D}" {
+     Name "SheetBody"
+     Slot OverlayWidgetSlot "{EC467C6993639E35}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 24 24 24 24
+     }
+     {
+      TextWidgetClass "{F2213BB611D33311}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "SheetTitle"
+       Slot LayoutSlot "{64750A42280F1D38}" {
+        Padding 4 0 4 0
+       }
+       Color 0.8378 0.8626 0.9222 1
+       Text "#ELIFE-Phone_Home_Widgets"
+       "Font Size" 22
+       "Min Font Size" 22
+       "Horizontal Alignment" Left
+      }
+      VerticalLayoutWidgetClass "{072CDC84572172C4}" {
+       Name "SheetList"
+       Slot LayoutSlot "{B296E6D27F385B52}" {
+        HorizontalAlign 3
+        Padding 0 16 0 0
+       }
+      }
+      SizeLayoutWidgetClass "{E8C750AF02212D53}" {
+       Name "SheetScrollSize"
+       Slot LayoutSlot "{3DD349F5BD20AB60}" {
+        HorizontalAlign 3
+        Padding 0 16 0 0
+       }
+       "Is Visible" 0
+       AllowHeightOverride 1
+       HeightOverride 256
+       {
+        ScrollLayoutWidgetClass "{B04D160C4D3BC043}" {
+         Name "SheetScroll"
+         Slot AlignableSlot "{7129588C7606342C}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.8626 0.8964 0.964 0.4
+         {
+          VerticalLayoutWidgetClass "{F8EF4BC18122ADCE}" {
+           Name "SheetScrollList"
+           Slot AlignableSlot "{44C9926B8BB9901C}" {
+            HorizontalAlign 3
+           }
+           "Fill Origin" Top
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

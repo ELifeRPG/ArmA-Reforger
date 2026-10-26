@@ -1,0 +1,910 @@
+OverlayWidgetClass {
+ Name "SetupRoot"
+ {
+  OverlayWidgetClass "{50F6D5DF5E74B3A7}" {
+   Name "Backdrop"
+   Slot OverlayWidgetSlot "{A4A5E722ED19D2FF}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    SmartPanelWidgetClass "{CB61397555F19DA7}" {
+     Name "BackdropBase"
+     Slot OverlayWidgetSlot "{6AA878C8354DFAE9}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.004 0.0048 0.0075 1
+     style rounded_12px
+     "no focus" 1
+    }
+    OverlayWidgetClass "{21C83358F90964EA}" {
+     Name "PhotoAGroup"
+     Slot OverlayWidgetSlot "{1684E83E7C5B8648}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     "Is Visible" 0
+     {
+      ScaleWidgetClass "{73030395C61A3786}" {
+       Name "PhotoAScale"
+       Slot OverlayWidgetSlot "{A93F16EE61634A72}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       "Scale Mode" "Scale to fill"
+       {
+        ImageWidgetClass "{2EE57F1CB6D2F8C0}" {
+         Name "PhotoA"
+         Slot AlignableSlot "{1ADCDD6E41478AC6}" {
+         }
+         Color 1 1 1 1
+         Size 1920 1080
+        }
+       }
+      }
+     }
+    }
+    OverlayWidgetClass "{C624879F2EA2C691}" {
+     Name "PhotoBGroup"
+     Slot OverlayWidgetSlot "{48F1703D9844CDF8}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     "Is Visible" 0
+     {
+      ScaleWidgetClass "{CE42E40384BAED23}" {
+       Name "PhotoBScale"
+       Slot OverlayWidgetSlot "{AB8DE293FBCCF718}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       "Scale Mode" "Scale to fill"
+       {
+        ImageWidgetClass "{302D2AE11C4FB35A}" {
+         Name "PhotoB"
+         Slot AlignableSlot "{62F350CB3B075963}" {
+         }
+         Color 1 1 1 1
+         Size 1920 1080
+        }
+       }
+      }
+     }
+    }
+    ImageWidgetClass "{4A821AE309328A03}" {
+     Name "PhotoScrim"
+     Slot OverlayWidgetSlot "{9E2EA939E9C637A1}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0 0 0 0.3
+    }
+    SizeLayoutWidgetClass "{3DA29507991F5AF2}" {
+     Name "PhotoFadeSize"
+     Slot OverlayWidgetSlot "{956618DADD445CB4}" {
+      HorizontalAlign 3
+      VerticalAlign 2
+     }
+     AllowHeightOverride 1
+     HeightOverride 760
+     {
+      ImageWidgetClass "{672C7F8B47C28722}" {
+       Name "PhotoFade"
+       Slot AlignableSlot "{C9EAEC694BF9A953}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.004 0.0048 0.0075 0.94
+       Texture "{099C73E0F66A5F28}UI/Textures/Common/gradientTexture_Dither_down_512.edds"
+      }
+     }
+    }
+   }
+  }
+  SmartPanelWidgetClass "{AE095BAD8344FE47}" {
+   Name "TourDim"
+   Slot OverlayWidgetSlot "{A9B0C3A4BCD40D75}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 0.004 0.0048 0.0075 0.62
+   style rounded_12px
+   "no focus" 1
+   "Is Visible" 0
+  }
+  FrameWidgetClass "{91068F596CC850F7}" {
+   Name "TourTouchLayer"
+   Slot OverlayWidgetSlot "{2EE5F56D3D0DE1C4}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   "Is Visible" 0
+   "Ignore Cursor" 1
+   {
+    ImageWidgetClass "{0DD4B88822FDEA08}" {
+     Name "TourRipple"
+     Slot FrameWidgetSlot "{DE586A7564E9B2F4}" {
+     }
+     Color 0.8378 0.8626 0.9222 0.4
+     Size 64 64
+    }
+    ImageWidgetClass "{AE5CA7E9E0943B38}" {
+     Name "TourFinger"
+     Slot FrameWidgetSlot "{5EEF09A31D8EC5DF}" {
+     }
+     Color 0.8378 0.8626 0.9222 0.85
+     Size 44 44
+    }
+   }
+  }
+  VerticalLayoutWidgetClass "{08953B58587E5C8F}" {
+   Name "Page"
+   Slot OverlayWidgetSlot "{4C9492896BBD0568}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+    Padding 40 104 40 56
+   }
+   "Fill Origin" Top
+   {
+    HorizontalLayoutWidgetClass "{6D69CC28D58CACDF}" {
+     Name "StepDots"
+     Slot LayoutSlot "{C140B2C5C8B67AFD}" {
+      HorizontalAlign 0
+     }
+     {
+      SizeLayoutWidgetClass "{A1EA6FFE01978C44}" {
+       Name "StepDot0Size"
+       Slot LayoutSlot "{5ABF3E22A6F522B5}" {
+        Padding 0 0 8 0
+       }
+       AllowWidthOverride 1
+       WidthOverride 12
+       AllowHeightOverride 1
+       HeightOverride 12
+       {
+        SmartPanelWidgetClass "{91AB751C3FA53363}" {
+         Name "StepDot0"
+         Slot AlignableSlot "{F8C5C10B8B42BC93}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.0383 0.0466 0.0723 1
+         style rounded_12px
+         "no focus" 1
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{01073BF71BD6B0BA}" {
+       Name "StepDot1Size"
+       Slot LayoutSlot "{07AE3C70F0D4E94F}" {
+        Padding 0 0 8 0
+       }
+       AllowWidthOverride 1
+       WidthOverride 12
+       AllowHeightOverride 1
+       HeightOverride 12
+       {
+        SmartPanelWidgetClass "{19021505268F32FA}" {
+         Name "StepDot1"
+         Slot AlignableSlot "{6E72190FA5FC07E8}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.0383 0.0466 0.0723 1
+         style rounded_12px
+         "no focus" 1
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{CDD5FF175C134004}" {
+       Name "StepDot2Size"
+       Slot LayoutSlot "{6B57D1EC5720AF66}" {
+        Padding 0 0 8 0
+       }
+       AllowWidthOverride 1
+       WidthOverride 12
+       AllowHeightOverride 1
+       HeightOverride 12
+       {
+        SmartPanelWidgetClass "{469744D36AC801FC}" {
+         Name "StepDot2"
+         Slot AlignableSlot "{E6ECC6D9602EF133}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.0383 0.0466 0.0723 1
+         style rounded_12px
+         "no focus" 1
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{0DB1DD0CD2B6B31A}" {
+       Name "StepDot3Size"
+       Slot LayoutSlot "{F0A801D051F9D92D}" {
+       }
+       AllowWidthOverride 1
+       WidthOverride 12
+       AllowHeightOverride 1
+       HeightOverride 12
+       {
+        SmartPanelWidgetClass "{75F0BA33126EA0CB}" {
+         Name "StepDot3"
+         Slot AlignableSlot "{4B412BC9C1C9A5FF}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.0383 0.0466 0.0723 1
+         style rounded_12px
+         "no focus" 1
+        }
+       }
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{03EE6396946E31BC}" {
+     Name "SetupSpacer"
+     Slot LayoutSlot "{8CF97CD488C2A69B}" {
+      SizeMode Fill
+     }
+    }
+    TextWidgetClass "{95A4F09D3BA52708}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+     Name "SetupHero"
+     Slot LayoutSlot "{03BA60AAFF78C753}" {
+     }
+     "Is Visible" 0
+     Color 0.8378 0.8626 0.9222 1
+     Text ""
+     "Font Size" 92
+     "Min Font Size" 92
+     "Horizontal Alignment" Left
+     FontProperties FontProperties "{69F1BB57C7B74319}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{563E7A8EFB758D20}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+     Name "SetupTitle"
+     Slot LayoutSlot "{F42FC8937239BC42}" {
+      Padding 0 8 0 0
+     }
+     Color 0.8378 0.8626 0.9222 1
+     Text ""
+     "Font Size" 40
+     "Min Font Size" 40
+     "Horizontal Alignment" Left
+     FontProperties FontProperties "{7A69391259B0BCD0}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{CF79276D11968061}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+     Name "SetupBody"
+     Slot LayoutSlot "{316CE286D8122F10}" {
+      Padding 0 12 0 0
+     }
+     Color 0.8378 0.8626 0.9222 1
+     Text ""
+     "Font Size" 22
+     "Min Font Size" 22
+     "Horizontal Alignment" Left
+    }
+    OverlayWidgetClass "{03ADEA742C94B53F}" {
+     Name "OwnerCard"
+     Slot LayoutSlot "{BE6A15E6B50FB0F5}" {
+      Padding 0 32 0 0
+     }
+     "Is Visible" 0
+     {
+      BlurWidgetClass "{A8E59FE2DB5D6AC6}" {
+       Name "GlassBlur"
+       Slot OverlayWidgetSlot "{A73FDA0483FCB194}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 1 1 1 1
+       Intensity 0.7
+      }
+      SmartPanelWidgetClass "{6B95FF1B0C072C02}" {
+       Name "GlassScrim"
+       Slot OverlayWidgetSlot "{AC33E2B4DC398A68}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.004 0.0048 0.0075 0.55
+       style rounded_12px
+       "no focus" 1
+      }
+      SmartPanelWidgetClass "{3A3DB9190C99EAE9}" {
+       Name "GlassTint"
+       Slot OverlayWidgetSlot "{D7F22F687773752E}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.5837 0.6453 0.8073 0.14
+       style rounded_12px
+       "no focus" 1
+      }
+      SizeLayoutWidgetClass "{9C1C5A0D9B4DC085}" {
+       Name "GlassSpecularSize"
+       Slot OverlayWidgetSlot "{57DC6172B3F44134}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 12 0 12 0
+       }
+       AllowHeightOverride 1
+       HeightOverride 2
+       {
+        ImageWidgetClass "{7076DEF1255F5F64}" {
+         Name "GlassSpecular"
+         Slot AlignableSlot "{7B74C3086FB528C2}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.8626 0.8964 0.964 0.18
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{6BCB5A27B1CEC52F}" {
+       Name "GlassHairlineSize"
+       Slot OverlayWidgetSlot "{414F937E71278827}" {
+        HorizontalAlign 3
+        VerticalAlign 2
+        Padding 12 0 12 0
+       }
+       AllowHeightOverride 1
+       HeightOverride 2
+       {
+        ImageWidgetClass "{22895F208EF1D438}" {
+         Name "GlassHairline"
+         Slot AlignableSlot "{264D104E128EDF69}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.0015 0.0021 0.0033 0.26
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{9FBA7C3FDA06FD97}" {
+       Name "OwnerCardRows"
+       Slot OverlayWidgetSlot "{93D121AB3E503321}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 24 24 24 24
+       }
+       {
+        HorizontalLayoutWidgetClass "{1C789EE196CE4E28}" {
+         Name "OwnerNameRowSize"
+         Slot LayoutSlot "{565737929B6E2D8B}" {
+          Padding 0 0 0 20
+         }
+         {
+          SizeLayoutWidgetClass "{A21262B266479E66}" {
+           Name "OwnerAvatarSize"
+           Slot LayoutSlot "{1668A5837EBF6F4F}" {
+            VerticalAlign 1
+           }
+           AllowWidthOverride 1
+           WidthOverride 104
+           AllowHeightOverride 1
+           HeightOverride 104
+           {
+            OverlayWidgetClass "{DD24E6FE663E8369}" {
+             Name "OwnerAvatar"
+             Slot AlignableSlot "{194C550472CAC0A8}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             {
+              ImageWidgetClass "{797927EE983533C6}" {
+               Name "OwnerAvatarDisc"
+               Slot OverlayWidgetSlot "{5B587B7F2528F012}" {
+                HorizontalAlign 1
+                VerticalAlign 1
+               }
+               Color 1 1 1 1
+               Size 104 104
+              }
+              TextWidgetClass "{07D695E2CC649DE6}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+               Name "OwnerAvatarGlyph"
+               Slot OverlayWidgetSlot "{255D9B86FBCB7851}" {
+                HorizontalAlign 1
+                VerticalAlign 1
+               }
+               Color 0.8378 0.8626 0.9222 1
+               Text ""
+               "Font Size" 40
+               "Min Font Size" 40
+               "Horizontal Alignment" Center
+               FontProperties FontProperties "{3E84BD291008E94A}" {
+                Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+               }
+              }
+             }
+            }
+           }
+          }
+          VerticalLayoutWidgetClass "{C90E4BC5D9BDA469}" {
+           Name "OwnerNameText"
+           Slot LayoutSlot "{342919EC18945F24}" {
+            VerticalAlign 1
+            Padding 20 0 0 0
+            SizeMode Fill
+           }
+           {
+            TextWidgetClass "{5C129E91C44CCB85}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "OwnerNameLabel"
+             Slot LayoutSlot "{526032675A950F43}" {
+             }
+             Color 0.366 0.4024 0.5025 1
+             Text "#ELIFE-Phone_Setup_RegisteredTo"
+             "Font Size" 18
+             "Min Font Size" 18
+             "Horizontal Alignment" Left
+            }
+            TextWidgetClass "{99AE5C9A35ED08CA}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "OwnerNameValue"
+             Slot LayoutSlot "{6B72E9134A7772BA}" {
+              Padding 0 4 0 0
+             }
+             Color 0.8378 0.8626 0.9222 1
+             Text ""
+             "Font Size" 30
+             "Min Font Size" 30
+             "Horizontal Alignment" Left
+             FontProperties FontProperties "{B7D652129CD71005}" {
+              Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+             }
+            }
+           }
+          }
+         }
+        }
+        SizeLayoutWidgetClass "{DB6FF1A9DD4B2288}" {
+         Name "OwnerRowHairlineSize"
+         Slot LayoutSlot "{C38B15ED63E69BA3}" {
+          Padding 0 0 0 20
+         }
+         AllowHeightOverride 1
+         HeightOverride 2
+         {
+          ImageWidgetClass "{1C3B19AD64B87BDF}" {
+           Name "OwnerRowHairline"
+           Slot AlignableSlot "{24804D057BBABDE9}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.0383 0.0466 0.0723 0.9
+          }
+         }
+        }
+        TextWidgetClass "{6BAA39FB58141ABE}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "OwnerNumberLabel"
+         Slot LayoutSlot "{2804ACE6A0559DC6}" {
+         }
+         Color 0.366 0.4024 0.5025 1
+         Text "#ELIFE-Phone_Settings_Number"
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Left
+        }
+        TextWidgetClass "{436D61C2B0E72346}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "OwnerNumberValue"
+         Slot LayoutSlot "{703E8134EB606767}" {
+          Padding 0 4 0 0
+         }
+         Color 0.8378 0.8626 0.9222 1
+         Text ""
+         "Font Size" 44
+         "Min Font Size" 44
+         "Horizontal Alignment" Left
+         FontProperties FontProperties "{46BF8D32E36FE2B3}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{A2F517F2769FA456}" {
+     Name "PinHost"
+     Slot LayoutSlot "{132A630F15EF561E}" {
+      Padding 0 32 0 0
+     }
+     "Is Visible" 0
+    }
+    SizeLayoutWidgetClass "{DFD368BCBA112EBE}" {
+     Name "ContinueSize"
+     Slot LayoutSlot "{98D3240A80E32C54}" {
+      Padding 0 40 0 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 68
+     {
+      OverlayWidgetClass "{6E885B030903CD86}" {
+       Name "ContinueChip"
+       Slot AlignableSlot "{759D062640747250}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        BlurWidgetClass "{84A9F98D9C8B2FBC}" {
+         Name "GlassBlur"
+         Slot OverlayWidgetSlot "{EEFE9C6E9E2C2D3F}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 1 1 1 1
+         Intensity 0.7
+        }
+        SmartPanelWidgetClass "{56E73C23975D5295}" {
+         Name "GlassScrim"
+         Slot OverlayWidgetSlot "{4BD9092320111CD0}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.004 0.0048 0.0075 0.55
+         style rounded_12px
+         "no focus" 1
+        }
+        SmartPanelWidgetClass "{0A2CA9E4D25D4216}" {
+         Name "GlassTint"
+         Slot OverlayWidgetSlot "{35BFAB6E3F4DC1D6}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.5837 0.6453 0.8073 0.14
+         style rounded_12px
+         "no focus" 1
+        }
+        SizeLayoutWidgetClass "{999727C1D4B1C6BC}" {
+         Name "GlassSpecularSize"
+         Slot OverlayWidgetSlot "{1A2CC02FFDBB487E}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 12 0 12 0
+         }
+         AllowHeightOverride 1
+         HeightOverride 2
+         {
+          ImageWidgetClass "{44E9C7BF60B8A47F}" {
+           Name "GlassSpecular"
+           Slot AlignableSlot "{BBD3A5ABDACA44CF}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.8626 0.8964 0.964 0.18
+          }
+         }
+        }
+        SizeLayoutWidgetClass "{6262CEBE438479E9}" {
+         Name "GlassHairlineSize"
+         Slot OverlayWidgetSlot "{AE558D5DF60B61BA}" {
+          HorizontalAlign 3
+          VerticalAlign 2
+          Padding 12 0 12 0
+         }
+         AllowHeightOverride 1
+         HeightOverride 2
+         {
+          ImageWidgetClass "{314CBD40426FCFF5}" {
+           Name "GlassHairline"
+           Slot AlignableSlot "{04453FD1D8E3A7BC}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.0015 0.0021 0.0033 0.26
+          }
+         }
+        }
+        TextWidgetClass "{F6F24B6D981876B6}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "ContinueLabel"
+         Slot OverlayWidgetSlot "{952111B262F8B2C2}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.8378 0.8626 0.9222 1
+         Text "#ELIFE-Phone_Setup_Continue"
+         "Font Size" 24
+         "Min Font Size" 24
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{147433F452F29263}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        ButtonWidgetClass "{DF70D21503D84AA5}" {
+         Name "ButtonContinue"
+         Slot OverlayWidgetSlot "{3E404E454BD02450}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 1 1 1 1
+         components {
+          SCR_ButtonTextComponent "{570FDB87E67D0B6D}" {
+           m_BackgroundDefault 0.910 0.929 0.973 0
+           m_BackgroundHovered 0.910 0.929 0.973 0.10
+           m_BackgroundSelected 0.910 0.929 0.973 0.16
+           m_BackgroundSelectedHovered 0.910 0.929 0.973 0.16
+           m_BackgroundClicked 0.910 0.929 0.973 0.16
+           m_sText ""
+          }
+         }
+         style blank
+         {
+          OverlayWidgetClass "{024BB2C618353688}" {
+           Name "ButtonSurface"
+           Slot ButtonWidgetSlot "{F85914D67E6D88F5}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           {
+            SmartPanelWidgetClass "{872E0B7BEB957A73}" {
+             Name "Background"
+             Slot OverlayWidgetSlot "{E27FFC34292C413C}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0 0 0 0
+             style rounded_12px
+             "no focus" 1
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  VerticalLayoutWidgetClass "{CBE3EE1C3991C26C}" {
+   Name "TourGroup"
+   Slot OverlayWidgetSlot "{ABE0FC482EFF7BB7}" {
+    HorizontalAlign 3
+    VerticalAlign 1
+    Padding 32 0 32 0
+   }
+   "Is Visible" 0
+   {
+    SizeLayoutWidgetClass "{A8008DC609D78AAF}" {
+     Name "TourArrowUpSize"
+     Slot LayoutSlot "{F4AC91885A5BC655}" {
+      HorizontalAlign 1
+     }
+     AllowWidthOverride 1
+     WidthOverride 40
+     AllowHeightOverride 1
+     HeightOverride 40
+     {
+      ImageWidgetClass "{4007205FC9A8BD85}" {
+       Name "TourArrowUp"
+       Slot AlignableSlot "{216ECDFC2C1D0AFC}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.8378 0.8626 0.9222 1
+      }
+     }
+    }
+    OverlayWidgetClass "{0B17ECB7072CEE13}" {
+     Name "TourCard"
+     Slot LayoutSlot "{6B5C1238C757AB0C}" {
+     }
+     {
+      BlurWidgetClass "{4B6468B5D7EDD756}" {
+       Name "GlassBlur"
+       Slot OverlayWidgetSlot "{0BE2A3E1AA290773}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 1 1 1 1
+       Intensity 0.7
+      }
+      SmartPanelWidgetClass "{CD166DAE52764810}" {
+       Name "GlassScrim"
+       Slot OverlayWidgetSlot "{3A47E6F8AD2BB024}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.004 0.0048 0.0075 0.55
+       style rounded_12px
+       "no focus" 1
+      }
+      SmartPanelWidgetClass "{7C524A7301BB765B}" {
+       Name "GlassTint"
+       Slot OverlayWidgetSlot "{865727F026AC4648}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.5837 0.6453 0.8073 0.14
+       style rounded_12px
+       "no focus" 1
+      }
+      SizeLayoutWidgetClass "{C4B0B53FBD7E9E6B}" {
+       Name "GlassSpecularSize"
+       Slot OverlayWidgetSlot "{2C6CFBC859A82F5F}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 12 0 12 0
+       }
+       AllowHeightOverride 1
+       HeightOverride 2
+       {
+        ImageWidgetClass "{E732A480201A1EDD}" {
+         Name "GlassSpecular"
+         Slot AlignableSlot "{7CBAD995EC89EC8A}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.8626 0.8964 0.964 0.18
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{693F572C0A5D4D99}" {
+       Name "GlassHairlineSize"
+       Slot OverlayWidgetSlot "{60E46EF24A0FF759}" {
+        HorizontalAlign 3
+        VerticalAlign 2
+        Padding 12 0 12 0
+       }
+       AllowHeightOverride 1
+       HeightOverride 2
+       {
+        ImageWidgetClass "{F9005E3739A81ABC}" {
+         Name "GlassHairline"
+         Slot AlignableSlot "{DF74B067ABA3F31C}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.0015 0.0021 0.0033 0.26
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{4A08E4E6D2279060}" {
+       Name "TourCardBody"
+       Slot OverlayWidgetSlot "{69E34A7B8E431AC7}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 24 20 24 8
+       }
+       {
+        TextWidgetClass "{3C50D883155F71C5}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "TourCount"
+         Slot LayoutSlot "{879F376EFCB036D9}" {
+         }
+         Color 0.366 0.4024 0.5025 1
+         Text ""
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Left
+        }
+        TextWidgetClass "{EA863B35D2757F68}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "TourTitle"
+         Slot LayoutSlot "{9B012473ACBFAA91}" {
+          Padding 0 6 0 0
+         }
+         Color 0.8378 0.8626 0.9222 1
+         Text ""
+         "Font Size" 30
+         "Min Font Size" 30
+         "Horizontal Alignment" Left
+         FontProperties FontProperties "{7B60A6A8E2E7C1E3}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{424EF626014B7F11}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "TourLine"
+         Slot LayoutSlot "{37834D6BED722187}" {
+          Padding 0 8 0 0
+         }
+         Color 0.8378 0.8626 0.9222 1
+         Text ""
+         "Font Size" 22
+         "Min Font Size" 22
+         "Horizontal Alignment" Left
+        }
+        SizeLayoutWidgetClass "{102E48CA35374FAE}" {
+         Name "TourNextSize"
+         Slot LayoutSlot "{3892A0C029F428D4}" {
+          HorizontalAlign 2
+          Padding 0 8 0 0
+         }
+         AllowWidthOverride 1
+         WidthOverride 140
+         AllowHeightOverride 1
+         HeightOverride 52
+         {
+          OverlayWidgetClass "{02E687A6F7C95C23}" {
+           Name "TourNextFrame"
+           Slot AlignableSlot "{905E853C3FD77CB3}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           {
+            TextWidgetClass "{353E9AEE3A023FF0}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+             Name "TourNextLabel"
+             Slot OverlayWidgetSlot "{CB6442282E74DE1C}" {
+              HorizontalAlign 2
+              VerticalAlign 1
+              Padding 0 0 4 0
+             }
+             Color 0.8378 0.8626 0.9222 1
+             Text ""
+             "Font Size" 22
+             "Min Font Size" 22
+             "Horizontal Alignment" Right
+             FontProperties FontProperties "{FB2C7D3A68F0A4B1}" {
+              Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+             }
+            }
+            ButtonWidgetClass "{41DD9D7ECB9304F0}" {
+             Name "ButtonTourNext"
+             Slot OverlayWidgetSlot "{7515192F2F543EFA}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 1 1 1 1
+             components {
+              SCR_ButtonTextComponent "{1E2EEF2BB2639B8F}" {
+               m_BackgroundDefault 0.910 0.929 0.973 0
+               m_BackgroundHovered 0.910 0.929 0.973 0.10
+               m_BackgroundSelected 0.910 0.929 0.973 0.16
+               m_BackgroundSelectedHovered 0.910 0.929 0.973 0.16
+               m_BackgroundClicked 0.910 0.929 0.973 0.16
+               m_sText ""
+              }
+             }
+             style blank
+             {
+              OverlayWidgetClass "{BB12177B4E1134D6}" {
+               Name "TourNextSurface"
+               Slot ButtonWidgetSlot "{36B591DFA7D8CF33}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               {
+                SmartPanelWidgetClass "{CC94B3A922DC0B5D}" {
+                 Name "Background"
+                 Slot OverlayWidgetSlot "{51A656D2A7798DB0}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                 }
+                 Color 0 0 0 0
+                 style rounded_12px
+                 "no focus" 1
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{DFE2B83F3852C311}" {
+     Name "TourArrowDownSize"
+     Slot LayoutSlot "{DA601FC2DF25888B}" {
+      HorizontalAlign 1
+     }
+     AllowWidthOverride 1
+     WidthOverride 40
+     AllowHeightOverride 1
+     HeightOverride 40
+     {
+      ImageWidgetClass "{89A8796DA0B20319}" {
+       Name "TourArrowDown"
+       Slot AlignableSlot "{E0BD8D882C443FE5}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.8378 0.8626 0.9222 1
+      }
+     }
+    }
+   }
+  }
+ }
+}

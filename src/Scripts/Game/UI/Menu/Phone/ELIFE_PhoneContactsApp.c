@@ -1,0 +1,1603 @@
+//------------------------------------------------------------------------------------------------
+class ELIFE_ContactAddClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneContactsApp m_App;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneContactsApp app)
+	{
+		m_App = app;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App)
+			m_App.OpenForm();
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class ELIFE_ContactRowClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneContactsApp m_App;
+	protected string m_sContactId;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneContactsApp app, string contactId)
+	{
+		m_App = app;
+		m_sContactId = contactId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App && m_sContactId != "")
+			m_App.OpenDetail(m_sContactId);
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class ELIFE_ContactMessageClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneContactsApp m_App;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneContactsApp app)
+	{
+		m_App = app;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App)
+			m_App.MessageOpenContact();
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class ELIFE_ContactFavouriteClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneContactsApp m_App;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneContactsApp app)
+	{
+		m_App = app;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App)
+			m_App.ToggleFavourite();
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class ELIFE_ContactEditClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneContactsApp m_App;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneContactsApp app)
+	{
+		m_App = app;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App)
+			m_App.EditOpenContact();
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class ELIFE_ContactSaveClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneContactsApp m_App;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneContactsApp app)
+	{
+		m_App = app;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App)
+			m_App.SubmitForm();
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! An edit box takes keyboard focus on click, but entering write mode needs an explicit call.
+class ELIFE_PhoneFieldFocus : ScriptedWidgetEventHandler
+{
+	protected Widget m_wRule;
+	protected ref Color m_FocusColor;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(Widget rule, Color focusColor)
+	{
+		m_wRule = rule;
+		m_FocusColor = focusColor;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnFocus(Widget w, int x, int y)
+	{
+		EditBoxWidget field = EditBoxWidget.Cast(w);
+		if (field)
+			field.ActivateWriteMode();
+
+		if (m_wRule && m_FocusColor)
+			m_wRule.SetColor(m_FocusColor);
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnFocusLost(Widget w, int x, int y)
+	{
+		if (m_wRule)
+			m_wRule.SetColor(ELIFE_PhoneStyle.WithAlpha(ELIFE_PhoneStyle.Hairline(), 0.9));
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class ELIFE_PhoneContactsApp : ELIFE_PhoneAppBase
+{
+	protected const ResourceName LAYOUT = "{3F1A6C820D9B4E51}UI/layouts/Menus/Phone/Apps/PhoneContacts.layout";
+	protected const ResourceName LAYOUT_CONTACT_ROW = "{5C2E9A17B4D06F38}UI/layouts/Menus/Phone/Apps/PhoneContactRow.layout";
+
+	//! Wrapper-set sprite names; an unknown name silently draws nothing.
+	protected const string ICON_ADD = "plus";
+	protected const string ICON_SAVE = "check";
+	protected const string ICON_MESSAGE = "comments";
+	protected const string ICON_FAVOURITE = "favourite";
+	protected const string ICON_FAVOURITE_OFF = "favouriteOff";
+
+	//! Sub-states: "" index, SUBSTATE_FORM add form, SUBSTATE_DETAIL_PREFIX + contactId detail page,
+	//! SUBSTATE_EDIT_PREFIX + contactId the same form renaming that contact.
+	protected const string SUBSTATE_FORM = "new";
+	static const string SUBSTATE_DETAIL_PREFIX = "c:";
+	protected const string SUBSTATE_EDIT_PREFIX = "edit:";
+
+	//! The number can't change on a rename, so its field is shown dimmed.
+	protected const float LOCKED_FIELD_OPACITY = 0.5;
+
+	//! Prefilled form for an unsaved number; built by Messages.
+	static const string SUBSTATE_FORM_NUMBER_PREFIX = "new:";
+
+	//! EditBoxFilterComponent can't attach to a bare EditBoxWidget, so lengths are capped here.
+	protected const int MAX_NUMBER_LENGTH = 24;
+	protected const int MAX_NAME_LENGTH = 40;
+
+	//! Write mode is left-aligned, so the name box hugs its text and stays centred.
+	protected const float NAME_FIELD_PAD = 16;
+	protected const float NAME_FIELD_MAX = 432;
+
+	protected ScrollLayoutWidget m_wContactScroll;
+	protected Widget m_wContactGroups;
+	protected Widget m_wEmptyContacts;
+	protected TextWidget m_wIndexTitle;
+
+	protected Widget m_wIndexPage;
+	protected Widget m_wFormPage;
+
+	protected Widget m_wDetailPage;
+	protected ScrollLayoutWidget m_wDetailScroll;
+	protected TextWidget m_wDetailTitle;
+	protected ImageWidget m_wDetailAvatarDisc;
+	protected Widget m_wDetailAvatarFallback;
+	protected TextWidget m_wDetailAvatarGlyph;
+	protected Widget m_wMessageButton;
+	protected ImageWidget m_wMessageDisc;
+	protected Widget m_wMessageFallback;
+	protected ImageWidget m_wMessageHover;
+	protected ImageWidget m_wMessageIcon;
+	protected Widget m_wMessageIconSize;
+	protected Widget m_wMessageGlyph;
+	protected TextWidget m_wMessageLabel;
+	protected ScrollLayoutWidget m_wFormScroll;
+	protected ImageWidget m_wFormAvatarDisc;
+	protected Widget m_wFormAvatarFallback;
+	protected TextWidget m_wFormAvatarGlyph;
+	protected EditBoxWidget m_wNumberField;
+	protected EditBoxWidget m_wNameField;
+	protected SizeLayoutWidget m_wNameFieldSize;
+	protected TextWidget m_wNameFieldMeasure;
+	protected TextWidget m_wFormError;
+	protected string m_sFormError;
+
+	protected ref ELIFE_ContactAddClick m_AddClick;
+	protected ref ELIFE_ContactSaveClick m_SaveClick;
+	protected ref ELIFE_ContactEditClick m_EditClick;
+	protected ref ELIFE_ContactMessageClick m_MessageClick;
+
+	//! Starred contacts sit on the home screen's favourites widget.
+	protected Widget m_wFavouriteButton;
+	protected ImageWidget m_wFavouriteDisc;
+	protected Widget m_wFavouriteFallback;
+	protected ImageWidget m_wFavouriteHover;
+	protected ImageWidget m_wFavouriteIcon;
+	protected TextWidget m_wFavouriteLabel;
+	protected ref ELIFE_ContactFavouriteClick m_FavouriteClick;
+
+	//! The favourites the list was last drawn with; wallpaper or Do Not Disturb changes leave it alone.
+	protected string m_sListedFavourites;
+
+	//! Detail page actions card, owner-only.
+	protected Widget m_wActionsCard;
+	protected Widget m_wBlockButton;
+	protected Widget m_wDeleteButton;
+	protected TextWidget m_wDetailError;
+	protected ref ELIFE_BlockListDto m_Blocks = new ELIFE_BlockListDto();
+
+	//! First tap on Delete only arms it; the second one sends.
+	protected bool m_bDeleteArmed;
+	protected bool m_bDeleting;
+	protected bool m_bBlocking;
+	protected ref array<ref ELIFE_ContactRowClick> m_aRowClicks = {};
+	protected ref ELIFE_PhoneFieldFocus m_NumberFocus;
+	protected ref ELIFE_PhoneFieldFocus m_NameFocus;
+
+	protected bool m_bFormOpen;
+
+	//! Set while the form is renaming this contact rather than adding one.
+	protected string m_sEditContactId;
+	protected string m_sEditOriginalName;
+
+	//! Set when opened prefilled, so GetSubState() reopens the same form on other screens.
+	protected string m_sPrefillNumber;
+
+	//! The contact whose detail page is open, held by contactId. Empty means the index is showing.
+	protected string m_sOpenContactId;
+
+	//! Kept (not local) so FindContact's returned DTO stays alive when FillDetail reads it later.
+	protected ref ELIFE_ContactListDto m_List;
+
+	protected bool m_bSaving;
+	protected int m_iSavingShownAt;
+
+	//! The request's outcome, held until the "Saving…" label has had its minimum time on screen.
+	protected bool m_bHasPendingResult;
+	protected ELIFE_EContactSaveResult m_ePendingResult;
+
+	//------------------------------------------------------------------------------------------------
+	override string GetTitle()
+	{
+		return "#ELIFE-Phone_App_Contacts";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override EPhoneScreenState GetScreenState()
+	{
+		return EPhoneScreenState.CONTACTS;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Form and detail page each count as their own nav level - Back returns to the list, not the app.
+	override bool OnBack()
+	{
+		if (m_bFormOpen)
+		{
+			//! Cancelling a rename keeps the old name and goes back to that contact, unless it's gone.
+			if (m_sEditContactId != "" && FindContact(m_sEditContactId))
+				OpenDetail(m_sEditContactId);
+			else
+				CloseForm();
+
+			return true;
+		}
+
+		if (m_sOpenContactId != "")
+		{
+			ShowIndex();
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Without a value per page, the world render target kept showing the list while owner was on the form.
+	override string GetSubState()
+	{
+		if (m_bFormOpen)
+		{
+			if (m_sEditContactId != "")
+				return SUBSTATE_EDIT_PREFIX + m_sEditContactId;
+
+			if (m_sPrefillNumber != "")
+				return SUBSTATE_FORM_NUMBER_PREFIX + m_sPrefillNumber;
+
+			return SUBSTATE_FORM;
+		}
+
+		if (m_sOpenContactId != "")
+			return SUBSTATE_DETAIL_PREFIX + m_sOpenContactId;
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void ApplySubState(string subState)
+	{
+		if (subState == SUBSTATE_FORM)
+		{
+			OpenForm();
+			return;
+		}
+
+		if (subState.StartsWith(SUBSTATE_FORM_NUMBER_PREFIX))
+		{
+			OpenForm(subState.Substring(SUBSTATE_FORM_NUMBER_PREFIX.Length(), subState.Length() - SUBSTATE_FORM_NUMBER_PREFIX.Length()));
+			return;
+		}
+
+		if (subState.StartsWith(SUBSTATE_DETAIL_PREFIX))
+		{
+			OpenDetail(subState.Substring(SUBSTATE_DETAIL_PREFIX.Length(), subState.Length() - SUBSTATE_DETAIL_PREFIX.Length()));
+			return;
+		}
+
+		if (subState.StartsWith(SUBSTATE_EDIT_PREFIX))
+		{
+			OpenEditForm(subState.Substring(SUBSTATE_EDIT_PREFIX.Length(), subState.Length() - SUBSTATE_EDIT_PREFIX.Length()));
+			return;
+		}
+
+		ShowIndex();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected override Widget CreateRoot(notnull Widget host)
+	{
+		return CreateStretched(LAYOUT, host);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected override void OnOpened()
+	{
+		if (!m_wRoot)
+			return;
+
+		m_wIndexPage = m_wRoot.FindAnyWidget("IndexPage");
+		m_wFormPage = m_wRoot.FindAnyWidget("FormPage");
+		m_wContactScroll = ScrollLayoutWidget.Cast(m_wRoot.FindAnyWidget("ContactScroll"));
+		m_wContactGroups = m_wRoot.FindAnyWidget("ContactGroups");
+		m_wEmptyContacts = m_wRoot.FindAnyWidget("EmptyContacts");
+		m_wIndexTitle = TextWidget.Cast(m_wRoot.FindAnyWidget("LargeTitle"));
+
+		ELIFE_PhoneStyle.ApplyGlass(m_wRoot.FindAnyWidget("NumberCard"), true);
+		ELIFE_PhoneStyle.ApplyGlass(m_wRoot.FindAnyWidget("DetailCard"), true);
+
+		m_wDetailPage = m_wRoot.FindAnyWidget("DetailPage");
+		m_wDetailScroll = ScrollLayoutWidget.Cast(m_wRoot.FindAnyWidget("DetailScroll"));
+		m_wDetailTitle = TextWidget.Cast(m_wRoot.FindAnyWidget("DetailTitle"));
+		m_wDetailAvatarDisc = ImageWidget.Cast(m_wRoot.FindAnyWidget("DetailAvatarDisc"));
+		m_wDetailAvatarFallback = m_wRoot.FindAnyWidget("DetailAvatarFallback");
+		m_wDetailAvatarGlyph = TextWidget.Cast(m_wRoot.FindAnyWidget("DetailAvatarGlyph"));
+		m_wMessageButton = m_wRoot.FindAnyWidget("ButtonMessage");
+		m_wMessageDisc = ImageWidget.Cast(m_wRoot.FindAnyWidget("MessageDisc"));
+		m_wMessageFallback = m_wRoot.FindAnyWidget("MessageFallback");
+		m_wMessageIconSize = m_wRoot.FindAnyWidget("MessageIconSize");
+		m_wMessageIcon = ImageWidget.Cast(m_wRoot.FindAnyWidget("MessageIcon"));
+		m_wMessageGlyph = m_wRoot.FindAnyWidget("MessageGlyph");
+		m_wMessageLabel = TextWidget.Cast(m_wRoot.FindAnyWidget("MessageLabel"));
+
+		Widget messageFrame = m_wRoot.FindAnyWidget("MessageFrame");
+		if (messageFrame)
+			m_wMessageHover = ImageWidget.Cast(messageFrame.FindAnyWidget("Background"));
+
+		m_wFavouriteButton = m_wRoot.FindAnyWidget("ButtonFavourite");
+		m_wFavouriteDisc = ImageWidget.Cast(m_wRoot.FindAnyWidget("FavouriteDisc"));
+		m_wFavouriteFallback = m_wRoot.FindAnyWidget("FavouriteFallback");
+		m_wFavouriteIcon = ImageWidget.Cast(m_wRoot.FindAnyWidget("FavouriteIcon"));
+		m_wFavouriteLabel = TextWidget.Cast(m_wRoot.FindAnyWidget("FavouriteLabel"));
+
+		Widget favouriteFrame = m_wRoot.FindAnyWidget("FavouriteFrame");
+		if (favouriteFrame)
+			m_wFavouriteHover = ImageWidget.Cast(favouriteFrame.FindAnyWidget("Background"));
+
+		m_wFormScroll = ScrollLayoutWidget.Cast(m_wRoot.FindAnyWidget("FormScroll"));
+		m_wFormAvatarDisc = ImageWidget.Cast(m_wRoot.FindAnyWidget("FormAvatarDisc"));
+		m_wFormAvatarFallback = m_wRoot.FindAnyWidget("FormAvatarFallback");
+		m_wFormAvatarGlyph = TextWidget.Cast(m_wRoot.FindAnyWidget("FormAvatarGlyph"));
+		m_wNumberField = EditBoxWidget.Cast(m_wRoot.FindAnyWidget("NumberField"));
+		m_wNameField = EditBoxWidget.Cast(m_wRoot.FindAnyWidget("NameField"));
+		m_wNameFieldSize = SizeLayoutWidget.Cast(m_wRoot.FindAnyWidget("NameFieldSize"));
+		m_wNameFieldMeasure = TextWidget.Cast(m_wRoot.FindAnyWidget("NameFieldMeasure"));
+		m_wFormError = TextWidget.Cast(m_wRoot.FindAnyWidget("FormError"));
+
+		m_NumberFocus = BindField(m_wNumberField, "NumberFieldRule");
+		m_NameFocus = BindField(m_wNameField, "NameFieldRule");
+
+		//! OnChange is reserved on ScriptedWidgetEventHandler, so use the field's SCR_EventHandlerComponent.
+		if (m_wNameField)
+		{
+			SCR_EventHandlerComponent nameEvents = SCR_EventHandlerComponent.Cast(m_wNameField.FindHandler(SCR_EventHandlerComponent));
+			if (nameEvents)
+				nameEvents.GetOnChange().Insert(OnFormNameChanged);
+		}
+
+		if (m_wNumberField)
+		{
+			SCR_EventHandlerComponent numberEvents = SCR_EventHandlerComponent.Cast(m_wNumberField.FindHandler(SCR_EventHandlerComponent));
+			if (numberEvents)
+			{
+				numberEvents.GetOnChange().Insert(OnFormNumberChanged);
+				numberEvents.GetOnFocusLost().Insert(OnFormNumberLeft);
+			}
+		}
+
+		TrackScroll(m_wContactScroll, m_wIndexTitle);
+		ShowAddAction();
+
+		SCR_ButtonTextComponent detailCopyButton = BindCopyControl("DetailCopyIcon", "DetailCopyChipSize", "ButtonDetailCopy");
+		if (detailCopyButton)
+			detailCopyButton.m_OnClicked.Insert(OnDetailCopy);
+
+		BindDetailActions();
+
+		if (!m_Phone)
+			return;
+
+		m_Phone.m_OnDataChanged.Insert(OnDataChanged);
+		m_Phone.m_OnContactSaveResult.Insert(OnContactSaveResult);
+		m_Phone.m_OnContactDeleteResult.Insert(OnContactDeleteResult);
+		m_Phone.m_OnBlockResult.Insert(OnBlockResult);
+		m_Phone.m_OnPersonalizationChanged.Insert(OnPersonalizationChanged);
+
+		//! Draw what we already have, then refresh - the fetch lands later via OnDataChanged.
+		ReadBlocks();
+		Fill();
+		m_Phone.RequestData(ELIFE_PhoneGadgetComponent.DATA_CONTACTS);
+		m_Phone.RequestData(ELIFE_PhoneGadgetComponent.DATA_BLOCKS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void BindDetailActions()
+	{
+		m_wActionsCard = m_wRoot.FindAnyWidget("ActionsCard");
+		m_wBlockButton = m_wRoot.FindAnyWidget("ButtonContactBlock");
+		m_wDeleteButton = m_wRoot.FindAnyWidget("ButtonContactDelete");
+		m_wDetailError = TextWidget.Cast(m_wRoot.FindAnyWidget("DetailError"));
+
+		ELIFE_PhoneStyle.ApplyGlass(m_wActionsCard, true);
+
+		//! Bystander copies can't act on the phone, and their blocklist copy is empty anyway.
+		if (m_wActionsCard)
+			m_wActionsCard.SetVisible(IsOwner());
+
+		SCR_ButtonTextComponent blockButton = SCR_ButtonTextComponent.GetButtonText("ButtonContactBlock", m_wRoot);
+		if (blockButton)
+			blockButton.m_OnClicked.Insert(OnBlockClicked);
+
+		SCR_ButtonTextComponent deleteButton = SCR_ButtonTextComponent.GetButtonText("ButtonContactDelete", m_wRoot);
+		if (deleteButton)
+			deleteButton.m_OnClicked.Insert(OnDeleteClicked);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected override void OnClosing()
+	{
+		if (m_Phone)
+		{
+			m_Phone.m_OnDataChanged.Remove(OnDataChanged);
+			m_Phone.m_OnContactSaveResult.Remove(OnContactSaveResult);
+			m_Phone.m_OnContactDeleteResult.Remove(OnContactDeleteResult);
+			m_Phone.m_OnBlockResult.Remove(OnBlockResult);
+			m_Phone.m_OnPersonalizationChanged.Remove(OnPersonalizationChanged);
+		}
+
+		GetGame().GetCallqueue().Remove(ShowSavingLabel);
+		GetGame().GetCallqueue().Remove(FinishSaving);
+
+		m_wContactScroll = null;
+		m_wContactGroups = null;
+		m_wEmptyContacts = null;
+		m_wIndexTitle = null;
+		m_wIndexPage = null;
+		m_wFormPage = null;
+		m_wFormScroll = null;
+		m_wFormAvatarDisc = null;
+		m_wFormAvatarFallback = null;
+		m_wFormAvatarGlyph = null;
+		m_wNumberField = null;
+		m_wNameField = null;
+		m_wNameFieldSize = null;
+		m_wNameFieldMeasure = null;
+		m_wFormError = null;
+		m_sFormError = "";
+		m_wDetailPage = null;
+		m_wDetailScroll = null;
+		m_wDetailTitle = null;
+		m_wDetailAvatarDisc = null;
+		m_wDetailAvatarFallback = null;
+		m_wDetailAvatarGlyph = null;
+		m_wMessageButton = null;
+		m_wMessageDisc = null;
+		m_wMessageFallback = null;
+		m_wMessageHover = null;
+		m_wMessageIcon = null;
+		m_wMessageIconSize = null;
+		m_wMessageGlyph = null;
+		m_wMessageLabel = null;
+		m_AddClick = null;
+		m_SaveClick = null;
+		m_EditClick = null;
+		m_MessageClick = null;
+		m_wFavouriteButton = null;
+		m_wFavouriteDisc = null;
+		m_wFavouriteFallback = null;
+		m_wFavouriteHover = null;
+		m_wFavouriteIcon = null;
+		m_wFavouriteLabel = null;
+		m_FavouriteClick = null;
+		m_wActionsCard = null;
+		m_wBlockButton = null;
+		m_wDeleteButton = null;
+		m_wDetailError = null;
+		m_Blocks = new ELIFE_BlockListDto();
+		ResetDetailActions();
+		m_aRowClicks.Clear();
+		m_NumberFocus = null;
+		m_NameFocus = null;
+		m_List = null;
+		m_bFormOpen = false;
+		m_sPrefillNumber = "";
+		m_sOpenContactId = "";
+		m_sEditContactId = "";
+		m_sEditOriginalName = "";
+		m_bSaving = false;
+		m_bHasPendingResult = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnDataChanged(string key)
+	{
+		if (key == ELIFE_PhoneGadgetComponent.DATA_CONTACTS)
+			Fill();
+
+		if (key == ELIFE_PhoneGadgetComponent.DATA_BLOCKS)
+		{
+			ReadBlocks();
+			RefreshDetailActions();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ReadBlocks()
+	{
+		m_Blocks = new ELIFE_BlockListDto();
+
+		string json = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_BLOCKS);
+		if (json != "")
+			m_Blocks.ExpandFromRAW(json);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Fill()
+	{
+		ApplyDataStatus(ELIFE_PhoneGadgetComponent.DATA_CONTACTS);
+		m_aRowClicks.Clear();
+		ClearChildren(m_wContactGroups);
+
+		m_List = new ELIFE_ContactListDto();
+		string json = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_CONTACTS);
+		if (json != "")
+			m_List.ExpandFromRAW(json);
+
+		int count = m_List.items.Count();
+
+		if (m_wEmptyContacts)
+			m_wEmptyContacts.SetVisible(count == 0);
+
+		if (!m_wContactGroups || count == 0)
+		{
+			if (m_sOpenContactId != "")
+				ShowIndex();
+
+			return;
+		}
+
+		bool isFirstGroup = true;
+
+		//! Starred contacts first, in the home widget's order; they stay under their letter too.
+		array<string> favourites = {};
+		m_Phone.GetFavourites(favourites);
+		m_sListedFavourites = JoinIds(favourites);
+
+		Widget favouriteList = null;
+		foreach (string favouriteId : favourites)
+		{
+			ELIFE_ContactSummary favourite = FindContact(favouriteId);
+			if (!favourite)
+				continue;
+
+			if (!favouriteList)
+			{
+				favouriteList = CreateListGroup(m_wContactGroups, "#ELIFE-Phone_Contacts_Favourites", isFirstGroup);
+				isFirstGroup = false;
+			}
+
+			if (favouriteList)
+				CreateContactRow(favouriteList, favourite);
+		}
+
+		array<ref ELIFE_ContactSummary> sorted = ELIFE_PhoneContactBook.SortedByLastName(m_List);
+
+		string currentLetter = "";
+		Widget currentList = null;
+
+		for (int i = 0; i < sorted.Count(); i++)
+		{
+			ELIFE_ContactSummary contact = sorted.Get(i);
+			if (!contact)
+				continue;
+
+			string letter = ELIFE_PhoneContactBook.GroupLetter(contact);
+			if (letter != currentLetter || !currentList)
+			{
+				currentLetter = letter;
+				currentList = CreateListGroup(m_wContactGroups, letter, isFirstGroup);
+				isFirstGroup = false;
+			}
+
+			if (currentList)
+				CreateContactRow(currentList, contact);
+		}
+
+		//! A refresh can rename or delete the contact an open detail page is showing, so re-read it.
+		if (m_sOpenContactId != "" && !FillDetail())
+			ShowIndex();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CreateContactRow(notnull Widget list, notnull ELIFE_ContactSummary contact)
+	{
+		//! isLast is always false - these are glass cards, not the hairline-row style it applies to.
+		Widget row = CreateListRow(LAYOUT_CONTACT_ROW, list, false);
+		if (!row)
+			return;
+
+		ELIFE_PhoneStyle.ApplyGlass(row, true);
+
+		string name = ELIFE_PhoneContactBook.DisplayName(contact);
+		SetTextAndColor(row, "ContactName", name, ELIFE_PhoneStyle.TextPrimary());
+		SetTextAndColor(row, "ContactNumber", contact.number, ELIFE_PhoneStyle.TextSecondary());
+		PaintAvatar(row, "ContactAvatarDisc", "ContactAvatarFallback", "ContactAvatarGlyph", name);
+
+		Widget button = row.FindAnyWidget("ContactButton");
+		if (!button)
+			button = row;
+
+		ELIFE_ContactRowClick click = new ELIFE_ContactRowClick();
+		click.Bind(this, ELIFE_PhoneContactBook.KeyFor(contact));
+		button.AddHandler(click);
+		m_aRowClicks.Insert(click);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string JoinIds(notnull array<string> ids)
+	{
+		string joined = "";
+		foreach (string id : ids)
+		{
+			joined += id + ",";
+		}
+
+		return joined;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Starring here or on another screen moves the contact in or out of the Favourites group.
+	protected void OnPersonalizationChanged()
+	{
+		RefreshFavouriteAction();
+
+		if (!m_Phone)
+			return;
+
+		array<string> favourites = {};
+		m_Phone.GetFavourites(favourites);
+		if (JoinIds(favourites) != m_sListedFavourites)
+			Fill();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OpenDetail(string contactId)
+	{
+		if (contactId == "")
+			return;
+
+		m_sOpenContactId = contactId;
+		m_bFormOpen = false;
+		m_sEditContactId = "";
+		CancelSaving();
+		ResetDetailActions();
+
+		GetGame().GetCallqueue().Remove(ResetCopyIcon);
+		ShowCopyIcon(ICON_COPY);
+
+		if (!FillDetail())
+		{
+			m_sOpenContactId = "";
+			return;
+		}
+
+		if (m_wFormPage)
+			m_wFormPage.SetVisible(false);
+
+		if (m_wIndexPage)
+			m_wIndexPage.SetVisible(false);
+
+		if (m_wDetailPage)
+			m_wDetailPage.SetVisible(true);
+
+		TrackScroll(m_wDetailScroll, m_wDetailTitle);
+
+		//! The trailing pill is Edit, the page's one named action, so Message gets its own labelled button.
+		HideNavAction();
+		ShowEditAction();
+		ShowMessageAction();
+		ShowFavouriteAction();
+
+		NotifySubStateChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool FillDetail()
+	{
+		ELIFE_ContactSummary contact = FindContact(m_sOpenContactId);
+		if (!contact)
+			return false;
+
+		string name = ELIFE_PhoneContactBook.DisplayName(contact);
+
+		SetTextAndColor(m_wRoot, "DetailTitle", name, ELIFE_PhoneStyle.TextPrimary());
+		SetTextAndColor(m_wRoot, "DetailNumberLabel", "#ELIFE-Phone_Contacts_Form_Number", ELIFE_PhoneStyle.TextPrimary());
+		SetTextAndColor(m_wRoot, "DetailNumberValue", contact.number, ELIFE_PhoneStyle.TextSecondary());
+
+		PaintHeroAvatar(m_wDetailAvatarDisc, m_wDetailAvatarFallback, m_wDetailAvatarGlyph, name);
+		SyncDetailNavTitle();
+		RefreshDetailActions();
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Leaving or switching the detail page drops any half-finished action.
+	protected void ResetDetailActions()
+	{
+		m_bDeleteArmed = false;
+		m_bDeleting = false;
+		m_bBlocking = false;
+		ShowDetailError("");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RefreshDetailActions()
+	{
+		ELIFE_ContactSummary contact = FindContact(m_sOpenContactId);
+		if (!contact || !IsOwner())
+			return;
+
+		bool blocked = m_Blocks.IsBlocked(contact.number);
+
+		string blockText = "#ELIFE-Phone_Contacts_Block";
+		Color blockColor = ELIFE_PhoneStyle.Negative();
+		if (m_bBlocking)
+		{
+			blockText = "#ELIFE-Phone_Messages_BlockPending";
+			blockColor = ELIFE_PhoneStyle.TextTertiary();
+		}
+		else if (blocked)
+		{
+			blockText = "#ELIFE-Phone_Contacts_Unblock";
+			blockColor = m_Accent;
+		}
+
+		SetTextAndColor(m_wRoot, "ContactBlockLabel", blockText, blockColor);
+
+		string deleteText = "#ELIFE-Phone_Contacts_Delete";
+		Color deleteColor = ELIFE_PhoneStyle.Negative();
+		if (m_bDeleting)
+		{
+			deleteText = "#ELIFE-Phone_Contacts_Deleting";
+			deleteColor = ELIFE_PhoneStyle.TextTertiary();
+		}
+		else if (m_bDeleteArmed)
+		{
+			deleteText = "#ELIFE-Phone_Contacts_DeleteConfirm";
+		}
+
+		SetTextAndColor(m_wRoot, "ContactDeleteLabel", deleteText, deleteColor);
+
+		//! One request at a time from this card.
+		bool idle = !m_bBlocking && !m_bDeleting;
+		if (m_wBlockButton)
+			m_wBlockButton.SetEnabled(idle);
+
+		if (m_wDeleteButton)
+			m_wDeleteButton.SetEnabled(idle);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnBlockClicked()
+	{
+		if (m_bBlocking || m_bDeleting || !m_Phone || !IsOwner())
+			return;
+
+		ELIFE_ContactSummary contact = FindContact(m_sOpenContactId);
+		if (!contact || contact.number == "")
+			return;
+
+		m_bDeleteArmed = false;
+		m_bBlocking = true;
+		ShowDetailError("");
+		RefreshDetailActions();
+
+		m_Phone.SetNumberBlocked(contact.number, !m_Blocks.IsBlocked(contact.number));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The blocklist push can trail the result, so success is applied locally; the push confirms it.
+	protected void OnBlockResult(string number, bool blocked, bool succeeded)
+	{
+		if (!m_wRoot || !m_bBlocking)
+			return;
+
+		m_bBlocking = false;
+
+		if (succeeded)
+			m_Blocks = m_Blocks.With(number, blocked);
+		else
+			ShowDetailError("#ELIFE-Phone_Contacts_BlockError");
+
+		RefreshDetailActions();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! First tap arms, second tap sends - there's no undo for a delete.
+	protected void OnDeleteClicked()
+	{
+		if (m_bBlocking || m_bDeleting || !m_Phone || !IsOwner())
+			return;
+
+		ELIFE_ContactSummary contact = FindContact(m_sOpenContactId);
+		if (!contact || contact.contactId == "")
+			return;
+
+		ShowDetailError("");
+
+		if (!m_bDeleteArmed)
+		{
+			m_bDeleteArmed = true;
+			RefreshDetailActions();
+			return;
+		}
+
+		m_bDeleteArmed = false;
+		m_bDeleting = true;
+		RefreshDetailActions();
+
+		m_Phone.DeleteContact(contact.contactId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Success returns to the list, where the refetch drops the row.
+	protected void OnContactDeleteResult(bool deleted)
+	{
+		if (!m_wRoot || !m_bDeleting)
+			return;
+
+		m_bDeleting = false;
+
+		if (deleted)
+		{
+			ShowIndex();
+			return;
+		}
+
+		ShowDetailError("#ELIFE-Phone_Contacts_DeleteError");
+		RefreshDetailActions();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowDetailError(string text)
+	{
+		if (!m_wDetailError)
+			return;
+
+		m_wDetailError.SetVisible(text != "");
+		m_wDetailError.SetText(text);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnDetailCopy()
+	{
+		if (!IsOwner())
+			return;
+
+		ELIFE_ContactSummary contact = FindContact(m_sOpenContactId);
+		if (contact)
+			CopyToClipboard(contact.number);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Keeps the collapsed nav title in sync after a rename.
+	protected void SyncDetailNavTitle()
+	{
+		if (m_wNavTitle && m_wDetailTitle)
+			m_wNavTitle.SetText(m_wDetailTitle.GetText());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnFormNameChanged(Widget w)
+	{
+		string name = "";
+		if (m_wNameField)
+			name = m_wNameField.GetText();
+
+		PaintFormAvatar(name);
+		FitNameField();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sized to the string so the caret follows centred text.
+	protected void FitNameField()
+	{
+		if (!m_wNameField || !m_wNameFieldSize || !m_wNameFieldMeasure)
+			return;
+
+		string shown = m_wNameField.GetText();
+		if (shown == "")
+			shown = m_wNameField.GetPlaceholderText();
+
+		m_wNameFieldMeasure.SetText(shown);
+
+		float textWidth, textHeight;
+		m_wNameFieldMeasure.GetTextSize(textWidth, textHeight);
+
+		float width = textWidth + NAME_FIELD_PAD;
+		if (width > NAME_FIELD_MAX)
+			width = NAME_FIELD_MAX;
+
+		m_wNameFieldSize.SetWidthOverride(width);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnFormNumberChanged(Widget w)
+	{
+		RefreshNumberError(false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnFormNumberLeft(Widget w)
+	{
+		RefreshNumberError(true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Only flag the number once the field is left, or once it's too long to ever be valid.
+	protected void RefreshNumberError(bool leaving)
+	{
+		string number = "";
+		if (m_wNumberField)
+			number = m_wNumberField.GetText();
+
+		if (number == "" || ELIFE_PhoneNumber.IsWellFormed(number))
+		{
+			if (m_sFormError == "#ELIFE-Phone_Contacts_Form_InvalidNumber")
+				ShowFormError("");
+
+			return;
+		}
+
+		if (leaving || CountDigits(number) > ELIFE_PhoneNumber.DIGIT_COUNT)
+			ShowFormError("#ELIFE-Phone_Contacts_Form_InvalidNumber");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int CountDigits(string raw)
+	{
+		int digits;
+		int length = raw.Length();
+		for (int i = 0; i < length; i++)
+		{
+			if ("0123456789".IndexOf(raw.Substring(i, 1)) != -1)
+				digits++;
+		}
+
+		return digits;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PaintFormAvatar(string displayName)
+	{
+		PaintHeroAvatar(m_wFormAvatarDisc, m_wFormAvatarFallback, m_wFormAvatarGlyph, displayName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Same monogram as the list row, but hero-sized on a real circle instead of the row's rounded square.
+	protected void PaintHeroAvatar(ImageWidget disc, Widget fallback, TextWidget glyph, string displayName)
+	{
+		Color fill = ELIFE_PhoneStyle.AccentDeepFor(GetScreenState());
+
+		bool round = false;
+		if (disc)
+		{
+			round = disc.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
+			disc.SetVisible(round);
+			disc.SetColor(fill);
+		}
+
+		if (fallback)
+		{
+			fallback.SetVisible(!round);
+			fallback.SetColor(fill);
+		}
+
+		if (glyph)
+		{
+			glyph.SetText(Initials(displayName));
+			glyph.SetColor(ELIFE_PhoneStyle.TextPrimary());
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected ELIFE_ContactSummary FindContact(string contactId)
+	{
+		if (contactId == "" || !m_List)
+			return null;
+
+		foreach (ELIFE_ContactSummary contact : m_List.items)
+		{
+			if (!contact)
+				continue;
+
+			if (contact.contactId == contactId || contact.number == contactId)
+				return contact;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Icon-only circle like the Add FAB, but in MESSAGES' accent since it's a door into that app.
+	protected void ShowMessageAction()
+	{
+		if (!m_MessageClick)
+		{
+			m_MessageClick = new ELIFE_ContactMessageClick();
+			m_MessageClick.Bind(this);
+
+			if (m_wMessageButton)
+				m_wMessageButton.AddHandler(m_MessageClick);
+		}
+
+		Color fill = ELIFE_PhoneStyle.AccentDeepFor(EPhoneScreenState.MESSAGES);
+
+		bool round = false;
+		if (m_wMessageDisc)
+		{
+			round = m_wMessageDisc.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
+			m_wMessageDisc.SetVisible(round);
+			m_wMessageDisc.SetColor(fill);
+		}
+
+		if (m_wMessageFallback)
+		{
+			m_wMessageFallback.SetVisible(!round);
+			m_wMessageFallback.SetColor(fill);
+		}
+
+		if (m_wMessageHover)
+			m_wMessageHover.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
+
+		bool iconLoaded = false;
+		if (m_wMessageIcon)
+		{
+			iconLoaded = m_wMessageIcon.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_MESSAGE);
+			if (iconLoaded)
+			{
+				m_wMessageIcon.SetColor(ELIFE_PhoneStyle.TextPrimary());
+				ELIFE_PhoneStyle.FitIcon(m_wMessageIcon, 32);
+			}
+		}
+
+		//! The wrapper carries the visibility - a hidden wrapper hides a perfectly loaded child.
+		if (m_wMessageIconSize)
+			m_wMessageIconSize.SetVisible(iconLoaded);
+
+		//! Never an empty circle: if the sprite ever goes missing the glyph takes the ink instead.
+		if (m_wMessageGlyph)
+			m_wMessageGlyph.SetVisible(!iconLoaded);
+
+		//! Caption is a child of the button, so it takes the destination app's accent along with the disc.
+		if (m_wMessageLabel)
+			m_wMessageLabel.SetColor(ELIFE_PhoneStyle.AccentFor(EPhoneScreenState.MESSAGES));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowFavouriteAction()
+	{
+		if (!m_FavouriteClick && m_wFavouriteButton)
+		{
+			m_FavouriteClick = new ELIFE_ContactFavouriteClick();
+			m_FavouriteClick.Bind(this);
+			m_wFavouriteButton.AddHandler(m_FavouriteClick);
+		}
+
+		if (m_wFavouriteHover)
+			m_wFavouriteHover.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
+
+		RefreshFavouriteAction();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Filled in Contacts' accent while starred; the phone's list is the truth, so it follows bystanders too.
+	protected void RefreshFavouriteAction()
+	{
+		if (!m_Phone)
+			return;
+
+		bool starred = m_Phone.IsFavourite(m_sOpenContactId);
+
+		Color fill = ELIFE_PhoneStyle.Hairline();
+		string icon = ICON_FAVOURITE_OFF;
+		Color labelColor = ELIFE_PhoneStyle.TextSecondary();
+		if (starred)
+		{
+			fill = ELIFE_PhoneStyle.AccentDeepFor(EPhoneScreenState.CONTACTS);
+			icon = ICON_FAVOURITE;
+			labelColor = ELIFE_PhoneStyle.AccentFor(EPhoneScreenState.CONTACTS);
+		}
+
+		bool round = false;
+		if (m_wFavouriteDisc)
+		{
+			round = m_wFavouriteDisc.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
+			m_wFavouriteDisc.SetVisible(round);
+			m_wFavouriteDisc.SetColor(fill);
+		}
+
+		if (m_wFavouriteFallback)
+		{
+			m_wFavouriteFallback.SetVisible(!round);
+			m_wFavouriteFallback.SetColor(fill);
+		}
+
+		bool iconLoaded = m_wFavouriteIcon && m_wFavouriteIcon.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, icon);
+		if (iconLoaded)
+		{
+			m_wFavouriteIcon.SetColor(ELIFE_PhoneStyle.TextPrimary());
+			ELIFE_PhoneStyle.FitIcon(m_wFavouriteIcon, 32);
+		}
+
+		//! The wrapper carries the visibility, as for Message.
+		SetVisibleOf("FavouriteIconSize", iconLoaded);
+		SetVisibleOf("FavouriteGlyph", !iconLoaded);
+
+		//! Only real ids can be starred.
+		ELIFE_ContactSummary contact = FindContact(m_sOpenContactId);
+		SetVisibleOf("ActionFavouriteSize", contact && contact.contactId != "");
+
+		if (m_wFavouriteLabel)
+			m_wFavouriteLabel.SetColor(labelColor);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void ToggleFavourite()
+	{
+		//! m_sOpenContactId falls back to the number for id-less contacts, and favourites replicate to bystanders.
+		ELIFE_ContactSummary contact = FindContact(m_sOpenContactId);
+		if (m_Phone && contact && contact.contactId != "")
+			m_Phone.SetFavourite(contact.contactId, !m_Phone.IsFavourite(contact.contactId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetVisibleOf(string widgetName, bool visible)
+	{
+		if (!m_wRoot)
+			return;
+
+		Widget widget = m_wRoot.FindAnyWidget(widgetName);
+		if (widget)
+			widget.SetVisible(visible);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hands off by contactId - sub-state replicates, and a raw number would show on bystanders' screens.
+	void MessageOpenContact()
+	{
+		if (m_sOpenContactId == "")
+			return;
+
+		OpenAppPage(EPhoneScreenState.MESSAGES, ELIFE_PhoneMessagesApp.SUBSTATE_CONTACT_PREFIX + m_sOpenContactId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowEditAction()
+	{
+		if (!m_EditClick)
+		{
+			m_EditClick = new ELIFE_ContactEditClick();
+			m_EditClick.Bind(this);
+		}
+
+		ShowNavAction("#ELIFE-Phone_Contacts_Edit", m_Accent, m_EditClick);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void EditOpenContact()
+	{
+		if (m_sOpenContactId != "")
+			OpenEditForm(m_sOpenContactId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The add form, prefilled, with the number locked: a rename only changes the name.
+	protected void OpenEditForm(string contactId)
+	{
+		ELIFE_ContactSummary contact = FindContact(contactId);
+		if (contact)
+			OpenForm(contact.number, contactId, ELIFE_PhoneContactBook.DisplayName(contact));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetNumberLocked(bool locked)
+	{
+		if (m_wNumberField)
+		{
+			m_wNumberField.SetEnabled(!locked);
+
+			float opacity = 1;
+			if (locked)
+				opacity = LOCKED_FIELD_OPACITY;
+
+			m_wNumberField.SetOpacity(opacity);
+		}
+
+		SetVisibleOf("NumberFieldRule", !locked);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowIndex()
+	{
+		m_bFormOpen = false;
+		m_sPrefillNumber = "";
+		m_sOpenContactId = "";
+		m_sEditContactId = "";
+		CancelSaving();
+		ResetDetailActions();
+
+		if (m_wFormPage)
+			m_wFormPage.SetVisible(false);
+
+		if (m_wDetailPage)
+			m_wDetailPage.SetVisible(false);
+
+		if (m_wIndexPage)
+			m_wIndexPage.SetVisible(true);
+
+		if (m_wNavTitle)
+			m_wNavTitle.SetText(GetTitle());
+
+		TrackScroll(m_wContactScroll, m_wIndexTitle);
+		ShowAddAction();
+
+		NotifySubStateChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Returns the handler so the app can hold it - a collected handler stops firing, silently.
+	protected ELIFE_PhoneFieldFocus BindField(EditBoxWidget field, string ruleName)
+	{
+		if (!field || !m_wRoot)
+			return null;
+
+		ELIFE_PhoneFieldFocus focus = new ELIFE_PhoneFieldFocus();
+		focus.Bind(m_wRoot.FindAnyWidget(ruleName), m_Accent);
+		field.AddHandler(focus);
+
+		return focus;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Index's commit-free "+" lives in the shared nav trailing pill, same slot the form's "Save" claims.
+	protected void ShowAddAction()
+	{
+		if (!m_AddClick)
+		{
+			m_AddClick = new ELIFE_ContactAddClick();
+			m_AddClick.Bind(this);
+		}
+
+		ShowNavAction("#ELIFE-Phone_Contacts_Index_Add", m_Accent, m_AddClick, ICON_ADD);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! prefillNumber is Messages' hand-off for a number it doesn't recognize - empty for the normal Add.
+	//! editContactId renames that contact instead; prefillName is its current name.
+	void OpenForm(string prefillNumber = "", string editContactId = "", string prefillName = "")
+	{
+		//! Also swallows the echo of this same form coming back from the server.
+		if (m_bFormOpen && m_sEditContactId == editContactId)
+			return;
+
+		m_bFormOpen = true;
+		m_sOpenContactId = "";
+		m_sEditContactId = editContactId;
+		m_sEditOriginalName = prefillName;
+		SetNumberLocked(editContactId != "");
+
+		m_sPrefillNumber = "";
+		if (editContactId == "")
+			m_sPrefillNumber = prefillNumber;
+
+		if (m_wDetailPage)
+			m_wDetailPage.SetVisible(false);
+
+		if (m_wNumberField)
+			m_wNumberField.SetText(prefillNumber);
+
+		if (m_wNameField)
+			m_wNameField.SetText(prefillName);
+
+		PaintFormAvatar(prefillName);
+		FitNameField();
+		ShowFormError("");
+
+		if (m_wIndexPage)
+			m_wIndexPage.SetVisible(false);
+
+		if (m_wFormPage)
+			m_wFormPage.SetVisible(true);
+
+		string formTitle = "#ELIFE-Phone_Contacts_Form_Title";
+		if (editContactId != "")
+			formTitle = "#ELIFE-Phone_Contacts_Edit_Title";
+
+		if (m_wNavTitle)
+			m_wNavTitle.SetText(formTitle);
+
+		//! No large title; the name is the heading and the nav bar shows the form's title when collapsed.
+		TrackScroll(m_wFormScroll, null);
+
+		if (!m_SaveClick)
+		{
+			m_SaveClick = new ELIFE_ContactSaveClick();
+			m_SaveClick.Bind(this);
+		}
+
+		ShowNavAction("#ELIFE-Phone_Contacts_Form_Save", m_Accent, m_SaveClick, ICON_SAVE);
+
+		NotifySubStateChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CloseForm()
+	{
+		ShowIndex();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SubmitForm()
+	{
+		if (m_bSaving || !m_Phone)
+			return;
+
+		string number = "";
+		if (m_wNumberField)
+			number = m_wNumberField.GetText();
+
+		string displayName = "";
+		if (m_wNameField)
+			displayName = m_wNameField.GetText();
+
+		if (number == "" || displayName == "")
+		{
+			ShowFormError("#ELIFE-Phone_Contacts_Form_Incomplete");
+			return;
+		}
+
+		if (m_sEditContactId != "")
+		{
+			SubmitRename(displayName);
+			return;
+		}
+
+		if (number.Length() > MAX_NUMBER_LENGTH)
+			number = number.Substring(0, MAX_NUMBER_LENGTH);
+
+		if (displayName.Length() > MAX_NAME_LENGTH)
+			displayName = displayName.Substring(0, MAX_NAME_LENGTH);
+
+		//! Backend still rejects a malformed number with 400; this just catches a typo without the round trip.
+		if (!ELIFE_PhoneNumber.IsWellFormed(number))
+		{
+			ShowFormError("#ELIFE-Phone_Contacts_Form_InvalidNumber");
+			return;
+		}
+
+		ShowFormError("");
+		BeginSaving();
+
+		m_Phone.SaveContact(number, displayName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An unchanged name needs no request; back to the contact as if it had saved.
+	protected void SubmitRename(string displayName)
+	{
+		if (displayName.Length() > MAX_NAME_LENGTH)
+			displayName = displayName.Substring(0, MAX_NAME_LENGTH);
+
+		if (displayName == m_sEditOriginalName)
+		{
+			OpenDetail(m_sEditContactId);
+			return;
+		}
+
+		ShowFormError("");
+		BeginSaving();
+
+		m_Phone.RenameContact(m_sEditContactId, displayName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Held rather than applied immediately, so a "Saving…" label gets its minimum time on screen.
+	protected void OnContactSaveResult(ELIFE_EContactSaveResult result)
+	{
+		if (!m_wRoot || !m_bSaving)
+			return;
+
+		m_bHasPendingResult = true;
+		m_ePendingResult = result;
+
+		EndSaving();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Label only shows after SPINNER_DELAY_MS - most saves resolve before that and never flash it.
+	protected void BeginSaving()
+	{
+		m_bSaving = true;
+		m_iSavingShownAt = 0;
+		m_bHasPendingResult = false;
+		SetNavActionEnabled(false);
+
+		GetGame().GetCallqueue().Remove(ShowSavingLabel);
+		GetGame().GetCallqueue().Remove(FinishSaving);
+		GetGame().GetCallqueue().CallLater(ShowSavingLabel, ELIFE_PhoneStyle.SPINNER_DELAY_MS, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowSavingLabel()
+	{
+		if (!m_bSaving)
+			return;
+
+		m_iSavingShownAt = System.GetTickCount();
+		SetNavActionLabel("#ELIFE-Phone_Contacts_Form_Saving", m_Accent, ICON_SAVE);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Keeps "Saving…" up for SPINNER_MIN_VISIBLE_MS once it has appeared.
+	protected void EndSaving()
+	{
+		GetGame().GetCallqueue().Remove(ShowSavingLabel);
+
+		if (!m_bSaving)
+			return;
+
+		if (m_iSavingShownAt > 0)
+		{
+			int shownFor = System.GetTickCount() - m_iSavingShownAt;
+			if (shownFor < ELIFE_PhoneStyle.SPINNER_MIN_VISIBLE_MS)
+			{
+				GetGame().GetCallqueue().Remove(FinishSaving);
+				GetGame().GetCallqueue().CallLater(FinishSaving, ELIFE_PhoneStyle.SPINNER_MIN_VISIBLE_MS - shownFor, false);
+				return;
+			}
+		}
+
+		FinishSaving();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Success closes the form - the new row appearing behind it is confirmation enough.
+	protected void FinishSaving()
+	{
+		GetGame().GetCallqueue().Remove(FinishSaving);
+
+		m_bSaving = false;
+		m_iSavingShownAt = 0;
+		SetNavActionEnabled(true);
+
+		if (m_bFormOpen)
+			SetNavActionLabel("#ELIFE-Phone_Contacts_Form_Save", m_Accent, ICON_SAVE);
+
+		if (!m_bHasPendingResult)
+			return;
+
+		m_bHasPendingResult = false;
+
+		if (m_ePendingResult != ELIFE_EContactSaveResult.SAVED)
+		{
+			ShowFormError(FailureText(m_ePendingResult));
+			return;
+		}
+
+		//! A rename lands back on the contact, already showing the new name - the gadget pushed it first.
+		if (m_sEditContactId != "")
+			OpenDetail(m_sEditContactId);
+		else
+			CloseForm();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Backing out mid-request: stop tracking the save so its response is ignored when it lands.
+	protected void CancelSaving()
+	{
+		GetGame().GetCallqueue().Remove(ShowSavingLabel);
+		GetGame().GetCallqueue().Remove(FinishSaving);
+
+		m_bSaving = false;
+		m_iSavingShownAt = 0;
+		m_bHasPendingResult = false;
+		SetNavActionEnabled(true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string FailureText(ELIFE_EContactSaveResult result)
+	{
+		if (result == ELIFE_EContactSaveResult.INVALID_NUMBER)
+			return "#ELIFE-Phone_Contacts_Form_InvalidNumber";
+
+		if (result == ELIFE_EContactSaveResult.DUPLICATE)
+			return "#ELIFE-Phone_Contacts_Form_Duplicate";
+
+		if (result == ELIFE_EContactSaveResult.INVALID_NAME)
+			return "#ELIFE-Phone_Contacts_Form_InvalidName";
+
+		if (result == ELIFE_EContactSaveResult.NOT_FOUND)
+			return "#ELIFE-Phone_Contacts_Edit_Gone";
+
+		return "#ELIFE-Phone_Contacts_Form_SaveError";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowFormError(string text)
+	{
+		m_sFormError = text;
+
+		if (!m_wFormError)
+			return;
+
+		m_wFormError.SetVisible(text != "");
+		m_wFormError.SetText(text);
+	}
+}

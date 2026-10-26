@@ -1,0 +1,484 @@
+OverlayWidgetClass {
+ Name "PinEntry"
+ {
+  VerticalLayoutWidgetClass "{1DE9259519EC230D}" {
+   Name "PinPad"
+   Slot OverlayWidgetSlot "{F5EC1F6AB7EA3882}" {
+    HorizontalAlign 3
+    VerticalAlign 2
+   }
+   {
+    TextWidgetClass "{C786EBB8F179D47E}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+     Name "PinStatus"
+     Slot LayoutSlot "{2EF7B9D9B1B0BE13}" {
+      HorizontalAlign 1
+     }
+     Color 0.366 0.4024 0.5025 1
+     Text ""
+     "Font Size" 18
+     "Min Font Size" 18
+     "Horizontal Alignment" Center
+    }
+    HorizontalLayoutWidgetClass "{22C069201734DC86}" {
+     Name "PinDots"
+     Slot LayoutSlot "{BDE2DD7F6CC8494F}" {
+      HorizontalAlign 1
+      Padding 0 16 0 24
+     }
+     {
+      SizeLayoutWidgetClass "{655E51E612CE07BF}" {
+       Name "PinDot0Size"
+       Slot LayoutSlot "{9FC607742D3596D1}" {
+        Padding 0 0 16 0
+       }
+       AllowWidthOverride 1
+       WidthOverride 16
+       AllowHeightOverride 1
+       HeightOverride 16
+       {
+        SmartPanelWidgetClass "{2C61470F8BD309CF}" {
+         Name "PinDot0"
+         Slot AlignableSlot "{5A8D3E53DBB24E90}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.0383 0.0466 0.0723 1
+         style rounded_12px
+         "no focus" 1
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{A4165987309A885A}" {
+       Name "PinDot1Size"
+       Slot LayoutSlot "{E4C3EEAA1F1D570A}" {
+        Padding 0 0 16 0
+       }
+       AllowWidthOverride 1
+       WidthOverride 16
+       AllowHeightOverride 1
+       HeightOverride 16
+       {
+        SmartPanelWidgetClass "{C7BC78627951C29E}" {
+         Name "PinDot1"
+         Slot AlignableSlot "{FF0B6B4FA6130DA6}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.0383 0.0466 0.0723 1
+         style rounded_12px
+         "no focus" 1
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{80D7D212FCA01AE6}" {
+       Name "PinDot2Size"
+       Slot LayoutSlot "{806A9960589C3161}" {
+        Padding 0 0 16 0
+       }
+       AllowWidthOverride 1
+       WidthOverride 16
+       AllowHeightOverride 1
+       HeightOverride 16
+       {
+        SmartPanelWidgetClass "{0FE2FF0355AB2390}" {
+         Name "PinDot2"
+         Slot AlignableSlot "{4E9CC5E896487C81}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.0383 0.0466 0.0723 1
+         style rounded_12px
+         "no focus" 1
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{7072A64A5624F438}" {
+       Name "PinDot3Size"
+       Slot LayoutSlot "{A1FD69F93BE347A5}" {
+       }
+       AllowWidthOverride 1
+       WidthOverride 16
+       AllowHeightOverride 1
+       HeightOverride 16
+       {
+        SmartPanelWidgetClass "{8052F6F5F035BB8E}" {
+         Name "PinDot3"
+         Slot AlignableSlot "{6172EBA1163F0507}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.0383 0.0466 0.0723 1
+         style rounded_12px
+         "no focus" 1
+        }
+       }
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{375ECFF2A5B5DDD8}" {
+     Name "PinRows"
+     Slot LayoutSlot "{B54629C5DF2C4249}" {
+      HorizontalAlign 1
+     }
+    }
+    SizeLayoutWidgetClass "{500BA10A74F6EF6C}" {
+     Name "NoPinSize"
+     Slot LayoutSlot "{4ACB5C2456DB3085}" {
+      HorizontalAlign 1
+      Padding 0 12 0 0
+     }
+     AllowWidthOverride 1
+     WidthOverride 400
+     AllowHeightOverride 1
+     HeightOverride 60
+     {
+      OverlayWidgetClass "{176F22720B36802A}" {
+       Name "NoPinFrame"
+       Slot AlignableSlot "{745BF758DC5183E0}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        TextWidgetClass "{D686CACBD136C279}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "NoPinLabel"
+         Slot OverlayWidgetSlot "{E8E820B9C1C60838}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+          Padding 16 0 16 0
+         }
+         Color 0.8378 0.8626 0.9222 1
+         Text ""
+         "Font Size" 22
+         "Min Font Size" 22
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{8503855D19BAE503}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        ButtonWidgetClass "{74A677A443DEA276}" {
+         Name "ButtonNoPin"
+         Slot OverlayWidgetSlot "{D314F7A0D484D8A2}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 1 1 1 1
+         components {
+          SCR_ButtonTextComponent "{455ED45E40F174CE}" {
+           m_BackgroundDefault 0.910 0.929 0.973 0
+           m_BackgroundHovered 0.910 0.929 0.973 0.08
+           m_BackgroundSelected 0.910 0.929 0.973 0.14
+           m_BackgroundSelectedHovered 0.910 0.929 0.973 0.14
+           m_BackgroundClicked 0.910 0.929 0.973 0.14
+           m_sText ""
+          }
+         }
+         style blank
+         {
+          OverlayWidgetClass "{7003D792B817941F}" {
+           Name "NoPinSurface"
+           Slot ButtonWidgetSlot "{5AA7E9F693582B39}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           {
+            SmartPanelWidgetClass "{40A9DDD27B94B057}" {
+             Name "Background"
+             Slot OverlayWidgetSlot "{0990847BAC18D21E}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0 0 0 0
+             style rounded_12px
+             "no focus" 1
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  OverlayWidgetClass "{11E070DAFF37D098}" {
+   Name "NoPinCard"
+   Slot OverlayWidgetSlot "{8E20933F6FACA923}" {
+    HorizontalAlign 3
+    VerticalAlign 2
+   }
+   "Is Visible" 0
+   {
+    BlurWidgetClass "{4ACCD31B0AD100EE}" {
+     Name "GlassBlur"
+     Slot OverlayWidgetSlot "{C89EF580D3715C12}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 1
+     Intensity 0.7
+    }
+    SmartPanelWidgetClass "{08918F36977052E1}" {
+     Name "GlassScrim"
+     Slot OverlayWidgetSlot "{CEBC1CF43064D80B}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.004 0.0048 0.0075 0.55
+     style rounded_12px
+     "no focus" 1
+    }
+    SmartPanelWidgetClass "{CBCF2E3F02174718}" {
+     Name "GlassTint"
+     Slot OverlayWidgetSlot "{5250F2FCC3EE2767}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.5837 0.6453 0.8073 0.14
+     style rounded_12px
+     "no focus" 1
+    }
+    SizeLayoutWidgetClass "{568B3E7B83AB054D}" {
+     Name "GlassSpecularSize"
+     Slot OverlayWidgetSlot "{C6CC26CE2DEE23A8}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+      Padding 12 0 12 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 2
+     {
+      ImageWidgetClass "{3E68667E591B580F}" {
+       Name "GlassSpecular"
+       Slot AlignableSlot "{51352BEF5FD29DE2}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.8626 0.8964 0.964 0.18
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{E9AA52BC40A5F8B6}" {
+     Name "GlassHairlineSize"
+     Slot OverlayWidgetSlot "{649AF1E0B67E101A}" {
+      HorizontalAlign 3
+      VerticalAlign 2
+      Padding 12 0 12 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 2
+     {
+      ImageWidgetClass "{F4141010FD8DBE21}" {
+       Name "GlassHairline"
+       Slot AlignableSlot "{EB4079B818851A35}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0015 0.0021 0.0033 0.26
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{82FF9D7EDC202360}" {
+     Name "NoPinCardBody"
+     Slot OverlayWidgetSlot "{449E747A4EF8B264}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+      Padding 24 24 24 8
+     }
+     {
+      TextWidgetClass "{9E2ACC9351E6EAE6}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "NoPinTitle"
+       Slot LayoutSlot "{C6FE8C3E0C27A562}" {
+       }
+       Color 0.8378 0.8626 0.9222 1
+       Text ""
+       "Font Size" 30
+       "Min Font Size" 30
+       "Horizontal Alignment" Left
+       FontProperties FontProperties "{1D5233E243144C3F}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{A989C06628E4D4D7}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "NoPinLine"
+       Slot LayoutSlot "{3264E0DDD89FD690}" {
+        Padding 0 8 0 0
+       }
+       Color 0.8378 0.8626 0.9222 1
+       Text ""
+       "Font Size" 22
+       "Min Font Size" 22
+       "Horizontal Alignment" Left
+      }
+      SizeLayoutWidgetClass "{538E833B1E4827FD}" {
+       Name "NoPinHairlineSize"
+       Slot LayoutSlot "{B025F57F8F8E159F}" {
+        Padding 0 16 0 0
+       }
+       AllowHeightOverride 1
+       HeightOverride 2
+       {
+        ImageWidgetClass "{51FF937DEEA45F09}" {
+         Name "NoPinHairline"
+         Slot AlignableSlot "{5EA345FA0D1C79D0}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.0383 0.0466 0.0723 0.9
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{C6D0ACE47F7B6E8F}" {
+       Name "NoPinConfirmSize"
+       Slot LayoutSlot "{5C7B112AE960DC4E}" {
+       }
+       AllowHeightOverride 1
+       HeightOverride 60
+       {
+        OverlayWidgetClass "{831779FFE6551AA4}" {
+         Name "NoPinConfirmFrame"
+         Slot AlignableSlot "{DABCAD288D599DBA}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         {
+          TextWidgetClass "{A62A2A42512665BB}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "NoPinConfirmLabel"
+           Slot OverlayWidgetSlot "{6115164A217ABF4D}" {
+            HorizontalAlign 1
+            VerticalAlign 1
+            Padding 16 0 16 0
+           }
+           Color 0.7756 0.2912 0.2622 1
+           Text ""
+           "Font Size" 22
+           "Min Font Size" 22
+           "Horizontal Alignment" Center
+           FontProperties FontProperties "{2F3F0D77F8CD0D08}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          ButtonWidgetClass "{EBA31637F6D0CC2B}" {
+           Name "ButtonNoPinConfirm"
+           Slot OverlayWidgetSlot "{4873816345B9AEC5}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 1 1 1 1
+           components {
+            SCR_ButtonTextComponent "{D2C0900271DE7E36}" {
+             m_BackgroundDefault 0.910 0.929 0.973 0
+             m_BackgroundHovered 0.910 0.929 0.973 0.08
+             m_BackgroundSelected 0.910 0.929 0.973 0.14
+             m_BackgroundSelectedHovered 0.910 0.929 0.973 0.14
+             m_BackgroundClicked 0.910 0.929 0.973 0.14
+             m_sText ""
+            }
+           }
+           style blank
+           {
+            OverlayWidgetClass "{FA561178E2F16856}" {
+             Name "NoPinConfirmSurface"
+             Slot ButtonWidgetSlot "{51C01720F4A6D97B}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             {
+              SmartPanelWidgetClass "{752139223F4580C7}" {
+               Name "Background"
+               Slot OverlayWidgetSlot "{E8E6115CE16BB86C}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0 0 0 0
+               style rounded_12px
+               "no focus" 1
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{B855250D72EC5C17}" {
+       Name "NoPinCancelSize"
+       Slot LayoutSlot "{907F90251916CF51}" {
+       }
+       AllowHeightOverride 1
+       HeightOverride 60
+       {
+        OverlayWidgetClass "{E03D9CAB5A37AA96}" {
+         Name "NoPinCancelFrame"
+         Slot AlignableSlot "{302BF6C150B6CF4C}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         {
+          TextWidgetClass "{B14A31C22402EE35}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "NoPinCancelLabel"
+           Slot OverlayWidgetSlot "{5189E9D03EC09603}" {
+            HorizontalAlign 1
+            VerticalAlign 1
+            Padding 16 0 16 0
+           }
+           Color 0.8378 0.8626 0.9222 1
+           Text ""
+           "Font Size" 22
+           "Min Font Size" 22
+           "Horizontal Alignment" Center
+           FontProperties FontProperties "{929C82DFADCF6291}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          ButtonWidgetClass "{0E33A1DC90383D0B}" {
+           Name "ButtonNoPinCancel"
+           Slot OverlayWidgetSlot "{45DC5E76AA61C931}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 1 1 1 1
+           components {
+            SCR_ButtonTextComponent "{342F8828E2C6324C}" {
+             m_BackgroundDefault 0.910 0.929 0.973 0
+             m_BackgroundHovered 0.910 0.929 0.973 0.08
+             m_BackgroundSelected 0.910 0.929 0.973 0.14
+             m_BackgroundSelectedHovered 0.910 0.929 0.973 0.14
+             m_BackgroundClicked 0.910 0.929 0.973 0.14
+             m_sText ""
+            }
+           }
+           style blank
+           {
+            OverlayWidgetClass "{8549CF2B33190C94}" {
+             Name "NoPinCancelSurface"
+             Slot ButtonWidgetSlot "{5203D0C5B166706E}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             {
+              SmartPanelWidgetClass "{46F11CA7F77E2695}" {
+               Name "Background"
+               Slot OverlayWidgetSlot "{FDB6CA542C806591}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Color 0 0 0 0
+               style rounded_12px
+               "no focus" 1
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

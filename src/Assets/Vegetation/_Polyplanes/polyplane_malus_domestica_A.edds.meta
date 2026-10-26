@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{DE79A983F3DB83D1}Assets/Vegetation/_Polyplanes/polyplane_malus_domestica_A.edds"
+ Configurations {
+  JPGResourceClass PC : "{6B149ECE3A72EF45}Configs/System/ResourceTypes/PC/TextureOneChannel.conf" {
+  }
+  JPGResourceClass XBOX_ONE : "{DC95471339A9BC2B}Configs/System/ResourceTypes/XBOX_ONE/TextureOneChannel.conf" {
+  }
+  JPGResourceClass XBOX_SERIES : "{C2F053ADC70F3804}Configs/System/ResourceTypes/XBOX_SERIES/TextureOneChannel.conf" {
+  }
+  JPGResourceClass PS4 : "{19FBA5E0ACB1C98E}Configs/System/ResourceTypes/PS4/TextureOneChannel.conf" {
+  }
+  JPGResourceClass HEADLESS : "{6866463573917E52}Configs/System/ResourceTypes/HEADLESS/TextureOneChannel.conf" {
+  }
+ }
+}

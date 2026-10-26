@@ -1,0 +1,148 @@
+SizeLayoutWidgetClass {
+ Name "HomeCardSize"
+ AllowHeightOverride 1
+ HeightOverride 124
+ {
+  OverlayWidgetClass "{8136B1241C850DE0}" {
+   Name "HomeCard"
+   Slot AlignableSlot "{6E60978114C945B6}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    BlurWidgetClass "{EB84B7E3B91E1C92}" {
+     Name "GlassBlur"
+     Slot OverlayWidgetSlot "{F5E0A89B5E6A9763}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 1
+     Intensity 0.7
+    }
+    SmartPanelWidgetClass "{E26B9B8F8994C511}" {
+     Name "GlassScrim"
+     Slot OverlayWidgetSlot "{B46A2F5C91C2BF78}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.004 0.0048 0.0075 0.55
+     style rounded_12px
+     "no focus" 1
+    }
+    SmartPanelWidgetClass "{D257AE3D6E6C2785}" {
+     Name "GlassTint"
+     Slot OverlayWidgetSlot "{A6171566C4012ECA}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.5837 0.6453 0.8073 0.14
+     style rounded_12px
+     "no focus" 1
+    }
+    SizeLayoutWidgetClass "{05CB1532B746254C}" {
+     Name "GlassSpecularSize"
+     Slot OverlayWidgetSlot "{B892FF77D33532C3}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+      Padding 12 0 12 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 2
+     {
+      ImageWidgetClass "{B420C7BCF4E6E8B2}" {
+       Name "GlassSpecular"
+       Slot AlignableSlot "{4C75E528630F88A9}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.8626 0.8964 0.964 0.18
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{57141D09DF615694}" {
+     Name "GlassHairlineSize"
+     Slot OverlayWidgetSlot "{A808B12C45D9E9B1}" {
+      HorizontalAlign 3
+      VerticalAlign 2
+      Padding 12 0 12 0
+     }
+     AllowHeightOverride 1
+     HeightOverride 2
+     {
+      ImageWidgetClass "{AE005D53CB18A83B}" {
+       Name "GlassHairline"
+       Slot AlignableSlot "{8D578228A8DFEF16}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0015 0.0021 0.0033 0.26
+      }
+     }
+    }
+    ButtonWidgetClass "{B1DE103064BB4669}" {
+     Name "CardButton"
+     Slot OverlayWidgetSlot "{EC028E8A99283002}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 1
+     style blank
+     components {
+      SCR_ButtonTextComponent "{725FC63DC6692C23}" {
+       m_BackgroundDefault 0.8626 0.8964 0.964 0
+       m_BackgroundHovered 0.8626 0.8964 0.964 0.08
+       m_BackgroundSelected 0.8626 0.8964 0.964 0.14
+       m_BackgroundSelectedHovered 0.8626 0.8964 0.964 0.14
+       m_BackgroundClicked 0.8626 0.8964 0.964 0.14
+       m_sText ""
+      }
+     }
+     {
+      OverlayWidgetClass "{8ECF1E699726B9E1}" {
+       Name "ButtonSurface"
+       Slot ButtonWidgetSlot "{E2F0D251644D31FC}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        SmartPanelWidgetClass "{BF7DFBCBEDBFCB8C}" {
+         Name "Background"
+         Slot OverlayWidgetSlot "{5CFCB2577D20B4AB}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0 0 0 0
+         style rounded_12px
+         "no focus" 1
+        }
+       }
+      }
+     }
+    }
+    HorizontalLayoutWidgetClass "{8DC92FB6FDF5C3E4}" {
+     Name "FavouriteList"
+     Slot OverlayWidgetSlot "{56CD3E115B6E272E}" {
+      HorizontalAlign 3
+      VerticalAlign 1
+      Padding 12 0 12 0
+     }
+    }
+    TextWidgetClass "{19EA0CCEB36CD42A}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+     Name "FavouriteEmpty"
+     Slot OverlayWidgetSlot "{76E24E3BE3CD78F7}" {
+      HorizontalAlign 1
+      VerticalAlign 1
+      Padding 24 0 24 0
+     }
+     "Is Visible" 0
+     "Ignore Cursor" 1
+     Color 0.366 0.4024 0.5025 1
+     Text "#ELIFE-Phone_Home_FavouritesEmpty"
+     "Font Size" 18
+     "Min Font Size" 18
+     "Horizontal Alignment" Center
+    }
+   }
+  }
+ }
+}

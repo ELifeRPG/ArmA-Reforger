@@ -1,0 +1,24 @@
+Tree : "{388AE316D09D0680}Prefabs/Vegetation/Core/Tree_Base.et" {
+ ID "0F2AA6B42CA78628"
+ components {
+  ELIFE_FarmTreeComponent "{5D7AA757DB98E09C}" {
+   m_aResourceNodePositions {
+    PointInfo "{5D7AE6A6460525F6}" {
+     Offset 0.21 2.23 0.79
+    }
+    PointInfo "{5D7AE6A64161E382}" {
+     Offset -0.7124 2.0955 0.0575
+    }
+    PointInfo "{5D7AE6A6430A0C79}" {
+     Offset 0.1528 2.2643 -0.5787
+    }
+    PointInfo "{5D7AE6A658241E5B}" {
+     Offset -0.2564 1.4796 0.0366
+    }
+   }
+   m_GatherItemPrefab "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
+  }
+  RplComponent "{5D7AE6A725A5A7FD}" {
+  }
+ }
+}

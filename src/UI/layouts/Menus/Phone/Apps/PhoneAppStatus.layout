@@ -1,0 +1,23 @@
+OverlayWidgetClass {
+ Name "StatusOverlay"
+ "Is Visible" 0
+ {
+  ImageWidgetClass "{6A4270E19A18AA2F}" {
+   Name "StatusBackdrop"
+   Slot OverlayWidgetSlot "{FD7469A349B62689}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 0.004 0.0048 0.0075 1
+  }
+  VerticalLayoutWidgetClass "{12CD766EC4A92E0D}" {
+   Name "SkeletonList"
+   Slot OverlayWidgetSlot "{26775FB146FCF42E}" {
+    HorizontalAlign 3
+    VerticalAlign 0
+    Padding 24 88 24 0
+   }
+   "Fill Origin" Top
+  }
+ }
+}

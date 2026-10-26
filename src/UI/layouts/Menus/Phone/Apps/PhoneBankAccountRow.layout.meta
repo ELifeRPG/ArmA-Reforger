@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{91D3B8E04A7C2F16}UI/layouts/Menus/Phone/Apps/PhoneBankAccountRow.layout"
+ Configurations {
+  LayoutResourceClass PC {
+  }
+  LayoutResourceClass XBOX_ONE : PC {
+  }
+  LayoutResourceClass XBOX_SERIES : PC {
+  }
+  LayoutResourceClass PS4 : PC {
+  }
+  LayoutResourceClass PS5 : PC {
+  }
+  LayoutResourceClass HEADLESS : PC {
+  }
+ }
+}

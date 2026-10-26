@@ -1,0 +1,1959 @@
+//------------------------------------------------------------------------------------------------
+class ELIFE_PhoneThreadRowClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneMessagesApp m_App;
+	protected string m_sThreadId;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneMessagesApp app, string threadId)
+	{
+		m_App = app;
+		m_sThreadId = threadId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App && m_sThreadId != "")
+			m_App.OpenThread(m_sThreadId);
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Nav trailing "Add" on the index - opens the contact picker, mirroring Contacts' own Add.
+class ELIFE_PhoneMessagesAddClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneMessagesApp m_App;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneMessagesApp app)
+	{
+		m_App = app;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App)
+			m_App.ShowPicker();
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Door to Contacts' add form, prefilled with this thread's number - only shown while it is unsaved.
+class ELIFE_ThreadAddContactClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneMessagesApp m_App;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneMessagesApp app)
+	{
+		m_App = app;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App)
+			m_App.AddRecipientToContacts();
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Toggles the block on the open thread's partner.
+class ELIFE_ThreadBlockClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneMessagesApp m_App;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneMessagesApp app)
+	{
+		m_App = app;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App)
+			m_App.ToggleBlockOpen();
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Thread title: door to the partner's Contacts page, where block and delete live for saved contacts.
+class ELIFE_ThreadTitleClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneMessagesApp m_App;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneMessagesApp app)
+	{
+		m_App = app;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App)
+			m_App.OpenPartnerContact();
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Chip under a message bubble: Save for an unknown number, Open for a saved contact.
+class ELIFE_MessageNumberClick : ScriptedWidgetEventHandler
+{
+	protected const float HOVER_LIGHTEN = 0.18;
+
+	protected ELIFE_PhoneMessagesApp m_App;
+	protected string m_sNumber;
+	protected Widget m_wFill;
+	protected ref Color m_Base;
+	protected ref Color m_Hover;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneMessagesApp app, string number, Widget fill, Color base)
+	{
+		m_App = app;
+		m_sNumber = number;
+		m_wFill = fill;
+		m_Base = base;
+		m_Hover = ELIFE_PhoneStyle.Mix(base, new Color(1, 1, 1, 1), HOVER_LIGHTEN);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnMouseEnter(Widget w, int x, int y)
+	{
+		if (m_wFill && m_Hover)
+			m_wFill.SetColor(m_Hover);
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnMouseLeave(Widget w, Widget enterW, int x, int y)
+	{
+		if (m_wFill && m_Base)
+			m_wFill.SetColor(m_Base);
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App && m_sNumber != "")
+			m_App.OpenNumberInContacts(m_sNumber);
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class ELIFE_PhonePickerRowClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneMessagesApp m_App;
+	protected string m_sContactId;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneMessagesApp app, string contactId)
+	{
+		m_App = app;
+		m_sContactId = contactId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App && m_sContactId != "")
+			m_App.PickContact(m_sContactId);
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class ELIFE_PhoneSendClick : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneMessagesApp m_App;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneMessagesApp app)
+	{
+		m_App = app;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_App)
+			m_App.SubmitCompose();
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! OnChange is reserved, so enter-to-send hooks GetOnChangeFinal() in BindCompose().
+class ELIFE_PhoneComposeFocus : ScriptedWidgetEventHandler
+{
+	protected ELIFE_PhoneMessagesApp m_App;
+
+	//------------------------------------------------------------------------------------------------
+	void Bind(ELIFE_PhoneMessagesApp app)
+	{
+		m_App = app;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnFocus(Widget w, int x, int y)
+	{
+		EditBoxWidget field = EditBoxWidget.Cast(w);
+		if (field)
+			field.ActivateWriteMode();
+
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
+{
+	protected const ResourceName LAYOUT = "{8B7D4F2306E1A95C}UI/layouts/Menus/Phone/Apps/PhoneMessages.layout";
+	protected const ResourceName LAYOUT_THREAD_ROW = "{2D9F5081C6A73B4E}UI/layouts/Menus/Phone/Apps/PhoneThreadRow.layout";
+	protected const ResourceName LAYOUT_MESSAGE_ROW = "{6E48B3D9F20C517A}UI/layouts/Menus/Phone/Apps/PhoneMessageRow.layout";
+	protected const ResourceName LAYOUT_CONTACT_ROW = "{5C2E9A17B4D06F38}UI/layouts/Menus/Phone/Apps/PhoneContactRow.layout";
+
+	protected Widget m_wIndexPage;
+	protected Widget m_wThreadPage;
+	protected ScrollLayoutWidget m_wThreadScroll;
+	protected Widget m_wThreadGroups;
+	protected Widget m_wEmptyThreads;
+	protected ScrollLayoutWidget m_wMessageScroll;
+	protected Widget m_wMessageList;
+	protected Widget m_wEmptyMessages;
+	protected TextWidget m_wIndexTitle;
+	protected TextWidget m_wThreadTitle;
+
+	//! The Add picker - a Messages sub-page, not a new app, mirroring Contacts' A-Z index.
+	protected Widget m_wPickerPage;
+	protected ScrollLayoutWidget m_wPickerScroll;
+	protected Widget m_wPickerGroups;
+	protected Widget m_wEmptyPicker;
+	protected bool m_bPickerOpen;
+
+	protected ref ELIFE_PhoneMessagesAddClick m_AddClick;
+	protected ref array<ref ELIFE_PhonePickerRowClick> m_aPickerRowClicks = {};
+
+	protected ref array<ref ELIFE_PhoneThreadRowClick> m_aRowClicks = {};
+	protected ref array<ref ELIFE_MessageNumberClick> m_aNumberClicks = {};
+
+	//! Lowercased display names and their contacts for the open thread, built once per FillThread.
+	protected ref array<string> m_aMentionNames = {};
+	protected ref array<ref ELIFE_ContactSummary> m_aMentionContacts = {};
+
+	protected Widget m_wComposeBar;
+	protected EditBoxWidget m_wComposeField;
+
+	//! Stands in for the field while the partner is blocked - a disabled field draws its own grey frame.
+	protected Widget m_wComposeBlocked;
+	protected Widget m_wSendButton;
+	protected Widget m_wSendSize;
+	protected ImageWidget m_wSendIcon;
+	protected Widget m_wSendIconSize;
+	protected TextWidget m_wSendLabel;
+
+	protected ref ELIFE_PhoneSendClick m_SendClick;
+	protected ref ELIFE_PhoneComposeFocus m_ComposeFocus;
+
+	//! In flight, so a second Enter or a second tap cannot fire a second send of the same text.
+	protected bool m_bSending;
+
+	//! The open thread's unread count at the last MarkThreadRead() - see MarkOpenThreadRead().
+	protected int m_iMarkedUnread;
+
+	//! API answers 400 for an over-long body; this only stops an obviously oversized one client-side.
+	protected const int MAX_BODY_LENGTH = 480;
+
+	protected const int NUMBER_LENGTH = 8;
+	protected const int MAX_CHIPS = 3;
+	protected const string DIGITS = "0123456789";
+	protected const string WORD_SEPARATORS = " \t\r\n.,;:!?-_()[]{}<>\"'/\\+*&#@";
+	protected const string ICON_CHIP_OPEN = "player";
+	protected const float CHIP_ICON_SIZE = 16;
+
+	//! LoadImageFromSet() fails closed on an unknown sprite name.
+	protected const string ICON_ADD = "plus";
+
+	//! Door glyph to Contacts - "add-friends" reads as "save this person", not a bare "+".
+	protected const string ICON_ADD_CONTACT = "add-friends";
+
+	protected Widget m_wAddContactSize;
+	protected Widget m_wAddContactButton;
+	protected ImageWidget m_wAddContactDisc;
+	protected Widget m_wAddContactFallback;
+	protected ImageWidget m_wAddContactHover;
+	protected ImageWidget m_wAddContactIcon;
+	protected Widget m_wAddContactIconSize;
+	protected Widget m_wAddContactGlyph;
+	protected TextWidget m_wAddContactLabel;
+	protected ref ELIFE_ThreadAddContactClick m_AddContactClick;
+
+	protected const string ICON_BLOCK = "block-user";
+	protected ref ELIFE_BlockListDto m_Blocks = new ELIFE_BlockListDto();
+
+	//! Block sits beside Add to Contacts, in the row only an unsaved number gets.
+	protected Widget m_wBlockSize;
+	protected Widget m_wBlockButton;
+	protected ImageWidget m_wBlockDisc;
+	protected Widget m_wBlockFallback;
+	protected ImageWidget m_wBlockHover;
+	protected ImageWidget m_wBlockIcon;
+	protected Widget m_wBlockIconSize;
+	protected Widget m_wBlockGlyph;
+	protected TextWidget m_wBlockLabel;
+	protected Widget m_wBlockedNote;
+	protected TextWidget m_wNoteUnblockLabel;
+	protected ref ELIFE_ThreadBlockClick m_BlockClick;
+
+	//! The blocked note's Unblock link - the only unblock on this page for a saved contact.
+	protected ref ELIFE_ThreadBlockClick m_NoteUnblockClick;
+	protected ref ELIFE_ThreadTitleClick m_TitleClick;
+
+	protected bool m_bBlocking;
+	protected bool m_bBlockFailed;
+
+	//! Chat atlas' paper-plane sprite - the wrapper set has no plane and no good stand-in for "send".
+	protected const string ICON_SEND = "whisper";
+	protected const float SEND_ICON_SIZE = 18;
+	protected const float SEND_ICON_GAP = 6;
+	protected const float SEND_PAD_H = 8;
+	protected ref ELIFE_MessageUpdates m_Updates = new ELIFE_MessageUpdates();
+	protected string m_sOpenThreadId;
+
+	//! Conversation addressed by number (no thread yet); switches to the real thread once one appears.
+	protected string m_sOpenNumber;
+
+	//! Contact for an empty conversation opened from Contacts. Sub-state carries this, not the number.
+	protected string m_sOpenContactId;
+
+	//! Sub-state prefix for a number hand-off; built by Contacts.
+	static const string SUBSTATE_NUMBER_PREFIX = "n:";
+
+	//! Same channel, for a saved contact - preferred over `n:` whenever an id is known.
+	static const string SUBSTATE_CONTACT_PREFIX = "c:";
+
+	//! The Add picker - a single fixed sub-page, exact-match like Contacts' SUBSTATE_FORM.
+	static const string SUBSTATE_PICKER = "pick";
+
+	//------------------------------------------------------------------------------------------------
+	override string GetTitle()
+	{
+		return "#ELIFE-Phone_App_Messages";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override EPhoneScreenState GetScreenState()
+	{
+		return EPhoneScreenState.MESSAGES;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnBack()
+	{
+		if (m_bPickerOpen)
+		{
+			ShowIndex();
+			return true;
+		}
+
+		if (m_sOpenThreadId != "" || m_sOpenNumber != "" || m_sOpenContactId != "")
+		{
+			ShowIndex();
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string GetSubState()
+	{
+		if (m_bPickerOpen)
+			return SUBSTATE_PICKER;
+
+		if (m_sOpenThreadId != "")
+			return m_sOpenThreadId;
+
+		if (m_sOpenContactId != "")
+			return SUBSTATE_CONTACT_PREFIX + m_sOpenContactId;
+
+		if (m_sOpenNumber != "")
+			return SUBSTATE_NUMBER_PREFIX + m_sOpenNumber;
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void ApplySubState(string subState)
+	{
+		if (subState == "")
+		{
+			ShowIndex();
+			return;
+		}
+
+		if (subState == SUBSTATE_PICKER)
+		{
+			ShowPicker();
+			return;
+		}
+
+		if (subState.StartsWith(SUBSTATE_CONTACT_PREFIX))
+		{
+			OpenConversationWithContact(subState.Substring(SUBSTATE_CONTACT_PREFIX.Length(), subState.Length() - SUBSTATE_CONTACT_PREFIX.Length()));
+			return;
+		}
+
+		if (subState.StartsWith(SUBSTATE_NUMBER_PREFIX))
+		{
+			OpenConversationWith(subState.Substring(SUBSTATE_NUMBER_PREFIX.Length(), subState.Length() - SUBSTATE_NUMBER_PREFIX.Length()));
+			return;
+		}
+
+		OpenThread(subState);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OpenConversationWith(string number)
+	{
+		ELIFE_ContactSummary contact = ELIFE_PhoneContactBook.FindByNumber(m_Phone, number);
+		string contactId = "";
+		if (contact)
+			contactId = contact.contactId;
+
+		OpenConversation(contactId, number);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Keeps the id even before contacts load; OnDataChanged resolves the number later.
+	void OpenConversationWithContact(string contactId)
+	{
+		ELIFE_ContactSummary contact = ELIFE_PhoneContactBook.FindById(m_Phone, contactId);
+		string number = "";
+		if (contact)
+			number = contact.number;
+
+		OpenConversation(contactId, number);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OpenConversation(string contactId, string number)
+	{
+		m_sOpenContactId = contactId;
+
+		if (number != "")
+		{
+			ELIFE_MessageThreadUpdate existing = FindThreadWith(number);
+			if (existing)
+			{
+				OpenThread(existing.threadId);
+				return;
+			}
+		}
+
+		if (number == "" && contactId == "")
+			return;
+
+		m_sOpenThreadId = "";
+		m_sOpenNumber = number;
+		ShowThreadPage();
+		NotifySubStateChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Only matches one-to-one conversations - nothing creates group threads yet.
+	protected ELIFE_MessageThreadUpdate FindThreadWith(string number)
+	{
+		if (number == "")
+			return null;
+
+		foreach (ELIFE_MessageThreadUpdate threadDto : m_Updates.threads)
+		{
+			foreach (string participant : threadDto.participants)
+			{
+				if (participant == number)
+					return threadDto;
+			}
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OpenThread(string threadId)
+	{
+		m_sOpenThreadId = threadId;
+		m_sOpenNumber = "";
+		m_sOpenContactId = "";
+		m_iMarkedUnread = 0;
+		ShowThreadPage();
+
+		//! Opening a thread is what reading it means, so the unread count clears here. The cache only holds
+		//! its newest message until the full history is fetched.
+		if (m_Phone && threadId != "")
+		{
+			m_Phone.MarkThreadRead(threadId);
+			m_Phone.RequestThread(threadId);
+		}
+
+		NotifySubStateChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Shared by both ways in, so an empty number-addressed conversation gets the same chrome as a real thread.
+	protected void ShowThreadPage()
+	{
+		m_bPickerOpen = false;
+		FillThread();
+
+		if (m_wIndexPage)
+			m_wIndexPage.SetVisible(false);
+
+		if (m_wPickerPage)
+			m_wPickerPage.SetVisible(false);
+
+		if (m_wThreadPage)
+			m_wThreadPage.SetVisible(true);
+
+		TrackScroll(m_wMessageScroll, m_wThreadTitle);
+		ScrollToLatest();
+
+		//! Compose is the commit on this page - the shared pill stays reserved for that, not Add.
+		HideNavAction();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every FillThread() branch must call this, or the collapsed nav title goes stale.
+	protected void SyncThreadNavTitle()
+	{
+		if (m_wNavTitle && m_wThreadTitle)
+			m_wNavTitle.SetText(m_wThreadTitle.GetText());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Run twice a tick apart - the new row hasn't been laid out yet on the first call.
+	protected void ScrollToLatest()
+	{
+		if (!m_wMessageScroll)
+			return;
+
+		GetGame().GetCallqueue().Remove(ApplyScrollToLatest);
+		ApplyScrollToLatest();
+		GetGame().GetCallqueue().CallLater(ApplyScrollToLatest, ELIFE_PhoneStyle.TICK_MS, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ApplyScrollToLatest()
+	{
+		if (!m_wMessageScroll)
+			return;
+
+		m_wMessageScroll.Update();
+		m_wMessageScroll.SetSliderPos(0, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected override Widget CreateRoot(notnull Widget host)
+	{
+		return CreateStretched(LAYOUT, host);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected override void OnOpened()
+	{
+		if (!m_wRoot)
+			return;
+
+		m_wIndexPage = m_wRoot.FindAnyWidget("IndexPage");
+		m_wThreadPage = m_wRoot.FindAnyWidget("ThreadPage");
+		m_wThreadScroll = ScrollLayoutWidget.Cast(m_wRoot.FindAnyWidget("ThreadScroll"));
+		m_wThreadGroups = m_wRoot.FindAnyWidget("ThreadGroups");
+		m_wEmptyThreads = m_wRoot.FindAnyWidget("EmptyThreads");
+		m_wMessageScroll = ScrollLayoutWidget.Cast(m_wRoot.FindAnyWidget("MessageScroll"));
+		m_wMessageList = m_wRoot.FindAnyWidget("MessageList");
+		m_wEmptyMessages = m_wRoot.FindAnyWidget("EmptyMessages");
+		m_wIndexTitle = TextWidget.Cast(m_wRoot.FindAnyWidget("LargeTitle"));
+		m_wThreadTitle = TextWidget.Cast(m_wRoot.FindAnyWidget("ThreadTitle"));
+
+		m_wAddContactSize = m_wRoot.FindAnyWidget("ThreadAddContactSize");
+		m_wAddContactButton = m_wRoot.FindAnyWidget("ButtonAddContact");
+		m_wAddContactDisc = ImageWidget.Cast(m_wRoot.FindAnyWidget("AddContactDisc"));
+		m_wAddContactFallback = m_wRoot.FindAnyWidget("AddContactFallback");
+		m_wAddContactIconSize = m_wRoot.FindAnyWidget("AddContactIconSize");
+		m_wAddContactIcon = ImageWidget.Cast(m_wRoot.FindAnyWidget("AddContactIcon"));
+		m_wAddContactGlyph = m_wRoot.FindAnyWidget("AddContactGlyph");
+		m_wAddContactLabel = TextWidget.Cast(m_wRoot.FindAnyWidget("AddContactLabel"));
+
+		Widget addContactFrame = m_wRoot.FindAnyWidget("AddContactFrame");
+		if (addContactFrame)
+			m_wAddContactHover = ImageWidget.Cast(addContactFrame.FindAnyWidget("Background"));
+
+		BindBlockControls();
+
+		m_wPickerPage = m_wRoot.FindAnyWidget("PickerPage");
+		m_wPickerScroll = ScrollLayoutWidget.Cast(m_wRoot.FindAnyWidget("PickerScroll"));
+		m_wPickerGroups = m_wRoot.FindAnyWidget("PickerGroups");
+		m_wEmptyPicker = m_wRoot.FindAnyWidget("EmptyPicker");
+
+		m_wComposeBar = m_wRoot.FindAnyWidget("ComposeBar");
+		m_wComposeField = EditBoxWidget.Cast(m_wRoot.FindAnyWidget("ComposeField"));
+		m_wComposeBlocked = m_wRoot.FindAnyWidget("ComposeBlockedText");
+		m_wSendButton = m_wRoot.FindAnyWidget("ButtonSend");
+		m_wSendSize = m_wRoot.FindAnyWidget("SendSize");
+		m_wSendIconSize = m_wRoot.FindAnyWidget("SendIconSize");
+		m_wSendIcon = ImageWidget.Cast(m_wRoot.FindAnyWidget("SendIcon"));
+		m_wSendLabel = TextWidget.Cast(m_wRoot.FindAnyWidget("SendLabel"));
+
+		BindCompose();
+
+		if (!m_Phone)
+			return;
+
+		m_Phone.m_OnDataChanged.Insert(OnDataChanged);
+		m_Phone.m_OnMessageSendResult.Insert(OnMessageSendResult);
+		m_Phone.m_OnBlockResult.Insert(OnBlockResult);
+
+		//! Draw the cache now; the fetch lands via OnDataChanged. Open() picks the visible page after.
+		ReadBlocks();
+		ReadUpdates();
+		FillIndex();
+		m_Phone.RequestData(ELIFE_PhoneGadgetComponent.DATA_MESSAGES);
+
+		//! Names shown here come from the contacts payload, even though this screen renders no contact.
+		m_Phone.RequestData(ELIFE_PhoneGadgetComponent.DATA_CONTACTS);
+		m_Phone.RequestData(ELIFE_PhoneGadgetComponent.DATA_BLOCKS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected override void OnClosing()
+	{
+		if (m_Phone)
+		{
+			m_Phone.m_OnDataChanged.Remove(OnDataChanged);
+			m_Phone.m_OnMessageSendResult.Remove(OnMessageSendResult);
+			m_Phone.m_OnBlockResult.Remove(OnBlockResult);
+		}
+
+		GetGame().GetCallqueue().Remove(ApplyScrollToLatest);
+
+		m_wComposeBar = null;
+		m_wComposeField = null;
+		m_wComposeBlocked = null;
+		m_wSendButton = null;
+		m_wSendSize = null;
+		m_wSendIcon = null;
+		m_wSendIconSize = null;
+		m_wSendLabel = null;
+		m_SendClick = null;
+		m_ComposeFocus = null;
+		m_bSending = false;
+
+		m_wPickerPage = null;
+		m_wPickerScroll = null;
+		m_wPickerGroups = null;
+		m_wEmptyPicker = null;
+		m_AddClick = null;
+		m_aPickerRowClicks.Clear();
+		m_bPickerOpen = false;
+
+		m_sOpenThreadId = "";
+		m_sOpenNumber = "";
+		m_sOpenContactId = "";
+		m_aRowClicks.Clear();
+		m_aNumberClicks.Clear();
+
+		m_wAddContactSize = null;
+		m_wAddContactButton = null;
+		m_wAddContactDisc = null;
+		m_wAddContactFallback = null;
+		m_wAddContactHover = null;
+		m_wAddContactIcon = null;
+		m_wAddContactIconSize = null;
+		m_wAddContactGlyph = null;
+		m_wAddContactLabel = null;
+		m_AddContactClick = null;
+
+		m_wBlockSize = null;
+		m_wBlockButton = null;
+		m_wBlockDisc = null;
+		m_wBlockFallback = null;
+		m_wBlockHover = null;
+		m_wBlockIcon = null;
+		m_wBlockIconSize = null;
+		m_wBlockGlyph = null;
+		m_wBlockLabel = null;
+		m_wBlockedNote = null;
+		m_wNoteUnblockLabel = null;
+		m_BlockClick = null;
+		m_NoteUnblockClick = null;
+		m_TitleClick = null;
+		m_bBlocking = false;
+		m_bBlockFailed = false;
+		m_Blocks = new ELIFE_BlockListDto();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnDataChanged(string key)
+	{
+		if (key == ELIFE_PhoneGadgetComponent.DATA_BLOCKS)
+		{
+			ReadBlocks();
+			FillIndex();
+			RefreshBlockState();
+			return;
+		}
+
+		//! Saving a contact renames every thread with that number, so this needs a re-render too.
+		if (key == ELIFE_PhoneGadgetComponent.DATA_CONTACTS)
+		{
+			ReadUpdates();
+			FillIndex();
+
+			if (m_bPickerOpen)
+				FillPicker();
+
+			//! A `c:` hand-off can land before this payload does - re-resolve the number now.
+			if (m_sOpenContactId != "" && m_sOpenThreadId == "")
+			{
+				ELIFE_ContactSummary contact = ELIFE_PhoneContactBook.FindById(m_Phone, m_sOpenContactId);
+				if (contact)
+					m_sOpenNumber = contact.number;
+
+				if (m_sOpenNumber != "")
+				{
+					ELIFE_MessageThreadUpdate existing = FindThreadWith(m_sOpenNumber);
+					if (existing)
+					{
+						OpenThread(existing.threadId);
+						return;
+					}
+				}
+			}
+
+			if (m_sOpenThreadId != "" || m_sOpenNumber != "" || m_sOpenContactId != "")
+				FillThread();
+
+			return;
+		}
+
+		if (key != ELIFE_PhoneGadgetComponent.DATA_MESSAGES)
+			return;
+
+		ReadUpdates();
+		FillIndex();
+
+		//! A number-addressed conversation promotes itself the moment its thread actually arrives.
+		if (m_sOpenNumber != "")
+		{
+			ELIFE_MessageThreadUpdate arrived = FindThreadWith(m_sOpenNumber);
+			if (arrived)
+			{
+				OpenThread(arrived.threadId);
+				return;
+			}
+		}
+
+		if (m_sOpenThreadId != "" || m_sOpenNumber != "" || m_sOpenContactId != "")
+		{
+			FillThread();
+			ScrollToLatest();
+		}
+
+		MarkOpenThreadRead();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A message landing in the open thread is read, so mark it or it returns to the hub.
+	protected void MarkOpenThreadRead()
+	{
+		if (!m_Phone || m_sOpenThreadId == "")
+			return;
+
+		ELIFE_MessageThreadUpdate threadDto = FindThread(m_sOpenThreadId);
+		if (!threadDto || threadDto.unreadCount <= 0)
+			return;
+
+		//! Keyed on the count, so the mark's own answer (zero) can't re-trigger it.
+		if (threadDto.unreadCount == m_iMarkedUnread)
+			return;
+
+		m_iMarkedUnread = threadDto.unreadCount;
+		m_Phone.MarkThreadRead(m_sOpenThreadId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ReadBlocks()
+	{
+		m_Blocks = new ELIFE_BlockListDto();
+
+		string json = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_BLOCKS);
+		if (json != "")
+			m_Blocks.ExpandFromRAW(json);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void BindBlockControls()
+	{
+		m_wBlockSize = m_wRoot.FindAnyWidget("ActionBlockSize");
+		m_wBlockButton = m_wRoot.FindAnyWidget("ButtonBlock");
+		m_wBlockDisc = ImageWidget.Cast(m_wRoot.FindAnyWidget("BlockDisc"));
+		m_wBlockFallback = m_wRoot.FindAnyWidget("BlockFallback");
+		m_wBlockIconSize = m_wRoot.FindAnyWidget("BlockIconSize");
+		m_wBlockIcon = ImageWidget.Cast(m_wRoot.FindAnyWidget("BlockIcon"));
+		m_wBlockGlyph = m_wRoot.FindAnyWidget("BlockGlyph");
+		m_wBlockLabel = TextWidget.Cast(m_wRoot.FindAnyWidget("BlockLabel"));
+		m_wBlockedNote = m_wRoot.FindAnyWidget("ThreadBlockedNote");
+		m_wNoteUnblockLabel = TextWidget.Cast(m_wRoot.FindAnyWidget("NoteUnblockLabel"));
+
+		Widget noteUnblockButton = m_wRoot.FindAnyWidget("ButtonNoteUnblock");
+		if (noteUnblockButton)
+		{
+			m_NoteUnblockClick = new ELIFE_ThreadBlockClick();
+			m_NoteUnblockClick.Bind(this);
+			noteUnblockButton.AddHandler(m_NoteUnblockClick);
+		}
+
+		Widget blockFrame = m_wRoot.FindAnyWidget("BlockFrame");
+		if (blockFrame)
+			m_wBlockHover = ImageWidget.Cast(blockFrame.FindAnyWidget("Background"));
+
+		if (m_wBlockButton)
+		{
+			m_BlockClick = new ELIFE_ThreadBlockClick();
+			m_BlockClick.Bind(this);
+			m_wBlockButton.AddHandler(m_BlockClick);
+		}
+
+		Widget titleButton = m_wRoot.FindAnyWidget("ButtonThreadTitle");
+		if (titleButton)
+		{
+			m_TitleClick = new ELIFE_ThreadTitleClick();
+			m_TitleClick.Bind(this);
+			titleButton.AddHandler(m_TitleClick);
+		}
+
+		//! Same round door as Add to Contacts, filled in the destructive colour.
+		Color fill = ELIFE_PhoneStyle.Negative();
+
+		bool round = false;
+		if (m_wBlockDisc)
+		{
+			round = m_wBlockDisc.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
+			m_wBlockDisc.SetVisible(round);
+			m_wBlockDisc.SetColor(fill);
+		}
+
+		if (m_wBlockFallback)
+		{
+			m_wBlockFallback.SetVisible(!round);
+			m_wBlockFallback.SetColor(fill);
+		}
+
+		if (m_wBlockHover)
+			m_wBlockHover.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
+
+		bool iconLoaded = false;
+		if (m_wBlockIcon)
+		{
+			iconLoaded = m_wBlockIcon.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_BLOCK);
+			if (iconLoaded)
+			{
+				m_wBlockIcon.SetColor(ELIFE_PhoneStyle.TextPrimary());
+				ELIFE_PhoneStyle.FitIcon(m_wBlockIcon, 32);
+			}
+		}
+
+		//! The wrapper carries the visibility - a hidden wrapper hides a perfectly loaded child.
+		if (m_wBlockIconSize)
+			m_wBlockIconSize.SetVisible(iconLoaded);
+
+		if (m_wBlockGlyph)
+			m_wBlockGlyph.SetVisible(!iconLoaded);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The note under the title and the Block door's label. Both owner-only - bystanders' blocklist copy is empty.
+	protected void RefreshBlockState()
+	{
+		string number = ComposeRecipient();
+		bool owner = IsOwner();
+		bool blocked = owner && m_Blocks.IsBlocked(number);
+
+		if (m_wBlockedNote)
+			m_wBlockedNote.SetVisible(blocked);
+
+		if (m_wNoteUnblockLabel)
+		{
+			string noteText = "#ELIFE-Phone_Messages_Unblock";
+			Color noteColor = m_Accent;
+			if (m_bBlocking)
+			{
+				noteText = "#ELIFE-Phone_Messages_BlockPending";
+				noteColor = ELIFE_PhoneStyle.TextTertiary();
+			}
+			else if (m_bBlockFailed)
+			{
+				noteText = "#ELIFE-Phone_Messages_BlockError";
+			}
+
+			m_wNoteUnblockLabel.SetText(noteText);
+			m_wNoteUnblockLabel.SetColor(noteColor);
+		}
+
+		ApplyComposeState();
+
+		if (m_wBlockSize)
+			m_wBlockSize.SetVisible(owner && number != "");
+
+		if (m_wBlockButton)
+			m_wBlockButton.SetEnabled(!m_bBlocking);
+
+		if (!m_wBlockLabel)
+			return;
+
+		string text = "#ELIFE-Phone_Messages_Block";
+		Color color = ELIFE_PhoneStyle.Negative();
+		if (m_bBlocking)
+		{
+			text = "#ELIFE-Phone_Messages_BlockPending";
+			color = ELIFE_PhoneStyle.TextTertiary();
+		}
+		else if (m_bBlockFailed)
+		{
+			text = "#ELIFE-Phone_Messages_BlockError";
+		}
+		else if (blocked)
+		{
+			text = "#ELIFE-Phone_Messages_Unblock";
+			color = m_Accent;
+		}
+
+		m_wBlockLabel.SetText(text);
+		m_wBlockLabel.SetColor(color);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A reply from a blocked number would be dropped, so sending is off until it's unblocked.
+	protected bool IsPartnerBlocked()
+	{
+		return IsOwner() && m_Blocks.IsBlocked(ComposeRecipient());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The one place that decides whether compose is usable: not mid-send, not to a blocked partner.
+	protected void ApplyComposeState()
+	{
+		bool blocked = IsPartnerBlocked();
+		bool canSend = !m_bSending && !blocked;
+
+		//! Blocked swaps the field for a plain line rather than disabling it; typed text survives the swap.
+		if (m_wComposeField)
+		{
+			m_wComposeField.SetVisible(!blocked);
+			m_wComposeField.SetEnabled(!m_bSending);
+		}
+
+		if (m_wComposeBlocked)
+			m_wComposeBlocked.SetVisible(blocked);
+
+		if (m_wSendButton)
+			m_wSendButton.SetEnabled(canSend);
+
+		PaintSendAction(canSend);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void ToggleBlockOpen()
+	{
+		if (m_bBlocking || !m_Phone || !IsOwner())
+			return;
+
+		string number = ComposeRecipient();
+		if (number == "")
+			return;
+
+		m_bBlocking = true;
+		m_bBlockFailed = false;
+		RefreshBlockState();
+
+		m_Phone.SetNumberBlocked(number, !m_Blocks.IsBlocked(number));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The blocklist push can trail the result, so success is applied locally; the push confirms it.
+	protected void OnBlockResult(string number, bool blocked, bool succeeded)
+	{
+		if (!m_wRoot || !m_bBlocking)
+			return;
+
+		m_bBlocking = false;
+		m_bBlockFailed = !succeeded;
+
+		if (succeeded)
+		{
+			m_Blocks = m_Blocks.With(number, blocked);
+			FillIndex();
+		}
+
+		RefreshBlockState();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Saved partners only - an unsaved number has its Add and Block doors on this page already.
+	void OpenPartnerContact()
+	{
+		ELIFE_ContactSummary contact = ELIFE_PhoneContactBook.FindByNumber(m_Phone, ComposeRecipient());
+		if (contact)
+			OpenAppPage(EPhoneScreenState.CONTACTS, ELIFE_PhoneContactsApp.SUBSTATE_DETAIL_PREFIX + contact.contactId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ReadUpdates()
+	{
+		m_Updates = new ELIFE_MessageUpdates();
+
+		string json = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_MESSAGES);
+		if (json != "")
+			m_Updates.ExpandFromRAW(json);
+
+		//! Owner payloads carry raw numbers; bystander payloads are already redacted names.
+		if (m_Phone && m_Phone.IsLocalCharacterOwner())
+			ResolveOwnerSenders();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ResolveOwnerSenders()
+	{
+		foreach (ELIFE_MessageThreadUpdate threadDto : m_Updates.threads)
+		{
+			if (!threadDto)
+				continue;
+
+			foreach (ELIFE_PhoneMessage message : threadDto.messages)
+			{
+				if (message && !message.isOutbound)
+					message.from = ELIFE_PhoneContactBook.NameFor(m_Phone, message.from);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowIndex()
+	{
+		m_bBlocking = false;
+		m_bBlockFailed = false;
+		m_bPickerOpen = false;
+		m_sOpenThreadId = "";
+		m_sOpenNumber = "";
+		m_sOpenContactId = "";
+
+		if (m_wThreadPage)
+			m_wThreadPage.SetVisible(false);
+
+		if (m_wPickerPage)
+			m_wPickerPage.SetVisible(false);
+
+		if (m_wIndexPage)
+			m_wIndexPage.SetVisible(true);
+
+		if (m_wNavTitle)
+			m_wNavTitle.SetText(GetTitle());
+
+		TrackScroll(m_wThreadScroll, m_wIndexTitle);
+		ShowAddAction();
+
+		NotifySubStateChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Index's nav-trailing "Add" - same shared pill Contacts' index and form use, never a second FAB.
+	protected void ShowAddAction()
+	{
+		if (!m_AddClick)
+		{
+			m_AddClick = new ELIFE_PhoneMessagesAddClick();
+			m_AddClick.Bind(this);
+		}
+
+		ShowNavAction("#ELIFE-Phone_Messages_Add", m_Accent, m_AddClick, ICON_ADD);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Contact picker for a new conversation: saved contacts only, A-Z.
+	void ShowPicker()
+	{
+		m_bPickerOpen = true;
+		m_sOpenThreadId = "";
+		m_sOpenNumber = "";
+		m_sOpenContactId = "";
+
+		if (m_wIndexPage)
+			m_wIndexPage.SetVisible(false);
+
+		if (m_wThreadPage)
+			m_wThreadPage.SetVisible(false);
+
+		if (m_wPickerPage)
+			m_wPickerPage.SetVisible(true);
+
+		if (m_wNavTitle)
+			m_wNavTitle.SetText("#ELIFE-Phone_Messages_New");
+
+		FillPicker();
+
+		//! No on-page large title, like Contacts' form - the nav title alone identifies the page.
+		TrackScroll(m_wPickerScroll, null);
+
+		//! Back is enough to leave; the picker commits nothing of its own.
+		HideNavAction();
+
+		NotifySubStateChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void PickContact(string contactId)
+	{
+		m_bPickerOpen = false;
+		OpenConversationWithContact(contactId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FillPicker()
+	{
+		m_aPickerRowClicks.Clear();
+		ClearChildren(m_wPickerGroups);
+
+		ELIFE_ContactListDto list = ELIFE_PhoneContactBook.Contacts(m_Phone);
+
+		int count = 0;
+		if (list)
+			count = list.items.Count();
+
+		if (m_wEmptyPicker)
+			m_wEmptyPicker.SetVisible(count == 0);
+
+		if (m_wPickerScroll)
+			m_wPickerScroll.SetVisible(count > 0);
+
+		if (!m_wPickerGroups || count == 0)
+			return;
+
+		array<ref ELIFE_ContactSummary> sorted = ELIFE_PhoneContactBook.SortedByLastName(list);
+
+		string currentLetter = "";
+		Widget currentList = null;
+		bool isFirstGroup = true;
+
+		for (int i = 0; i < sorted.Count(); i++)
+		{
+			ELIFE_ContactSummary contact = sorted.Get(i);
+			if (!contact)
+				continue;
+
+			string letter = ELIFE_PhoneContactBook.GroupLetter(contact);
+			if (letter != currentLetter || !currentList)
+			{
+				currentLetter = letter;
+				currentList = CreateListGroup(m_wPickerGroups, letter, isFirstGroup);
+				isFirstGroup = false;
+			}
+
+			if (!currentList)
+				continue;
+
+			//! isLast is always false - these are glass cards, not the hairline-row style it applies to.
+			Widget row = CreateListRow(LAYOUT_CONTACT_ROW, currentList, false);
+			if (!row)
+				continue;
+
+			ELIFE_PhoneStyle.ApplyGlass(row, true);
+
+			string name = ELIFE_PhoneContactBook.DisplayName(contact);
+			SetTextAndColor(row, "ContactName", name, ELIFE_PhoneStyle.TextPrimary());
+			SetTextAndColor(row, "ContactNumber", contact.number, ELIFE_PhoneStyle.TextSecondary());
+			PaintAvatar(row, "ContactAvatarDisc", "ContactAvatarFallback", "ContactAvatarGlyph", name);
+
+			Widget button = row.FindAnyWidget("ContactButton");
+			if (!button)
+				button = row;
+
+			ELIFE_PhonePickerRowClick click = new ELIFE_PhonePickerRowClick();
+			click.Bind(this, ELIFE_PhoneContactBook.KeyFor(contact));
+			button.AddHandler(click);
+			m_aPickerRowClicks.Insert(click);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Threads arrive newest first, so bucketing is a single pass.
+	protected void FillIndex()
+	{
+		ApplyDataStatus(ELIFE_PhoneGadgetComponent.DATA_MESSAGES);
+		m_aRowClicks.Clear();
+		ClearChildren(m_wThreadGroups);
+
+		int count = m_Updates.threads.Count();
+
+		if (m_wEmptyThreads)
+			m_wEmptyThreads.SetVisible(count == 0);
+
+		if (!m_wThreadGroups || count == 0)
+			return;
+
+		string currentBucket = "";
+		Widget currentList = null;
+		bool isFirstGroup = true;
+
+		for (int i = 0; i < count; i++)
+		{
+			ELIFE_MessageThreadUpdate threadDto = m_Updates.threads.Get(i);
+
+			string bucket = DateBucket(threadDto);
+			if (bucket != currentBucket || !currentList)
+			{
+				currentBucket = bucket;
+				currentList = CreateListGroup(m_wThreadGroups, bucket, isFirstGroup);
+				isFirstGroup = false;
+			}
+
+			if (!currentList)
+				continue;
+
+			//! isLast is always false - these are glass cards, not the hairline-row style it applies to.
+			Widget row = CreateListRow(LAYOUT_THREAD_ROW, currentList, false);
+			if (!row)
+				continue;
+
+			ELIFE_PhoneStyle.ApplyGlass(row, true);
+
+			string participants = ELIFE_PhoneContactBook.TitleFor(m_Phone, threadDto);
+			SetTextAndColor(row, "ThreadParticipants", participants, ELIFE_PhoneStyle.TextPrimary());
+			string preview = ThreadPreview(threadDto);
+			Color previewColor = ELIFE_PhoneStyle.TextSecondary();
+
+			//! The blocklist is owner-only data, so only the owner's inbox can mark it.
+			if (IsOwner() && m_Blocks.IsBlocked(PartnerOf(threadDto)))
+			{
+				preview = WidgetManager.Translate("#ELIFE-Phone_Messages_Blocked") + " · " + preview;
+				previewColor = ELIFE_PhoneStyle.Negative();
+			}
+
+			SetTextAndColor(row, "ThreadPreview", preview, previewColor);
+			SetTextAndColor(row, "ThreadTime", RowTimestamp(threadDto), ELIFE_PhoneStyle.TextTertiary());
+			PaintAvatar(row, "ThreadAvatarDisc", "ThreadAvatarFallback", "ThreadAvatarGlyph", participants);
+
+			Widget unread = row.FindAnyWidget("ThreadUnreadSize");
+			if (unread)
+				unread.SetVisible(threadDto.unreadCount > 0);
+
+			ELIFE_PhoneStyle.SetColorOf(row, "ThreadUnreadFill", m_Accent);
+			SetTextAndColor(row, "ThreadUnreadCount", threadDto.unreadCount.ToString(), ELIFE_PhoneStyle.Ink());
+
+			Widget button = row.FindAnyWidget("ThreadButton");
+			if (!button)
+				button = row;
+
+			ELIFE_PhoneThreadRowClick click = new ELIFE_PhoneThreadRowClick();
+			click.Bind(this, threadDto.threadId);
+			button.AddHandler(click);
+			m_aRowClicks.Insert(click);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! By real calendar day, not a rolling 24h window - "Yesterday" is the previous calendar date.
+	protected string DateBucket(notnull ELIFE_MessageThreadUpdate threadDto)
+	{
+		int days = DaysSince(threadDto.lastMessageAt);
+
+		if (days <= 0)
+			return "#ELIFE-Phone_Messages_Bucket_Today";
+
+		if (days == 1)
+			return "#ELIFE-Phone_Messages_Bucket_Yesterday";
+
+		if (days <= 7)
+			return "#ELIFE-Phone_Messages_Bucket_Last7Days";
+
+		if (days <= 14)
+			return "#ELIFE-Phone_Messages_Bucket_Last14Days";
+
+		if (days <= 30)
+			return "#ELIFE-Phone_Messages_Bucket_LastMonth";
+
+		return "#ELIFE-Phone_Messages_Bucket_Older";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Today/Yesterday headers already name the day; older rows show it too.
+	protected string RowTimestamp(notnull ELIFE_MessageThreadUpdate threadDto)
+	{
+		if (DaysSince(threadDto.lastMessageAt) <= 1)
+			return FormatClock(threadDto.lastMessageAt);
+
+		return FormatDayTime(threadDto.lastMessageAt);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Real wall-clock UTC days, not the in-game calendar.
+	protected int DaysSince(string iso)
+	{
+		if (iso.Length() < 10)
+			return 0;
+
+		int year = iso.Substring(0, 4).ToInt();
+		int month = iso.Substring(5, 2).ToInt();
+		int day = iso.Substring(8, 2).ToInt();
+
+		int nowDays = System.GetUnixTime() / 86400;
+		int msgDays = DaysFromCivil(year, month, day);
+
+		return nowDays - msgDays;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Days since the Unix epoch, via Howard Hinnant's constant-time civil_from_days algorithm.
+	protected int DaysFromCivil(int year, int month, int day)
+	{
+		int y = year;
+		if (month <= 2)
+			y -= 1;
+
+		int era = y / 400;
+		if (y < 0)
+			era = (y - 399) / 400;
+
+		int yoe = y - era * 400;
+
+		int monthAdjusted = month - 3;
+		if (month <= 2)
+			monthAdjusted = month + 9;
+
+		int doy = (153 * monthAdjusted + 2) / 5 + day - 1;
+		int doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+
+		return era * 146097 + doe - 719468;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Real glass, not a painted strip - the conversation scrolls underneath it.
+	protected void BindCompose()
+	{
+		ELIFE_PhoneStyle.ApplyGlass(m_wComposeBar, false, true);
+
+		if (m_wComposeField && !m_ComposeFocus)
+		{
+			m_ComposeFocus = new ELIFE_PhoneComposeFocus();
+			m_ComposeFocus.Bind(this);
+			m_wComposeField.AddHandler(m_ComposeFocus);
+
+			//! Enter sends - GetOnChangeFinal() fires only on commit, not on every keystroke.
+			SCR_EventHandlerComponent events = SCR_EventHandlerComponent.Cast(m_wComposeField.FindHandler(SCR_EventHandlerComponent));
+			if (events)
+				events.GetOnChangeFinal().Insert(OnComposeConfirmed);
+		}
+
+		if (m_wSendButton && !m_SendClick)
+		{
+			m_SendClick = new ELIFE_PhoneSendClick();
+			m_SendClick.Bind(this);
+			m_wSendButton.AddHandler(m_SendClick);
+		}
+
+		if (m_wSendLabel)
+			m_wSendLabel.SetText("#ELIFE-Phone_Messages_Send");
+
+		bool iconLoaded = false;
+		if (m_wSendIcon)
+		{
+			iconLoaded = m_wSendIcon.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_CHAT, ICON_SEND);
+			if (iconLoaded)
+				ELIFE_PhoneStyle.FitIcon(m_wSendIcon, SEND_ICON_SIZE);
+		}
+
+		if (m_wSendIconSize)
+		{
+			m_wSendIconSize.SetVisible(iconLoaded);
+
+			SizeLayoutWidget iconSize = SizeLayoutWidget.Cast(m_wSendIconSize);
+			if (iconSize)
+			{
+				if (iconLoaded)
+					iconSize.SetWidthOverride(SEND_ICON_SIZE);
+				else
+					iconSize.SetWidthOverride(0);
+			}
+		}
+
+		FitSendAction(iconLoaded);
+		PaintSendAction(true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Width hugs the localized word the same way the nav pill does.
+	protected void FitSendAction(bool iconLoaded)
+	{
+		if (!m_wSendSize || !m_wSendLabel)
+			return;
+
+		float textWidth, textHeight;
+		m_wSendLabel.GetTextSize(textWidth, textHeight);
+
+		float iconWidth = 0;
+		if (iconLoaded)
+			iconWidth = SEND_ICON_SIZE + SEND_ICON_GAP;
+
+		SizeLayoutWidget sendSize = SizeLayoutWidget.Cast(m_wSendSize);
+		if (sendSize)
+			sendSize.SetWidthOverride(textWidth + iconWidth + SEND_PAD_H * 2);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PaintSendAction(bool enabled)
+	{
+		Color color = ELIFE_PhoneStyle.TextTertiary();
+		if (enabled && m_Accent)
+			color = m_Accent;
+
+		if (m_wSendLabel)
+			m_wSendLabel.SetColor(color);
+
+		if (m_wSendIcon)
+			m_wSendIcon.SetColor(color);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnComposeConfirmed(Widget w)
+	{
+		SubmitCompose();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Reachable two ways, Enter and the button, so this is written to be safe to call twice.
+	void SubmitCompose()
+	{
+		if (m_bSending || !m_Phone || !m_wComposeField)
+			return;
+
+		string body = m_wComposeField.GetText();
+		body.TrimInPlace();
+
+		//! An empty send is not an error worth saying anything about - there is nothing to send.
+		if (body == "")
+			return;
+
+		if (body.Length() > MAX_BODY_LENGTH)
+			body = body.Substring(0, MAX_BODY_LENGTH);
+
+		string number = ComposeRecipient();
+		if (number == "" || IsPartnerBlocked())
+			return;
+
+		m_bSending = true;
+		ApplyComposeState();
+
+		m_Phone.SendMessage(number, body);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A number-opened thread already knows; a real thread's recipient is whoever in it isn't this phone.
+	protected string ComposeRecipient()
+	{
+		if (m_sOpenNumber != "")
+			return m_sOpenNumber;
+
+		ELIFE_MessageThreadUpdate threadDto = FindThread(m_sOpenThreadId);
+		if (!threadDto)
+			return "";
+
+		return PartnerOf(threadDto);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whoever in a one-to-one thread isn't this phone.
+	protected string PartnerOf(notnull ELIFE_MessageThreadUpdate threadDto)
+	{
+		string own = m_Phone.GetNumber();
+
+		foreach (string participant : threadDto.participants)
+		{
+			if (participant != own)
+				return participant;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Contacts' own hand-off, reversed: sends the phone to the add form with this number prefilled.
+	void AddRecipientToContacts()
+	{
+		string number = ComposeRecipient();
+		if (number == "")
+			return;
+
+		OpenAppPage(EPhoneScreenState.CONTACTS, ELIFE_PhoneContactsApp.SUBSTATE_FORM_NUMBER_PREFIX + number);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Shown only for a number this phone hasn't saved yet - a known contact already has this covered.
+	protected void UpdateAddContactAction(string number)
+	{
+		//! Block lives in this row too, so it follows the same unsaved-number rule.
+		RefreshBlockState();
+
+		bool show = number != "" && !ELIFE_PhoneContactBook.FindByNumber(m_Phone, number);
+
+		if (m_wAddContactSize)
+			m_wAddContactSize.SetVisible(show);
+
+		if (!show)
+			return;
+
+		if (!m_AddContactClick)
+		{
+			m_AddContactClick = new ELIFE_ThreadAddContactClick();
+			m_AddContactClick.Bind(this);
+
+			if (m_wAddContactButton)
+				m_wAddContactButton.AddHandler(m_AddContactClick);
+		}
+
+		//! Destination accent - this door hands the phone to Contacts, not Messages' own hue.
+		Color fill = ELIFE_PhoneStyle.AccentDeepFor(EPhoneScreenState.CONTACTS);
+
+		bool round = false;
+		if (m_wAddContactDisc)
+		{
+			round = m_wAddContactDisc.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
+			m_wAddContactDisc.SetVisible(round);
+			m_wAddContactDisc.SetColor(fill);
+		}
+
+		if (m_wAddContactFallback)
+		{
+			m_wAddContactFallback.SetVisible(!round);
+			m_wAddContactFallback.SetColor(fill);
+		}
+
+		if (m_wAddContactHover)
+			m_wAddContactHover.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_PERSON_MARK);
+
+		bool iconLoaded = false;
+		if (m_wAddContactIcon)
+		{
+			iconLoaded = m_wAddContactIcon.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, ICON_ADD_CONTACT);
+			if (iconLoaded)
+			{
+				m_wAddContactIcon.SetColor(ELIFE_PhoneStyle.TextPrimary());
+				ELIFE_PhoneStyle.FitIcon(m_wAddContactIcon, 32);
+			}
+		}
+
+		//! The wrapper carries the visibility - a hidden wrapper hides a perfectly loaded child.
+		if (m_wAddContactIconSize)
+			m_wAddContactIconSize.SetVisible(iconLoaded);
+
+		if (m_wAddContactGlyph)
+			m_wAddContactGlyph.SetVisible(!iconLoaded);
+
+		if (m_wAddContactLabel)
+			m_wAddContactLabel.SetColor(ELIFE_PhoneStyle.AccentFor(EPhoneScreenState.CONTACTS));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Field clears only once the send is confirmed - a failure hands the typed text straight back.
+	protected void OnMessageSendResult(ELIFE_EMessageSendResult result, string threadId)
+	{
+		if (!m_wRoot || !m_bSending)
+			return;
+
+		m_bSending = false;
+		ApplyComposeState();
+
+		if (result == ELIFE_EMessageSendResult.FAILED || result == ELIFE_EMessageSendResult.TOO_LONG)
+			return;
+
+		if (m_wComposeField)
+			m_wComposeField.SetText("");
+
+		//! A first message to a number creates the thread, so the page promotes to it.
+		if (threadId != "" && m_sOpenThreadId == "")
+			OpenThread(threadId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string ThreadPreview(notnull ELIFE_MessageThreadUpdate threadDto)
+	{
+		int count = threadDto.messages.Count();
+		if (count == 0)
+			return "";
+
+		return threadDto.messages.Get(count - 1).body;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FillThread()
+	{
+		ClearChildren(m_wMessageList);
+		m_aNumberClicks.Clear();
+		BuildMentionIndex();
+
+		ELIFE_MessageThreadUpdate threadDto = FindThread(m_sOpenThreadId);
+
+		//! A conversation opened onto a person has no thread yet - expected, not a missing thread.
+		if (!threadDto && (m_sOpenNumber != "" || m_sOpenContactId != ""))
+		{
+			SetTextAndColor(m_wRoot, "ThreadTitle", ELIFE_PhoneContactBook.TitleForOpen(m_Phone, m_sOpenContactId, m_sOpenNumber), ELIFE_PhoneStyle.TextPrimary());
+			SyncThreadNavTitle();
+			UpdateAddContactAction(ComposeRecipient());
+
+			if (m_wEmptyMessages)
+				m_wEmptyMessages.SetVisible(true);
+
+			return;
+		}
+
+		//! A refresh replaces the thread list wholesale, so the open thread can disappear under us.
+		if (!threadDto)
+		{
+			SetText(m_wRoot, "ThreadTitle", "");
+			SyncThreadNavTitle();
+			UpdateAddContactAction("");
+
+			if (m_wEmptyMessages)
+				m_wEmptyMessages.SetVisible(true);
+
+			return;
+		}
+
+		SetTextAndColor(m_wRoot, "ThreadTitle", ELIFE_PhoneContactBook.TitleFor(m_Phone, threadDto), ELIFE_PhoneStyle.TextPrimary());
+		SyncThreadNavTitle();
+		UpdateAddContactAction(ComposeRecipient());
+
+		int count = threadDto.messages.Count();
+
+		if (m_wEmptyMessages)
+			m_wEmptyMessages.SetVisible(count == 0);
+
+		if (!m_wMessageList || count == 0)
+			return;
+
+		string you = WidgetManager.Translate("#ELIFE-Phone_Messages_You");
+		string previousMeta = "";
+
+		for (int i = 0; i < count; i++)
+		{
+			ELIFE_PhoneMessage message = threadDto.messages.Get(i);
+
+			Widget row = CreateListRow(LAYOUT_MESSAGE_ROW, m_wMessageList);
+			if (!row)
+				continue;
+
+			//! `from` is already a name (resolved in ReadUpdates() or by ELIFE_PhoneMessage.Redact()) - don't re-look it up.
+			string sender = message.from;
+			if (message.isOutbound)
+				sender = you;
+
+			string meta = sender + " · " + FormatClock(message.sentAt);
+
+			//! Consecutive messages from the same sender in the same minute share one meta line.
+			TextWidget metaWidget = TextWidget.Cast(row.FindAnyWidget("MessageMeta"));
+			if (metaWidget)
+			{
+				if (meta == previousMeta)
+				{
+					metaWidget.SetVisible(false);
+				}
+				else
+				{
+					metaWidget.SetText(meta);
+					metaWidget.SetColor(ELIFE_PhoneStyle.TextTertiary());
+					LayoutSlot.SetHorizontalAlign(metaWidget, LayoutHorizontalAlign.Left);
+					if (message.isOutbound)
+						LayoutSlot.SetHorizontalAlign(metaWidget, LayoutHorizontalAlign.Right);
+				}
+			}
+
+			previousMeta = meta;
+
+			Widget bubbleSize = row.FindAnyWidget("BubbleSize");
+			if (bubbleSize)
+			{
+				LayoutSlot.SetHorizontalAlign(bubbleSize, LayoutHorizontalAlign.Left);
+				if (message.isOutbound)
+					LayoutSlot.SetHorizontalAlign(bubbleSize, LayoutHorizontalAlign.Right);
+			}
+
+			//! Bubbles are glass, not a flat fill: inbound dark, outbound accent glass in this app's colour.
+			Widget bubble = row.FindAnyWidget("Bubble");
+			if (message.isOutbound)
+				ELIFE_PhoneStyle.ApplyGlass(bubble, false, false, false, true, ELIFE_PhoneStyle.AccentDeepFor(EPhoneScreenState.MESSAGES));
+			else
+				ELIFE_PhoneStyle.ApplyGlass(bubble, true);
+
+			TextWidget body = TextWidget.Cast(row.FindAnyWidget("MessageBody"));
+			if (body)
+			{
+				//! Only place in the phone UI with free text of unbounded length.
+				body.SetTextWrapping(true);
+				body.SetText(message.body);
+				body.SetColor(ELIFE_PhoneStyle.TextPrimary());
+			}
+
+			FillNumberAction(row, message);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Collects each run of exactly NUMBER_LENGTH digits once; longer runs are not numbers.
+	protected void FindNumbers(string text, notnull array<string> numbers)
+	{
+		string run = "";
+
+		for (int i = 0; i <= text.Length(); i++)
+		{
+			string ch = "";
+			if (i < text.Length())
+				ch = text.Get(i);
+
+			if (ch != "" && DIGITS.Contains(ch))
+			{
+				run += ch;
+				continue;
+			}
+
+			if (run.Length() == NUMBER_LENGTH && numbers.Find(run) < 0)
+				numbers.Insert(run);
+
+			run = "";
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Lowercases the saved contacts' names once, skipping the thread partner.
+	protected void BuildMentionIndex()
+	{
+		m_aMentionNames.Clear();
+		m_aMentionContacts.Clear();
+
+		ELIFE_ContactListDto list = ELIFE_PhoneContactBook.Contacts(m_Phone);
+		if (!list)
+			return;
+
+		string partner = ComposeRecipient();
+
+		foreach (ELIFE_ContactSummary contact : list.items)
+		{
+			if (!contact || contact.number == partner)
+				continue;
+
+			string name = ELIFE_PhoneContactBook.DisplayName(contact);
+			if (name == "")
+				continue;
+
+			name.ToLower();
+			m_aMentionNames.Insert(name);
+			m_aMentionContacts.Insert(contact);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Saved contacts named in the text as whole words, in written order.
+	protected void FindMentionedContacts(string text, notnull array<ref ELIFE_ContactSummary> found)
+	{
+		string haystack = text;
+		haystack.ToLower();
+
+		array<int> positions = {};
+		array<string> names = {};
+
+		foreach (int index, string name : m_aMentionNames)
+		{
+			int position = WordIndex(haystack, name);
+			if (position < 0)
+				continue;
+
+			//! Sorted insert by position.
+			int slot = positions.Count();
+			while (slot > 0 && positions.Get(slot - 1) > position)
+				slot--;
+
+			positions.InsertAt(position, slot);
+			names.InsertAt(name, slot);
+			found.InsertAt(m_aMentionContacts.Get(index), slot);
+		}
+
+		//! Drop a name contained in a longer matched one ("Peter" next to "Peter Mueller").
+		for (int i = found.Count() - 1; i >= 0; i--)
+		{
+			for (int j = 0; j < names.Count(); j++)
+			{
+				if (j != i && names.Get(j).Length() > names.Get(i).Length() && names.Get(j).Contains(names.Get(i)))
+				{
+					found.RemoveOrdered(i);
+					names.RemoveOrdered(i);
+					break;
+				}
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Index of the first whole-word occurrence, or -1.
+	protected int WordIndex(string haystack, string word)
+	{
+		int from = 0;
+		while (from < haystack.Length())
+		{
+			int index = haystack.IndexOfFrom(from, word);
+			if (index < 0)
+				return -1;
+
+			int end = index + word.Length();
+			bool startOk = index == 0 || !IsWordChar(haystack.Get(index - 1));
+			bool endOk = end >= haystack.Length() || !IsWordChar(haystack.Get(end));
+			if (startOk && endOk)
+				return index;
+
+			from = index + 1;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool IsWordChar(string ch)
+	{
+		return !WORD_SEPARATORS.Contains(ch);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Chips for numbers first, then mentioned contacts; incoming messages on the owner's view only.
+	protected void FillNumberAction(notnull Widget row, notnull ELIFE_PhoneMessage message)
+	{
+		if (message.isOutbound || !IsOwner())
+			return;
+
+		array<string> targets = {};
+		array<string> labels = {};
+		array<string> icons = {};
+
+		array<string> numbers = {};
+		FindNumbers(message.body, numbers);
+
+		string ownNumber = m_Phone.GetNumber();
+
+		foreach (string number : numbers)
+		{
+			if (number == ownNumber)
+				continue;
+
+			ELIFE_ContactSummary contact = ELIFE_PhoneContactBook.FindByNumber(m_Phone, number);
+			if (contact)
+			{
+				AddChip(targets, labels, icons, number, WidgetManager.Translate("#ELIFE-Phone_Messages_ChipOpen", ELIFE_PhoneContactBook.DisplayName(contact)), ICON_CHIP_OPEN);
+				continue;
+			}
+
+			AddChip(targets, labels, icons, number, WidgetManager.Translate("#ELIFE-Phone_Messages_ChipSave", number), ICON_ADD_CONTACT);
+		}
+
+		array<ref ELIFE_ContactSummary> mentioned = {};
+		FindMentionedContacts(message.body, mentioned);
+
+		foreach (ELIFE_ContactSummary mention : mentioned)
+			AddChip(targets, labels, icons, mention.number, WidgetManager.Translate("#ELIFE-Phone_Messages_ChipOpen", ELIFE_PhoneContactBook.DisplayName(mention)), ICON_CHIP_OPEN);
+
+		Color fill = ELIFE_PhoneStyle.AccentDeepFor(EPhoneScreenState.CONTACTS);
+		int count = Math.Min(targets.Count(), MAX_CHIPS);
+
+		for (int i = 0; i < count; i++)
+		{
+			string suffix = (i + 1).ToString();
+			Widget button = row.FindAnyWidget("MessageActionButton" + suffix);
+			if (!button)
+				continue;
+
+			SetTextAndColor(row, "MessageActionLabel" + suffix, labels.Get(i), ELIFE_PhoneStyle.TextPrimary());
+			ELIFE_PhoneStyle.SetColorOf(row, "MessageActionFill" + suffix, fill);
+
+			ImageWidget iconWidget = ImageWidget.Cast(row.FindAnyWidget("MessageActionIcon" + suffix));
+			Widget iconSize = row.FindAnyWidget("MessageActionIconSize" + suffix);
+			if (iconWidget)
+			{
+				bool loaded = iconWidget.LoadImageFromSet(0, ELIFE_PhoneStyle.ICON_SET_WRAPPER, icons.Get(i));
+				if (loaded)
+					ELIFE_PhoneStyle.FitIcon(iconWidget, CHIP_ICON_SIZE);
+
+				if (iconSize)
+					iconSize.SetVisible(loaded);
+			}
+
+			ELIFE_MessageNumberClick click = new ELIFE_MessageNumberClick();
+			click.Bind(this, targets.Get(i), row.FindAnyWidget("MessageActionFill" + suffix), fill);
+			button.AddHandler(click);
+			m_aNumberClicks.Insert(click);
+			button.SetVisible(true);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One chip per number, so a saved number that is also written as a name shows once.
+	protected void AddChip(notnull array<string> targets, notnull array<string> labels, notnull array<string> icons, string number, string label, string icon)
+	{
+		if (targets.Find(number) >= 0)
+			return;
+
+		targets.Insert(number);
+		labels.Insert(label);
+		icons.Insert(icon);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Contact detail for a saved number, the prefilled add form otherwise.
+	void OpenNumberInContacts(string number)
+	{
+		ELIFE_ContactSummary contact = ELIFE_PhoneContactBook.FindByNumber(m_Phone, number);
+		if (contact)
+			OpenAppPage(EPhoneScreenState.CONTACTS, ELIFE_PhoneContactsApp.SUBSTATE_DETAIL_PREFIX + contact.contactId);
+		else
+			OpenAppPage(EPhoneScreenState.CONTACTS, ELIFE_PhoneContactsApp.SUBSTATE_FORM_NUMBER_PREFIX + number);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected ELIFE_MessageThreadUpdate FindThread(string threadId)
+	{
+		if (threadId == "")
+			return null;
+
+		foreach (ELIFE_MessageThreadUpdate threadDto : m_Updates.threads)
+		{
+			if (threadDto.threadId == threadId)
+				return threadDto;
+		}
+
+		return null;
+	}
+}

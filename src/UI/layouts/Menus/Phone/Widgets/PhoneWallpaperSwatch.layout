@@ -1,0 +1,136 @@
+SizeLayoutWidgetClass {
+ Name "SwatchSize"
+ AllowWidthOverride 1
+ WidthOverride 72
+ AllowHeightOverride 1
+ HeightOverride 148
+ {
+  OverlayWidgetClass "{DA684BCCFB154D36}" {
+   Name "Swatch"
+   Slot AlignableSlot "{0AB5D3B59C3FE209}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    SmartPanelWidgetClass "{1D381B9B9A89A354}" {
+     Name "SwatchBase"
+     Slot OverlayWidgetSlot "{06C6622AD7178C18}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.0066 0.0103 0.0243 1
+     style rounded_12px
+     "no focus" 1
+    }
+    ImageWidgetClass "{5065BAD169B0ECD6}" {
+     Name "SwatchGlow"
+     Slot OverlayWidgetSlot "{109BB0511FFD0CFC}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 2 2 2 2
+     }
+     Color 0.0232 0.0421 0.1246 1
+     Texture "{099C73E0F66A5F28}UI/Textures/Common/gradientTexture_Dither_down_512.edds"
+    }
+    OverlayWidgetClass "{EA62280892701C48}" {
+     Name "SwatchPhotoGroup"
+     Slot OverlayWidgetSlot "{D09EC6917874FBF0}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     "Is Visible" 0
+     {
+      ScaleWidgetClass "{357DAA24CAACE9B8}" {
+       Name "SwatchPhotoScale"
+       Slot OverlayWidgetSlot "{D95FFFAEFE68B3B9}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       "Scale Mode" "Scale to fill"
+       {
+        ImageWidgetClass "{76F62B779E6F3614}" {
+         Name "SwatchPhoto"
+         Slot AlignableSlot "{261BD5D084DFAFC3}" {
+         }
+         Size 1920 1080
+        }
+       }
+      }
+      ImageWidgetClass "{E67B2039601FB217}" {
+       Name "SwatchPhotoScrim"
+       Slot OverlayWidgetSlot "{61D2F5A1F68D4697}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0 0 0 0.15
+      }
+     }
+    }
+    ButtonWidgetClass "{CDFE6D3BA4DC84A4}" {
+     Name "SwatchButton"
+     Slot OverlayWidgetSlot "{3F8385519C6139F8}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 1
+     style blank
+     components {
+      SCR_ButtonTextComponent "{EE77FDC4954FF16C}" {
+       m_BackgroundDefault 0.8626 0.8964 0.964 0
+       m_BackgroundHovered 0.8626 0.8964 0.964 0.08
+       m_BackgroundSelected 0.8626 0.8964 0.964 0.14
+       m_BackgroundSelectedHovered 0.8626 0.8964 0.964 0.14
+       m_BackgroundClicked 0.8626 0.8964 0.964 0.14
+       m_sText ""
+      }
+     }
+     {
+      OverlayWidgetClass "{E969C99B1F330916}" {
+       Name "ButtonSurface"
+       Slot ButtonWidgetSlot "{06005938EAC835C2}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        SmartPanelWidgetClass "{897DD20121A2E7A0}" {
+         Name "Background"
+         Slot OverlayWidgetSlot "{BCA092572BC5A0D0}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0 0 0 0
+         style rounded_12px
+         "no focus" 1
+        }
+        SizeLayoutWidgetClass "{DD274C689DEABA68}" {
+         Name "SwatchCheckSize"
+         Slot OverlayWidgetSlot "{39596AD56EB158A0}" {
+          HorizontalAlign 1
+          VerticalAlign 2
+          Padding 0 0 0 10
+         }
+         "Is Visible" 0
+         AllowWidthOverride 1
+         WidthOverride 22
+         AllowHeightOverride 1
+         HeightOverride 22
+         {
+          ImageWidgetClass "{899162C4F90AA3AF}" {
+           Name "SwatchCheck"
+           Slot AlignableSlot "{89E6ACE3344406BB}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.8378 0.8626 0.9222 1
+           Size 22 22
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

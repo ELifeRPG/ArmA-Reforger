@@ -9,34 +9,23 @@ class ELIFE_ChatCaption
 }
 
 //------------------------------------------------------------------------------------------------
-class ELIFE_ChatCaptionFilterCallback : SCR_ScriptProfanityFilterRequestCallback
+class ELIFE_ChatCaptionFilterRequest : ELIFE_ProfanityFilterRequest
 {
 	ELIFE_ChatCaptions m_Captions;
 	int m_iPlayerId;
 	bool m_bIsEmote;
 
 	//------------------------------------------------------------------------------------------------
-	//! Same post-processing as vanilla chat (SCR_ChatPanelManager.OnMessageFiltered).
-	override void OnFilteredResult()
+	override protected void OnFiltered(string text)
 	{
-		super.OnFilteredResult();
-
-		string text = SCR_StringHelper.Join("\n", m_FilteredTexts, true);
-		if (GetGame().GetPlatformService().GetLocalPlatformKind() == PlatformKind.XBOX)
-		{
-			string censored;
-			SCR_ProfaneFilter.ReplaceProfanities(text, censored);
-			text = censored;
-		}
-
 		if (m_Captions)
-			m_Captions.OnFiltered(this, text);
+			m_Captions.AddFiltered(m_iPlayerId, text, m_bIsEmote);
 	}
 }
 
 //------------------------------------------------------------------------------------------------
 //! Local chat above the sender's head. Chat already delivers Local only within range, so no own networking.
-//! Vanilla filters profanity only when adding to the chat log, which Local skips, so it's done here.
+//! Local skips the chat log, where vanilla filters profanity, so captions are filtered here.
 class ELIFE_ChatCaptions
 {
 	protected static const ResourceName TEXT_LAYOUT = "{3132F64DB8B4CB44}UI/layouts/WidgetLibrary/TextWidgets/Text_Body.layout";
@@ -53,9 +42,6 @@ class ELIFE_ChatCaptions
 
 	protected ref array<ref ELIFE_ChatCaption> m_aCaptions = {};
 
-	//! Held until the async result arrives, otherwise the request is collected.
-	protected ref array<ref ELIFE_ChatCaptionFilterCallback> m_aPendingFilters = {};
-
 	//! Full-screen container; a text widget placed directly on the workspace isn't drawn.
 	protected Widget m_wRoot;
 
@@ -70,33 +56,15 @@ class ELIFE_ChatCaptions
 		if (!s_Instance)
 			s_Instance = new ELIFE_ChatCaptions();
 
-		s_Instance.RequestFiltered(playerId, text, isEmote);
+		ELIFE_ChatCaptionFilterRequest request = new ELIFE_ChatCaptionFilterRequest();
+		request.m_Captions = s_Instance;
+		request.m_iPlayerId = playerId;
+		request.m_bIsEmote = isEmote;
+		ELIFE_ProfanityFilter.Filter(text, request);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void RequestFiltered(int playerId, string text, bool isEmote)
-	{
-		ELIFE_ChatCaptionFilterCallback callback = new ELIFE_ChatCaptionFilterCallback();
-		callback.m_Captions = this;
-		callback.m_iPlayerId = playerId;
-		callback.m_bIsEmote = isEmote;
-		m_aPendingFilters.Insert(callback);
-
-		// Like vanilla chat: shown unfiltered when the platform can't filter.
-		array<string> texts = {text};
-		if (!GetGame().GetPlatformService().FilterProfanityAsync(texts, callback))
-			OnFiltered(callback, text);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void OnFiltered(ELIFE_ChatCaptionFilterCallback callback, string text)
-	{
-		m_aPendingFilters.RemoveItem(callback);
-		Add(callback.m_iPlayerId, text, callback.m_bIsEmote);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void Add(int playerId, string message, bool isEmote)
+	void AddFiltered(int playerId, string message, bool isEmote)
 	{
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		if (!workspace)

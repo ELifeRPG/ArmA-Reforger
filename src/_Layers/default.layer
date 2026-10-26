@@ -1,0 +1,9 @@
+SCR_FactionManager ELIFE_FactionManager1 : "{C4747BA20C71D8E2}Prefabs/MP/Managers/Factions/ELIFE_FactionManager.et" {
+ coords 3148.242 18.64 2629.187
+}
+ELIFE_GameMode ELIFE_GameMode1 : "{E9922930097C3FD4}Prefabs/MP/Modes/ELIFE_GameMode.et" {
+ coords 3147.673 18.676 2628.885
+}
+SCR_LoadoutManager : "{318E93063CC0FC86}Prefabs/MP/Managers/Loadouts/ELIFE_LoadoutManager.et" {
+ coords 3148.853 18.688 2627.15
+}
