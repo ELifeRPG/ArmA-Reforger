@@ -293,11 +293,11 @@ class ELIFE_PhoneScreenShell
 	protected TextWidget m_wStatusNotifyCount;
 	protected ref array<ref ELIFE_PhoneBannerClick> m_aHubClicks = {};
 
-	//! threadId -> unread count already seen. A banner fires when a count rises past this.
-	protected ref map<string, int> m_mSeenUnread = new map<string, int>();
+	//! Notification ids already accounted for; a banner fires for any id not in here.
+	protected ref map<string, bool> m_mSeenNotifications = new map<string, bool>();
 
-	//! The first payload only seeds the baseline, so opening the phone doesn't replay old unread.
-	protected bool m_bUnreadSeeded;
+	//! The first payload only seeds the baseline, so opening the phone doesn't replay what's waiting.
+	protected bool m_bNotificationsSeeded;
 
 	protected bool m_bBannerOnly;
 
@@ -2188,7 +2188,8 @@ class ELIFE_PhoneScreenShell
 			return;
 		}
 
-		if (key != ELIFE_PhoneGadgetComponent.DATA_MESSAGES && key != ELIFE_PhoneGadgetComponent.DATA_CONTACTS)
+		bool notifications = key == ELIFE_PhoneGadgetComponent.DATA_NOTIFICATIONS;
+		if (!notifications && key != ELIFE_PhoneGadgetComponent.DATA_MESSAGES && key != ELIFE_PhoneGadgetComponent.DATA_CONTACTS)
 			return;
 
 		if (m_eState == EPhoneScreenState.LOCKED)
@@ -2196,12 +2197,13 @@ class ELIFE_PhoneScreenShell
 		else if (m_eState == EPhoneScreenState.HOME)
 			RefreshHomeScreen();
 
-		if (key != ELIFE_PhoneGadgetComponent.DATA_MESSAGES)
+		if (key == ELIFE_PhoneGadgetComponent.DATA_CONTACTS)
 			return;
 
-		RaiseArrivedBanners();
+		if (notifications)
+			RaiseArrivedBanners();
 
-		//! After the banners, so a new arrival also lands in the list.
+		//! After the banners, so a new arrival also lands in the list; the inbox carries the card text.
 		RefreshNotifications();
 	}
 
@@ -2256,40 +2258,48 @@ class ELIFE_PhoneScreenShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Diff against what this screen has already accounted for and banner whatever went up.
+	//! Banners whichever threads got a notification this screen hasn't accounted for yet.
 	void RaiseArrivedBanners()
 	{
 		if (!m_Phone)
 			return;
 
-		string json = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_MESSAGES);
+		string json = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_NOTIFICATIONS);
 		if (json == "")
 			return;
 
-		ELIFE_MessageUpdates updates = new ELIFE_MessageUpdates();
-		updates.ExpandFromRAW(json);
+		ELIFE_PhoneNotificationListDto queue = new ELIFE_PhoneNotificationListDto();
+		queue.ExpandFromRAW(json);
 
-		//! Record every thread, so one dropping to zero and rising again reads as new.
-		array<ref ELIFE_MessageThreadUpdate> arrived = {};
+		//! Rebuilt from the queue each time, so acked ids drop out instead of piling up.
+		map<string, bool> seen = new map<string, bool>();
+		array<string> arrivedThreads = {};
 
-		foreach (ELIFE_MessageThreadUpdate threadDto : updates.threads)
+		foreach (ELIFE_PhoneNotification notification : queue.items)
 		{
-			if (!threadDto)
+			if (!notification || !notification.IsMessage())
 				continue;
 
-			int seen = 0;
-			m_mSeenUnread.Find(threadDto.threadId, seen);
+			seen.Set(notification.notificationId, true);
 
-			if (m_bUnreadSeeded && threadDto.unreadCount > seen)
-				arrived.Insert(threadDto);
-
-			m_mSeenUnread.Set(threadDto.threadId, threadDto.unreadCount);
+			if (m_bNotificationsSeeded && !m_mSeenNotifications.Contains(notification.notificationId) && !arrivedThreads.Contains(notification.groupKey))
+				arrivedThreads.Insert(notification.groupKey);
 		}
 
-		m_bUnreadSeeded = true;
+		m_mSeenNotifications = seen;
+		m_bNotificationsSeeded = true;
 
-		foreach (ELIFE_MessageThreadUpdate threadDto : arrived)
-			ShowBanner(threadDto);
+		if (arrivedThreads.IsEmpty())
+			return;
+
+		array<ref ELIFE_MessageThreadUpdate> pending = {};
+		CollectNotifications(pending);
+
+		foreach (ELIFE_MessageThreadUpdate threadDto : pending)
+		{
+			if (arrivedThreads.Contains(threadDto.threadId))
+				ShowBanner(threadDto);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2302,7 +2312,7 @@ class ELIFE_PhoneScreenShell
 		foreach (ELIFE_MessageThreadUpdate threadDto : pending)
 			ShowBanner(threadDto);
 
-		m_bUnreadSeeded = false;
+		m_bNotificationsSeeded = false;
 		RaiseArrivedBanners();
 	}
 
@@ -2442,33 +2452,76 @@ class ELIFE_PhoneScreenShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Threads with an undismissed notification, newest first (payload order).
+	//! One entry per thread with queued Messages notifications, newest first. unreadCount is how many are
+	//! queued and lastMessageAt the newest one's time; title and text come from the inbox, which has been
+	//! through the profanity filter.
 	protected void CollectNotifications(notnull array<ref ELIFE_MessageThreadUpdate> outThreads)
 	{
 		if (!m_Phone)
 			return;
 
-		string json = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_MESSAGES);
-		if (json == "")
+		string queueJson = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_NOTIFICATIONS);
+		string inboxJson = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_MESSAGES);
+		if (queueJson == "" || inboxJson == "")
 			return;
 
-		ELIFE_MessageUpdates updates = new ELIFE_MessageUpdates();
-		updates.ExpandFromRAW(json);
+		ELIFE_PhoneNotificationListDto queue = new ELIFE_PhoneNotificationListDto();
+		queue.ExpandFromRAW(queueJson);
 
-		foreach (ELIFE_MessageThreadUpdate threadDto : updates.threads)
+		ELIFE_MessageUpdates inbox = new ELIFE_MessageUpdates();
+		inbox.ExpandFromRAW(inboxJson);
+
+		foreach (ELIFE_PhoneNotification notification : queue.items)
 		{
-			if (!threadDto || threadDto.unreadCount <= 0)
+			if (!notification || !notification.IsMessage() || IsThreadOnScreen(notification.groupKey))
 				continue;
 
-			//! Hides threads the reader cleared, until the next message arrives on them.
-			if (m_Phone.IsNotificationDismissed(threadDto.threadId, threadDto.unreadCount))
-				continue;
+			ELIFE_MessageThreadUpdate entry = FindNotified(outThreads, notification.groupKey);
+			if (!entry)
+			{
+				ELIFE_MessageThreadUpdate threadDto = inbox.FindThread(notification.groupKey);
+				if (!threadDto)
+					continue;
 
-			if (IsThreadOnScreen(threadDto.threadId))
-				continue;
+				entry = threadDto.Copy();
+				entry.KeepNewestInbound();
+				entry.unreadCount = 0;
+				entry.lastMessageAt = "";
+				outThreads.Insert(entry);
+			}
 
-			outThreads.Insert(threadDto);
+			entry.unreadCount++;
+			if (entry.lastMessageAt < notification.occurredAt)
+				entry.lastMessageAt = notification.occurredAt;
 		}
+
+		//! Newest first; the queue itself is oldest first.
+		int count = outThreads.Count();
+		for (int i = 1; i < count; i++)
+		{
+			ELIFE_MessageThreadUpdate current = outThreads.Get(i);
+			int j = i - 1;
+
+			while (j >= 0 && outThreads.Get(j).lastMessageAt < current.lastMessageAt)
+			{
+				outThreads.Set(j + 1, outThreads.Get(j));
+				j--;
+			}
+
+			outThreads.Set(j + 1, current);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected ELIFE_MessageThreadUpdate FindNotified(notnull array<ref ELIFE_MessageThreadUpdate> threads, string threadId)
+	{
+		foreach (ELIFE_MessageThreadUpdate threadDto : threads)
+		{
+			if (threadDto.threadId == threadId)
+				return threadDto;
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2605,19 +2658,11 @@ class ELIFE_PhoneScreenShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Dismisses without marking read; the next message on a thread notifies again.
+	//! Acks the queue without marking anything read; the next message on a thread notifies again.
 	protected void OnHubClearClicked()
 	{
-		if (!m_Phone)
-			return;
-
-		array<ref ELIFE_MessageThreadUpdate> pending = {};
-		CollectNotifications(pending);
-
-		foreach (ELIFE_MessageThreadUpdate threadDto : pending)
-			m_Phone.DismissNotification(threadDto.threadId, threadDto.unreadCount);
-
-		RefreshNotifications();
+		if (m_Phone)
+			m_Phone.ClearNotifications();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3431,12 +3476,8 @@ class ELIFE_PhoneScreenShell
 		if (!m_Phone)
 			return;
 
-		string json = m_Phone.GetData(ELIFE_PhoneGadgetComponent.DATA_MESSAGES);
-		if (json == "")
-			return;
-
-		ELIFE_MessageUpdates updates = new ELIFE_MessageUpdates();
-		updates.ExpandFromRAW(json);
+		array<ref ELIFE_MessageThreadUpdate> pending = {};
+		CollectNotifications(pending);
 
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		if (!workspace)
@@ -3444,13 +3485,10 @@ class ELIFE_PhoneScreenShell
 
 		int shown = 0;
 
-		foreach (ELIFE_MessageThreadUpdate threadDto : updates.threads)
+		foreach (ELIFE_MessageThreadUpdate threadDto : pending)
 		{
 			if (shown >= LOCK_NOTIFICATION_LIMIT)
 				break;
-
-			if (threadDto.unreadCount <= 0)
-				continue;
 
 			Widget card = workspace.CreateWidgets(LAYOUT_NOTIFICATION, m_wLockNotifications);
 			if (!card)

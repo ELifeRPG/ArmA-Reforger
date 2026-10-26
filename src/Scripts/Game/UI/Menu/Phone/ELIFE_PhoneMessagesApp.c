@@ -509,9 +509,13 @@ class ELIFE_PhoneMessagesApp : ELIFE_PhoneAppBase
 		m_iMarkedUnread = 0;
 		ShowThreadPage();
 
-		//! Opening a thread is what reading it means, so the unread count clears here.
+		//! Opening a thread is what reading it means, so the unread count clears here. The cache only holds
+		//! its newest message until the full history is fetched.
 		if (m_Phone && threadId != "")
+		{
 			m_Phone.MarkThreadRead(threadId);
+			m_Phone.RequestThread(threadId);
+		}
 
 		NotifySubStateChanged();
 	}

@@ -24,6 +24,71 @@ modded class ELIFE_MessageThreadUpdate
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! sentAt and occurredAt are the same UTC ISO-8601 format, so string order is time order.
+	bool HasMessageSince(string at)
+	{
+		foreach (ELIFE_PhoneMessage message : messages)
+		{
+			if (message && message.sentAt >= at)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Enough for a preview; assumes oldest-first order.
+	void KeepNewestOnly()
+	{
+		int count = messages.Count();
+		if (count <= 1)
+			return;
+
+		ELIFE_PhoneMessage newest = messages.Get(count - 1);
+		messages.Clear();
+		messages.Insert(newest);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a notification card shows: the newest message from the other side, or nothing.
+	void KeepNewestInbound()
+	{
+		for (int i = messages.Count() - 1; i >= 0; i--)
+		{
+			ELIFE_PhoneMessage message = messages.Get(i);
+			if (!message || message.isOutbound)
+				continue;
+
+			messages.Clear();
+			messages.Insert(message);
+			return;
+		}
+
+		messages.Clear();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static ELIFE_MessageThreadUpdate FromDetail(notnull ELIFE_MessageThreadDetail detail)
+	{
+		ELIFE_MessageThreadUpdate threadDto = new ELIFE_MessageThreadUpdate();
+		threadDto.threadId = detail.threadId;
+		threadDto.unreadCount = detail.unreadCount;
+		threadDto.lastMessageAt = detail.lastMessageAt;
+
+		foreach (string participant : detail.participants)
+			threadDto.participants.Insert(participant);
+
+		foreach (ELIFE_PhoneMessage message : detail.messages)
+		{
+			if (message)
+				threadDto.messages.Insert(message.Copy());
+		}
+
+		threadDto.SortMessages();
+		return threadDto;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Oldest first, the order a conversation reads in. sentAt is UTC ISO-8601, so string order is
 	//! chronological order. Insertion sort - a thread holds far too few messages for anything else to
 	//! pay for itself, and a merged thread is almost always already sorted.

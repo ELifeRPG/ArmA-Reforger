@@ -357,30 +357,38 @@ API timestamps are UTC ISO and shown as-is: `FormatClock` → `14:32`,
 
   | Surface | Is | Rule |
   |---|---|---|
-  | Lock list | Standing state | Every unread thread, rebuilt each lock render. |
+  | Lock list | Standing state | Every thread with queued notifications, rebuilt each lock render. |
   | Banner | An event | Awake-screen arrivals only, capped stack, self-dismisses after `BANNER_DURATION_MS`. Fades **both ways** — in on the present duration, out on the shorter state one, since arriving announces something and leaving is housekeeping. A **door**: taps hand the phone to the source app on that item. |
   | Hub | The backlog | Everything still standing, opened on demand as a dark-glass sheet over the current page — it takes the screen away rather than floating over it, unlike the light-glass cards it lists. |
   | Peek | An event, phone away | A banner strip at the top centre slides down from the top edge, holds, slides back. **Never a menu** — it fires unprompted, so it must not take the cursor or the input context; it is a bare workspace widget and the player keeps moving throughout. It is the banner layer of a real `PhoneScreen` (every other layer hidden) painted with the compact 1× card (`ELIFE_PhoneScreenShell.UseCompactBanners()`), not a phone shape. Keep `PhonePeekCard.layout` in step with `PhoneNotificationCard.layout`. No world blur or dim: those mean "you are in the phone now", and a glance means the opposite. Nothing on it is clickable — acting on the message is taking the phone out. |
 
-  A rising unread count is an arrival; a merely non-zero one is not — opening the
-  phone must never replay old unread as fresh news, and a thread already open on
-  screen must never banner or queue itself, since it is being read as it lands.
-  Seed the arrival baseline from whatever the screen already has when it opens;
-  the first poll after wake must still be able to count as news.
+  All four read the backend's notification queue (`/phones/{id}/notifications`, the
+  only thing the phone polls), one entry per thread, with title and text from the
+  inbox so they have been through the profanity filter. A notification id not seen
+  before is an arrival; one already waiting is not — opening the phone must never
+  replay it as fresh news, and a thread already open on screen must never banner or
+  list itself, since it is being read as it lands. Seed the arrival baseline from
+  whatever the screen already has when it opens; the first poll after wake must still
+  be able to count as news.
 
   A peek is a banner surface, so it cannot be the lock screen — lock has no banner.
   Taking the phone out while a peek is up is the door: it hands the phone to the
   source app on that item, same as tapping the banner. Never two copies of the
   same phone. A second arrival while a peek is up restarts it; do not stack another.
 
-  The **status-bar indicator** counts messages (three from one person is three
-  things waiting); the **hub row** counts per-thread, since its body only shows the
-  newest. Never confuse the two. Both surfaces are hidden entirely on lock and off —
+  The **status-bar indicator** counts queued notifications (three from one person is
+  three things waiting); the **hub row** counts per-thread, since its body only shows
+  the newest. Never confuse the two. Both surfaces are hidden entirely on lock and off —
   a count is still information about who is contacting you, and the hub is bodies
-  one tap from a locked phone. **Clear** is a watermark per thread, not a read flag
-  and never a backend call — the next message pushes past it and the notification
-  returns, so clearing can never mean "ignore forever." Hub open state is
-  replicated so a bystander's copy of the screen matches the owner's.
+  one tap from a locked phone. **Clear** acks the queue on the backend, so it survives
+  a restart, but it is not a read flag — the next message notifies again. Opening a
+  thread marks it read, which drops that thread's notifications on the backend too.
+  Hub open state is replicated so a bystander's copy of the screen matches the owner's.
+
+  The **inbox** comes from the thread list (`/apps/messages/threads`), refetched on
+  every new notification; an opened conversation loads its full history
+  (`/threads/{id}`). Until it is opened, a thread's preview is the text of its newest
+  notification, and a thread restored after a restart has none.
 - **Settings.** Grouped rows, caption headers, right-aligned values, chevrons for
   pushes, toggles for booleans. Device ID, number, and PIN are real fields — values,
   not body copy. The PIN shows as `****` until the owner taps its row (an eye icon at the trailing edge: `private`, struck

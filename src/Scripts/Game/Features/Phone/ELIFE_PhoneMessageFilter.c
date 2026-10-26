@@ -59,6 +59,13 @@ class ELIFE_PhoneMessageFilter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A payload is waiting on filtered bodies and hasn't been released yet.
+	bool IsBusy()
+	{
+		return m_sPendingJson != "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void OnBodyFiltered(string messageId, string body)
 	{
 		m_mFilteredBodies.Set(messageId, body);
