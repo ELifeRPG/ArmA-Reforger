@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{54C7649C6CB3918F}Prefabs/Characters/Footwear/WorkBoots_01"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}

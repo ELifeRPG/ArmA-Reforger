@@ -1,0 +1,29 @@
+GenericEntity : "{203EEA924B049EF1}Prefabs/Characters/Footwear/JungleBoots_01/JungleBoots_01.et" {
+ ID "9CECC798B0CECDB2"
+ components {
+  InventoryItemComponent "{5244C46AD695742D}" {
+   Attributes SCR_ItemAttributeCollection "{52C8D60139586A54}" {
+    ItemDisplayName UIInfo "{52C8D60138ED3590}" {
+     Name "#ELIFE-Item_WorkBoots_Name"
+     Description "#ELIFE-Item_WorkBoots_Description"
+    }
+   }
+  }
+  MeshObject "{5244C34DEE7DBFB4}" {
+   Materials {
+    MaterialAssignClass "{DBE3C024C7492035}" {
+     SourceMaterial "JungleBoots_01"
+     AssignedMaterial "{7B266F7EC35A3F76}Assets/Characters/Footwear/WorkBoots_01/Data/WorkBoots_01.emat"
+    }
+   }
+  }
+  BaseLoadoutClothComponent "{5244C34DEE7DBFB2}" {
+   WornMaterialsOverride {
+    "{7B266F7EC35A3F76}Assets/Characters/Footwear/WorkBoots_01/Data/WorkBoots_01.emat"
+   }
+   ItemMaterialsOverride {
+    "{7B266F7EC35A3F76}Assets/Characters/Footwear/WorkBoots_01/Data/WorkBoots_01.emat"
+   }
+  }
+ }
+}

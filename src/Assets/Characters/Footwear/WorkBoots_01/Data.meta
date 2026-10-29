@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F2B79CE1FAEBEA38}Assets/Characters/Footwear/WorkBoots_01/Data"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1610,5 +1610,85 @@ StringTable {
    Author "Robin"
    LastChanged "Robin"
   }
+  CustomStringTableItem "{5577C1D963C021B5}" {
+   Id "ELIFE-Item_Cash_Name"
+   Target_en_us "Cash"
+   Target_de_de "Bargeld"
+   Modified 1793208823
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{6F5A74E6354B7685}" {
+   Id "ELIFE-Item_Cash_Description"
+   Target_en_us "A stack of tolar banknotes."
+   Target_de_de "Ein Stapel Tolar-Scheine."
+   Modified 1793208823
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{BCD623B4CE81A210}" {
+   Id "ELIFE-Item_Cash_NameAmount"
+   Target_en_us "Cash (%1)"
+   Target_de_de "Bargeld (%1)"
+   Modified 1793208823
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{A4A3D509DA6C1E68}" {
+   Id "ELIFE-Cash_Move_Confirm"
+   Target_en_us "Move"
+   Target_de_de "Bewegen"
+   Modified 1793272295
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{2A968D8E038CDEF3}" {
+   Id "ELIFE-Cash_Move_Title"
+   Target_en_us "Move cash"
+   Target_de_de "Bargeld bewegen"
+   Modified 1793272295
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{2AC3154EC268F9F5}" {
+   Id "ELIFE-Cash_Move_Message"
+   Target_en_us "This stack holds %1. How many tolars do you want to move?"
+   Target_de_de "Dieser Stapel enthält %1. Wie viele Tolar möchtest du bewegen?"
+   Modified 1793272295
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{8F27F8CB1E2A5B21}" {
+   Id "ELIFE-Cash_Move_Cancel"
+   Target_en_us "Cancel"
+   Target_de_de "Abbrechen"
+   Modified 1793272295
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{365DA27937BC9F1B}" {
+   Id "ELIFE-Cash_Move_Placeholder"
+   Target_en_us "Amount in tolars"
+   Target_de_de "Betrag in Tolar"
+   Modified 1793272295
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{79C666AFC5CD1062}" {
+   Id "ELIFE-Item_WorkBoots_Name"
+   Target_en_us "Work Boots"
+   Target_de_de "Arbeitsstiefel"
+   Modified 1793276503
+   Author "Robin"
+   LastChanged "Robin"
+  }
+  CustomStringTableItem "{12565441AFAAAFD5}" {
+   Id "ELIFE-Item_WorkBoots_Description"
+   Target_en_us "Sturdy brown leather work boots."
+   Target_de_de "Robuste braune Arbeitsstiefel aus Leder."
+   Modified 1793276503
+   Author "Robin"
+   LastChanged "Robin"
+  }
  }
 }
