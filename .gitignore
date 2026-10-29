@@ -4,3 +4,9 @@ src/Scripts/WorkbenchGame/
 /.directory
 
 resourceDatabase.rdb
+
+## Docs site (zensical)
+.venv/
+site/
+.cache/
+__pycache__/

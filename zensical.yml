@@ -1,8 +1,7 @@
 site_url: https://eliferpg.github.io/ArmA-Reforger/
-site_name: ELifeRPG ArmA Reforger
+site_name: eliferpg-arma-reforger
 site_description: Technical documentation for the ELifeRPG ArmA Reforger addon
 copyright: Copyright &copy; 2026 ELifeRPG
-docs_dir: .
 
 repo_url: https://github.com/ELifeRPG/ArmA-Reforger
 repo_name: ELifeRPG/ArmA-Reforger
