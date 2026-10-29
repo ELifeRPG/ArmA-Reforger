@@ -1,0 +1,61 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  SoundComponent "{4427948903F58CAC}" {
+   Filenames {
+    "{12A94705DF2BFD25}Sounds/Items/_SharedData/PickUp/Items_PickUp_Generic.acp"
+   }
+   OnFrameUpdate 0
+  }
+  ELIFE_CashComponent "{E668C13FE22956C5}" {
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{1A03881783C3C395}" {
+    ItemDisplayName ELIFE_CashInventoryUIInfo "{D9032A133D2EE5B9}" {
+     Name "#ELIFE-Item_Cash_Name"
+     Description "#ELIFE-Item_Cash_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.1
+     SizeSetupStrategy Manual
+     ItemDimensions 5 5 5
+     ItemVolume 100
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{B4E8B198B2879104}" {
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{F7C410B62A8B22D3}" {
+      CameraOrbitAngles 0 180 0
+      CameraDistanceToItem 0.2
+      CameraOffset 0.03 0 0
+      ItemRenderRotation 90 0 0
+      IsDynamicObject 0
+      LodModel 0
+      TakeVisibilityIntoAccount 0
+     }
+    }
+    CommonItemType "NONE"
+    m_Size SLOT_1x1
+    m_SlotType SLOT_LOADOUT_STORAGE
+    m_bStackable 0
+   }
+  }
+  MeshObject "{4F786DA9411BCE41}" {
+   Object "{1BF8C5BE3DEEC82C}Assets/Items/Identity/Belongings_Personal/Papers_Personal.xob"
+   Materials {
+    MaterialAssignClass "{3E53457063861DED}" {
+     SourceMaterial "Personal_Belongings_Generic_PhotosPapers_US"
+     AssignedMaterial "{54419A0B61C2A3DB}Assets/Items/Identity/Belongings_Personal/Data/Personal_Belongings_Generic_PhotosPapers_FIA.emat"
+    }
+   }
+  }
+  RigidBody "{D07FDAC4F7B53FC7}" {
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+   CCDRadius 0.015
+  }
+ }
+ coords 0 0 0
+}

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{09B5BCCB4A9BC350}Scripts/Game/UI/Menu/Banking"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}

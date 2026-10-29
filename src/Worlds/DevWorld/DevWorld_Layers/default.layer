@@ -28,3 +28,19 @@ $grp ELIFE_PrefabSpawn {
   m_rnPrefab "{E8692A5A14D74B83}Prefabs/Items/Equipment/Phone/Phone_Silver.et"
  }
 }
+GenericEntity : "{4B8E888EFE59EE44}Prefabs/Items/Cash/Cash.et" {
+ components {
+  ELIFE_CashComponent "{E668C13FE22956C5}" {
+   m_iInitialAmount 200
+  }
+ }
+ coords 7.5 0.05 4.5
+}
+GenericEntity : "{4B8E888EFE59EE44}Prefabs/Items/Cash/Cash.et" {
+ components {
+  ELIFE_CashComponent "{E668C13FE22956C5}" {
+   m_iInitialAmount 200
+  }
+ }
+ coords 8 0.05 4.5
+}

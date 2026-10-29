@@ -1,0 +1,106 @@
+VerticalLayoutWidgetClass {
+ Name "ContentRoot"
+ Slot LayoutSlot "{89F79A4162B15BD1}" {
+ }
+ {
+  ButtonWidgetClass "{F7EC20DE42ED5415}" : "{4A41296C0E9A889F}UI/layouts/WidgetLibrary/WLib_Slider.layout" {
+   Name "Slider"
+   Slot LayoutSlot "{BCFC5C0622622056}" {
+    HorizontalAlign 3
+    Padding 4 4 4 4
+   }
+   components {
+    SCR_SliderComponent "{548294960C7399D9}" {
+     m_bUseLabel 0
+     m_sLabel ""
+     m_fValue 0
+     m_fStep 1
+     m_sFormatText "%1"
+    }
+   }
+   {
+    SizeLayoutWidgetClass "{55387AC2CCC7E284}" {
+     Prefab "{55387AC2CCC7E284}"
+     {
+      OverlayWidgetClass "{55367D8E531FD623}" {
+       Prefab "{55367D8E531FD623}"
+       {
+        SizeLayoutWidgetClass "{55387AC20CC69AE3}" {
+         Prefab "{55387AC20CC69AE3}"
+         Slot OverlayWidgetSlot "{5E56CB1DAC07478E}" {
+          Padding 0 0 0 0
+         }
+         {
+          TextWidgetClass "{55387AC25A3A8660}" {
+           Prefab "{55387AC25A3A8660}"
+           Slot AlignableSlot "{55387AC25A3A859E}" {
+            HorizontalAlign 1
+           }
+           "Horizontal Alignment" Center
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{71EDFB8B7BB45F5B}" : "{0022F0B45ADBC5AC}UI/layouts/WidgetLibrary/EditBox/WLib_EditBox.layout" {
+   Name "EditBox"
+   Slot LayoutSlot "{A1AF5CF270BF140C}" {
+   }
+   components {
+    SCR_EditBoxComponent "{547290FFBD5B33E9}" {
+     m_bUseLabel 0
+     m_sLabel ""
+     m_bShowWriteIcon 0
+    }
+   }
+   {
+    VerticalLayoutWidgetClass "{5AA4D27F39EB2514}" {
+     Prefab "{5AA4D27F39EB2514}"
+     {
+      SizeLayoutWidgetClass "{5538C205B27B0F5D}" {
+       Prefab "{5538C205B27B0F5D}"
+       {
+        OverlayWidgetClass "{55367D8E531FD623}" {
+         Prefab "{55367D8E531FD623}"
+         {
+          HorizontalLayoutWidgetClass "{55367D8E4592BC6E}" {
+           Prefab "{55367D8E4592BC6E}"
+           {
+            OverlayWidgetClass "{5538C2059A570E94}" {
+             Prefab "{5538C2059A570E94}"
+             {
+              HorizontalLayoutWidgetClass "{58D095EE846E2B93}" {
+               Prefab "{58D095EE846E2B93}"
+               {
+                EditBoxWidgetClass "{5538C2058B18F877}" {
+                 Prefab "{5538C2058B18F877}"
+                 components {
+                  EditBoxFilterComponent "{5538D70DF38310BC}" {
+                   m_iCharacterLimit 9
+                   m_bPunctuation 0
+                   m_bASCIIchars 0
+                   m_bUTFMultibyte 0
+                  }
+                 }
+                 "Placeholder text" "#ELIFE-Cash_Move_Placeholder"
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

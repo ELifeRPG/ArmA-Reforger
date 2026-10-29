@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{C88A29E77F4C18BD}Configs/Banking/ELIFE_CashDialogs.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
