@@ -10,14 +10,14 @@ modded class ELIFE_Api
 		return cbx;
 	}
 
-	ELIFE_BaseRestCallback ListCharacters(string bohemiaId, Managed instance = null, string functionName = "")
+	ELIFE_BaseRestCallback ListCharacters(string gameIdentityId, Managed instance = null, string functionName = "")
 	{
 		ELIFE_BaseRestCallback cbx = new ELIFE_BaseRestCallback;
 		cbx.SetCallback(instance, functionName);
 		string requestRoute = "characters";
 		string requestQuery = "";
-		if (bohemiaId != "")
-			requestQuery += string.Format("&bohemiaId=%1", bohemiaId);
+		if (gameIdentityId != "")
+			requestQuery += string.Format("&gameIdentityId=%1", gameIdentityId);
 		if (requestQuery != "")
 			requestRoute += "?" + requestQuery.Substring(1, requestQuery.Length() - 1);
 		GetElifeApi().GET(cbx, requestRoute);
