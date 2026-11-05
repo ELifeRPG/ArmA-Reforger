@@ -767,7 +767,7 @@ class ELIFE_PhoneScreenInteractComponent : ScriptComponent
 			return false;
 
 		vector bone[4];
-		if (!m_HandParent.GetBoneMatrix(m_iHandPivot, bone))
+		if (!m_HandParent.GetAnimation().GetBoneMatrix(m_iHandPivot, bone))
 			return false;
 
 		vector parentWorld[4], boneWorld[4];

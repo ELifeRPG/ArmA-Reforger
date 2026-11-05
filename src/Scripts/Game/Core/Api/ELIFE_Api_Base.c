@@ -29,7 +29,7 @@ class ELIFE_Api
 	//------------------------------------------------------------------------------------------------
 	protected string ParseServerUrlFromProfile()
 	{
-		if (!FileIO.FileExist(CONFIG_FILE_PATH))
+		if (!FileIO.FileExists(CONFIG_FILE_PATH))
 		{
 #ifdef WORKBENCH
 			return WORKBENCH_DEFAULT_SERVER_URL;
