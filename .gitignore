@@ -6,3 +6,9 @@ src/Scripts/WorkbenchGame/
 resourceDatabase.rdb
 *.blend1
 docs/banking-backend-issue.md
+
+## Docs site (zensical)
+.venv/
+site/
+.cache/
+__pycache__/
