@@ -1,0 +1,198 @@
+GenericEntity : "{E1E7ED9AD721B9F8}Prefabs/Props/Commercial/ATM_01.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  MeshObject "{5872F0EB7FA40561}" {
+   Materials {
+    MaterialAssignClass "{7FBFC1A24606C428}" {
+     SourceMaterial "ATM_Screen_Live"
+     AssignedMaterial "{F09B290779BF3044}Assets/WorldScreen/Data/WorldScreen_Idle.emat"
+    }
+   }
+  }
+  ELIFE_ATMComponent "{A20D0366BD86192B}" {
+  }
+  ELIFE_ATMScreenComponent "{657DFE04986F8F84}" {
+   m_sCanvasLayout "{5F03159AB4887356}UI/layouts/Menus/WorldScreen/WorldScreenContent.layout"
+   m_sContentLayout "{C14BDDA3162FE5DC}UI/layouts/Menus/Banking/ATMScreen.layout"
+   m_iCanvasWidth 1024
+   m_iCanvasHeight 928
+   m_sScreenSourceMaterial "ATM_Screen_Live"
+   m_sLiveMaterial "{4677ABB51060E7F4}Assets/Props/Commercial/ATM_01/Data/ATM_Screen_Live.emat"
+   m_sIdleMaterial "{F09B290779BF3044}Assets/WorldScreen/Data/WorldScreen_Idle.emat"
+  }
+  ELIFE_WorldScreenInteractComponent "{D16C27946CF570B0}" {
+   m_vScreenOrigin 0.21534 1.429 0.066882
+   m_vScreenRight -0.244399 0 0
+   m_vScreenUp 0 -0.2125 0.063118
+   m_bTouchEnabled 0
+   m_fInspectDistance 0.3
+   m_aButtons {
+    ELIFE_WorldScreenButton "{D7E0E81A0FE9C105}" {
+     m_sId "side_l1"
+     m_vOrigin 0.275485 1.414803 0.071099
+     m_vRight -0.042483 0 0
+     m_vDown 0 -0.025189 0.007482
+    }
+    ELIFE_WorldScreenButton "{4EE00733346DAB62}" {
+     m_sId "side_l2"
+     m_vOrigin 0.275485 1.370379 0.084294
+     m_vRight -0.042483 0 0
+     m_vDown 0 -0.025189 0.007482
+    }
+    ELIFE_WorldScreenButton "{62F6D3D4B4ADE1C1}" {
+     m_sId "side_l3"
+     m_vOrigin 0.275485 1.323895 0.098101
+     m_vRight -0.042483 0 0
+     m_vDown 0 -0.025189 0.007482
+    }
+    ELIFE_WorldScreenButton "{2475FB60E0A929E2}" {
+     m_sId "side_l4"
+     m_vOrigin 0.275485 1.273518 0.113064
+     m_vRight -0.042483 0 0
+     m_vDown 0 -0.025418 0.00755
+    }
+    ELIFE_WorldScreenButton "{E360FA85347D425A}" {
+     m_sId "side_r1"
+     m_vOrigin -0.049107 1.414803 0.071099
+     m_vRight -0.042722 0 0
+     m_vDown 0 -0.025189 0.007482
+    }
+    ELIFE_WorldScreenButton "{82B4FD0CA222CCD9}" {
+     m_sId "side_r2"
+     m_vOrigin -0.049107 1.370379 0.084294
+     m_vRight -0.042722 0 0
+     m_vDown 0 -0.025189 0.007482
+    }
+    ELIFE_WorldScreenButton "{349AA2F17E1CF0E6}" {
+     m_sId "side_r3"
+     m_vOrigin -0.049107 1.323895 0.098101
+     m_vRight -0.042722 0 0
+     m_vDown 0 -0.025189 0.007482
+    }
+    ELIFE_WorldScreenButton "{59586FE73D589AB4}" {
+     m_sId "side_r4"
+     m_vOrigin -0.049107 1.273518 0.113064
+     m_vRight -0.042722 0 0
+     m_vDown 0 -0.025418 0.00755
+    }
+    ELIFE_WorldScreenButton "{D55E4AB4A523B81E}" {
+     m_sId "key_1"
+     m_vOrigin 0.18056 1.04769 0.196856
+     m_vRight -0.03 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+    ELIFE_WorldScreenButton "{DB0CE1DB15F9B0B8}" {
+     m_sId "key_2"
+     m_vOrigin 0.14316 1.04769 0.196856
+     m_vRight -0.03 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+    ELIFE_WorldScreenButton "{4CDCDF6BA5ED255B}" {
+     m_sId "key_3"
+     m_vOrigin 0.10436 1.04769 0.196856
+     m_vRight -0.03 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+    ELIFE_WorldScreenButton "{815AF304089AB3F6}" {
+     m_sId "fn_cancel"
+     m_vOrigin 0.03686 1.04769 0.196856
+     m_vRight -0.045 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+    ELIFE_WorldScreenButton "{5EC0EFB284168458}" {
+     m_sId "key_4"
+     m_vOrigin 0.18056 1.04659 0.225856
+     m_vRight -0.03 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+    ELIFE_WorldScreenButton "{2518E1310199B839}" {
+     m_sId "key_5"
+     m_vOrigin 0.14316 1.04659 0.225856
+     m_vRight -0.03 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+    ELIFE_WorldScreenButton "{DB2A1FD161CD0BC2}" {
+     m_sId "key_6"
+     m_vOrigin 0.10436 1.04659 0.225856
+     m_vRight -0.03 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+    ELIFE_WorldScreenButton "{D26F600E98F4E039}" {
+     m_sId "fn_clear"
+     m_vOrigin 0.03686 1.04659 0.225856
+     m_vRight -0.045 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+    ELIFE_WorldScreenButton "{6EA0BBC92D586158}" {
+     m_sId "key_7"
+     m_vOrigin 0.18056 1.04549 0.254856
+     m_vRight -0.03 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+    ELIFE_WorldScreenButton "{2CDB0113664F6601}" {
+     m_sId "key_8"
+     m_vOrigin 0.14316 1.04549 0.254856
+     m_vRight -0.03 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+    ELIFE_WorldScreenButton "{2CF048060D59388A}" {
+     m_sId "key_9"
+     m_vOrigin 0.10436 1.04549 0.254856
+     m_vRight -0.03 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+    ELIFE_WorldScreenButton "{FF0C16FF681970CE}" {
+     m_sId "fn_spare"
+     m_vOrigin 0.03686 1.04549 0.254856
+     m_vRight -0.045 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+    ELIFE_WorldScreenButton "{DD7D8186CD2BEEE8}" {
+     m_sId "key_blank_l"
+     m_vOrigin 0.18056 1.04439 0.283856
+     m_vRight -0.03 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+    ELIFE_WorldScreenButton "{24D0407ECC82C111}" {
+     m_sId "key_0"
+     m_vOrigin 0.14316 1.04439 0.283856
+     m_vRight -0.03 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+    ELIFE_WorldScreenButton "{50CA32F688443876}" {
+     m_sId "key_blank_r"
+     m_vOrigin 0.10436 1.04439 0.283856
+     m_vRight -0.03 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+    ELIFE_WorldScreenButton "{EDFCA497D0F05236}" {
+     m_sId "fn_confirm"
+     m_vOrigin 0.03686 1.04439 0.283856
+     m_vRight -0.045 0 0
+     m_vDown 0 -0.001182 0.02297
+    }
+   }
+  }
+  ActionsManagerComponent "{7C33172966E3B560}" {
+   ActionContexts {
+    UserActionContext "{97B2B282892A5B18}" {
+     ContextName "Screen"
+     Position PointInfo "{8DA317463A580CEA}" {
+      Offset 0.09314 1.32275 0.104
+     }
+     Radius 0.4
+    }
+   }
+   additionalActions {
+    ELIFE_ATMUseAction "{CE0D81097DFA18EE}" {
+     ParentContextList {
+      "Screen"
+     }
+     UIInfo UIInfo "{5A6D9D68ACFAC4D8}" {
+      Name "#ELIFE-ATM_Use"
+     }
+    }
+   }
+  }
+ }
+}

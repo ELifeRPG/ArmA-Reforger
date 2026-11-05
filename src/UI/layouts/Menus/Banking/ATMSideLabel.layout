@@ -1,0 +1,11 @@
+TextWidgetClass {
+ Name "ATMSideLabel"
+ Clipping Ancestor
+ Color 0.8378 0.8626 0.9222 1
+ Text ""
+ "Font Size" 40
+ "Min Font Size" 40
+ FontProperties FontProperties "{DA71FB37E7CFDCBC}" {
+  Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+ }
+}

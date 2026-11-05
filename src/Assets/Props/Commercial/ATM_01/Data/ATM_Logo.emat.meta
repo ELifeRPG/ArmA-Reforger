@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{6C6730FD02F8CBE1}Assets/Props/Commercial/ATM_01/Data/ATM_Logo.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

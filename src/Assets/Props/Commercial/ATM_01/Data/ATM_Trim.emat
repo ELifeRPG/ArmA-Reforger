@@ -1,0 +1,8 @@
+MatPBRBasic : "{AD04B939A2C3F083}Assets/_BaseMaterials/Equipment_MatPBRBasic.emat" {
+ Color 0.02 0.02 0.022 1
+ SurfaceProperties "{B701566F3B8A0DF6}Common/Materials/Game/metal_sheet.gamemat"
+ BCRMap "{6390F3AA091C74E1}Assets/_SharedData/Metal/ST_MetalPaint_Mate_1m_BCR.edds"
+ NMOMap "{E33A5A9E39D9E660}Assets/_SharedData/Metal/ST_MetalPaint_Mate_1m_NMO.edds"
+ RoughnessScale 0.75
+ MetalnessScale 0
+}

@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{6D40F82EC310EE37}Assets/Props/Commercial/ATM_01/Data/ATM_Keypad.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

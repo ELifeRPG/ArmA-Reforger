@@ -79,9 +79,36 @@ class ELIFE_CashComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server-only. Puts a new stack into the given storage, else anywhere in the inventory, else on the ground.
-	static IEntity SpawnCash(int amount, notnull IEntity character, BaseInventoryStorageComponent storage = null, bool toGround = false)
+	//! Server-only. Tops up carried stacks, fullest first, and returns how much of the amount they took.
+	static int AddToCarriedStacks(notnull IEntity character, int amount)
 	{
+		if (!Replication.IsServer())
+			return 0;
+
+		int added;
+		while (added < amount)
+		{
+			ELIFE_CashComponent stack = FindStackWithRoom(character, 1);
+			if (!stack)
+				break;
+
+			int take = MAX_AMOUNT - stack.GetAmount();
+			if (take > amount - added)
+				take = amount - added;
+
+			stack.SetAmount(stack.GetAmount() + take);
+			added += take;
+		}
+
+		return added;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-only. Puts a new stack into the given storage, else anywhere in the inventory, else on the ground, which onGround reports.
+	static IEntity SpawnCash(int amount, notnull IEntity character, out bool onGround, BaseInventoryStorageComponent storage = null, bool toGround = false)
+	{
+		onGround = false;
+
 		if (!Replication.IsServer() || amount <= 0 || amount > MAX_AMOUNT)
 			return null;
 
@@ -126,6 +153,7 @@ class ELIFE_CashComponent : ScriptComponent
 		if (item)
 			item.PlaceOnGround(character);
 
+		onGround = true;
 		return cash;
 	}
 }

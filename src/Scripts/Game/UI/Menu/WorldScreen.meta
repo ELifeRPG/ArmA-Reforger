@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{18E3D8974F5CFC62}Scripts/Game/UI/Menu/WorldScreen"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}

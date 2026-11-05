@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{59794BA3D7A0096A}Assets/Props/Commercial/ATM_01/Data/ATM_Trim.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

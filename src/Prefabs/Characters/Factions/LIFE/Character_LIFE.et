@@ -23,6 +23,8 @@ SCR_ChimeraCharacter : "{836E7E39AAC5888B}Prefabs/Characters/Factions/BLUFOR/US_
   }
   ELIFE_CashCharacterComponent "{F5901383B65BE30A}" {
   }
+  ELIFE_ATMCharacterComponent "{D34B22879ABC80C6}" {
+  }
   CharacterGrenadeSlotComponent "{520EA1D2F659CE6E}" {
   }
   CharacterWeaponSlotComponent "{520EA1D2F659CFAB}" {

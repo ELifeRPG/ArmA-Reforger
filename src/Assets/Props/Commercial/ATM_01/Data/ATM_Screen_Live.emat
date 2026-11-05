@@ -1,0 +1,10 @@
+MatPBRBasic {
+ Color 1 1 1 1
+ SpecularIBL 0.205 0.205 0.205 1
+ Emissive 1 1 1 1
+ EmissiveLV -0.75
+ SpecularMul 0.1
+ RoughnessScale 0.2
+ MetalnessScale 0
+ BCRMap "$rendertarget"
+}

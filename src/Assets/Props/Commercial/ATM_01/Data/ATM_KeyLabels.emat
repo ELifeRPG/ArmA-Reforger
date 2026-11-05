@@ -1,0 +1,7 @@
+MatPBRBasic : "{AD04B939A2C3F083}Assets/_BaseMaterials/Equipment_MatPBRBasic.emat" {
+ Color 1 1 1 1
+ SurfaceProperties "{B701566F3B8A0DF6}Common/Materials/Game/metal_sheet.gamemat"
+ BCRMap "{605B9454698F43F9}Assets/Props/Commercial/ATM_01/Data/ATM_KeyLabels_BCR.edds"
+ RoughnessScale 0.7
+ MetalnessScale 0
+}

@@ -1,0 +1,376 @@
+OverlayWidgetClass {
+ Name "ATMScreenRoot"
+ {
+  ImageWidgetClass "{DD2ECC7AAD4F1BF9}" {
+   Name "Border"
+   Slot OverlayWidgetSlot "{0CF34DD4F83A016B}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 0.7446 0.3971 0.0684 1
+  }
+  ImageWidgetClass "{02AE303A54BF74AF}" {
+   Name "Background"
+   Slot OverlayWidgetSlot "{54B1E91CD52A0206}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+    Padding 6 6 6 6
+   }
+   Color 0.004 0.0048 0.0075 1
+  }
+  FrameWidgetClass "{A8D5886CF125851C}" {
+   Name "ScreenFrame"
+   Slot OverlayWidgetSlot "{32A235DF9DD5A4C5}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   "Ignore Cursor" 1
+   {
+    HorizontalLayoutWidgetClass "{7EC5F8813D1EE82F}" {
+     Name "TopStrip"
+     Slot FrameWidgetSlot "{7BF119E09726E27B}" {
+      PositionX 24
+      OffsetLeft 24
+      PositionY 8
+      OffsetTop 8
+      SizeX 976
+      OffsetRight -1000
+      SizeY 52
+      OffsetBottom -60
+     }
+     {
+      TextWidgetClass "{7399F1333C0D4FF0}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "BankMark"
+       Slot LayoutSlot "{6BA34538A971D63E}" {
+        VerticalAlign 1
+       }
+       Color 0.8378 0.8626 0.9222 1
+       Text ""
+       "Font Size" 40
+       "Min Font Size" 40
+       "Horizontal Alignment" Left
+       FontProperties FontProperties "{815C5173D95A5096}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{99033BCE0DB4D215}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "BankName"
+       Slot LayoutSlot "{DB570FCF5D0A6C86}" {
+        SizeMode Fill
+        VerticalAlign 1
+        Padding 12 0 0 0
+       }
+       Color 0.8378 0.8626 0.9222 1
+       Text ""
+       "Font Size" 34
+       "Min Font Size" 34
+       "Horizontal Alignment" Left
+      }
+      TextWidgetClass "{6A1F3C90D2B84E17}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "PageMark"
+       Slot LayoutSlot "{C47E20B19A5D3F68}" {
+        VerticalAlign 1
+        Padding 16 0 0 0
+       }
+       Color 0.366 0.4024 0.5025 1
+       Text ""
+       "Font Size" 34
+       "Min Font Size" 34
+       "Horizontal Alignment" 2
+      }
+      TextWidgetClass "{FF36B5432ABA4AF9}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "MachineId"
+       Slot LayoutSlot "{5B4FEEBEB53D6605}" {
+        VerticalAlign 1
+        Padding 16 0 0 0
+       }
+       Color 0.366 0.4024 0.5025 1
+       Text ""
+       "Font Size" 34
+       "Min Font Size" 34
+       "Horizontal Alignment" 2
+      }
+      TextWidgetClass "{E15EB6A43C75F4AD}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "AccountNumber"
+       Slot LayoutSlot "{01FC05CA89B38749}" {
+        VerticalAlign 1
+        Padding 16 0 0 0
+       }
+       Color 0.366 0.4024 0.5025 1
+       Text ""
+       "Font Size" 34
+       "Min Font Size" 34
+       "Horizontal Alignment" 2
+      }
+     }
+    }
+    ImageWidgetClass "{02D6720F05753B0F}" {
+     Name "StripHairline"
+     Slot FrameWidgetSlot "{BA9AD6BB8B32719C}" {
+      PositionX 24
+      OffsetLeft 24
+      PositionY 64
+      OffsetTop 64
+      SizeX 976
+      OffsetRight -1000
+      SizeY 2
+      OffsetBottom -66
+     }
+     Color 0.0383 0.0466 0.0723 1
+    }
+    OverlayWidgetClass "{1D41D72A75AAC9C5}" {
+     Name "StackArea"
+     Slot FrameWidgetSlot "{A386DD3A6462468F}" {
+      PositionX 48
+      OffsetLeft 48
+      PositionY 84
+      OffsetTop 84
+      SizeX 928
+      OffsetRight -976
+      SizeY 816
+      OffsetBottom -900
+     }
+     {
+      VerticalLayoutWidgetClass "{5FDFB3B10D7FF4ED}" {
+       Name "Stack"
+       Slot OverlayWidgetSlot "{33ECEE3E4CCF690E}" {
+        HorizontalAlign 3
+        VerticalAlign 1
+       }
+       "Fill Origin" Top
+       {
+        TextWidgetClass "{4621807D67FA614D}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "Heading"
+         Slot LayoutSlot "{C02D3A4A25E10A02}" {
+          HorizontalAlign 3
+          Padding 0 0 0 16
+         }
+         "Is Visible" 0
+         Color 0.8378 0.8626 0.9222 1
+         Text ""
+         "Font Size" 56
+         "Min Font Size" 56
+         "Horizontal Alignment" Left
+         FontProperties FontProperties "{41A754178C7A82C2}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        HorizontalLayoutWidgetClass "{2BB41240C2E7045F}" {
+         Name "Line1"
+         Slot LayoutSlot "{CB91625229469F4E}" {
+          HorizontalAlign 3
+          Padding 0 0 0 8
+         }
+         "Is Visible" 0
+         {
+          TextWidgetClass "{35F26C19AB576F66}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "Line1Label"
+           Slot LayoutSlot "{F574F15EC31D89D6}" {
+            SizeMode Fill
+            VerticalAlign 1
+           }
+           Color 0.366 0.4024 0.5025 1
+           Text ""
+           "Font Size" 40
+           "Min Font Size" 40
+           "Horizontal Alignment" Left
+          }
+          TextWidgetClass "{2396D030130C4416}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "Line1Value"
+           Slot LayoutSlot "{B7C96997B115DF08}" {
+            VerticalAlign 1
+            Padding 16 0 0 0
+           }
+           Color 0.8378 0.8626 0.9222 1
+           Text ""
+           "Font Size" 40
+           "Min Font Size" 40
+           "Horizontal Alignment" 2
+           FontProperties FontProperties "{208B5ADF36FDF924}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+         }
+        }
+        HorizontalLayoutWidgetClass "{72FE0D37D2C11FEF}" {
+         Name "Line2"
+         Slot LayoutSlot "{923AD9E349C76D15}" {
+          HorizontalAlign 3
+          Padding 0 0 0 8
+         }
+         "Is Visible" 0
+         {
+          TextWidgetClass "{4025FBFA28A8343A}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "Line2Label"
+           Slot LayoutSlot "{3EB74586E12FE48B}" {
+            SizeMode Fill
+            VerticalAlign 1
+           }
+           Color 0.366 0.4024 0.5025 1
+           Text ""
+           "Font Size" 40
+           "Min Font Size" 40
+           "Horizontal Alignment" Left
+          }
+          TextWidgetClass "{5AB235C0664A2A24}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+           Name "Line2Value"
+           Slot LayoutSlot "{9B097B238387C376}" {
+            VerticalAlign 1
+            Padding 16 0 0 0
+           }
+           Color 0.8378 0.8626 0.9222 1
+           Text ""
+           "Font Size" 40
+           "Min Font Size" 40
+           "Horizontal Alignment" 2
+           FontProperties FontProperties "{44F85D7C92B1952A}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+         }
+        }
+        TextWidgetClass "{A94DE25429CD0912}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "Caption"
+         Slot LayoutSlot "{EFC77FC04DAAD016}" {
+          HorizontalAlign 3
+          Padding 0 16 0 0
+         }
+         "Is Visible" 0
+         Color 0.366 0.4024 0.5025 1
+         Text ""
+         "Font Size" 40
+         "Min Font Size" 40
+         "Horizontal Alignment" Left
+        }
+        TextWidgetClass "{2D913B4772497FEF}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "Figure"
+         Slot LayoutSlot "{2A286B290ECB4250}" {
+          HorizontalAlign 3
+         }
+         "Is Visible" 0
+         Color 0.8378 0.8626 0.9222 1
+         Text ""
+         "Font Size" 120
+         "Min Font Size" 120
+         "Horizontal Alignment" Left
+         FontProperties FontProperties "{411A71618CE6661C}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{ECD46BCEB3148166}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "Body"
+         Slot LayoutSlot "{50E3F68DFD30DF83}" {
+          HorizontalAlign 3
+          Padding 0 16 0 0
+         }
+         "Is Visible" 0
+         Color 0.8378 0.8626 0.9222 1
+         Text ""
+         "Font Size" 40
+         "Min Font Size" 40
+         "Horizontal Alignment" Left
+        }
+        TextWidgetClass "{91D7A6E4035CB28F}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "Activity"
+         Slot LayoutSlot "{2E8B5F71C6A04D93}" {
+          HorizontalAlign 3
+          Padding 0 16 0 0
+         }
+         "Is Visible" 0
+         Color 0.7446 0.3971 0.0684 1
+         Text ""
+         "Font Size" 56
+         "Min Font Size" 56
+         "Horizontal Alignment" Left
+         FontProperties FontProperties "{B3607D1E94AC5F28}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{EDA524CFC1CCE0CD}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "Notice"
+         Slot LayoutSlot "{FDF6B648E55CDEE7}" {
+          HorizontalAlign 3
+          Padding 0 16 0 0
+         }
+         "Is Visible" 0
+         Color 0.7756 0.2912 0.2622 1
+         Text ""
+         "Font Size" 40
+         "Min Font Size" 40
+         "Horizontal Alignment" Left
+        }
+       }
+      }
+     }
+    }
+    TextWidgetClass "{A71C5E20D9F3B864}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+     Name "AccountDetail1"
+     Slot FrameWidgetSlot "{3B90E6D14C72A58F}" {
+     }
+     "Is Visible" 0
+     Color 0.366 0.4024 0.5025 1
+     Text ""
+     "Font Size" 28
+     "Min Font Size" 28
+     "Horizontal Alignment" 2
+    }
+    TextWidgetClass "{C2846F1AE07D35B9}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+     Name "AccountDetail2"
+     Slot FrameWidgetSlot "{58D1A3F76E0C942B}" {
+     }
+     "Is Visible" 0
+     Color 0.366 0.4024 0.5025 1
+     Text ""
+     "Font Size" 28
+     "Min Font Size" 28
+     "Horizontal Alignment" 2
+    }
+    TextWidgetClass "{E95D07B3A18C64F2}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+     Name "AccountDetail3"
+     Slot FrameWidgetSlot "{16F4C2A8B73E0D95}" {
+     }
+     "Is Visible" 0
+     Color 0.366 0.4024 0.5025 1
+     Text ""
+     "Font Size" 28
+     "Min Font Size" 28
+     "Horizontal Alignment" 2
+    }
+    TextWidgetClass "{D05C8E37B1F2A964}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+     Name "WideNotice"
+     Slot FrameWidgetSlot "{7A94E1C26D03B85F}" {
+      PositionX 48
+      OffsetLeft 48
+      PositionY 548
+      OffsetTop 548
+      SizeX 928
+      OffsetRight -976
+      SizeY 148
+      OffsetBottom -696
+     }
+     "Is Visible" 0
+     Color 0.7756 0.2912 0.2622 1
+     Text ""
+     "Font Size" 40
+     "Min Font Size" 40
+     "Horizontal Alignment" Left
+    }
+    VerticalLayoutWidgetClass "{33882093EAB2C249}" {
+     Name "Rows"
+     Slot FrameWidgetSlot "{0DC39D7DF9754158}" {
+      PositionX 48
+      OffsetLeft 48
+      PositionY 76
+      OffsetTop 76
+      SizeX 800
+      OffsetRight -848
+      SizeY 820
+      OffsetBottom -896
+     }
+     "Is Visible" 0
+     "Fill Origin" Top
+    }
+   }
+  }
+ }
+}

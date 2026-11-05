@@ -4,3 +4,5 @@ src/Scripts/WorkbenchGame/
 /.directory
 
 resourceDatabase.rdb
+*.blend1
+docs/banking-backend-issue.md

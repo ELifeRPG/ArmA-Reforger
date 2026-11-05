@@ -141,7 +141,7 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 		string balance = "";
 		if (account)
 		{
-			name = account.number;
+			name = account.GetDisplayNumber();
 			kind = KindLabel(account);
 			balance = ELIFE_PhoneBankingService.FormatMoney(ELIFE_PhoneBankingService.ToCents(account.balance));
 		}
@@ -337,7 +337,7 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 			ELIFE_PhoneStyle.ApplyGlass(row, true);
 
 			//! Kind lives on the group header (Personal/Company), so the account number is the row's name.
-			SetTextAndColor(row, "AccountName", account.number, ELIFE_PhoneStyle.TextPrimary());
+			SetTextAndColor(row, "AccountName", account.GetDisplayNumber(), ELIFE_PhoneStyle.TextPrimary());
 			SetTextAndColor(row, "AccountBalance", ELIFE_PhoneBankingService.FormatMoney(ELIFE_PhoneBankingService.ToCents(account.balance)), m_Accent);
 
 			Widget buttonWidget = row.FindAnyWidget("AccountButton");

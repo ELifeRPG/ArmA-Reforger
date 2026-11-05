@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{CF130D20337BE170}UI/layouts/Menus/WorldScreen"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}

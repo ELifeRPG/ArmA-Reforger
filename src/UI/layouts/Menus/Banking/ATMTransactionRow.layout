@@ -1,0 +1,91 @@
+SizeLayoutWidgetClass {
+ Name "ATMTransactionRow"
+ AllowHeightOverride 1
+ HeightOverride 100
+ {
+  OverlayWidgetClass "{7D78165AFC503643}" {
+   Name "Row"
+   Slot AlignableSlot "{0BF857D9CF6B7A9A}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    VerticalLayoutWidgetClass "{40E57B13D5283A0E}" {
+     Name "RowBody"
+     Slot OverlayWidgetSlot "{77BAAF8916728221}" {
+      HorizontalAlign 3
+      VerticalAlign 1
+     }
+     "Fill Origin" Top
+     {
+      HorizontalLayoutWidgetClass "{90453278CF6312ED}" {
+       Name "RowTop"
+       Slot LayoutSlot "{B259C0555D2C9F8B}" {
+        HorizontalAlign 3
+       }
+       {
+        TextWidgetClass "{BFAA95A86F011089}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "RowKind"
+         Slot LayoutSlot "{98B19AA867F6D306}" {
+          SizeMode Fill
+          VerticalAlign 1
+         }
+         Color 0.8378 0.8626 0.9222 1
+         Text ""
+         "Font Size" 34
+         "Min Font Size" 34
+         "Horizontal Alignment" Left
+        }
+        TextWidgetClass "{C730116859C6FC85}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "RowAmount"
+         Slot LayoutSlot "{C8F4CA6DC25AA37B}" {
+          VerticalAlign 1
+          Padding 16 0 0 0
+         }
+         Color 0.8378 0.8626 0.9222 1
+         Text ""
+         "Font Size" 34
+         "Min Font Size" 34
+         "Horizontal Alignment" 2
+         FontProperties FontProperties "{AAE23B40DBD9562B}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+       }
+      }
+      TextWidgetClass "{75E3082628A21205}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+       Name "RowMeta"
+       Slot LayoutSlot "{80DE1412AECBE706}" {
+        HorizontalAlign 3
+       }
+       Color 0.366 0.4024 0.5025 1
+       Text ""
+       "Font Size" 28
+       "Min Font Size" 28
+       "Horizontal Alignment" Left
+      }
+     }
+    }
+    SizeLayoutWidgetClass "{F2CA3A70DCDFE801}" {
+     Name "RowHairlineSize"
+     Slot OverlayWidgetSlot "{627C445A9BDC3919}" {
+      HorizontalAlign 3
+      VerticalAlign 2
+     }
+     AllowHeightOverride 1
+     HeightOverride 2
+     {
+      ImageWidgetClass "{27CEE2DE3DDAC1C3}" {
+       Name "RowHairline"
+       Slot AlignableSlot "{5A1482D27F93263B}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.0383 0.0466 0.0723 1
+      }
+     }
+    }
+   }
+  }
+ }
+}

@@ -31,6 +31,10 @@ class ELIFE_PhoneToggle
 		if (!character)
 			return;
 
+		//! A world screen owns the cursor while it's in use.
+		if (ELIFE_WorldScreenMenu.GetOpen())
+			return;
+
 		MenuManager menuManager = GetGame().GetMenuManager();
 		if (menuManager && menuManager.FindMenuByPreset(ChimeraMenuPreset.ELIFE_PhoneMenu))
 		{

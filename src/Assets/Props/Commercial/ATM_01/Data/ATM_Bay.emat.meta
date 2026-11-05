@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{3396161FA4F94DEF}Assets/Props/Commercial/ATM_01/Data/ATM_Bay.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

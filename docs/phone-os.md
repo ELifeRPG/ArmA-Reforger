@@ -13,8 +13,10 @@ in the widgets those files already use (`OverlayWidget`, `SmartPanelWidget`,
 
 **Every pixel size in this doc and in the code is authored at 2× the original 268 × 552
 design** (the render target is 536 × 1104) so the screen stays sharp on the 3D model.
-Numbers below are the 2× values. See [`docs/phone-3d-screen.md`](phone-3d-screen.md)
-for how the screen is drawn, clicked and inspected in the world.
+Numbers below are the 2× values. See [`docs/rttexture-guide.md`](rttexture-guide.md)
+for how the screen is drawn in the world. `ELIFE_WorldScreenComponent` and
+`ELIFE_WorldScreenInteractComponent` render and click it; the phone subclasses add the
+inspect pose.
 
 ## Extending — a sixth app
 

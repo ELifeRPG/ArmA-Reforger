@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{9EFEBCC12ECD23D0}Assets/Props/Commercial/ATM_01/Data"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}

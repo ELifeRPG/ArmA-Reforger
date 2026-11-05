@@ -99,7 +99,8 @@ class ELIFE_CashCharacterComponent : ScriptComponent
 
 		source.SetAmount(current - amount);
 
-		IEntity split = ELIFE_CashComponent.SpawnCash(amount, GetOwner(), storage, !storage);
+		bool onGround;
+		IEntity split = ELIFE_CashComponent.SpawnCash(amount, GetOwner(), onGround, storage, !storage);
 		if (!split)
 		{
 			source.SetAmount(current);

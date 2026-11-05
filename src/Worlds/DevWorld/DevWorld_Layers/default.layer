@@ -44,3 +44,7 @@ GenericEntity : "{4B8E888EFE59EE44}Prefabs/Items/Cash/Cash.et" {
  }
  coords 8 0.05 4.5
 }
+GenericEntity : "{698A9C5A9D583450}Prefabs/Props/Commercial/ATM_01_Bank.et" {
+ coords 6.5 0 6.2
+ angles 0 180 0
+}

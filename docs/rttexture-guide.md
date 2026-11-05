@@ -215,6 +215,34 @@ unconditionally on every state change or replication update, a
 logged. Guard reassignment behind a check against the currently-applied
 material and skip when it hasn't changed.
 
+## Vanilla props with a usable screen
+
+Check here before trying a new prop. "Slot" is the mesh's material slot name,
+i.e. the `SourceMaterial` to reassign in a `MaterialAssignClass`.
+
+| Prop | Reference | Slot | Notes |
+|---|---|---|---|
+| Computer monitor | `{2595F6426CDFDBBB}Prefabs/Props/Civilian/Computer_E_01/Computer_E_01_Monitor_on.et` | `Computer_Screen_On` | Live UI renders in game but needs calibrating. Desktop-monitor size. See below. |
+| Tablet (S2 PDA) | Mesh `{5CF173E5C500540E}Assets/Props/S2/S2_PDA/S2_PDA.xob`; prefab `Prefabs/Props/S2/S2_PDA/S2_PDA.et` | `screen` | Modern tablet, lies flat by default, reusable (e.g. on counters). Live UI not tried yet. See below. |
+| Old TV | `{313CC1F195E06A6E}Prefabs/Props/Furniture/TVSet_01.et`, mesh `Assets/Props/Furniture/TVset_01/TVset_01.xob` (note the lower-case `s`) | None for the screen alone | The mesh only has the slots `TVset_01` and `Color_palette`. The screen is probably part of `TVset_01`, shared with the body, so it can't be swapped on its own. |
+
+- **Computer monitor:** the visible screen is about 0.30 x 0.23 m, behind curved
+  glass. The body is retro and TV-like, with a speaker grille, knobs and a
+  numbered panel on the right. Its printed labels are probably in the separate
+  `Computer_Decals` material `{B9A03AEA25408B81}` (unverified). The screen's UVs
+  cover only part of the texture and assume a square canvas, measured roughly
+  at u 0.09-0.90, v 0.27-0.91 from one screenshot and not calibrated, because
+  we moved to a custom model.
+- **Tablet:** the prefab's GUID wasn't found in the game's text files; it
+  inherits `{9D2E8F6F942A8F45}Prefabs/Props/S2/S2_Prop_Base.et`, and its own
+  screen material is `{5976FE5EC77F16DB}Assets/Props/S2/S2_PDA/Data/S2_PDA_screen.emat`.
+
+Not screens, so don't retry them: `ATCPanel_E_01` is a dashboard prop with no
+display, and `MedicalScreen_01` is a divider between medical beds.
+
+When exact fit matters, use a custom model with a flat 4-vertex screen quad and
+full 0-1 UVs, as `ATM_01` does.
+
 ## Debugging checklist (in order)
 
 When a render target shows black/blank in Play mode, check in this order:

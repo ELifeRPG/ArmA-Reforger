@@ -62,6 +62,19 @@ modded class ELIFE_BankAccountSummary
 	}
 
 	//------------------------------------------------------------------------------------------------
+	string GetIban()
+	{
+		return ELIFE_PhoneBankingService.ToIban(number, bankId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The number as players see it.
+	string GetDisplayNumber()
+	{
+		return ELIFE_PhoneBankingService.GroupIban(GetIban());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A fresh instance that may be Pack()ed - the parsed one can't be.
 	ELIFE_BankAccountSummary Copy()
 	{
@@ -82,6 +95,7 @@ modded class ELIFE_BankAccountSummary
 	{
 		ELIFE_BankAccountSummary redacted = new ELIFE_BankAccountSummary();
 		redacted.bankAccountId = bankAccountId;
+		redacted.bankId = bankId;
 		redacted.number = ELIFE_DataRedactor.RedactDigits(number);
 		redacted.type = type;
 		redacted.companyId = companyId;

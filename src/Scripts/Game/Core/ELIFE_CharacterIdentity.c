@@ -3,10 +3,10 @@
 //! for the real characterId lookup once that exists; callers don't need to change.
 class ELIFE_CharacterIdentity
 {
-	//! Fixed demo characterId from Dummy API/phone-api-overview.md.
+	//! A character that exists on the dev backend, shared by every player.
 	static string GetCharacterId(int playerId)
 	{
-		return "8a1e2d3c-4f5a-4b6c-9d7e-8f9a0b1c2d3e";
+		return "374c417b-9b34-4b06-8c15-08d4ff97316d";
 	}
 
 	//------------------------------------------------------------------------------------------------
