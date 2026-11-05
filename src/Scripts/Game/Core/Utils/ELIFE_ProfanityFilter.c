@@ -12,15 +12,7 @@ class ELIFE_ProfanityFilterRequest : SCR_ScriptProfanityFilterRequestCallback
 	{
 		super.OnFilteredResult();
 
-		string text = SCR_StringHelper.Join("\n", m_FilteredTexts, true);
-		if (GetGame().GetPlatformService().GetLocalPlatformKind() == PlatformKind.XBOX)
-		{
-			string censored;
-			SCR_ProfaneFilter.ReplaceProfanities(text, censored);
-			text = censored;
-		}
-
-		Complete(text);
+		Complete(SCR_StringHelper.Join("\n", m_FilteredTexts, true));
 	}
 
 	//------------------------------------------------------------------------------------------------
