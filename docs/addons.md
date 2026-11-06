@@ -7,21 +7,26 @@ below the Workshop limits and lets the large, rarely changing art live apart fro
 
 | Addon | GUID | Contains | Depends on |
 | --- | --- | --- | --- |
-| `ELifeRPG_Assets_Items` | `14E46A965EE53285` | Art for general items (food: apple, plum) | vanilla |
-| `ELifeRPG_Assets_Phone` | `58DF4AD2DDC2CA55` | Phone mesh, materials, screen textures, phone UI sounds | vanilla |
-| `ELifeRPG_Assets_Vehicles` | `4B054C78918EAA22` | Car key art, vehicle lock sounds | vanilla |
-| `ELifeRPG_Assets_Vegetation` | `12BC1DE093734B8A` | Fruit tree materials and polyplanes | vanilla |
-| `ELifeRPG_Core` | `66EB6BA548DD28C2` | **All** scripts, configs, UI, localization and prefabs | vanilla + all `Assets_*` |
+| `ELifeRPG_Items` | `14E46A965EE53285` | Art for general items (food: apple, plum) | vanilla |
+| `ELifeRPG_Phone` | `58DF4AD2DDC2CA55` | Phone mesh, materials, screen textures, phone UI sounds | vanilla |
+| `ELifeRPG_Vehicles` | `4B054C78918EAA22` | Car key art, vehicle lock sounds | vanilla |
+| `ELifeRPG_Vegetation` | `12BC1DE093734B8A` | Fruit tree materials and polyplanes | vanilla |
+| `ELifeRPG_Core` | `66EB6BA548DD28C2` | **All** scripts, configs, UI, localization and prefabs | vanilla + all asset addons |
 | `ELifeRPG` | `596AFBF40E2150FD` | Nothing. Meta-pack that pulls in the whole stack | all of the above |
 | `ELifeRPG_Dev` | `B23160BEBCAB2D32` | `DevWorld` and test layers. Published unlisted for internal servers | `ELifeRPG` |
 
 Servers list a single mod, `ELifeRPG` (`596AFBF40E2150FD`). It's the GUID the original single
 addon had, so existing server configs keep working and get the new addons through dependencies.
 
+**Asset addons** are named after their topic (`ELifeRPG_Phone`, `ELifeRPG_Weapons_Glock`, …) and hold
+only art. Every addon except `ELifeRPG`, `ELifeRPG_Core`, `ELifeRPG_Dev`, `ELifeRPG_Map_*` and
+`ELifeRPG_Patches_*` is an asset addon.
+
 Coming later, following the same rules:
 
-- `ELifeRPG_Assets_<Topic>`: one per new art topic (`_Clothing`, `_Buildings`, …). Weapons split
-  per family right away: `ELifeRPG_Assets_Weapons_Glock`, `ELifeRPG_Assets_Weapons_M4`.
+- `ELifeRPG_<Topic>`: one asset addon per new art topic (`ELifeRPG_Clothing`, `ELifeRPG_Buildings`, …).
+  Weapons split per family right away: `ELifeRPG_Weapons_Glock`, `ELifeRPG_Weapons_M4`.
+- `ELifeRPG_<Topic>_Common` / `ELifeRPG_Common`: shared art, see rule 4.
 - `ELifeRPG_Map_<Name>`: terrain and world. Depends on `ELifeRPG_Core`.
 - `ELifeRPG_Patches_<Mod>`: compatibility with one third-party mod. This is the only kind of addon
   besides Core that may contain scripts, because it has to depend on that mod. It is not part of the
@@ -29,21 +34,29 @@ Coming later, following the same rules:
 
 ## Rules
 
-1. **Dependencies only point one way:** `Assets_*` ← `Core` ← `Map_*` / `Patches_*` ← `ELifeRPG` ← `Dev`.
+1. **Dependencies only point one way:** asset addons ← `Core` ← `Map_*` / `Patches_*` ← `ELifeRPG` ← `Dev`.
 2. **Scripts, configs, UI, localization and prefabs go into `ELifeRPG_Core`.** Prefabs carry script
    components and are referenced by the game mode and by scripts, so they have to live next to the code.
-3. **Raw art goes into the `Assets_*` addon for its topic:** meshes (`.xob`, `.fbx`, `.txo`),
-   materials and textures (`.emat`, `.edds`), sounds (`.wav`, `.acp`). An asset addon references
-   only itself or vanilla. Art used by two topics goes into the more general one.
-4. **Keep the internal path when moving a file between addons**, and move its `.meta` with it.
+3. **Raw art goes into the asset addon for its topic:** meshes (`.xob`, `.fbx`, `.txo`),
+   materials and textures (`.emat`, `.edds`), sounds (`.wav`, `.acp`).
+4. **Shared art goes into a Common addon:**
+   - Shared within one topic → `ELifeRPG_<Topic>_Common`, e.g. `ELifeRPG_Weapons_Common` for
+     attachments, magazines, materials or sounds used by several weapon families. The family addons
+     depend on it.
+   - Shared across topics → `ELifeRPG_Common`.
+   - An asset addon depends only on vanilla and on Common addons, never on a sibling family and never
+     on Core. Core depends on every asset addon, including the Common ones.
+   - Create a Common addon when the second addon needs the same file, not earlier, and move
+     the file there following rule 5.
+5. **Keep the internal path when moving a file between addons**, and move its `.meta` with it.
    References are `{GUID}path`, and the GUID lives in the `.meta`. With the same path and the `.meta`
    moved along, every reference still resolves.
-5. Vanilla full-file overrides (`Configs/System/chimeraMenus.conf`, `chimeraInputCommon.conf`) may
+6. Vanilla full-file overrides (`Configs/System/chimeraMenus.conf`, `chimeraInputCommon.conf`) may
    exist in only one addon: `ELifeRPG_Core`.
-6. Source files (`.blend`, `.obj`, …) stay in the repo-level `assets/` folder and are never shipped.
+7. Source files (`.blend`, `.obj`, …) stay in the repo-level `assets/` folder and are never shipped.
 
-To check rules 1–4 (unresolved or wrong-direction references, duplicate GUIDs, logic in an
-asset addon):
+To check rules 1–5 (unresolved or wrong-direction references, duplicate GUIDs, logic in an asset
+addon, asset addons depending on anything but Common addons):
 
 ```sh
 python3 tools/check_addons.py addons
@@ -67,7 +80,7 @@ so players fetch next to nothing for addons whose content didn't change.
    `MINOR` = features and content; `PATCH` = fixes).
 2. Run `python3 tools/check_addons.py addons`.
 3. In Workbench, publish in dependency order, each addon with the version from `VERSION`:
-   all `ELifeRPG_Assets_*` → `ELifeRPG_Core` → `ELifeRPG_Map_*` → `ELifeRPG` → `ELifeRPG_Dev`
+   `ELifeRPG_Common` → `ELifeRPG_*_Common` → other asset addons → `ELifeRPG_Core` → `ELifeRPG_Map_*` → `ELifeRPG` → `ELifeRPG_Dev`
    (unlisted). A dependency has to exist on the Workshop before an addon that depends on it can be published.
 4. Tag the commit `vX.Y.Z`.
 
@@ -78,4 +91,4 @@ same release number. The Workshop keeps only the last 50 versions of an addon.
 
 Register every folder under `addons/` as an addon directory, then open the addon you work in:
 `ELifeRPG_Dev` to play the test world, or `ELifeRPG_Core` for scripts and prefabs. When you create
-new art, save it inside the matching `ELifeRPG_Assets_*` addon so its `.meta` is created there.
+new art, save it inside the matching asset addon so its `.meta` is created there.

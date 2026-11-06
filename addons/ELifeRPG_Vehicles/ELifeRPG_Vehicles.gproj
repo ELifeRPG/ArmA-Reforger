@@ -1,7 +1,7 @@
 GameProject {
- ID "ELifeRPG_Assets_Items"
- GUID "14E46A965EE53285"
- TITLE "ELifeRPG_Assets_Items"
+ ID "ELifeRPG_Vehicles"
+ GUID "4B054C78918EAA22"
+ TITLE "ELifeRPG_Vehicles"
  Dependencies {
   "58D0FB3206B6F859" "5614BBCCBB55ED1C"
  }

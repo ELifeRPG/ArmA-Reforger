@@ -1,6 +1,7 @@
 """Check the addon split: every {GUID} reference must resolve inside the
 referencing addon or one of its (transitive) dependencies, and asset addons
-must not contain scripts, prefabs, layouts or worlds.
+must not contain scripts, prefabs, configs, layouts or worlds, and may only
+depend on vanilla and on *_Common addons.
 
 Usage: python3 tools/check_addons.py addons   (exit code 1 on problems)
 """
@@ -29,11 +30,20 @@ def closure(g, seen=None):
     seen.add(g)
     for d in addons[g]['deps']: closure(d, seen)
     return seen
+LOGIC_ADDONS = {'ELifeRPG', 'ELifeRPG_Core', 'ELifeRPG_Dev'}
+LOGIC_SUFFIXES = ('.c', '.et', '.conf', '.layout', '.ent', '.layer')
+def is_asset(name):
+    return name not in LOGIC_ADDONS and not name.startswith(('ELifeRPG_Map_', 'ELifeRPG_Patches_'))
+def is_common(name):
+    return name == 'ELifeRPG_Common' or name.endswith('_Common')
 for g, a in addons.items():
     visible = {addons[x]['name'] for x in closure(g)}
-    if a['name'].startswith('ELifeRPG_Assets_'):
+    if is_asset(a['name']):
         for f in a['dir'].rglob('*'):
-            if f.suffix in ('.c', '.et', '.layout', '.ent', '.layer'): print('LOGIC IN ASSET PACK', f); bad += 1
+            if f.suffix in LOGIC_SUFFIXES: print('LOGIC IN ASSET ADDON', f); bad += 1
+        for d in a['deps']:
+            if d in addons and not is_common(addons[d]['name']):
+                print(f'ASSET ADDON {a["name"]} DEPENDS ON NON-COMMON {addons[d]["name"]}'); bad += 1
     for f in a['dir'].rglob('*'):
         if not f.is_file() or f.suffix == '.meta': continue
         for rg, path in set(ref_re.findall(f.read_bytes())):

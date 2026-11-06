@@ -1,7 +1,7 @@
 GameProject {
- ID "ELifeRPG_Assets_Vegetation"
+ ID "ELifeRPG_Vegetation"
  GUID "12BC1DE093734B8A"
- TITLE "ELifeRPG_Assets_Vegetation"
+ TITLE "ELifeRPG_Vegetation"
  Dependencies {
   "58D0FB3206B6F859" "5614BBCCBB55ED1C"
  }
