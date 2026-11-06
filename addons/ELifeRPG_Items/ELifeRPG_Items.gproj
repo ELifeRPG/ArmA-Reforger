@@ -1,0 +1,20 @@
+GameProject {
+ ID "ELifeRPG_Items"
+ GUID "14E46A965EE53285"
+ TITLE "ELifeRPG_Items"
+ Dependencies {
+  "58D0FB3206B6F859" "5614BBCCBB55ED1C"
+ }
+ Configurations {
+  GameProjectConfig PC {
+  }
+  GameProjectConfig XBOX_ONE {
+  }
+  GameProjectConfig XBOX_SERIES {
+  }
+  GameProjectConfig PS4 {
+  }
+  GameProjectConfig HEADLESS {
+  }
+ }
+}
