@@ -3,12 +3,12 @@ class ELIFE_TransferRequest : JsonApiStruct
 {
 	float amount;
 	string characterId;
-	string targetBankAccountId;
+	string targetNumber;
 
 	void ELIFE_TransferRequest()
 	{
 		RegV("amount");
 		RegV("characterId");
-		RegV("targetBankAccountId");
+		RegV("targetNumber");
 	}
 }

@@ -3,14 +3,18 @@ class ELIFE_PlayerConnectedResponse : JsonApiStruct
 {
 	string accountId;
 	ELIFE_PlayerSessionStatus status;
+	bool webAccountLinked;
 	string linkPin;
+	string linkUrl;
 	ref array<ref ELIFE_CharacterSummary> characters = {};
 
 	void ELIFE_PlayerConnectedResponse()
 	{
 		RegV("accountId");
 		RegV("status");
+		RegV("webAccountLinked");
 		RegV("linkPin");
+		RegV("linkUrl");
 		RegV("characters");
 	}
 }

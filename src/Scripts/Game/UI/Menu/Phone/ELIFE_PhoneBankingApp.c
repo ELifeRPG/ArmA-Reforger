@@ -2,20 +2,20 @@
 class ELIFE_PhoneBankRowClick : ScriptedWidgetEventHandler
 {
 	protected ELIFE_PhoneBankingApp m_App;
-	protected string m_sAccountId;
+	protected string m_sAccountKey;
 
 	//------------------------------------------------------------------------------------------------
-	void Bind(ELIFE_PhoneBankingApp app, string accountId)
+	void Bind(ELIFE_PhoneBankingApp app, string accountKey)
 	{
 		m_App = app;
-		m_sAccountId = accountId;
+		m_sAccountKey = accountKey;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override bool OnClick(Widget w, int x, int y, int button)
 	{
-		if (m_App && m_sAccountId != "")
-			m_App.OpenStatement(m_sAccountId);
+		if (m_App && m_sAccountKey != "")
+			m_App.OpenStatement(m_sAccountKey);
 
 		return false;
 	}
@@ -46,7 +46,7 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	protected ref ELIFE_BankAccountListDto m_Accounts = new ELIFE_BankAccountListDto();
 	protected ref ELIFE_BankStatementDto m_Statement;
 	protected ref array<ref ELIFE_PhoneBankRowClick> m_aRowClicks;
-	protected string m_sOpenAccountId;
+	protected string m_sOpenAccountKey;
 
 	//------------------------------------------------------------------------------------------------
 	override string GetTitle()
@@ -63,7 +63,7 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	override bool OnBack()
 	{
-		if (m_sOpenAccountId != "")
+		if (m_sOpenAccountKey != "")
 		{
 			ShowIndex();
 			return true;
@@ -75,7 +75,7 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	override string GetSubState()
 	{
-		return m_sOpenAccountId;
+		return m_sOpenAccountKey;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -89,12 +89,12 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 
 	//------------------------------------------------------------------------------------------------
 	//! Opens before the statement has loaded - the header fills from the index row, the postings land later.
-	void OpenStatement(string accountId)
+	void OpenStatement(string accountKey)
 	{
-		if (accountId == "")
+		if (accountKey == "")
 			return;
 
-		m_sOpenAccountId = accountId;
+		m_sOpenAccountKey = accountKey;
 
 		if (m_wIndexPage)
 			m_wIndexPage.SetVisible(false);
@@ -109,13 +109,13 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 		NotifySubStateChanged();
 
 		if (m_Phone)
-			m_Phone.RequestData(StatementKey(accountId));
+			m_Phone.RequestData(StatementKey(accountKey));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected string StatementKey(string accountId)
+	protected string StatementKey(string accountKey)
 	{
-		return ELIFE_PhoneGadgetComponent.DATA_BANK_STATEMENT_PREFIX + accountId;
+		return ELIFE_PhoneGadgetComponent.DATA_BANK_STATEMENT_PREFIX + accountKey;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -124,17 +124,17 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 		if (!m_Phone)
 			return;
 
-		ApplyDataStatus(StatementKey(m_sOpenAccountId));
+		ApplyDataStatus(StatementKey(m_sOpenAccountKey));
 
 		m_Statement = new ELIFE_BankStatementDto();
-		string json = m_Phone.GetData(StatementKey(m_sOpenAccountId));
+		string json = m_Phone.GetData(StatementKey(m_sOpenAccountKey));
 		if (json != "")
 			m_Statement.ExpandFromRAW(json);
 
 		//! The statement's own copy is the fresher balance; the index row covers the wait for it.
 		ELIFE_BankAccountSummary account = m_Statement.account;
-		if (account.bankAccountId == "")
-			account = FindAccount(m_sOpenAccountId);
+		if (account.number == "")
+			account = FindAccount(m_sOpenAccountKey);
 
 		string name = "";
 		string kind = "";
@@ -218,7 +218,7 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 		if (m_Phone)
 			m_Phone.m_OnDataChanged.Remove(OnDataChanged);
 
-		m_sOpenAccountId = "";
+		m_sOpenAccountKey = "";
 		m_Accounts = new ELIFE_BankAccountListDto();
 		m_Statement = null;
 		m_aRowClicks = null;
@@ -233,13 +233,13 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 			FillIndex();
 
 			//! The statement header falls back on the index row until its own payload lands.
-			if (m_sOpenAccountId != "")
+			if (m_sOpenAccountKey != "")
 				FillStatement();
 
 			return;
 		}
 
-		if (m_sOpenAccountId != "" && key == StatementKey(m_sOpenAccountId))
+		if (m_sOpenAccountKey != "" && key == StatementKey(m_sOpenAccountKey))
 			FillStatement();
 	}
 
@@ -256,7 +256,7 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	//------------------------------------------------------------------------------------------------
 	protected void ShowIndex()
 	{
-		m_sOpenAccountId = "";
+		m_sOpenAccountKey = "";
 
 		if (m_wStatementPage)
 			m_wStatementPage.SetVisible(false);
@@ -278,7 +278,7 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	protected void FillIndex()
 	{
 		//! The overlay is shared, so only the page on screen gets to drive it.
-		if (m_sOpenAccountId == "")
+		if (m_sOpenAccountKey == "")
 			ApplyDataStatus(ELIFE_PhoneGadgetComponent.DATA_BANK_ACCOUNTS);
 
 		if (m_aRowClicks)
@@ -344,8 +344,9 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 			if (!buttonWidget)
 				buttonWidget = row;
 
+			//! Bystanders follow this key, so it's the account's place in the list rather than its number.
 			ELIFE_PhoneBankRowClick click = new ELIFE_PhoneBankRowClick();
-			click.Bind(this, account.bankAccountId);
+			click.Bind(this, m_Accounts.items.Find(account).ToString());
 			buttonWidget.AddHandler(click);
 			if (m_aRowClicks)
 				m_aRowClicks.Insert(click);
@@ -447,18 +448,13 @@ class ELIFE_PhoneBankingApp : ELIFE_PhoneAppBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected ELIFE_BankAccountSummary FindAccount(string accountId)
+	protected ELIFE_BankAccountSummary FindAccount(string accountKey)
 	{
-		if (accountId == "")
+		int index = ELIFE_PhoneGadgetComponent.ParseAccountKey(accountKey);
+		if (!m_Accounts || !m_Accounts.items.IsIndexValid(index))
 			return null;
 
-		foreach (ELIFE_BankAccountSummary account : m_Accounts.items)
-		{
-			if (account && account.bankAccountId == accountId)
-				return account;
-		}
-
-		return null;
+		return m_Accounts.items[index];
 	}
 
 	//------------------------------------------------------------------------------------------------

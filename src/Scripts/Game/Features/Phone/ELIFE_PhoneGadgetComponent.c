@@ -246,7 +246,8 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//! What the backend's store offers to install. It decides which downloadable apps are visible at all.
 	static const string DATA_STORE_APPS = "store-apps";
 
-	//! Followed by the bankAccountId - one statement per key.
+	//! Followed by the account's index in the owner's account list - one statement per key.
+	//! Not the number: bystanders follow the key, and the number is private.
 	static const string DATA_BANK_STATEMENT_PREFIX = "bank-statement:";
 
 	//! Server-only: the real payload per key plus its pre-built bystander copy.
@@ -259,8 +260,11 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//! Server-only. The in-flight fetch per key, held for its HTTP code and, on list routes, its raw body.
 	protected ref map<string, ref RestCallback> m_mFetchCallbacks = new map<string, ref RestCallback>();
 
-	//! Server-only. bankAccountId -> packed account, waiting for its transactions to land.
+	//! Server-only. Account number -> packed account, waiting for its transactions to land.
 	protected ref map<string, string> m_mStatementAccounts = new map<string, string>();
+
+	//! Server-only. Account number -> the statement key its fetch answers.
+	protected ref map<string, string> m_mStatementKeys = new map<string, string>();
 
 	//! What this machine got pushed - real payload for the owner, redacted copy for everyone else.
 	protected ref map<string, string> m_mData = new map<string, string>();
@@ -2232,9 +2236,16 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		else if (key.StartsWith(DATA_BANK_STATEMENT_PREFIX) && m_sServerOwnerCharacterId != "")
 		{
 			//! Account first, then its transactions - see OnStatementAccountFetched().
-			string accountId = key.Substring(DATA_BANK_STATEMENT_PREFIX.Length(), key.Length() - DATA_BANK_STATEMENT_PREFIX.Length());
+			string number = OwnerAccountNumber(key.Substring(DATA_BANK_STATEMENT_PREFIX.Length(), key.Length() - DATA_BANK_STATEMENT_PREFIX.Length()));
+			if (number == "")
+			{
+				PushDataError(key);
+				return;
+			}
+
+			m_mStatementKeys.Set(number, key);
 			m_mPendingFetches.Set(key, true);
-			m_mFetchCallbacks.Set(key, api.GetBankAccount(accountId, this, "OnStatementAccountFetched"));
+			m_mFetchCallbacks.Set(key, api.GetBankAccount(number, this, "OnStatementAccountFetched"));
 		}
 		else
 		{
@@ -2275,7 +2286,54 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	//------------------------------------------------------------------------------------------------
 	void OnBankAccountsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string characterId)
 	{
+		//! Statements are keyed by position in this list, which a new account can shift.
+		array<string> statementKeys = {};
+		foreach (string key, ELIFE_PhoneDataEntry entry : m_mServerData)
+		{
+			if (key.StartsWith(DATA_BANK_STATEMENT_PREFIX))
+				statementKeys.Insert(key);
+		}
+
+		foreach (string statementKey : statementKeys)
+		{
+			m_mServerData.Remove(statementKey);
+		}
+
 		OnListFetched(status, DATA_BANK_ACCOUNTS, new ELIFE_BankAccountListDto());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! -1 for anything but a plain index, so a malformed key never reaches ToInt().
+	static int ParseAccountKey(string accountKey)
+	{
+		if (accountKey == "" || accountKey.Length() > 4)
+			return -1;
+
+		for (int i = 0; i < accountKey.Length(); i++)
+		{
+			if ("0123456789".IndexOf(accountKey.Substring(i, 1)) == -1)
+				return -1;
+		}
+
+		return accountKey.ToInt();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-only. The number behind a statement key, from the owner's last fetched account list.
+	protected string OwnerAccountNumber(string accountKey)
+	{
+		ELIFE_PhoneDataEntry entry;
+		if (!m_mServerData.Find(DATA_BANK_ACCOUNTS, entry) || entry.m_sReal == "")
+			return "";
+
+		ELIFE_BankAccountListDto accounts = new ELIFE_BankAccountListDto();
+		accounts.ExpandFromRAW(entry.m_sReal);
+
+		int index = ParseAccountKey(accountKey);
+		if (!accounts.items.IsIndexValid(index) || !accounts.items[index])
+			return "";
+
+		return accounts.items[index].number;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2315,21 +2373,25 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Step one of a statement. The id came from a client, so it has to be one of the owner's accounts.
-	void OnStatementAccountFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string bankAccountId)
+	//! Step one of a statement. The number came from the owner's list, but the account is checked again.
+	void OnStatementAccountFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string number)
 	{
-		string key = DATA_BANK_STATEMENT_PREFIX + bankAccountId;
+		string key;
+		if (!m_mStatementKeys.Find(number, key))
+			return;
 
 		ELIFE_BankAccountSummary account = ELIFE_BankAccountSummary.Cast(data);
 		if (status != ELIFE_EApiStatusCode.SUCCESS || !account)
 		{
+			m_mStatementKeys.Remove(number);
 			OnDataFetched(ELIFE_EApiStatusCode.ERROR, null, key);
 			return;
 		}
 
 		if (account.characterId != m_sServerOwnerCharacterId)
 		{
-			Print(string.Format("ELIFE_PhoneGadgetComponent | bank account %1 is not the owner's", bankAccountId), LogLevel.WARNING);
+			Print(string.Format("ELIFE_PhoneGadgetComponent | bank account %1 is not the owner's", number), LogLevel.WARNING);
+			m_mStatementKeys.Remove(number);
 			OnDataFetched(ELIFE_EApiStatusCode.ERROR, null, key);
 			return;
 		}
@@ -2337,6 +2399,7 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		ELIFE_Api api = ELIFE_Api.GetInstance();
 		if (!api)
 		{
+			m_mStatementKeys.Remove(number);
 			OnDataFetched(ELIFE_EApiStatusCode.ERROR, null, key);
 			return;
 		}
@@ -2344,19 +2407,25 @@ class ELIFE_PhoneGadgetComponent : SCR_GadgetComponent
 		//! The account rides in front of the transactions array, so the pair lands as one payload.
 		ELIFE_BankAccountSummary copy = account.Copy();
 		copy.Pack();
-		m_mStatementAccounts.Set(bankAccountId, copy.AsString());
+		m_mStatementAccounts.Set(number, copy.AsString());
 
-		m_mFetchCallbacks.Set(key, api.ListBankAccountTransactions(bankAccountId, this, "OnStatementTransactionsFetched"));
+		m_mFetchCallbacks.Set(key, api.ListBankAccountTransactions(number, this, "OnStatementTransactionsFetched"));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void OnStatementTransactionsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string bankAccountId)
+	void OnStatementTransactionsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string number)
 	{
-		string accountJson;
-		m_mStatementAccounts.Find(bankAccountId, accountJson);
-		m_mStatementAccounts.Remove(bankAccountId);
+		string key;
+		if (!m_mStatementKeys.Find(number, key))
+			return;
 
-		OnListFetched(status, DATA_BANK_STATEMENT_PREFIX + bankAccountId, new ELIFE_BankStatementDto(), "\"account\":" + accountJson + ",");
+		m_mStatementKeys.Remove(number);
+
+		string accountJson;
+		m_mStatementAccounts.Find(number, accountJson);
+		m_mStatementAccounts.Remove(number);
+
+		OnListFetched(status, key, new ELIFE_BankStatementDto(), "\"account\":" + accountJson + ",");
 	}
 
 	//------------------------------------------------------------------------------------------------

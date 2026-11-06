@@ -43,20 +43,17 @@ enum ELIFE_EATMReason
 //! One line of the account choice. Built by the server rather than sent as the API's account, which has no bank name.
 class ELIFE_ATMAccountChoice : JsonApiStruct
 {
-	string bankAccountId;
 	string number;
 	float balance;
 	string bankName;
 
 	//------------------------------------------------------------------------------------------------
-	void ELIFE_ATMAccountChoice(string accountId = "", string accountNumber = "", float accountBalance = 0, string accountBankName = "")
+	void ELIFE_ATMAccountChoice(string accountNumber = "", float accountBalance = 0, string accountBankName = "")
 	{
-		bankAccountId = accountId;
 		number = accountNumber;
 		balance = accountBalance;
 		bankName = accountBankName;
 
-		RegV("bankAccountId");
 		RegV("number");
 		RegV("balance");
 		RegV("bankName");
@@ -95,7 +92,7 @@ class ELIFE_ATMWithdrawal
 	int m_iPlayerId;
 	IEntity m_Character;
 	string m_sCharacterId;
-	string m_sAccountId;
+	string m_sAccountNumber;
 	int m_iAmount;
 	float m_fQuotedFee;
 	float m_fFeeBase;
@@ -113,7 +110,7 @@ class ELIFE_ATMWithdrawal
 	//------------------------------------------------------------------------------------------------
 	string Describe()
 	{
-		return string.Format("%1 player %2 character %3 account %4 amount %5 baseline %6 newest row '%7' paid %8", m_sMachineId, m_iPlayerId, m_sCharacterId, m_sAccountId, m_iAmount, m_fBaseline, m_sBaselineAt, m_iPaid);
+		return string.Format("%1 player %2 character %3 account %4 amount %5 baseline %6 newest row '%7' paid %8", m_sMachineId, m_iPlayerId, m_sCharacterId, m_sAccountNumber, m_iAmount, m_fBaseline, m_sBaselineAt, m_iPaid);
 	}
 }
 
@@ -177,7 +174,7 @@ class ELIFE_ATMComponent : ScriptComponent
 	protected ref ELIFE_BaseRestCallback m_LoadCallback;
 	protected bool m_bLoadInFlight;
 	protected bool m_bLoadStale;
-	protected string m_sAccountId;
+	protected string m_sAccountNumber;
 	protected string m_sAccountBankId;
 	protected string m_sAccountJson;
 	protected bool m_bFeesKnown;
@@ -193,9 +190,9 @@ class ELIFE_ATMComponent : ScriptComponent
 	protected string m_sBankName;
 
 	protected ref ELIFE_BankAccountListDto m_LoadedAccounts;
-	//! The personal accounts of the last load: the only ids a client may choose from.
-	protected ref array<string> m_aAccountIds = {};
-	protected string m_sChosenAccountId;
+	//! The personal accounts of the last load: the only numbers a client may choose from.
+	protected ref array<string> m_aAccountNumbers = {};
+	protected string m_sChosenAccountNumber;
 	protected string m_sRealAccountsJson;
 	protected string m_sRedactedAccountsJson;
 
@@ -429,13 +426,13 @@ class ELIFE_ATMComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server-only. The id came from a client, so it only counts if the last load found it among this character's accounts.
-	void RequestSelectAccount(int playerId, notnull IEntity character, string accountId)
+	//! Server-only. The number came from a client, so it only counts if the last load found it among this character's accounts.
+	void RequestSelectAccount(int playerId, notnull IEntity character, string accountNumber)
 	{
-		if (m_aAccountIds.Contains(accountId))
-			ChangeAccount(playerId, character, accountId);
+		if (m_aAccountNumbers.Contains(accountNumber))
+			ChangeAccount(playerId, character, accountNumber);
 		else
-			Print(string.Format("ELIFE_ATMComponent | player %1 chose account %2, which is not on their list", playerId, accountId), LogLevel.WARNING);
+			Print(string.Format("ELIFE_ATMComponent | player %1 chose account %2, which is not on their list", playerId, accountNumber), LogLevel.WARNING);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -447,7 +444,7 @@ class ELIFE_ATMComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! A quote is for one account's fees, so it goes too. A dropped request is safe: the client only follows the state.
-	protected void ChangeAccount(int playerId, notnull IEntity character, string accountId)
+	protected void ChangeAccount(int playerId, notnull IEntity character, string accountNumber)
 	{
 		if (!IsOccupant(playerId, character) || m_Withdrawal || m_bShowingPaid)
 			return;
@@ -458,7 +455,7 @@ class ELIFE_ATMComponent : ScriptComponent
 			return;
 
 		m_iLastRefreshTick = now;
-		m_sChosenAccountId = accountId;
+		m_sChosenAccountNumber = accountNumber;
 		m_iQuoteId = 0;
 		ClearLoadedAccount();
 		SetState(ELIFE_EATMState.LOADING);
@@ -468,7 +465,7 @@ class ELIFE_ATMComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	protected void ClearLoadedAccount()
 	{
-		m_sAccountId = "";
+		m_sAccountNumber = "";
 		m_bFeesKnown = false;
 		m_fLoadedBalance = 0;
 		m_sRealJson = "";
@@ -525,12 +522,12 @@ class ELIFE_ATMComponent : ScriptComponent
 		m_Withdrawal.m_iPlayerId = playerId;
 		m_Withdrawal.m_Character = character;
 		m_Withdrawal.m_sCharacterId = m_sOccupantCharacterId;
-		m_Withdrawal.m_sAccountId = m_sAccountId;
+		m_Withdrawal.m_sAccountNumber = m_sAccountNumber;
 		m_Withdrawal.m_iAmount = m_iQuoteAmount;
 		m_Withdrawal.m_fQuotedFee = m_fQuoteFee;
 		m_Withdrawal.m_fFeeBase = m_fFeeBase;
 		m_Withdrawal.m_fFeeMultiplier = m_fFeeMultiplier;
-		s_aBusyAccounts.Insert(m_sAccountId);
+		s_aBusyAccounts.Insert(m_sAccountNumber);
 		SetState(ELIFE_EATMState.PROCESSING);
 
 		ELIFE_Api api = ELIFE_Api.GetInstance();
@@ -540,7 +537,7 @@ class ELIFE_ATMComponent : ScriptComponent
 			return;
 		}
 
-		m_FlowCallback = api.GetBankAccount(m_sAccountId, this, "OnBaselineAccountFetched");
+		m_FlowCallback = api.GetBankAccount(m_sAccountNumber, this, "OnBaselineAccountFetched");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -561,7 +558,7 @@ class ELIFE_ATMComponent : ScriptComponent
 		if (amount > MAX_WITHDRAWAL)
 			return ELIFE_EATMReason.AMOUNT_TOO_HIGH;
 
-		if (m_sAccountId == "")
+		if (m_sAccountNumber == "")
 			return ELIFE_EATMReason.NO_ACCOUNT;
 
 		if (!m_bFeesKnown)
@@ -588,7 +585,7 @@ class ELIFE_ATMComponent : ScriptComponent
 		if (!IsUsableBy(character))
 			return ELIFE_EATMReason.OUT_OF_RANGE;
 
-		if (s_aBusyAccounts.Contains(m_sAccountId))
+		if (s_aBusyAccounts.Contains(m_sAccountNumber))
 			return ELIFE_EATMReason.BUSY;
 
 		return ELIFE_EATMReason.NONE;
@@ -651,17 +648,17 @@ class ELIFE_ATMComponent : ScriptComponent
 		m_sOccupantCharacterId = "";
 		m_bClosePending = false;
 		m_iQuoteId = 0;
-		m_sAccountId = "";
+		m_sAccountNumber = "";
 		m_sAccountBankId = "";
 		m_sAccountJson = "";
 		m_bFeesKnown = false;
 		m_fLoadedBalance = 0;
 		m_sRealJson = "";
 		m_sRedactedJson = "";
-		m_aAccountIds.Clear();
+		m_aAccountNumbers.Clear();
 		m_LoadedAccounts = null;
 		m_sBankName = "";
-		m_sChosenAccountId = "";
+		m_sChosenAccountNumber = "";
 		m_sRealAccountsJson = "";
 		m_sRedactedAccountsJson = "";
 		m_bShowingPaid = false;
@@ -828,7 +825,7 @@ class ELIFE_ATMComponent : ScriptComponent
 		m_LoadedAccounts = new ELIFE_BankAccountListDto();
 		foreach (ELIFE_BankAccountSummary account : list.items)
 		{
-			if (account && account.characterId == characterId && account.bankAccountId != "" && !account.IsCompany())
+			if (account && account.characterId == characterId && account.number != "" && !account.IsCompany())
 				m_LoadedAccounts.items.Insert(account.Copy());
 		}
 
@@ -860,7 +857,7 @@ class ELIFE_ATMComponent : ScriptComponent
 
 		foreach (ELIFE_BankAccountSummary account : ownAccounts.items)
 		{
-			if (account.bankAccountId == m_sChosenAccountId)
+			if (account.number == m_sChosenAccountNumber)
 				return account;
 		}
 
@@ -871,21 +868,21 @@ class ELIFE_ATMComponent : ScriptComponent
 	//! Bystanders get stand-in numbers and balances, and no ids. Bank names are public.
 	protected void PublishAccounts(notnull ELIFE_BankAccountListDto ownAccounts, ELIFE_BankListDto banks)
 	{
-		m_aAccountIds.Clear();
+		m_aAccountNumbers.Clear();
 
 		ELIFE_ATMAccountList real = new ELIFE_ATMAccountList();
 		ELIFE_ATMAccountList redacted = new ELIFE_ATMAccountList();
 		foreach (ELIFE_BankAccountSummary account : ownAccounts.items)
 		{
-			m_aAccountIds.Insert(account.bankAccountId);
+			m_aAccountNumbers.Insert(account.number);
 
 			string bankName = "";
 			ELIFE_BankSummary bank = FindBank(banks, account.bankId);
 			if (bank)
 				bankName = bank.name;
 
-			real.items.Insert(new ELIFE_ATMAccountChoice(account.bankAccountId, account.GetIban(), account.balance, bankName));
-			redacted.items.Insert(new ELIFE_ATMAccountChoice("", ELIFE_DataRedactor.RedactDigits(account.GetIban()), ELIFE_DataRedactor.RedactAmount(account.balance), bankName));
+			real.items.Insert(new ELIFE_ATMAccountChoice(account.number, account.balance, bankName));
+			redacted.items.Insert(new ELIFE_ATMAccountChoice(ELIFE_DataRedactor.RedactDigits(account.number), ELIFE_DataRedactor.RedactAmount(account.balance), bankName));
 		}
 
 		real.Pack();
@@ -965,7 +962,7 @@ class ELIFE_ATMComponent : ScriptComponent
 			return;
 		}
 
-		m_sAccountId = picked.bankAccountId;
+		m_sAccountNumber = picked.number;
 		m_sAccountBankId = picked.bankId;
 
 		ELIFE_BankAccountSummary copy = picked.Copy();
@@ -995,18 +992,18 @@ class ELIFE_ATMComponent : ScriptComponent
 			return;
 		}
 
-		m_LoadCallback = api.ListBankAccountTransactions(m_sAccountId, this, "OnLoadTransactions");
+		m_LoadCallback = api.ListBankAccountTransactions(m_sAccountNumber, this, "OnLoadTransactions");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void OnLoadTransactions(ELIFE_EApiStatusCode status, JsonApiStruct data, string bankAccountId)
+	void OnLoadTransactions(ELIFE_EApiStatusCode status, JsonApiStruct data, string accountNumber)
 	{
 		if (DropStaleLoad())
 			return;
 
 		if (status != ELIFE_EApiStatusCode.SUCCESS || !m_LoadCallback || !IsArrayBody(m_LoadCallback.GetData()))
 		{
-			Print(string.Format("ELIFE_ATMComponent | load failed, no transactions for account %1", bankAccountId), LogLevel.WARNING);
+			Print(string.Format("ELIFE_ATMComponent | load failed, no transactions for account %1", accountNumber), LogLevel.WARNING);
 			EndLoad(ELIFE_EATMState.LOAD_FAILED);
 			return;
 		}
@@ -1025,7 +1022,6 @@ class ELIFE_ATMComponent : ScriptComponent
 
 		//! Redacted once per load, so bystanders and late joiners all see the same stand-in figures.
 		ELIFE_BankStatementDto redacted = statement.Redact();
-		redacted.account.bankAccountId = "";
 		redacted.Pack();
 		m_sRedactedJson = redacted.AsString();
 
@@ -1051,16 +1047,16 @@ class ELIFE_ATMComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void OnBaselineAccountFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string bankAccountId)
+	void OnBaselineAccountFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string accountNumber)
 	{
 		if (!m_Withdrawal)
 		{
-			Print(string.Format("ELIFE_ATMComponent | baseline account %1 arrived with no withdrawal running", bankAccountId), LogLevel.ERROR);
+			Print(string.Format("ELIFE_ATMComponent | baseline account %1 arrived with no withdrawal running", accountNumber), LogLevel.ERROR);
 			return;
 		}
 
 		ELIFE_BankAccountSummary account = ELIFE_BankAccountSummary.Cast(data);
-		if (status != ELIFE_EApiStatusCode.SUCCESS || !account || account.bankAccountId != bankAccountId)
+		if (status != ELIFE_EApiStatusCode.SUCCESS || !account || account.number != accountNumber)
 		{
 			AbortWithdrawal(ELIFE_EATMReason.DATA_UNAVAILABLE, "baseline account read failed");
 			return;
@@ -1080,16 +1076,16 @@ class ELIFE_ATMComponent : ScriptComponent
 		}
 
 		m_Withdrawal.m_fBaseline = account.balance;
-		m_FlowCallback = api.ListBankAccountTransactions(bankAccountId, this, "OnBaselineTransactionsFetched");
+		m_FlowCallback = api.ListBankAccountTransactions(accountNumber, this, "OnBaselineTransactionsFetched");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Last stop before the one PUT.
-	void OnBaselineTransactionsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string bankAccountId)
+	void OnBaselineTransactionsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string accountNumber)
 	{
 		if (!m_Withdrawal)
 		{
-			Print(string.Format("ELIFE_ATMComponent | baseline rows of %1 arrived with no withdrawal running", bankAccountId), LogLevel.ERROR);
+			Print(string.Format("ELIFE_ATMComponent | baseline rows of %1 arrived with no withdrawal running", accountNumber), LogLevel.ERROR);
 			return;
 		}
 
@@ -1130,16 +1126,16 @@ class ELIFE_ATMComponent : ScriptComponent
 		request.characterId = m_Withdrawal.m_sCharacterId;
 
 		Print(string.Format("ELIFE_ATMComponent | withdrawing: %1", m_Withdrawal.Describe()), LogLevel.NORMAL);
-		m_FlowCallback = api.WithdrawFromBankAccount(request, bankAccountId, this, "OnWithdrawResult");
+		m_FlowCallback = api.WithdrawFromBankAccount(request, accountNumber, this, "OnWithdrawResult");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! No idempotency, and the Bridge retries PUTs: only a 200 with figures that add up, or a 403/404, is an answer.
-	void OnWithdrawResult(ELIFE_EApiStatusCode status, JsonApiStruct data, string bankAccountId)
+	void OnWithdrawResult(ELIFE_EApiStatusCode status, JsonApiStruct data, string accountNumber)
 	{
 		if (!m_Withdrawal)
 		{
-			Print(string.Format("ELIFE_ATMComponent | withdraw result for %1 arrived with no withdrawal running", bankAccountId), LogLevel.ERROR);
+			Print(string.Format("ELIFE_ATMComponent | withdraw result for %1 arrived with no withdrawal running", accountNumber), LogLevel.ERROR);
 			return;
 		}
 
@@ -1201,17 +1197,17 @@ class ELIFE_ATMComponent : ScriptComponent
 			return;
 		}
 
-		m_FlowCallback = api.ListBankAccountTransactions(m_Withdrawal.m_sAccountId, this, "OnReconcileTransactionsFetched");
+		m_FlowCallback = api.ListBankAccountTransactions(m_Withdrawal.m_sAccountNumber, this, "OnReconcileTransactionsFetched");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Rows are newest first, so "newer than the baseline" is everything above the baseline row. occurredAt strings
 	//! vary in length, so they are matched rather than ordered. Another server's identical withdrawal in this window would count too.
-	void OnReconcileTransactionsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string bankAccountId)
+	void OnReconcileTransactionsFetched(ELIFE_EApiStatusCode status, JsonApiStruct data, string accountNumber)
 	{
 		if (!m_Withdrawal)
 		{
-			Print(string.Format("ELIFE_ATMComponent | reconcile rows of %1 arrived with no withdrawal running", bankAccountId), LogLevel.ERROR);
+			Print(string.Format("ELIFE_ATMComponent | reconcile rows of %1 arrived with no withdrawal running", accountNumber), LogLevel.ERROR);
 			return;
 		}
 
@@ -1373,15 +1369,15 @@ class ELIFE_ATMComponent : ScriptComponent
 
 		ELIFE_DepositRequest request = new ELIFE_DepositRequest();
 		request.amount = m_Withdrawal.m_fDeposit;
-		m_FlowCallback = api.DepositToBankAccount(request, m_Withdrawal.m_sAccountId, this, "OnDepositBackResult");
+		m_FlowCallback = api.DepositToBankAccount(request, m_Withdrawal.m_sAccountNumber, this, "OnDepositBackResult");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void OnDepositBackResult(ELIFE_EApiStatusCode status, JsonApiStruct data, string bankAccountId)
+	void OnDepositBackResult(ELIFE_EApiStatusCode status, JsonApiStruct data, string accountNumber)
 	{
 		if (!m_Withdrawal)
 		{
-			Print(string.Format("ELIFE_ATMComponent | deposit result for %1 arrived with no withdrawal running", bankAccountId), LogLevel.ERROR);
+			Print(string.Format("ELIFE_ATMComponent | deposit result for %1 arrived with no withdrawal running", accountNumber), LogLevel.ERROR);
 			return;
 		}
 
@@ -1446,7 +1442,7 @@ class ELIFE_ATMComponent : ScriptComponent
 	//! The lock comes free through a pending close or the next tick, so the idle clock restarts here.
 	protected void FinishWithdrawal()
 	{
-		s_aBusyAccounts.RemoveItem(m_Withdrawal.m_sAccountId);
+		s_aBusyAccounts.RemoveItem(m_Withdrawal.m_sAccountNumber);
 		m_Withdrawal = null;
 		m_FlowCallback = null;
 		m_iLastRequestTick = System.GetTickCount();
@@ -1472,7 +1468,7 @@ class ELIFE_ATMComponent : ScriptComponent
 		if (!m_Withdrawal)
 			return;
 
-		s_aBusyAccounts.RemoveItem(m_Withdrawal.m_sAccountId);
+		s_aBusyAccounts.RemoveItem(m_Withdrawal.m_sAccountNumber);
 		Print(string.Format("ELIFE_ATMComponent | ATM deleted during a withdrawal, UNRESOLVED: %1", m_Withdrawal.Describe()), LogLevel.ERROR);
 	}
 }

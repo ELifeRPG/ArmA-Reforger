@@ -25,7 +25,7 @@ class ELIFE_BankAccountListDto : ELIFE_PhoneRawDto
 //! One account's statement: GetBankAccount() spliced in front of its bare-array transactions.
 class ELIFE_BankStatementDto : ELIFE_PhoneRawDto
 {
-	//! Pre-built so a parse always has somewhere to land; an empty bankAccountId means it hasn't.
+	//! Pre-built so a parse always has somewhere to land; an empty number means it hasn't.
 	ref ELIFE_BankAccountSummary account = new ELIFE_BankAccountSummary();
 	ref array<ref ELIFE_BankAccountTransaction> items = {};
 
@@ -62,16 +62,10 @@ modded class ELIFE_BankAccountSummary
 	}
 
 	//------------------------------------------------------------------------------------------------
-	string GetIban()
-	{
-		return ELIFE_PhoneBankingService.ToIban(number, bankId);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The number as players see it.
 	string GetDisplayNumber()
 	{
-		return ELIFE_PhoneBankingService.GroupIban(GetIban());
+		return ELIFE_PhoneBankingService.GroupIban(number);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -79,7 +73,6 @@ modded class ELIFE_BankAccountSummary
 	ELIFE_BankAccountSummary Copy()
 	{
 		ELIFE_BankAccountSummary copy = new ELIFE_BankAccountSummary();
-		copy.bankAccountId = bankAccountId;
 		copy.bankId = bankId;
 		copy.number = number;
 		copy.type = type;
@@ -90,11 +83,10 @@ modded class ELIFE_BankAccountSummary
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! bankAccountId stays real - it's the statement's sub-state key, which bystanders follow too.
+	//! Keeps the bank, so the stand-in number still shows the real bank code.
 	ELIFE_BankAccountSummary Redact()
 	{
 		ELIFE_BankAccountSummary redacted = new ELIFE_BankAccountSummary();
-		redacted.bankAccountId = bankAccountId;
 		redacted.bankId = bankId;
 		redacted.number = ELIFE_DataRedactor.RedactDigits(number);
 		redacted.type = type;

@@ -45,11 +45,11 @@ class ELIFE_ATMCharacterComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void RequestSelectAccount(notnull IEntity atm, string accountId)
+	void RequestSelectAccount(notnull IEntity atm, string accountNumber)
 	{
 		RplId atmId = GetAtmId(atm);
 		if (atmId.IsValid())
-			Rpc(RpcAsk_SelectAccount, atmId, accountId);
+			Rpc(RpcAsk_SelectAccount, atmId, accountNumber);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -172,11 +172,11 @@ class ELIFE_ATMCharacterComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_SelectAccount(RplId atmId, string accountId)
+	protected void RpcAsk_SelectAccount(RplId atmId, string accountNumber)
 	{
 		ELIFE_ATMComponent atm = FindATM(atmId, "select account");
 		if (atm && IsInReach(atm, "select account"))
-			atm.RequestSelectAccount(GetPlayerId(), GetOwner(), accountId);
+			atm.RequestSelectAccount(GetPlayerId(), GetOwner(), accountNumber);
 	}
 
 	//------------------------------------------------------------------------------------------------

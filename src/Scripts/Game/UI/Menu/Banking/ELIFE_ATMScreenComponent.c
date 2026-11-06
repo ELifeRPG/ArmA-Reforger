@@ -914,7 +914,7 @@ class ELIFE_ATMScreenComponent : ELIFE_WorldScreenComponent
 			if (slot >= 0 && m_Accounts && index < m_Accounts.items.Count())
 			{
 				SetView(ELIFE_EATMScreen.HOME);
-				link.RequestSelectAccount(GetOwner(), m_Accounts.items[index].bankAccountId);
+				link.RequestSelectAccount(GetOwner(), m_Accounts.items[index].number);
 			}
 		}
 	}
@@ -1116,10 +1116,9 @@ class ELIFE_ATMScreenComponent : ELIFE_WorldScreenComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The redacted payload blanks the id, so the number counts as well.
 	protected bool HasAccount()
 	{
-		return m_Statement && (m_Statement.account.bankAccountId != "" || m_Statement.account.number != "");
+		return m_Statement && m_Statement.account.number != "";
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -5,7 +5,7 @@ class ELIFE_BankAccountTransaction : JsonApiStruct
 	float amount;
 	float fee;
 	string actingCharacterId;
-	string counterpartyBankAccountId;
+	string counterpartyNumber;
 	string occurredAt;
 
 	void ELIFE_BankAccountTransaction()
@@ -14,7 +14,7 @@ class ELIFE_BankAccountTransaction : JsonApiStruct
 		RegV("amount");
 		RegV("fee");
 		RegV("actingCharacterId");
-		RegV("counterpartyBankAccountId");
+		RegV("counterpartyNumber");
 		RegV("occurredAt");
 	}
 }
