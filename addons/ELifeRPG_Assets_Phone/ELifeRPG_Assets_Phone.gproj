@@ -1,0 +1,20 @@
+GameProject {
+ ID "ELifeRPG_Assets_Phone"
+ GUID "58DF4AD2DDC2CA55"
+ TITLE "ELifeRPG_Assets_Phone"
+ Dependencies {
+  "58D0FB3206B6F859" "5614BBCCBB55ED1C"
+ }
+ Configurations {
+  GameProjectConfig PC {
+  }
+  GameProjectConfig XBOX_ONE {
+  }
+  GameProjectConfig XBOX_SERIES {
+  }
+  GameProjectConfig PS4 {
+  }
+  GameProjectConfig HEADLESS {
+  }
+ }
+}

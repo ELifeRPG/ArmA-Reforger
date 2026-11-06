@@ -5,8 +5,8 @@ In-game phone for an Arma Reforger life mod. Covers lock, home, the shared app s
 Apps: Messages, Contacts, Banking, Map, Settings. A sixth app must fit without a
 redesign.
 
-Output is Enfusion `.layout` and Script under `src/UI/layouts/Menus/Phone/` and
-`src/Scripts/Game/UI/Menu/Phone/`. Tokens live in `ELIFE_PhoneStyle`. Apps subclass
+Output is Enfusion `.layout` and Script under `addons/ELifeRPG_Core/UI/layouts/Menus/Phone/` and
+`addons/ELifeRPG_Core/Scripts/Game/UI/Menu/Phone/`. Tokens live in `ELIFE_PhoneStyle`. Apps subclass
 `ELIFE_PhoneAppBase` and are hosted by `ELIFE_PhoneScreenShell`. Express everything
 in the widgets those files already use (`OverlayWidget`, `SmartPanelWidget`,
 `ImageWidget`, `SizeLayoutWidget`, `TextWidget`, `ScrollLayoutWidget`).
