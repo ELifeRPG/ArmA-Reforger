@@ -135,6 +135,8 @@ class ELIFE_ATMComponent : ScriptComponent
 	//! Above the 30 s total budget of the Bridge's standard resilience handler, so no retry can land after our read.
 	protected static const int RECONCILE_DELAY_MS = 45000;
 	protected static const float MONEY_TOLERANCE = 0.01;
+	//! A few float steps: above about 130,000 a float no longer holds cents.
+	protected static const float MONEY_RELATIVE_TOLERANCE = 0.000001;
 	protected static const int HTTP_FORBIDDEN = 403;
 	protected static const int HTTP_NOT_FOUND = 404;
 
@@ -742,6 +744,13 @@ class ELIFE_ATMComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected bool MoneyMatches(float a, float b)
+	{
+		float tolerance = Math.Max(MONEY_TOLERANCE, Math.Max(Math.AbsFloat(a), Math.AbsFloat(b)) * MONEY_RELATIVE_TOLERANCE);
+		return Math.AbsFloat(a - b) <= tolerance;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The bodies of the bare-array routes aren't parsed by the callback, so a bad one would read as an empty list.
 	protected bool IsArrayBody(string body)
 	{
@@ -1146,7 +1155,7 @@ class ELIFE_ATMComponent : ScriptComponent
 		if (status == ELIFE_EApiStatusCode.SUCCESS && result)
 		{
 			float expected = m_Withdrawal.m_fBaseline - m_Withdrawal.m_iAmount - result.fee;
-			if (Math.AbsFloat(result.amount - m_Withdrawal.m_iAmount) <= MONEY_TOLERANCE && Math.AbsFloat(expected - result.newBalance) <= MONEY_TOLERANCE)
+			if (MoneyMatches(result.amount, m_Withdrawal.m_iAmount) && MoneyMatches(expected, result.newBalance))
 			{
 				m_Withdrawal.m_fNewBalance = result.newBalance;
 				m_Withdrawal.m_bBalanceKnown = true;
@@ -1154,7 +1163,6 @@ class ELIFE_ATMComponent : ScriptComponent
 				return;
 			}
 
-			//! A float false alarm on a large balance lands here too, which only costs the wait below.
 			Print(string.Format("ELIFE_ATMComponent | withdraw answered 200 with unexpected figures amount %1 fee %2 new balance %3: %4", result.amount, result.fee, result.newBalance, m_Withdrawal.Describe()), LogLevel.WARNING);
 			StartReconcile();
 			return;
@@ -1231,7 +1239,7 @@ class ELIFE_ATMComponent : ScriptComponent
 			if (row.kind != ELIFE_BankAccountTransaction.KIND_WITHDRAWN || row.actingCharacterId != m_Withdrawal.m_sCharacterId)
 				continue;
 
-			if (Math.AbsFloat(row.amount - m_Withdrawal.m_iAmount) > MONEY_TOLERANCE)
+			if (!MoneyMatches(row.amount, m_Withdrawal.m_iAmount))
 				continue;
 
 			if (matches == 0)

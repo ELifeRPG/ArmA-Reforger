@@ -15,8 +15,6 @@ class ELIFE_WorldScreenMenu : ChimeraMenuBase
 	protected ref array<bool> m_aDigitHeld = {false, false, false, false, false, false, false, false, false, false};
 	protected bool m_bClearHeld;
 	protected bool m_bConfirmHeld;
-	protected ref array<int> m_aDigitKeys = {KeyCode.KC_0, KeyCode.KC_1, KeyCode.KC_2, KeyCode.KC_3, KeyCode.KC_4, KeyCode.KC_5, KeyCode.KC_6, KeyCode.KC_7, KeyCode.KC_8, KeyCode.KC_9};
-	protected ref array<int> m_aNumpadKeys = {KeyCode.KC_NUMPAD0, KeyCode.KC_NUMPAD1, KeyCode.KC_NUMPAD2, KeyCode.KC_NUMPAD3, KeyCode.KC_NUMPAD4, KeyCode.KC_NUMPAD5, KeyCode.KC_NUMPAD6, KeyCode.KC_NUMPAD7, KeyCode.KC_NUMPAD8, KeyCode.KC_NUMPAD9};
 	protected bool m_bKeysActive;
 
 	//------------------------------------------------------------------------------------------------
@@ -98,7 +96,7 @@ class ELIFE_WorldScreenMenu : ChimeraMenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Keyboard input for the bound screen, polled like the phone's PIN keys instead of using input actions.
+	//! Keyboard input for the bound screen, polled through MenuContext input actions.
 	protected void PollKeys()
 	{
 		//! Keys belong to whatever is on top, such as a dialog over this menu.
@@ -114,20 +112,20 @@ class ELIFE_WorldScreenMenu : ChimeraMenuBase
 
 		for (int digit = 0; digit < 10; digit++)
 		{
-			bool down = Debug.KeyState(m_aDigitKeys[digit]) != 0 || Debug.KeyState(m_aNumpadKeys[digit]) != 0;
+			bool down = IsActionDown("ELIFE_KeyDigit" + digit.ToString());
 			if (typing && down && !m_aDigitHeld[digit])
 				m_BoundScreen.PressButton(KEY_DIGIT_PREFIX + digit.ToString());
 
 			m_aDigitHeld[digit] = down;
 		}
 
-		bool clearDown = Debug.KeyState(KeyCode.KC_BACK) != 0;
+		bool clearDown = IsActionDown("ELIFE_KeyClear");
 		if (typing && clearDown && !m_bClearHeld)
 			m_BoundScreen.PressButton(KEY_CLEAR);
 
 		m_bClearHeld = clearDown;
 
-		bool confirmDown = Debug.KeyState(KeyCode.KC_RETURN) != 0 || Debug.KeyState(KeyCode.KC_NUMPADENTER) != 0;
+		bool confirmDown = IsActionDown("ELIFE_KeyConfirm");
 		if (typing && confirmDown && !m_bConfirmHeld)
 			m_BoundScreen.PressButton(KEY_CONFIRM);
 
@@ -138,7 +136,14 @@ class ELIFE_WorldScreenMenu : ChimeraMenuBase
 	//! Read by the bound screen every frame instead of being pushed to it, so nothing can stay held.
 	bool IsInspectKeyHeld()
 	{
-		return IsFocused() && Debug.KeyState(KeyCode.KC_R) != 0;
+		return IsFocused() && IsActionDown("ELIFE_KeyInspect");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool IsActionDown(string action)
+	{
+		InputManager inputManager = GetGame().GetInputManager();
+		return inputManager && inputManager.GetActionValue(action) > 0;
 	}
 
 	//------------------------------------------------------------------------------------------------

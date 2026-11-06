@@ -90,18 +90,6 @@ OverlayWidgetClass {
        "Min Font Size" 34
        "Horizontal Alignment" 2
       }
-      TextWidgetClass "{E15EB6A43C75F4AD}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
-       Name "AccountNumber"
-       Slot LayoutSlot "{01FC05CA89B38749}" {
-        VerticalAlign 1
-        Padding 16 0 0 0
-       }
-       Color 0.366 0.4024 0.5025 1
-       Text ""
-       "Font Size" 34
-       "Min Font Size" 34
-       "Horizontal Alignment" 2
-      }
      }
     }
     ImageWidgetClass "{02D6720F05753B0F}" {
@@ -154,6 +142,18 @@ OverlayWidgetClass {
          FontProperties FontProperties "{41A754178C7A82C2}" {
           Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
          }
+        }
+        TextWidgetClass "{E15EB6A43C75F4AD}" : "{E64DA8292CD7DBDD}UI/layouts/WidgetLibrary/TextWidgets/Text_InteractiveSmall.layout" {
+         Name "AccountNumber"
+         Slot LayoutSlot "{01FC05CA89B38749}" {
+          HorizontalAlign 3
+         }
+         "Is Visible" 0
+         Color 0.366 0.4024 0.5025 1
+         Text ""
+         "Font Size" 40
+         "Min Font Size" 40
+         "Horizontal Alignment" Left
         }
         HorizontalLayoutWidgetClass "{2BB41240C2E7045F}" {
          Name "Line1"

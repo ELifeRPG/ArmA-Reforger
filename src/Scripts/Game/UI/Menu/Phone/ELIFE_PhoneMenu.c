@@ -11,8 +11,6 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	//! Previous-frame key state, for press edges.
 	protected ref array<bool> m_aDigitHeld = {false, false, false, false, false, false, false, false, false, false};
 	protected bool m_bBackHeld;
-	protected ref array<int> m_aDigitKeys = {KeyCode.KC_0, KeyCode.KC_1, KeyCode.KC_2, KeyCode.KC_3, KeyCode.KC_4, KeyCode.KC_5, KeyCode.KC_6, KeyCode.KC_7, KeyCode.KC_8, KeyCode.KC_9};
-	protected ref array<int> m_aNumpadKeys = {KeyCode.KC_NUMPAD0, KeyCode.KC_NUMPAD1, KeyCode.KC_NUMPAD2, KeyCode.KC_NUMPAD3, KeyCode.KC_NUMPAD4, KeyCode.KC_NUMPAD5, KeyCode.KC_NUMPAD6, KeyCode.KC_NUMPAD7, KeyCode.KC_NUMPAD8, KeyCode.KC_NUMPAD9};
 	protected bool m_bPinKeysActive;
 
 	//------------------------------------------------------------------------------------------------
@@ -35,7 +33,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Keyboard PIN entry, polled instead of using input actions.
+	//! Keyboard PIN entry, polled through MenuContext input actions.
 	override void OnMenuUpdate(float tDelta)
 	{
 		super.OnMenuUpdate(tDelta);
@@ -63,7 +61,7 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 			m_aDigitHeld[digit] = down;
 		}
 
-		bool backDown = Debug.KeyState(KeyCode.KC_BACK) != 0;
+		bool backDown = IsActionDown("ELIFE_KeyClear");
 		if (typing && backDown && !m_bBackHeld)
 			controller.OnPinBackspace();
 
@@ -74,7 +72,14 @@ class ELIFE_PhoneMenu : ChimeraMenuBase
 	//! Top-row or numpad digit.
 	protected bool IsDigitDown(int digit)
 	{
-		return Debug.KeyState(m_aDigitKeys[digit]) != 0 || Debug.KeyState(m_aNumpadKeys[digit]) != 0;
+		return IsActionDown("ELIFE_KeyDigit" + digit.ToString());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool IsActionDown(string action)
+	{
+		InputManager inputManager = GetGame().GetInputManager();
+		return inputManager && inputManager.GetActionValue(action) > 0;
 	}
 
 	//------------------------------------------------------------------------------------------------

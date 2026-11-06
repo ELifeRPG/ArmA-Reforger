@@ -1316,6 +1316,7 @@ class ELIFE_ATMScreenComponent : ELIFE_WorldScreenComponent
 		}
 
 		m_wHeading.SetVisible(false);
+		m_wAccountNumber.SetVisible(false);
 		m_wLine1.SetVisible(false);
 		m_wLine2.SetVisible(false);
 		m_wCaption.SetVisible(false);
@@ -1355,12 +1356,6 @@ class ELIFE_ATMScreenComponent : ELIFE_WorldScreenComponent
 			m_wPageMark.SetTextFormat("#ELIFE-ATM_Tx_Page", m_iTransactionPage + 1, GetTransactionPageCount());
 		else
 			m_wPageMark.SetText("");
-
-		string number = "";
-		if (HasAccount())
-			number = m_Statement.account.GetDisplayNumber();
-
-		m_wAccountNumber.SetText(number);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1458,7 +1453,10 @@ class ELIFE_ATMScreenComponent : ELIFE_WorldScreenComponent
 				ShowText(m_wHeading, "#ELIFE-ATM_Accounts_Title");
 				return;
 			case ELIFE_EATMScreen.HOME:
-				PlaceStack(CONTENT_LEFT, BELOW_R2_TOP, CONTENT_WIDTH, ABOVE_R4_BOTTOM);
+				PlaceStack(CONTENT_LEFT, BELOW_R1_TOP, CONTENT_WIDTH, CONTENT_BOTTOM);
+				if (HasAccount())
+					ShowText(m_wAccountNumber, m_Statement.account.GetDisplayNumber());
+
 				ShowText(m_wCaption, "#ELIFE-ATM_Balance");
 				ShowFigure(GetBalanceText(), ELIFE_PhoneStyle.AccentBank());
 				RenderInspectHint();
