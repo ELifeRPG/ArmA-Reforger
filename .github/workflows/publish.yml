@@ -1,0 +1,72 @@
+name: Publish to Workshop
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      pack_only:
+        description: Only pack the addons, do not publish
+        type: boolean
+        default: true
+permissions:
+  contents: read
+concurrency:
+  group: workshop-publish
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: python3 tools/check_addons.py addons
+      - name: Tag matches VERSION
+        if: github.ref_type == 'tag'
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          expected="v$(tr -d '[:space:]' < VERSION)"
+          if [ "$TAG" != "$expected" ]; then
+            echo "::error::Tag $TAG does not match VERSION ($expected)"
+            exit 1
+          fi
+
+  publish:
+    needs: check
+    runs-on: [self-hosted, windows, reforger]
+    environment: workshop
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Change note from tag annotation
+        if: github.ref_type == 'tag'
+        shell: pwsh
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          git fetch --force origin "refs/tags/${env:TAG}:refs/tags/${env:TAG}"
+          $note = (git tag -l --format='%(contents)' $env:TAG | Out-String).Trim()
+          if (-not $note) { $note = "Release $env:TAG" }
+          Set-Content -Path "$env:RUNNER_TEMP\changenote.txt" -Value $note
+      - name: Pack and publish
+        shell: pwsh
+        env:
+          PACK_ONLY: ${{ github.ref_type != 'tag' && inputs.pack_only }}
+        run: |
+          $note = "$env:RUNNER_TEMP\changenote.txt"
+          if ($env:PACK_ONLY -eq 'true') {
+            ./tools/publish.ps1 -PackOnly
+          } elseif (Test-Path $note) {
+            ./tools/publish.ps1 -ChangeNoteFile $note
+          } else {
+            ./tools/publish.ps1
+          }
+      - name: Upload Workbench logs
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: workbench-logs
+          path: out/logs
+          if-no-files-found: ignore
