@@ -10,3 +10,5 @@ resourceDatabase.rdb
 site/
 .cache/
 __pycache__/
+## Workbench pack output (tools/publish.ps1)
+/out/

@@ -76,12 +76,25 @@ release republishes every addon with that version. The Workshop downloads patche
 so players fetch next to nothing for addons whose content didn't change.
 
 1. Bump `VERSION` (`MAJOR` = breaking: removed/renamed prefabs or assets, backend protocol;
-   `MINOR` = features and content; `PATCH` = fixes).
-2. Run `python3 tools/check_addons.py addons`.
-3. In Workbench, publish in dependency order, each addon with the version from `VERSION`:
-   `ELifeRPG_Common` → `ELifeRPG_*_Common` → other asset addons → `ELifeRPG_Core` → `ELifeRPG_Map_*` → `ELifeRPG` → `ELifeRPG_Dev`
-   (unlisted). A dependency has to exist on the Workshop before an addon that depends on it can be published.
-4. Tag the commit `vX.Y.Z`.
+   `MINOR` = features and content; `PATCH` = fixes) and merge it to `main`.
+2. Tag the merge commit with the change notes as the tag message, and push the tag:
+
+   ```sh
+   git tag -a v1.2.0 -m "Phone: new banking app"
+   git push origin v1.2.0
+   ```
+
+3. The **Publish to Workshop** workflow (`.github/workflows/publish.yml`) runs
+   `tools/check_addons.py`, checks that the tag matches `VERSION`, and then runs `tools/publish.ps1`
+   on the publishing runner. The script packs and publishes every addon in dependency order (derived
+   from the `.gproj` dependencies: asset addons → `ELifeRPG_Core` → `ELifeRPG` → `ELifeRPG_Dev`) and
+   stops at the first error. Workbench logs are attached to the run as the `workbench-logs` artifact.
+
+To check that everything packs without publishing anything, start the workflow by hand (*Run workflow*,
+`pack_only` checked). As a manual fallback, run `pwsh tools/publish.ps1` on the runner machine.
+
+A **new addon** has to be published once through the Workbench GUI (*Publish Project*), because
+title, summary and description can't be set from the command line. After that, the workflow updates it.
 
 Servers either leave mod versions unpinned (always the latest) or pin every ELifeRPG addon to the
 same release number. The Workshop keeps only the last 50 versions of an addon.
@@ -91,3 +104,23 @@ same release number. The Workshop keeps only the last 50 versions of an addon.
 Register every folder under `addons/` as an addon directory, then open the addon you work in:
 `ELifeRPG_Dev` to play the test world, or `ELifeRPG_Core` for scripts and prefabs. When you create
 new art, save it inside the matching asset addon so its `.meta` is created there.
+
+## Publishing runner (one-time setup)
+
+Publishing goes through the Workbench command line. That only runs on Windows, and Workbench takes
+its Bohemia account session from the logged-in Steam client. There is no public Workshop API.
+The workflow therefore runs on a self-hosted Windows machine:
+
+- Steam logged in with the account that owns the Workshop items, plus Arma Reforger Tools installed.
+  Log into Workbench once and do the first GUI publish of each addon there.
+- A [GitHub Actions runner](https://docs.github.com/en/actions/hosting-your-own-runners) with the
+  labels `self-hosted, windows, reforger`, **running as that Windows user** (interactively or as a
+  service under that account, not as LocalSystem). Otherwise it can't see the Steam session.
+- PowerShell 7 (`pwsh`) and Git on `PATH`.
+- Two environment variables for the runner (e.g. in the runner's `.env` file):
+  - `REFORGER_WORKBENCH`: full path to `ArmaReforgerWorkbenchSteamDiag.exe`
+  - `REFORGER_ADDONS`: the vanilla `addons` folder of the Tools/game install
+- At least 3 GB of free RAM. Don't run the game while publishing (Workbench hangs if it does).
+- Optional: in the repository settings, add required reviewers to the `workshop` environment so every
+  publish needs an approval.
+
