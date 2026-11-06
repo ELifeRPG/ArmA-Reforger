@@ -51,7 +51,7 @@ MetaFileClass {
    Common TXOCommonClass "{6AC31959DA21D562}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
    }
    ApplicationVendor "Enfusion Blender Tools"
-   ApplicationName "Enfusion Blender FBX Exporter - Validaton: Normal"
+   ApplicationName "Enfusion Blender FBX Exporter - Validaton: Permissive"
    ApplicationVersion "4.2.23 LTS"
   }
   FBXResourceClass XBOX_ONE : PC {
@@ -75,4 +75,5 @@ MetaFileClass {
    }
   }
  }
+ Tags "EBTPermissiveExport"
 }
