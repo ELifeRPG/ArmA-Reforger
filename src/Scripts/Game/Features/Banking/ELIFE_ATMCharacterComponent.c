@@ -45,6 +45,14 @@ class ELIFE_ATMCharacterComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	void RequestHeartbeat(notnull IEntity atm)
+	{
+		RplId atmId = GetAtmId(atm);
+		if (atmId.IsValid())
+			Rpc(RpcAsk_Heartbeat, atmId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void RequestSelectAccount(notnull IEntity atm, string accountNumber)
 	{
 		RplId atmId = GetAtmId(atm);
@@ -159,6 +167,16 @@ class ELIFE_ATMCharacterComponent : ScriptComponent
 		ELIFE_ATMComponent atm = FindATM(atmId, "refresh");
 		if (atm && IsInReach(atm, "refresh"))
 			atm.RequestRefresh(GetPlayerId(), GetOwner());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Unreliable: one lost among the four in the server's window does no harm. No reach check, as the tick does that.
+	[RplRpc(RplChannel.Unreliable, RplRcver.Server)]
+	protected void RpcAsk_Heartbeat(RplId atmId)
+	{
+		ELIFE_ATMComponent atm = FindATM(atmId, "heartbeat");
+		if (atm)
+			atm.Heartbeat(GetPlayerId(), GetOwner());
 	}
 
 	//------------------------------------------------------------------------------------------------

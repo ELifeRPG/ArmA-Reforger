@@ -111,6 +111,8 @@ class ELIFE_ATMScreenComponent : ELIFE_WorldScreenComponent
 	protected const int STAND_IN_TYPED_MAX_DIGITS = 6;
 
 	protected const int KEEP_ALIVE_INTERVAL_MS = 5000;
+	//! Well inside the server's 20 s heartbeat window, so a lost one or two don't matter.
+	protected const int HEARTBEAT_INTERVAL_MS = 5000;
 	//! How long an outcome stays up once there's no session left to dismiss it with.
 	protected const int RESULT_LINGER_MS = 15000;
 	//! Vanilla has no cash sound; this one is paper being folded.
@@ -235,6 +237,8 @@ class ELIFE_ATMScreenComponent : ELIFE_WorldScreenComponent
 		m_bSessionOpen = true;
 		m_eResult = ELIFE_EATMReason.NONE;
 		SetView(ELIFE_EATMScreen.HOME);
+		GetGame().GetCallqueue().Remove(SendHeartbeat);
+		GetGame().GetCallqueue().CallLater(SendHeartbeat, HEARTBEAT_INTERVAL_MS, true);
 		m_Interact.SetActive(true);
 		ELIFE_WorldScreenMenu.Open(m_Interact);
 		Render();
@@ -1074,6 +1078,22 @@ class ELIFE_ATMScreenComponent : ELIFE_WorldScreenComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Every few seconds while the menu is open, whether or not anything is pressed. Stops itself once the session ends.
+	protected void SendHeartbeat()
+	{
+		if (!m_bSessionOpen)
+		{
+			GetGame().GetCallqueue().Remove(SendHeartbeat);
+			return;
+		}
+
+		ELIFE_ATMCharacterComponent link = GetLink();
+		if (link)
+			link.RequestHeartbeat(GetOwner());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A press, so it also counts as input for the server's AFK limit.
 	protected void SendKeepAlive(notnull ELIFE_ATMCharacterComponent link)
 	{
 		int now = System.GetTickCount();
@@ -1923,6 +1943,7 @@ class ELIFE_ATMScreenComponent : ELIFE_WorldScreenComponent
 	//------------------------------------------------------------------------------------------------
 	void ~ELIFE_ATMScreenComponent()
 	{
+		GetGame().GetCallqueue().Remove(SendHeartbeat);
 		GetGame().GetCallqueue().Remove(ClearLingeringResult);
 		GetGame().GetCallqueue().Remove(ClearPressed);
 		StopActivity();

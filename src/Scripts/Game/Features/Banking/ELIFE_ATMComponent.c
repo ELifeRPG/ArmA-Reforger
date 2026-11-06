@@ -126,7 +126,10 @@ class ELIFE_ATMComponent : ScriptComponent
 	static const int PAID_RESULT_MS = 8000;
 
 	protected static const int TICK_INTERVAL_MS = 1000;
-	protected static const int IDLE_TIMEOUT_MS = 60000;
+	//! Without a request or heartbeat for this long, the occupant's game has hung or lost its connection.
+	protected static const int HEARTBEAT_TIMEOUT_MS = 20000;
+	//! Without a request for this long, the occupant has walked away from the keyboard.
+	protected static const int AFK_TIMEOUT_MS = 300000;
 	protected static const int QUOTE_LIFETIME_MS = 60000;
 	protected static const int REFRESH_MIN_INTERVAL_MS = 2000;
 	//! Above the 30 s total budget of the Bridge's standard resilience handler, so no retry can land after our read.
@@ -168,6 +171,7 @@ class ELIFE_ATMComponent : ScriptComponent
 	protected IEntity m_Occupant;
 	protected string m_sOccupantCharacterId;
 	protected int m_iLastRequestTick;
+	protected int m_iLastHeartbeatTick;
 	protected int m_iLastRefreshTick;
 	protected bool m_bClosePending;
 
@@ -366,6 +370,7 @@ class ELIFE_ATMComponent : ScriptComponent
 		m_sOccupantCharacterId = characterId;
 		m_iLastRequestTick = System.GetTickCount();
 		m_iLastRefreshTick = m_iLastRequestTick;
+		m_iLastHeartbeatTick = m_iLastRequestTick;
 		m_iState = ELIFE_EATMState.LOADING;
 		Replication.BumpMe();
 
@@ -402,6 +407,14 @@ class ELIFE_ATMComponent : ScriptComponent
 	{
 		if (IsOccupant(playerId, character))
 			m_iLastRequestTick = System.GetTickCount();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-only. Only proves the occupant's game still runs; it doesn't count as input.
+	void Heartbeat(int playerId, notnull IEntity character)
+	{
+		if (IsOccupant(playerId, character))
+			m_iLastHeartbeatTick = System.GetTickCount();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -620,8 +633,20 @@ class ELIFE_ATMComponent : ScriptComponent
 			return;
 		}
 
-		if (System.GetTickCount() - m_iLastRequestTick > IDLE_TIMEOUT_MS)
-			Release("no request from the occupant");
+		//! A request proves the game runs as well as a heartbeat does.
+		int now = System.GetTickCount();
+		int lastSign = m_iLastRequestTick;
+		if (m_iLastHeartbeatTick > lastSign)
+			lastSign = m_iLastHeartbeatTick;
+
+		if (now - lastSign > HEARTBEAT_TIMEOUT_MS)
+		{
+			Release("the occupant's game stopped sending heartbeats");
+			return;
+		}
+
+		if (now - m_iLastRequestTick > AFK_TIMEOUT_MS)
+			Release("no input from the occupant");
 	}
 
 	//------------------------------------------------------------------------------------------------
