@@ -78,14 +78,6 @@ VerticalLayoutWidgetClass {
                {
                 EditBoxWidgetClass "{5538C2058B18F877}" {
                  Prefab "{5538C2058B18F877}"
-                 components {
-                  EditBoxFilterComponent "{5538D70DF38310BC}" {
-                   m_iCharacterLimit 9
-                   m_bPunctuation 0
-                   m_bASCIIchars 0
-                   m_bUTFMultibyte 0
-                  }
-                 }
                  "Placeholder text" "#ELIFE-Cash_Move_Placeholder"
                 }
                }

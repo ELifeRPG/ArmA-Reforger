@@ -75,7 +75,7 @@ class ELIFE_CashCharacterComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_SplitCash(RplId cashId, int amount, RplId storageId)
 	{
-		ELIFE_CashComponent source = FindOwnCash(cashId, "split");
+		ELIFE_CashComponent source = FindReachableCash(cashId, "split");
 		if (!source)
 			return;
 
@@ -113,11 +113,11 @@ class ELIFE_CashCharacterComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_TransferCash(RplId sourceId, RplId targetId, int amount)
 	{
-		ELIFE_CashComponent source = FindOwnCash(sourceId, "transfer");
+		ELIFE_CashComponent source = FindReachableCash(sourceId, "transfer");
 		if (!source)
 			return;
 
-		ELIFE_CashComponent target = FindOwnCash(targetId, "transfer");
+		ELIFE_CashComponent target = FindReachableCash(targetId, "transfer");
 		if (!target)
 			return;
 
@@ -136,11 +136,9 @@ class ELIFE_CashCharacterComponent : ScriptComponent
 			return;
 		}
 
+		//! Deleted without zeroing first, so clients never see an empty stack before it goes.
 		if (amount == sourceAmount)
-		{
-			source.SetAmount(0);
 			SCR_EntityHelper.DeleteEntityAndChildren(source.GetOwner());
-		}
 		else
 		{
 			source.SetAmount(sourceAmount - amount);
@@ -150,7 +148,7 @@ class ELIFE_CashCharacterComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The source is emptied and deleted before the target grows, so a repeated or competing request finds nothing to pick up.
+	//! The source is deleted before the target grows, so a repeated or competing request finds nothing to pick up.
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_PickUpCash(RplId cashId)
 	{
@@ -179,27 +177,36 @@ class ELIFE_CashCharacterComponent : ScriptComponent
 			return;
 		}
 
-		source.SetAmount(0);
 		SCR_EntityHelper.DeleteEntityAndChildren(cash);
 		target.SetAmount(target.GetAmount() + amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Like FindCash, but the stack must also be in this character's inventory.
-	protected ELIFE_CashComponent FindOwnCash(RplId cashId, string request)
+	//! Like FindCash, but the stack must also be in this character's inventory or lying within reach.
+	protected ELIFE_CashComponent FindReachableCash(RplId cashId, string request)
 	{
 		ELIFE_CashComponent cashComponent = FindCash(cashId, request);
 		if (!cashComponent)
 			return null;
 
-		SCR_InventoryStorageManagerComponent inventory = SCR_InventoryStorageManagerComponent.Cast(GetOwner().FindComponent(SCR_InventoryStorageManagerComponent));
-		if (!inventory || !inventory.Contains(cashComponent.GetOwner()))
+		if (!CanReach(cashComponent.GetOwner()))
 		{
-			Print(string.Format("ELIFE_CashCharacterComponent | %1 rejected, cash is not in the requester's inventory", request), LogLevel.WARNING);
+			Print(string.Format("ELIFE_CashCharacterComponent | %1 rejected, cash is neither carried nor lying within reach", request), LogLevel.WARNING);
 			return null;
 		}
 
 		return cashComponent;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Carried by this character or lying on the ground near it. The client asks the same before offering a split or merge.
+	bool CanReach(notnull IEntity cash)
+	{
+		SCR_InventoryStorageManagerComponent inventory = SCR_InventoryStorageManagerComponent.Cast(GetOwner().FindComponent(SCR_InventoryStorageManagerComponent));
+		if (inventory && inventory.Contains(cash))
+			return true;
+
+		return IsLyingInReach(cash);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,0 +1,14 @@
+GenericEntity : "{4B8E888EFE59EE44}Prefabs/Items/Cash/Cash.et" {
+ ID "D1345D6B4620ABA0"
+ components {
+  MeshObject "{4F786DA9411BCE41}" {
+   Object "{9787463F40E1971B}Assets/Items/Cash/Cash_Small.xob"
+   Materials {
+    MaterialAssignClass "{8CD9616671A0EC63}" {
+     SourceMaterial "Cash_Note"
+     AssignedMaterial "{FC681CB84C4EB339}Assets/Items/Cash/Data/Cash_Note_20.emat"
+    }
+   }
+  }
+ }
+}

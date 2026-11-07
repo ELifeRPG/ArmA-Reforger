@@ -1,0 +1,7 @@
+MatPBRBasic : "{AD04B939A2C3F083}Assets/_BaseMaterials/Equipment_MatPBRBasic.emat" {
+ Color 1 1 1 1
+ SurfaceProperties "{AC1A1CDEE58FEE27}Common/Materials/Game/paper.gamemat"
+ BCRMap "{3BBA5E756318C809}Assets/Items/Cash/Data/Cash_Note_20_BCR.edds"
+ RoughnessScale 0.9
+ MetalnessScale 0
+}

@@ -1,0 +1,53 @@
+MetaFileClass {
+ Name "{9787463F40E1971B}Assets/Items/Cash/Cash_Small.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{6ACD6B6B38053D9C}" {
+     SourceMaterial "Cash_Note"
+     AssignedMaterial "{DEED2158352087C7}Assets/Items/Cash/Data/Cash_Note.emat"
+    }
+   }
+   MeshParams {
+    MeshParam Cash_Small {
+    }
+   }
+   GeometryParams {
+    GeometryParam UBX_Cash_Small {
+     LayerPreset "ItemFireView"
+     SurfaceProperties {
+      "{AC1A1CDEE58FEE27}Common/Materials/Game/paper.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
+   Common TXOCommonClass "{6ACD6B6B380389C7}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Enfusion Blender Tools"
+   ApplicationName "Enfusion Blender FBX Exporter - Validaton: Permissive"
+   ApplicationVersion "4.2.23 LTS"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{6ACD6B6B38038946}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{6ACD6B6B38038968}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{6ACD6B6B3803888E}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+   Common TXOCommonClass "{6ACD6B6B38038899}" : "{F62AA8E7B8EA9D26}Configs/System/ResourceTypes/PS5/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{6ACD6B6B380388A5}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+ }
+ Tags "EBTPermissiveExport"
+}

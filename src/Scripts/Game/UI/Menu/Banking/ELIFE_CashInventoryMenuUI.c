@@ -1,46 +1,94 @@
 //------------------------------------------------------------------------------------------------
-//! Every drag of own cash to an own storage, the ground or another own stack asks how much to move, like vanilla supply crates.
+//! Dragging carried or nearby cash to a storage, the ground or another stack asks how much to move, like vanilla supply crates.
 modded class SCR_InventoryMenuUI
 {
+	//! Vanilla's m_InspectionScreen is a weak reference, so the panel is kept alive here.
+	protected ref SCR_InventoryInspectionUI m_ELIFE_InspectionScreen;
+
 	//------------------------------------------------------------------------------------------------
-	//! Amounts change without an inventory event, so the slot and the item info are refreshed by hand.
-	void ELIFE_RefreshItemSlot(IEntity item)
+	//! Amounts change without an inventory event, so the focused item's info is refreshed by hand.
+	void ELIFE_RefreshItemInfo(IEntity item)
 	{
-		if (!item)
+		if (!item || !m_pFocusedSlotUI)
 			return;
 
-		InventoryItemComponent itemComponent = InventoryItemComponent.Cast(item.FindComponent(InventoryItemComponent));
-		if (!itemComponent)
-			return;
+		InventoryItemComponent itemComponent = m_pFocusedSlotUI.GetInventoryItemComponent();
+		if (itemComponent && itemComponent.GetOwner() == item)
+			SetFocusedSlotEffects();
+	}
 
-		BaseInventoryStorageComponent storage;
-		InventoryStorageSlot parentSlot = itemComponent.GetParentSlot();
-		if (parentSlot)
-			storage = parentSlot.GetStorage();
+	//------------------------------------------------------------------------------------------------
+	override protected bool CanInspectItemInInventory(notnull IEntity item, notnull InventoryItemComponent iic)
+	{
+		return item.FindComponent(ELIFE_CashComponent) || super.CanInspectItemInInventory(item, iic);
+	}
 
-		SCR_InventoryStorageBaseUI storageUI = GetStorageUIByBaseStorageComponent(storage);
-		if (storageUI)
+	//------------------------------------------------------------------------------------------------
+	//! Vanilla only inspects weapons, on the character preview. Cash gets the rotatable inspection panel instead.
+	override void Action_Inspect()
+	{
+		if (m_InspectionScreen)
 		{
-			array<SCR_InventorySlotUI> slots = storageUI.GetUISlots();
-			if (slots)
-			{
-				foreach (SCR_InventorySlotUI slot : slots)
-				{
-					if (slot && slot.GetInventoryItemComponent() == itemComponent)
-						slot.Refresh();
-				}
-			}
+			ELIFE_CloseInspection();
+			SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.SOUND_INV_WEAPON_INSPECT);
+			return;
 		}
 
-		if (m_pFocusedSlotUI && m_pFocusedSlotUI.GetInventoryItemComponent() == itemComponent)
-			SetFocusedSlotEffects();
+		if (!ELIFE_GetReachableCash(m_pFocusedSlotUI))
+		{
+			super.Action_Inspect();
+			return;
+		}
+
+		m_ELIFE_InspectionScreen = new SCR_InventoryInspectionUI(m_pFocusedSlotUI.GetInventoryItemComponent(), m_pFocusedSlotUI.GetStorageUI());
+		m_InspectionScreen = m_ELIFE_InspectionScreen;
+		SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.SOUND_INV_WEAPON_INSPECT);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Vanilla never opens the panel, so it doesn't close it with the menu either.
+	override void OnMenuClose()
+	{
+		ELIFE_CloseInspection();
+
+		super.OnMenuClose();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ELIFE_CloseInspection()
+	{
+		if (!m_InspectionScreen)
+			return;
+
+		m_InspectionScreen.Destroy();
+		m_InspectionScreen = null;
+		m_ELIFE_InspectionScreen = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Quick move from the ground tops up a carried stack instead of taking another slot, like the pickup action.
+	override protected void MoveBetweenFromVicinity()
+	{
+		if (m_pSelectedSlotUI && m_Player)
+		{
+			InventoryItemComponent itemComponent = m_pSelectedSlotUI.GetInventoryItemComponent();
+			IEntity item;
+			if (itemComponent)
+				item = itemComponent.GetOwner();
+
+			ELIFE_CashCharacterComponent requester = ELIFE_CashCharacterComponent.Cast(m_Player.FindComponent(ELIFE_CashCharacterComponent));
+			if (item && requester && item.FindComponent(ELIFE_CashComponent) && requester.RequestPickUp(item))
+				return;
+		}
+
+		super.MoveBetweenFromVicinity();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Dropped onto a storage area, or the vicinity.
 	override protected bool MoveItem_ResourceContainer(inout SCR_InventoryStorageBaseUI pStorageBaseUI = null)
 	{
-		ELIFE_CashComponent cash = ELIFE_GetOwnCash(m_pSelectedSlotUI);
+		ELIFE_CashComponent cash = ELIFE_GetReachableCash(m_pSelectedSlotUI);
 		if (!cash || !m_pActiveHoveredStorageUI)
 			return super.MoveItem_ResourceContainer(pStorageBaseUI);
 
@@ -67,16 +115,23 @@ modded class SCR_InventoryMenuUI
 		if (m_bDraggingEnabled)
 			draggedSlot = m_DraggedSlot;
 
-		ELIFE_CashComponent cash = ELIFE_GetOwnCash(draggedSlot);
+		ELIFE_CashComponent cash = ELIFE_GetReachableCash(draggedSlot);
 		if (!cash || !m_pFocusedSlotUI)
 			return super.MoveItemToStorageSlot_ResourceContainer();
 
-		ELIFE_CashComponent target = ELIFE_GetOwnCash(m_pFocusedSlotUI);
+		ELIFE_CashComponent target = ELIFE_GetReachableCash(m_pFocusedSlotUI);
 		if (target)
 		{
 			if (target == cash)
 			{
+				//! Onto itself on the ground splits it there, like it does in a storage.
 				BaseInventoryStorageComponent cashStorage = ELIFE_GetCashStorage(cash);
+				if (!cashStorage)
+				{
+					ELIFE_OpenCashMoveDialog(cash, ELIFE_ECashMoveTarget.GROUND);
+					return true;
+				}
+
 				if (!ELIFE_IsOwnCashStorage(cash, cashStorage))
 					return super.MoveItemToStorageSlot_ResourceContainer();
 
@@ -148,10 +203,16 @@ modded class SCR_InventoryMenuUI
 	protected void ELIFE_MoveWholeCash(notnull IEntity cash, BaseInventoryStorageComponent storageTo)
 	{
 		InventoryItemComponent item = InventoryItemComponent.Cast(cash.FindComponent(InventoryItemComponent));
-		if (!item || !item.GetParentSlot() || !m_InventoryManager.CanMoveItem(cash))
+		if (!item || !m_InventoryManager.CanMoveItem(cash))
 			return;
 
-		BaseInventoryStorageComponent storageFrom = item.GetParentSlot().GetStorage();
+		//! No parent slot means it's lying on the ground.
+		BaseInventoryStorageComponent storageFrom;
+		if (item.GetParentSlot())
+			storageFrom = item.GetParentSlot().GetStorage();
+
+		if (!storageFrom && !storageTo)
+			return;
 
 		m_pCallBack.m_pItem = cash;
 		m_pCallBack.m_pMenu = this;
@@ -199,9 +260,10 @@ modded class SCR_InventoryMenuUI
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected ELIFE_CashComponent ELIFE_GetOwnCash(SCR_InventorySlotUI slot)
+	//! Cash the player carries or that lies within reach; the server checks the same.
+	protected ELIFE_CashComponent ELIFE_GetReachableCash(SCR_InventorySlotUI slot)
 	{
-		if (!slot)
+		if (!slot || !m_Player)
 			return null;
 
 		InventoryItemComponent itemComponent = slot.GetInventoryItemComponent();
@@ -209,9 +271,20 @@ modded class SCR_InventoryMenuUI
 			return null;
 
 		IEntity item = itemComponent.GetOwner();
-		if (!item || !ItemBelongsToThePlayer(item))
+		if (!item)
 			return null;
 
-		return ELIFE_CashComponent.Cast(item.FindComponent(ELIFE_CashComponent));
+		ELIFE_CashComponent cash = ELIFE_CashComponent.Cast(item.FindComponent(ELIFE_CashComponent));
+		if (!cash)
+			return null;
+
+		if (ItemBelongsToThePlayer(item))
+			return cash;
+
+		ELIFE_CashCharacterComponent requester = ELIFE_CashCharacterComponent.Cast(m_Player.FindComponent(ELIFE_CashCharacterComponent));
+		if (requester && requester.CanReach(item))
+			return cash;
+
+		return null;
 	}
 }

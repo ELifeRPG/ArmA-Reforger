@@ -9,7 +9,7 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
   }
   ELIFE_CashComponent "{E668C13FE22956C5}" {
   }
-  InventoryItemComponent "{5222EB4D0C73006B}" {
+  ELIFE_CashInventoryItemComponent "{5222EB4D0C73006B}" {
    Attributes SCR_ItemAttributeCollection "{1A03881783C3C395}" {
     ItemDisplayName ELIFE_CashInventoryUIInfo "{D9032A133D2EE5B9}" {
      Name "#ELIFE-Item_Cash_Name"
@@ -27,7 +27,7 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
      PreviewRenderAttributes "{F7C410B62A8B22D3}" {
       CameraOrbitAngles 0 180 0
       CameraDistanceToItem 0.2
-      CameraOffset 0.03 0 0
+      CameraOffset 0 0 0
       ItemRenderRotation 90 0 0
       IsDynamicObject 0
       LodModel 0
@@ -41,13 +41,7 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
    }
   }
   MeshObject "{4F786DA9411BCE41}" {
-   Object "{1BF8C5BE3DEEC82C}Assets/Items/Identity/Belongings_Personal/Papers_Personal.xob"
-   Materials {
-    MaterialAssignClass "{3E53457063861DED}" {
-     SourceMaterial "Personal_Belongings_Generic_PhotosPapers_US"
-     AssignedMaterial "{54419A0B61C2A3DB}Assets/Items/Identity/Belongings_Personal/Data/Personal_Belongings_Generic_PhotosPapers_FIA.emat"
-    }
-   }
+   Object "{1ED96F215A5D455E}Assets/Items/Cash/Cash_Medium.xob"
   }
   RigidBody "{D07FDAC4F7B53FC7}" {
    LinearDamping 0.5

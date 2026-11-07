@@ -14,6 +14,8 @@ class ELIFE_CashMoveDialog : SCR_EditboxDialogUi
 	protected static const string PRESET_TAG = "ELIFE_CASH_MOVE";
 	protected static const string WIDGET_SLIDER = "Slider";
 	protected static const int MAX_SLIDER_STEPS = 100;
+	//! Enough for any amount up to the cap, short enough that ToInt() can't overflow.
+	protected static const int MAX_DIGITS = 9;
 
 	protected ELIFE_CashComponent m_Cash;
 	protected ELIFE_ECashMoveTarget m_eTarget;
@@ -76,6 +78,14 @@ class ELIFE_CashMoveDialog : SCR_EditboxDialogUi
 		//! The edit box fires once more while the dialog is being torn down.
 		if (m_bIsClosing)
 			return;
+
+		//! Filtered here because vanilla's EditBoxFilterComponent errors on this edit box.
+		string digits = DigitsOnly(text);
+		if (digits != text && m_Editbox)
+		{
+			m_Editbox.SetValue(digits);
+			return;
+		}
 
 		int amount = GetEnteredAmount();
 		if (amount > 0)
@@ -193,6 +203,20 @@ class ELIFE_CashMoveDialog : SCR_EditboxDialogUi
 			return room;
 
 		return amount;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string DigitsOnly(string text)
+	{
+		string digits;
+		for (int i = 0, count = text.Length(); i < count && digits.Length() < MAX_DIGITS; i++)
+		{
+			string character = text.Get(i);
+			if ("0123456789".Contains(character))
+				digits += character;
+		}
+
+		return digits;
 	}
 
 	//------------------------------------------------------------------------------------------------

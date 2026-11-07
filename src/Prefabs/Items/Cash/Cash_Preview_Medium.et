@@ -1,0 +1,8 @@
+GenericEntity : "{4B8E888EFE59EE44}Prefabs/Items/Cash/Cash.et" {
+ ID "62623CC3880D9FB1"
+ components {
+  MeshObject "{4F786DA9411BCE41}" {
+   Object "{1ED96F215A5D455E}Assets/Items/Cash/Cash_Medium.xob"
+  }
+ }
+}
